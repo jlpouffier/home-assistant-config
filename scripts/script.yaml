@@ -1,0 +1,112 @@
+###########################
+###### LIGHTS SCENES ######
+###########################
+
+
+# REGULAR (KITCHEN / LIVINGROOM)
+lights_set_livingroom_kitchen_regular:
+  alias: lights_set_livingroom_kitchen_regular
+  sequence:
+  - data:
+      brightness_pct: 100
+      color_temp: 350
+      entity_id: light.salon
+      transition: 1
+    service: light.turn_on
+  - data:
+      brightness_pct: 100
+      entity_id: light.cuisine
+      transition: 1
+    service: light.turn_on
+  - data:
+      brightness_pct: 100
+      entity_id: light.entree
+      transition: 1
+    service: light.turn_on
+
+    
+    
+# TV PLAYING (KITCHEN / LIVINGROOM)
+lights_set_tv:
+  alias: lights_set_tv
+  sequence:
+  - data:
+      brightness_pct: 20
+      color_temp: 500
+      entity_id: light.living_room_wall
+      transition: 2
+    service: light.turn_on
+  - data:
+      brightness_pct: 10
+      entity_id: light.living_room_sphere
+      rgb_color:
+      - 255
+      - 154
+      - 46
+      transition: 2
+    service: light.turn_on
+  - data:
+      entity_id: light.cuisine
+      transition: 2
+    service: light.turn_off
+  - data:
+      entity_id: light.entree
+      transition: 2
+    service: light.turn_off
+    
+    
+# TV PAUSED (KITCHEN / LIVINGROOM)
+lights_set_tv_paused:
+  alias: lights_set_tv_paused
+  sequence:
+  - data:
+      brightness_pct: 50
+      color_temp: 500
+      entity_id: light.living_room_wall
+      transition: 2
+    service: light.turn_on
+  - data:
+      brightness_pct: 50
+      entity_id: light.living_room_sphere
+      rgb_color:
+      - 255
+      - 154
+      - 46
+      transition: 2
+    service: light.turn_on
+  - data:
+      brightness_pct: 30
+      entity_id: light.cuisine
+      transition: 2
+    service: light.turn_on
+  - data:
+      brightness_pct: 30
+      entity_id: light.entree
+      transition: 2
+    service: light.turn_on
+    
+    
+# EATING (KITCHEN / LIVINGROOM)
+lights_set_eating:
+  alias: lights_set_eating
+  sequence:
+  - data:
+      brightness_pct: 100
+      entity_id: light.cuisine
+      transition: 1
+    service: light.turn_on
+  - data:
+      brightness_pct: 50
+      color_temp: 350
+      entity_id: light.living_room_wall
+      transition: 1
+    service: light.turn_on
+  - data:
+      entity_id: light.living_room_sphere
+      transition: 1
+    service: light.turn_off
+  - data:
+      entity_id: light.entree
+      transition: 1
+    service: light.turn_off
+    

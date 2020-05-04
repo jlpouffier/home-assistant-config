@@ -1,0 +1,18 @@
+#https://www.home-assistant.io/integrations/recorder/
+purge_keep_days: 14
+exclude:
+    entities:
+      - sensor.date
+      - sensor.date_time
+      - sensor.date_time_iso
+      - sensor.date_time_utc
+      - sensor.time
+      - sensor.time_date
+      - sensor.time_utc
+      - sensor.target_arrival_ricardo_to_home
+      - sensor.target_arrival_home_to_ricardo
+      - sensor.target_arrival_home_to_amadeus
+      - sensor.target_arrival_amadeus_to_home
+      - sun.sun
+      - sensor.sun_elevation
+      - sensor.sun_azimuth

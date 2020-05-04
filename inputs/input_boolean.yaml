@@ -1,0 +1,31 @@
+# https://www.home-assistant.io/integrations/input_boolean/
+
+# Switch to turn on / off Edith (AppDemaon)
+edith_switch:
+  name: Edith
+  icon: mdi:telegram
+
+# Switch to turn on / off Snips (AppDemaon)
+snips_switch:
+  name: Snips
+  icon: mdi:google-assistant
+
+# Switch to turn on / off clean_house (AppDemaon)
+spiroo_planification_switch:
+  name: Planification Spiroo
+  icon: mdi:broom
+
+# Switch to turn on / off watch_tv (AppDemaon)
+watch_tv_automation_switch:
+  name: TV intelligente
+  icon: mdi:television    
+
+# Switch to turn on / off wake_up and work_arrow (AppDemaon)
+wake_up_automation_switch:
+  name: Réveil intelligent
+  icon: mdi:alarm
+
+# Switch to turn on / off welcome_home (AppDemaon)
+welcome_home_automation_switch:
+  name: Bienvenue lumineux
+  icon: mdi:home-import-outline

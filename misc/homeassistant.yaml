@@ -1,0 +1,167 @@
+# https://www.home-assistant.io/docs/configuration/customizing-devices/
+customize:
+    #PERSONS
+    person.jenova70:
+        friendly_name: JL
+        entity_picture: /local/jl.jpeg
+    
+    person.valentine:
+        entity_picture: /local/valentine.jpeg
+        
+    # Individualt lights
+    light.living_room_sphere:
+        icon: 'mdi:checkbox-blank-circle'
+    light.main_bedroom_bloom:
+        icon: 'mdi:wall-sconce-variant'
+    light.main_bedroom_fairy_lights:
+        icon: 'mdi:bed-double'
+    light.secondary_bedroom_ceiling:
+        icon: 'mdi:ceiling-light'
+    light.secondary_bedroom_desk:
+        icon: 'mdi:desk-lamp'
+    light.entry_ceiling:
+        icon: 'mdi:ceiling-light'
+    light.exterior_wall:
+        icon: 'mdi:coach-lamp'
+    
+    # Grouped lights
+    light.living_room_wall_a:
+        icon: 'mdi:wall-sconce'
+        friendly_name: "Applique A (Salon)"
+    light.living_room_wall_b:
+        icon: 'mdi:wall-sconce'
+        friendly_name: "Applique B (Salon)"
+    light.living_room_wall:
+        icon: 'mdi:wall-sconce'
+        friendly_name: "Appliques (Salon)"
+        
+    light.main_bedroom_ceiling_a:
+        icon: 'mdi:checkbox-blank-circle'
+        friendly_name: "Suspension A (Chambre principale)"
+    light.main_bedroom_ceiling_b:
+        icon: 'mdi:checkbox-blank-circle'
+        friendly_name: "Suspension B (Chambre principale)"
+    light.main_bedroom_ceiling:
+        icon: 'mdi:checkbox-multiple-blank-circle'
+        friendly_name: "Suspensions (Chambre principale)"
+        
+    light.kitchen_ceiling_a:
+        icon: 'mdi:ceiling-light'
+        friendly_name: "Suspension A (Cuisine)"
+    light.kitchen_ceiling_b:
+        icon: 'mdi:ceiling-light'
+        friendly_name: "Suspension B (Cuisine)"
+    light.kitchen_ceiling_c:
+        icon: 'mdi:ceiling-light'
+        friendly_name: "Suspension C (Cuisine)"
+    light.kitchen_ceiling:
+        icon: 'mdi:vanity-light'
+        friendly_name: "Suspensions (Cuisine)"
+        
+    # light groups
+    light.interior_lights:
+        icon: 'mdi:home'
+        friendly_name: "Lumières Intérieures"
+    light.exterior_lights:
+        icon: 'mdi:coach-lamp'
+        friendly_name: "Lumières Extérieures"
+        
+    # hue light groups
+    light.entree:
+        icon: 'mdi:coat-rack'
+        friendly_name: "Lumières Entrée"
+    light.cuisine:
+        icon: 'mdi:food-apple'
+        friendly_name: "Lumières Cuisine"
+    light.salon:
+        icon: 'mdi:sofa'
+        friendly_name: "Lumières Salon"
+    light.chambre_principale:
+        icon: 'mdi:bed-king'
+        friendly_name: "Lumières Chambre principale"
+    light.chambre_secondaire:
+        icon: 'mdi:desk-lamp'
+        friendly_name: "Lumières Chambre secondaire"
+    light.terrasse:
+        icon: 'mdi:coach-lamp'
+        friendly_name: "Lumières Terrasse"
+    
+    
+    #SPIROO
+    vacuum.spiroo:
+        icon: 'mdi:robot-vacuum-variant'
+     
+    #SCRIPTS
+    script.lights_set_tv:
+        icon: 'mdi:play'
+        friendly_name: "Lumières lecture film (Scène)"
+    script.lights_set_eating:
+        icon: 'mdi:food-fork-drink'
+        friendly_name: "Lumières diner (Scène)"
+    script.lights_set_livingroom_kitchen_regular:
+        icon: 'mdi:home-lightbulb'
+        friendly_name: "Lumières normale (Scène)"
+    script.lights_set_tv_paused:
+        icon: 'mdi:pause'
+        friendly_name: "Lumières film en pause (Scène)"
+    
+    #AUTOMATION
+    automation.send_event_to_snips:
+        icon: mdi:google-assistant
+        
+    # WAZE SENSORS
+    sensor.home_to_amadeus:
+        icon: "mdi:briefcase"
+        friendly_name: "Temps trajet Maison > Amadeus"
+    sensor.home_to_ricardo:
+        icon: "mdi:briefcase-outline"
+        friendly_name: "Temps trajet Maison > Ricardo"
+    sensor.amadeus_to_home:
+        icon: "mdi:home"
+        friendly_name: "Temps trajet Amadeus > Maison"
+    sensor.ricardo_to_home:
+        icon: "mdi:home-outline"
+        friendly_name: "Temps trajet Ricardo > Maison"
+
+    # system monitoring sensors
+    sensor.disk_free:
+        friendly_name: "Stockage libre"
+    sensor.disk_use:
+        friendly_name: "Stockage utilisé"
+    sensor.disk_use_percent:
+        friendly_name: "Stockage utilisé (%)"
+    sensor.memory_free:
+        friendly_name: "Mémoire libre"
+    sensor.memory_use:
+        friendly_name: "Mémoire utilisée"
+    sensor.memory_use_percent:
+        friendly_name: "Mémoire utilisée (%)"
+    
+        
+    # COVERS
+    cover.all_covers:
+        icon: "mdi:blinds"
+        friendly_name: "Tous les volets"
+        
+    # Device Trackers
+    device_tracker.livebox_home:
+        friendly_name: Livebox
+        icon: 'mdi:hubspot'
+    device_tracker.jlsphilipshue_home:
+        friendly_name: Hue
+        icon: 'mdi:lightbulb'
+    device_tracker.spiroo_home:
+        friendly_name: Spiroo
+        icon: 'mdi:robot-vacuum-variant'
+    device_tracker.jl_nas_home:
+        friendly_name: NAS
+        icon: 'mdi:nas'
+    device_tracker.snips_home:
+        friendly_name: Snips
+        icon: 'mdi:google-assistant'
+    device_tracker.android_home:
+        friendly_name: TV
+        icon: 'mdi:youtube-tv'
+    device_tracker.imac_de_jean_loic_home:
+        friendly_name: iMac
+        icon: 'mdi:desktop-mac'

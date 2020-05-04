@@ -1,0 +1,5 @@
+# https://www.home-assistant.io/integrations/cover.group/
+- platform: group
+  name: all_covers
+  entities:
+    - cover.main_bedroom_roller_shutter

@@ -1,0 +1,21 @@
+############################
+####### MQTT to Event ######
+############################
+
+- id: 'send_event_to_snips'
+  alias: send_event_to_snips
+  trigger:
+  - platform: mqtt
+    topic: snips/intent/Jenova70:ActOnLight  
+  - platform: mqtt
+    topic: snips/intent/Jenova70:ActOnVacuum
+  - platform: mqtt
+    topic: snips/intent/Jenova70:LeavingHome
+  - platform: mqtt
+    topic: snips/intent/Jenova70:ArrivingHome
+  - platform: mqtt
+    topic: snips/intent/Jenova70:ActOnCover
+  action:
+  - event: SNIPS_EVENT
+    event_data_template:
+      payload: '{{ trigger.payload }}'

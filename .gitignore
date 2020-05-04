@@ -1,0 +1,16 @@
+.storage/
+appdaemon/apps/__pycache__/
+appdaemon/logs
+appdaemon/dashboards/
+/tts
+OpenZWave/
+*.db
+*.sqlite
+*.log
+OZW_Log.txt
+.spotify-token-cache
+secrets.yaml
+known_devices.yaml
+zwcfg_*.xml
+options.xml
+zwscene.xml

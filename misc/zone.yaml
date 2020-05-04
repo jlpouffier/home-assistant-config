@@ -1,0 +1,15 @@
+# https://www.home-assistant.io/integrations/zone/
+
+#SOPHIA
+- name: Travail (Sophia)
+  latitude: !secret latitude_work_zone
+  longitude: !secret longitude_work_zone
+  radius: 2500
+  icon: mdi:office-building
+ 
+#Home
+- name: Home
+  latitude: !secret latitude
+  longitude: !secret longitude
+  radius: 200
+  icon: mdi:home

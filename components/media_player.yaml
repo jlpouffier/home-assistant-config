@@ -1,0 +1,23 @@
+# KODI
+# https://www.home-assistant.io/integrations/kodi/
+- platform: kodi
+  host: 192.168.1.13
+  username: !secret kodi_usr
+  password: !secret kodi_pwd
+
+# ANDROID TV
+# https://www.home-assistant.io/integrations/androidtv/
+- platform: androidtv
+  name: Philips Android TV
+  device_class: androidtv
+  host: 192.168.1.13
+  adb_server_ip: 127.0.0.1
+  get_sources: false
+  apps:
+    com.spotify.tv.android: Spotify
+    org.xbmc.kodi: Kodi
+    tv.molotov.app: Molotov
+    com.google.android.youtube.tv: YouTube
+    com.google.android.apps.mediashell: Cast
+    com.google.android.tvlauncher: Home
+    com.android.vending: Google Play Store

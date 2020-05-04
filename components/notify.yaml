@@ -1,0 +1,5 @@
+# Telegram notifier
+# https://www.home-assistant.io/integrations/telegram/
+- name: telegram_notifier
+  platform: telegram
+  chat_id: !secret telegram_chat_id

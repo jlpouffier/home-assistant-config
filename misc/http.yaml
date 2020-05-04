@@ -1,0 +1,4 @@
+# https://www.home-assistant.io/integrations/http/
+base_url: !secret hass_base_url
+ssl_certificate: /ssl/fullchain.pem
+ssl_key: /ssl/privkey.pem

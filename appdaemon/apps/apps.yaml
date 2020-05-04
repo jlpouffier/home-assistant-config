@@ -1,0 +1,32 @@
+bot_edith:
+  module: edith
+  class: edith
+  
+bot_snips:
+  module: snips
+  class: snips
+
+watch_tv:
+  module: watch_tv
+  class: watch_tv
+  constrain_input_boolean: input_boolean.watch_tv_automation_switch
+    
+clean_house:
+  module: clean_house
+  class: clean_house
+  constrain_input_boolean: input_boolean.spiroo_planification_switch
+
+wake_up:
+  module: wake_up
+  class: wake_up
+  constrain_input_boolean: input_boolean.wake_up_automation_switch
+  
+welcome_home:
+  module: welcome_home
+  class: welcome_home
+  constrain_input_boolean: input_boolean.welcome_home_automation_switch
+  
+work_arrow:
+  module: work_arrow
+  class: work_arrow
+  constrain_input_boolean: input_boolean.wake_up_automation_switch

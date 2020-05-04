@@ -1,0 +1,61 @@
+# https://www.home-assistant.io/integrations/binary_sensor/
+
+
+
+
+# Workday (current day)
+# https://www.home-assistant.io/integrations/workday/
+- platform: workday
+  name: 'workday_today' 
+  country: FRA
+
+# Workday (Tomorrow)
+# https://www.home-assistant.io/integrations/workday/
+- platform: workday
+  name: 'workday_tomorrow' 
+  country: FRA
+  days_offset: 1
+
+# Day when Spiroo will clean the appartment 
+# https://www.home-assistant.io/integrations/workday/
+- platform: workday
+  name: 'spiroo_days' 
+  country: FRA
+  workdays: [mon, wed, fri]
+  excludes: [tue, thu, sat, sun]
+  
+# Home Occupancy
+# https://www.home-assistant.io/integrations/binary_sensor.template/
+- platform: template
+  sensors:
+      home_occupied:
+          friendly_name: "Maison"
+          device_class: occupancy
+          value_template: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
+          icon_template: >
+              {% if is_state("binary_sensor.home_occupied", "on") -%}
+                  mdi:home-account
+              {%- else -%}
+                  mdi:home
+              {%- endif %}
+              
+# Spotify Usage
+# https://www.home-assistant.io/integrations/binary_sensor.template/
+- platform: template
+  sensors:
+      is_spotify_used:
+          value_template: "{{is_state('media_player.spotify_jlp', 'playing') or is_state('media_player.spotify_jlp', 'paused')}}"
+
+# Kodi usage
+# https://www.home-assistant.io/integrations/binary_sensor.template/
+- platform: template
+  sensors:
+      is_kodi_used:
+          value_template: "{{is_state('media_player.kodi', 'playing') or is_state('media_player.kodi', 'paused')}}"
+          
+# Sun rising
+# https://www.home-assistant.io/integrations/binary_sensor.template/
+- platform: template
+  sensors:
+      is_sun_rising:
+          value_template: "{{is_state_attr('sun.sun', 'rising', true)}}"

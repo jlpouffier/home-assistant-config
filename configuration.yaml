@@ -1,0 +1,36 @@
+# DEFAULT
+default_config:
+api:
+
+# COMPONENTS
+neato: !include components/neato.yaml
+device_tracker: !include components/device_tracker.yaml
+zwave: !include components/zwave.yaml
+linky: !include components/linky.yaml
+light: !include components/light.yaml
+media_player: !include components/media_player.yaml
+sensor: !include components/sensor.yaml
+binary_sensor: !include components/binary_sensor.yaml
+notify: !include components/notify.yaml
+telegram_bot: !include components/telegram_bot.yaml
+cover: !include components/cover.yaml
+spotify: !include components/spotify.yaml
+
+# INPUTS
+input_boolean: !include inputs/input_boolean.yaml
+input_datetime: !include inputs/input_datetime.yaml
+
+# MISC
+http: !include misc/http.yaml
+homeassistant: !include misc/homeassistant.yaml
+frontend: !include misc/frontend.yaml   
+zone: !include misc/zone.yaml
+recorder: !include misc/recorder.yaml
+    
+# AUTOMATIONS
+automation: !include automations/automation.yaml
+
+# SCRIPTS
+script: !include scripts/script.yaml
+
+
