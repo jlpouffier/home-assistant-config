@@ -15,14 +15,6 @@
   name: 'workday_tomorrow' 
   country: FRA
   days_offset: 1
-
-# Day when Spiroo will clean the appartment 
-# https://www.home-assistant.io/integrations/workday/
-- platform: workday
-  name: 'spiroo_days' 
-  country: FRA
-  workdays: [mon, wed, fri]
-  excludes: [tue, thu, sat, sun]
   
 # Home Occupancy
 # https://www.home-assistant.io/integrations/binary_sensor.template/

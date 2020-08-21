@@ -1,4 +1,0 @@
-# Linky integration used to track the energy consumption of the appartment
-# https://www.home-assistant.io/integrations/linky/
-- username: !secret linky_usr
-  password: !secret linky_pwd

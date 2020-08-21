@@ -3,14 +3,12 @@ import datetime
 
 class work_arrow(hass.Hass):
     def initialize(self):
-        """
         runtime = datetime.time(3,0,0)
         self.run_daily(self.callback_prepare_app, runtime)
         # Fallback if the app starts after 3am and before the wakeup time...
         if self.now_is_between("03:00:00" , self.get_state("input_datetime.wake_up_time")):
             self.run_in(self.callback_prepare_app, 0)
         self.log("Work Arrow Automation initialized")
-        """
 
     def callback_prepare_app(self, kwargs):
         self.last_arrival_datetime_green = datetime.datetime.combine(self.date() , datetime.time(8,0))

@@ -128,44 +128,6 @@
           unit_of_measurement: "°"
           value_template: "{{state_attr('sun.sun' , 'azimuth')}}"
           icon_template: "mdi:target"
-
-# Linky specific sensors
-# https://www.home-assistant.io/integrations/template/
-- platform: template
-  sensors:
-    linky_current_month_fee:
-      unit_of_measurement: "€"
-      friendly_name: "Prix consommation mois courant"
-      value_template: "{{states('sensor.linky_current_month') | float | multiply(0.1524) | round(2) }}"
-      icon_template: "mdi:currency-eur"
-    linky_current_year_fee:
-      unit_of_measurement: "€"
-      friendly_name: "Prix consommation année courante"
-      value_template: "{{states('sensor.linky_current_year') | float | multiply(0.1524) | round(2) }}"
-      icon_template: "mdi:currency-eur"
-    linky_last_month_fee:
-      unit_of_measurement: "€"
-      friendly_name: "Prix consommation mois précédent"
-      value_template: "{{states('sensor.linky_last_month') | float | multiply(0.1524) | round(2) }}"
-      icon_template: "mdi:currency-eur"
-    linky_last_year_fee:
-      unit_of_measurement: "€"
-      friendly_name: "Prix consommation année précédente"
-      value_template: "{{states('sensor.linky_last_year') | float | multiply(0.1524) | round(2) }}"
-      icon_template: "mdi:currency-eur"
-    linky_yesterday_fee:
-      unit_of_measurement: "€"
-      friendly_name: "Prix consommation hier"
-      value_template: "{{states('sensor.linky_yesterday') | float | multiply(0.1524) | round(2) }}"
-      icon_template: "mdi:currency-eur"
-    linky_current_month_vs_last_month:
-      unit_of_measurement: "%"
-      value_template: "{{ (states('sensor.linky_current_month') | float / states('sensor.linky_last_month') | float )  | multiply (100) | round(2)}}"
-      icon_template: "mdi:finance"
-    linky_current_year_vs_last_year:
-      unit_of_measurement: "%"
-      value_template: "{{ (states('sensor.linky_current_year') | float / states('sensor.linky_last_year') | float )  | multiply (100) | round(2)}}"
-      icon_template: "mdi:finance"
       
 # Time to reach home / work sensors
 # https://www.home-assistant.io/integrations/template/

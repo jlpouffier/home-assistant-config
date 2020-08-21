@@ -242,7 +242,7 @@ class edith(hass.Hass):
       # Restart HASS
       self.call_service("homeassistant/restart")
     elif payload == "/cancel_planned_clean_house":
-      # Send event DELAYED_AUTOMATION_CANCELED with payload = clean_house (See usecase_manager.clean_house app that will receive it)
+      # Send event DELAYED_AUTOMATION_CANCELED with payload = clean_house (See clean_house app that will receive it)
       self.fire_event("DELAYED_AUTOMATION_CANCELED", payload = "clean_house")
 
 

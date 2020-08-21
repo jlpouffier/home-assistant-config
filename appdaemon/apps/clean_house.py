@@ -10,28 +10,28 @@ Functionality :
 """
 class clean_house(hass.Hass):
   def initialize(self):
-    runtime = datetime.time(17,0,0)
+    runtime = datetime.time(16,0,0)
     self.run_daily(self.callback_pre_cleaning, runtime)
     self.listen_event(self.callback_cancel_cleaning , "DELAYED_AUTOMATION_CANCELED")
     self.log("House cleaning Automation initialized")
 
  
   """
-  Callback triggered everyday at 17:00. A test will be made to check if 
-    we are on a cleaning day (binary_sensor.spiroo_days)
+  Callback triggered everyday at 16:00. A test will be made to check if 
     we are on a working day (binary_sensor.workday_today) 
     we are not, right now, in cleaning state
-    the last cleaning happend more than one day ago
+    the home is not occupied
+    the last cleaning happend more than 36 hours ago
   Goals :
   . Schedule cleaning in 30 minutes
   . Inform Edith that Spiroo will start in 30 minutes
   """ 
   def callback_pre_cleaning(self, kwargs):
-    if self.get_state("binary_sensor.spiroo_days") == "on" and self.get_state("binary_sensor.workday_today") == "on" and self.get_state("vacuum.spiroo") != "cleaning": 
+    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("vacuum.spiroo") != "cleaning" and self.get_state("binary_sensor.home_occupied") == "off": 
       last_cleaning = self.parse_datetime(self.get_state("vacuum.spiroo", attribute="clean_start"))
       now = self.datetime()
       diff = now - last_cleaning
-      if diff > datetime.timedelta(days = 1):
+      if diff > datetime.timedelta(hours = 36):
         self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Edith")
         delay = 1800
         # Schedule cleaning in 30 minutes via callback callback_cleaning

@@ -178,7 +178,7 @@ class snips(hass.Hass):
     if bom['action'] == 'on':
       self.say('Lancement de Spirou')
       self.log("Starting sprioo")
-      self.call_service("neato/custom_cleaning" , entity_id = "vacuum.spiroo" , category = 4 , mode  = 1 , navigation = 1)
+      self.call_service("vacuum/start" , entity_id = "vacuum.spiroo")
     elif bom['action'] == 'off':
       self.say('Retour de Spirou à sa base')
       self.log("Stoping sprioo")

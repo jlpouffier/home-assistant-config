@@ -6,7 +6,6 @@ api:
 neato: !include components/neato.yaml
 device_tracker: !include components/device_tracker.yaml
 zwave: !include components/zwave.yaml
-linky: !include components/linky.yaml
 light: !include components/light.yaml
 media_player: !include components/media_player.yaml
 sensor: !include components/sensor.yaml
