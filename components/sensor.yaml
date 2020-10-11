@@ -54,7 +54,6 @@
     - type: memory_use
     - type: memory_free
 
-
 # Neato specific sensors
 # https://www.home-assistant.io/integrations/template/
 - platform: template

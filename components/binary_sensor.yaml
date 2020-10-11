@@ -30,7 +30,7 @@
               {%- else -%}
                   mdi:home
               {%- endif %}
-              
+
 # Spotify Usage
 # https://www.home-assistant.io/integrations/binary_sensor.template/
 - platform: template
