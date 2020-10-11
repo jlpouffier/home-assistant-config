@@ -25,6 +25,7 @@ class watch_tv(hass.Hass):
   def initialize(self):
     # KODI CALLBACKS
     self.listen_state(self.callback_philips_android_tv, "media_player.philips_android_tv")
+    self.listen_event(self.callback_tv_nfc_tag_scanned, "tag_scanned", tag_id = "7f6e5304-2942-4c49-b44d-d6e8aa937b80")
     self.log("Watch TV Automation initialized")
     # Variable to store the old app to detect app changes. Initialized to the Android Home page
     self.old_app = "com.google.android.tvlauncher"
@@ -80,6 +81,9 @@ class watch_tv(hass.Hass):
 
       self.old_app = current_app
   
+  def callback_tv_nfc_tag_scanned(self, event_name, data, kwargs):
+      self.call_service("script/lights_set_tv") 
+      
   """
   Helper method:
   Does : Nothing
