@@ -1,5 +1,18 @@
 # DEFAULT
+
 default_config:
+
+#Added to remove a few things for the Ricardo demo
+#mobile_app:
+#person:
+#scene:
+#ssdp:
+#sun:
+#system_health:
+#tag:
+#updater:
+#zeroconf:
+
 api:
 
 # COMPONENTS
@@ -18,6 +31,8 @@ spotify: !include components/spotify.yaml
 # INPUTS
 input_boolean: !include inputs/input_boolean.yaml
 input_datetime: !include inputs/input_datetime.yaml
+input_text: !include inputs/input_text.yaml
+
 
 # MISC
 http: !include misc/http.yaml

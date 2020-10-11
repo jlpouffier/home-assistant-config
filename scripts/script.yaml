@@ -110,3 +110,11 @@ lights_set_eating:
       transition: 1
     service: light.turn_off
     
+    
+say_snips:
+    alias: say_snips
+    sequence:
+    - event: SNIPS_SAY
+      event_data: 
+        payload: "{{ states('input_text.snips_input')}}"
+    

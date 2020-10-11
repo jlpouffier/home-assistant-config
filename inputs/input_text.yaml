@@ -1,0 +1,4 @@
+snips_input:
+    pattern: '[a-zA-Z0-9 ]*'
+    max: 100
+    name: Snips Input
