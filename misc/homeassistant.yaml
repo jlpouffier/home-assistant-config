@@ -12,9 +12,9 @@ customize:
     light.living_room_sphere:
         icon: 'mdi:checkbox-blank-circle'
     light.main_bedroom_bloom:
-        icon: 'mdi:wall-sconce-variant'
+        icon: 'mdi:wall-sconce-round-variant'
     light.main_bedroom_fairy_lights:
-        icon: 'mdi:bed-double'
+        icon: 'mdi:string-lights'
     light.secondary_bedroom_ceiling:
         icon: 'mdi:ceiling-light'
     light.secondary_bedroom_desk:
@@ -36,13 +36,13 @@ customize:
         friendly_name: "Appliques (Salon)"
         
     light.main_bedroom_ceiling_a:
-        icon: 'mdi:checkbox-blank-circle'
+        icon: 'mdi:globe-light'
         friendly_name: "Suspension A (Chambre principale)"
     light.main_bedroom_ceiling_b:
-        icon: 'mdi:checkbox-blank-circle'
+        icon: 'mdi:globe-light'
         friendly_name: "Suspension B (Chambre principale)"
     light.main_bedroom_ceiling:
-        icon: 'mdi:checkbox-multiple-blank-circle'
+        icon: 'mdi:globe-light'
         friendly_name: "Suspensions (Chambre principale)"
         
     light.kitchen_ceiling_a:
