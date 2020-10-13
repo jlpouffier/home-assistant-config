@@ -11,6 +11,7 @@ Functionalities
 . Nofify Spiroo not docked for more than 30 minutes
 . Notify HASS update
 . Notify lights are still on when nobody is at home > Turn off light possible
+. Notify TV still on when nobody is at home > Turn off TV possible
 . Reply to /ping command wih /pong
 . Reply to /pong command with /ping
 . Reply to /restart command > Confirm mandatory 
@@ -184,6 +185,16 @@ class edith(hass.Hass):
       # /turn_off_lights : turn off lights
       self.call_service("telegram_bot/send_message", message = "Je détecte encore des lumières allumées alors que personne n'est présent:\n\n" + "\n".join(lights_on), inline_keyboard = ["C'est normal:/ack" , "Éteins les lumières:/turn_off_lights"])
 
+    # test if TV is still on
+    if self.get_state("media_player.philips_android_tv") not in ["off", "standby", "unavailable"]:
+      self.log("Detecting home empty and TV on. Notifying it...")
+      # Send message with two telegram_callbacks
+      # /ack : acknowlege TV is still on
+      # /turn_off_tv : turn off TV
+      self.call_service("telegram_bot/send_message", message = "Je détecte encore la TV allumée alors que personne n'est présent", inline_keyboard = ["C'est normal:/ack" , "Éteins la TV:/turn_off_tv"])
+
+
+
 
   """
   Callback triggered when Edith receives a telegram_command (ie. /command)
@@ -238,6 +249,10 @@ class edith(hass.Hass):
     elif payload == "/turn_off_lights":
       # Turn off all lights
       self.call_service("light/turn_off" , entity_id = "light.interior_lights")
+      self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
+    elif payload == "/turn_off_tv":
+      # Turn off TV
+      self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
     elif payload == "/restart_hass":
       # Restart HASS
       self.call_service("homeassistant/restart")
@@ -274,7 +289,8 @@ class edith(hass.Hass):
       "light.salon",
       "light.entree",
       "light.chambre_principale",
-      "light.chambre_secondaire"
+      "light.chambre_secondaire",
+      "light.terrasse"
     ]
 
     for room in rooms:
