@@ -95,7 +95,7 @@ class edith(hass.Hass):
     # Send message with two telegram_callbacks
     # /ack : acknowledge Spiroo start
     # /rth_spiroo : RTH Spiroo
-    self.call_service("telegram_bot/send_message", message = "Spiroo démarre son nettoyage ..." , inline_keyboard = ["C'est normal:/ack" , "Annule le nettoyage:/rth_spiroo"])
+    self.call_service("telegram_bot/send_message", message = "🧹 Spiroo démarre son nettoyage ..." , inline_keyboard = ["C'est normal:/ack" , "Annule le nettoyage:/rth_spiroo"])
 
 
   """
@@ -112,10 +112,10 @@ class edith(hass.Hass):
     current_battery_level = self.get_state("sensor.spiroo_battery_level")
     cleaned_map = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
     # Send summary message
-    self.call_service("telegram_bot/send_message", message = "Spiroo a terminé son nettoyage")
+    self.call_service("telegram_bot/send_message", message = "✅ Spiroo a terminé son nettoyage")
     # Send stats message
-    self.call_service("telegram_bot/send_message", message = "Surface nettoyée: " + area_cleaned + "m2")
-    self.call_service("telegram_bot/send_message", message = "Niveau de batterie actuel: " + current_battery_level + "%")
+    self.call_service("telegram_bot/send_message", message = "🧹 Surface nettoyée: " + area_cleaned + "m2")
+    self.call_service("telegram_bot/send_message", message = "🔋 Niveau de batterie actuel: " + current_battery_level + "%")
     # Send map
     self.call_service("telegram_bot/send_photo", url = cleaned_map)
 
@@ -134,7 +134,7 @@ class edith(hass.Hass):
       current_location = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
       status = self.translate_spiroo_error_status(self.get_state("vacuum.spiroo" , attribute = "status"))
       # Send message
-      self.call_service("telegram_bot/send_message", message = "Spiroo est en erreur :")
+      self.call_service("telegram_bot/send_message", message = "⚠️ Spiroo est en erreur :")
       self.call_service("telegram_bot/send_message", message = status)
       # Send map
       self.call_service("telegram_bot/send_photo", url = current_location)
@@ -149,7 +149,7 @@ class edith(hass.Hass):
     if old != new:
       self.log("Detecting that Spiroo is not plugged since more than 30 miuntes. Notifying it...")
       # Send message
-      self.call_service("telegram_bot/send_message", message = "Je detecte que Spiroo n' est plus sur sa base depuis plus de 30 minutes ...")
+      self.call_service("telegram_bot/send_message", message = "⚠️ Je detecte que Spiroo n' est plus sur sa base depuis plus de 30 minutes ...")
 
 
   """
@@ -163,9 +163,9 @@ class edith(hass.Hass):
     version = self.get_state("binary_sensor.updater", attribute = "newest_version")
     # Send message
     if version is None:
-      self.call_service("telegram_bot/send_message", message = " Nouvelle version de Home Assistant est dispo ! (Version inconnue)")
+      self.call_service("telegram_bot/send_message", message = "🎉 Nouvelle version de Home Assistant est dispo ! (Version inconnue)")
     else:
-      self.call_service("telegram_bot/send_message", message = " La version " + version + " de Home Assistant est dispo !")
+      self.call_service("telegram_bot/send_message", message = "🎉 La version " + version + " de Home Assistant est dispo !")
 
 
   """
@@ -183,7 +183,7 @@ class edith(hass.Hass):
       # Send message with two telegram_callbacks
       # /ack : acknowlege lights are still on
       # /turn_off_lights : turn off lights
-      self.call_service("telegram_bot/send_message", message = "Je détecte encore des lumières allumées alors que personne n'est présent:\n\n" + "\n".join(lights_on), inline_keyboard = ["C'est normal:/ack" , "Éteins les lumières:/turn_off_lights"])
+      self.call_service("telegram_bot/send_message", message = "💡 Je détecte encore des lumières allumées alors que personne n'est présent:\n\n" + "\n".join(lights_on), inline_keyboard = ["C'est normal:/ack" , "Éteins les lumières:/turn_off_lights"])
 
     # test if TV is still on
     if self.get_state("media_player.philips_android_tv") not in ["off", "standby", "unavailable"]:
@@ -191,7 +191,7 @@ class edith(hass.Hass):
       # Send message with two telegram_callbacks
       # /ack : acknowlege TV is still on
       # /turn_off_tv : turn off TV
-      self.call_service("telegram_bot/send_message", message = "Je détecte encore la TV allumée alors que personne n'est présent", inline_keyboard = ["C'est normal:/ack" , "Éteins la TV:/turn_off_tv"])
+      self.call_service("telegram_bot/send_message", message = "📺 Je détecte encore la TV allumée alors que personne n'est présent", inline_keyboard = ["C'est normal:/ack" , "Éteins la TV:/turn_off_tv"])
 
 
 
@@ -227,7 +227,7 @@ class edith(hass.Hass):
         self.fire_event("SNIPS_SAY", payload = payload)
     else:
       # Send generic unsupported message
-      self.call_service("telegram_bot/send_message", message = "Commande " + data["command"] + " non supportée ...")
+      self.call_service("telegram_bot/send_message", message = "❌ Commande " + data["command"] + " non supportée ...")
 
 
   """
@@ -273,7 +273,7 @@ class edith(hass.Hass):
     self.log("Received a delayed automation notification : " + payload)
     if payload == "clean_house":
       # Send message
-      self.call_service("telegram_bot/send_message", message = "Spiroo démarrera son nettoyage dans 30 minutes" , inline_keyboard = ["Ok:/ack", "Annuler:/cancel_planned_clean_house"])
+      self.call_service("telegram_bot/send_message", message = "⏰ Spiroo démarrera son nettoyage dans 30 minutes" , inline_keyboard = ["Ok:/ack", "Annuler:/cancel_planned_clean_house"])
 
 
   """
