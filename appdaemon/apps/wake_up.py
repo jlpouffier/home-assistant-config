@@ -31,24 +31,31 @@ class wake_up(hass.Hass):
       
       # Only register callbacks if the wake-up time is in the future (Strict future ! so I have added 1 minute)
       if wake_up_datetime > self.datetime() + datetime.timedelta(minutes = 1) :
-          self.log("Wake up light will be turned on at :")
+          self.log("Wake up automation will be turned on at :")
           self.log(wake_up_datetime)
           # ... and register the wake-up callback
           self.run_at(self.callback_wake_up_1, wake_up_datetime)
       else: 
-          self.log("Wake up light won't be turned on today because wake-up time is in the past :")
+          self.log("Wake up automation won't be turned on today because wake-up time is in the past :")
           self.log(wake_up_datetime)
 
   def callback_wake_up_1(self, kwargs):
-    self.log("Wake up light part 1")
+    self.log("Wake up automation part 1/3")
     # wake-up callback part 1
     self.call_service('light/turn_off', entity_id = "light.chambre_principale")
     self.call_service('light/turn_on', entity_id = "light.main_bedroom_bloom", transition = 300, brightness_pct = 100, rgb_color=[255,159,1])
-    # register the wake-up callback part 2
+    # register the wake-up callback part 2 (5 minutes later)
     self.run_in(self.callback_wake_up_2, 300)
 
   def callback_wake_up_2(self, kwargs):
-    self.log("Wake up light part 2")
+    self.log("Wake up automation part 2/3")
     # wake-up callback part 2
+    self.call_service('light/turn_on', entity_id = "light.main_bedroom_ceiling", transition = 300, brightness_pct = 100)
+    # register the wake-up callback part 3 (10 minutes later)
+    self.run_in(self.callback_wake_up_3, 600)
+
+  def callback_wake_up_2(self, kwargs):
+    self.log("Wake up automation part 3/3")
     self.call_service('light/turn_on', entity_id = "light.main_bedroom_fairy_lights")
-    self.call_service('light/turn_on', entity_id = "light.main_bedroom_ceiling", transition = 300, brightness_pct = 100,)
+    self.call_service("cover/open_cover", entity_id = "cover.main_bedroom_roller_shutter")
+
