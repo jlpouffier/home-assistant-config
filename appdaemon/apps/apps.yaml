@@ -1,6 +1,7 @@
 bot_edith:
   module: edith
   class: edith
+  hass_base_url: !secret hass_base_url
   
 bot_snips:
   module: snips

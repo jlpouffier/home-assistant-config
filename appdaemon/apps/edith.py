@@ -110,7 +110,7 @@ class edith(hass.Hass):
     # Retrieve spiroo usefull states
     area_cleaned = self.get_state("sensor.spiroo_last_cleaning_area")
     current_battery_level = self.get_state("sensor.spiroo_battery_level")
-    cleaned_map = "https://hassio-jlp.duckdns.org" + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
+    cleaned_map = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
     # Send summary message
     self.call_service("telegram_bot/send_message", message = "Spiroo a terminé son nettoyage")
     # Send stats message
@@ -131,7 +131,7 @@ class edith(hass.Hass):
     if old != new:
       self.log("Detecting that Spiroo is in trouble. Notifying it...")
       # retrieve spiroo usefull states
-      current_location = "https://hassio-jlp.duckdns.org" + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
+      current_location = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
       status = self.translate_spiroo_error_status(self.get_state("vacuum.spiroo" , attribute = "status"))
       # Send message
       self.call_service("telegram_bot/send_message", message = "Spiroo est en erreur :")
@@ -303,17 +303,26 @@ class edith(hass.Hass):
   """
   Helper method:
   Does : 
-  . Remove the inline keyboard options linked to the data received in input
   . Reply to the telegram_callback linked ot the data received in input with a generic message 
   Returns : Nothing
 
   """
   def reply_telegram_callback(self, data):
     # Remove inline keyboard options
-    self.call_service("telegram_bot/edit_replymarkup" , message_id = data["message"]["message_id"] , chat_id = data["message"]["chat"]["id"], inline_keyboard = [])
+    self.delete_inline_keyboard(data)
     # Reply to telegram_callback
     self.call_service("telegram_bot/answer_callback_query" , callback_query_id = data["id"], message = "C'est noté")
 
+  """
+  Helper method:
+  Does : 
+  . Remove the inline keyboard options linked to the data received in input
+  Returns : Nothing
+
+  """
+  def delete_inline_keyboard(self, data):
+    # Remove inline keyboard options
+    self.call_service("telegram_bot/edit_replymarkup" , message_id = data["message"]["message_id"] , chat_id = data["message"]["chat"]["id"], inline_keyboard = [])
 
   """
   Helper method:
