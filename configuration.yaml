@@ -42,9 +42,9 @@ zone: !include misc/zone.yaml
 recorder: !include misc/recorder.yaml
     
 # AUTOMATIONS
-automation: !include automations/automation.yaml
+automation: !include automations.yaml
 
 # SCRIPTS
-script: !include scripts/script.yaml
+script: !include scripts.yaml
 
 

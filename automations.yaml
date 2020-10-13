@@ -1,12 +1,8 @@
-############################
-####### MQTT to Event ######
-############################
-
-- id: 'send_event_to_snips'
+- id: send_event_to_snips
   alias: send_event_to_snips
   trigger:
   - platform: mqtt
-    topic: snips/intent/Jenova70:ActOnLight  
+    topic: snips/intent/Jenova70:ActOnLight
   - platform: mqtt
     topic: snips/intent/Jenova70:ActOnVacuum
   - platform: mqtt

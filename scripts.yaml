@@ -1,9 +1,3 @@
-###########################
-###### LIGHTS SCENES ######
-###########################
-
-
-# REGULAR (KITCHEN / LIVINGROOM)
 lights_set_livingroom_kitchen_regular:
   alias: lights_set_livingroom_kitchen_regular
   sequence:
@@ -23,10 +17,6 @@ lights_set_livingroom_kitchen_regular:
       entity_id: light.entree
       transition: 1
     service: light.turn_on
-
-    
-    
-# TV PLAYING (KITCHEN / LIVINGROOM)
 lights_set_tv:
   alias: lights_set_tv
   sequence:
@@ -53,9 +43,6 @@ lights_set_tv:
       entity_id: light.entree
       transition: 2
     service: light.turn_off
-    
-    
-# TV PAUSED (KITCHEN / LIVINGROOM)
 lights_set_tv_paused:
   alias: lights_set_tv_paused
   sequence:
@@ -84,9 +71,6 @@ lights_set_tv_paused:
       entity_id: light.entree
       transition: 2
     service: light.turn_on
-    
-    
-# EATING (KITCHEN / LIVINGROOM)
 lights_set_eating:
   alias: lights_set_eating
   sequence:
@@ -109,12 +93,9 @@ lights_set_eating:
       entity_id: light.entree
       transition: 1
     service: light.turn_off
-    
-    
 say_snips:
-    alias: say_snips
-    sequence:
-    - event: SNIPS_SAY
-      event_data: 
-        payload: "{{ states('input_text.snips_input')}}"
-    
+  alias: say_snips
+  sequence:
+  - event: SNIPS_SAY
+    event_data:
+      payload: '{{ states(''input_text.snips_input'')}}'
