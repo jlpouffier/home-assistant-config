@@ -27,6 +27,7 @@ notify: !include components/notify.yaml
 telegram_bot: !include components/telegram_bot.yaml
 cover: !include components/cover.yaml
 spotify: !include components/spotify.yaml
+climate: !include components/climate.yaml
 
 # INPUTS
 input_boolean: !include inputs/input_boolean.yaml
