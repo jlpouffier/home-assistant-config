@@ -1,10 +1,3 @@
-# KODI
-# https://www.home-assistant.io/integrations/kodi/
-- platform: kodi
-  host: 192.168.1.13
-  username: !secret kodi_usr
-  password: !secret kodi_pwd
-
 # ANDROID TV
 # https://www.home-assistant.io/integrations/androidtv/
 - platform: androidtv

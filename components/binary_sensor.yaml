@@ -38,12 +38,12 @@
       is_spotify_used:
           value_template: "{{is_state('media_player.spotify_jlp', 'playing') or is_state('media_player.spotify_jlp', 'paused')}}"
 
-# Kodi usage
+# TV usage
 # https://www.home-assistant.io/integrations/binary_sensor.template/
 - platform: template
   sensors:
-      is_kodi_used:
-          value_template: "{{is_state('media_player.kodi', 'playing') or is_state('media_player.kodi', 'paused')}}"
+      is_tv_used:
+          value_template: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
           
 # Sun rising
 # https://www.home-assistant.io/integrations/binary_sensor.template/
