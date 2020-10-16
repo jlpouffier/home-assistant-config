@@ -24,6 +24,3 @@ appdaemon:
     HASS:
       type: hass
       ha_url: http://hassio/homeassistant
-      
-http:
-    url: !secret appdeamon_http_url_port

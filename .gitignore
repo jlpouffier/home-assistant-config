@@ -14,3 +14,4 @@ known_devices.yaml
 zwcfg_*.xml
 options.xml
 zwscene.xml
+ip_bans.yaml
