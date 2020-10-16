@@ -12,6 +12,7 @@ Functionalities
 . Notify HASS update
 . Notify lights are still on when nobody is at home > Turn off light possible
 . Notify TV still on when nobody is at home > Turn off TV possible
+. Notify AC still on when nobody is at home > Turn off AC possible
 . Reply to /ping command wih /pong
 . Reply to /pong command with /ping
 . Reply to /restart command > Confirm mandatory 
@@ -193,6 +194,13 @@ class edith(hass.Hass):
       # /turn_off_tv : turn off TV
       self.call_service("telegram_bot/send_message", message = "📺 Je détecte encore la TV allumée alors que personne n'est présent", inline_keyboard = ["C'est normal:/ack" , "Éteins la TV:/turn_off_tv"])
 
+    # test if the climate control is still on
+    if self.get_state("climate.salon") != "off":
+      self.log("Detecting home empty and climate on. Notifying it...")
+      # Send message with two telegram_callbacks
+      # /ack : acknowlege climate is still on
+      # /turn_off_climate : turn off climate
+      self.call_service("telegram_bot/send_message", message = "🧊 Je détecte encore la climatisation allumée dans le salon alors que personne n'est présent", inline_keyboard = ["C'est normal:/ack" , "Éteins la clim:/turn_off_climate"])
 
 
 
@@ -253,6 +261,9 @@ class edith(hass.Hass):
     elif payload == "/turn_off_tv":
       # Turn off TV
       self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
+    elif payload == "/turn_off_climate":
+      # Turn off Climate
+      self.call_service("climate/turn_off" , entity_id = "climate.salon")
     elif payload == "/restart_hass":
       # Restart HASS
       self.call_service("homeassistant/restart")
