@@ -45,22 +45,22 @@ class watch_tv(hass.Hass):
       current_app = attr["attributes"]["app_id"] 
     else:
       current_app = "com.google.android.tvlauncher"
+      
+    self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
+    
     # If the current app, or the old app are linked to the lights, and if the sun is set, change the lights depending on the states.
     if (self.is_app_controling_light(current_app) or self.is_app_controling_light(self.old_app)) and self.is_dark():
       if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
         #CALL SCRIPT
-        self.log("Setting lights to PLAYING mode :")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
+        self.log("TV playing : Lights dimmed")
         self.call_service("script/lights_set_tv")  
       elif old == "playing" and new == "paused":
         #CALL SCRIPT
-        self.log("Setting lights to PAUSED mode :")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
+        self.log("TV paused : Lights partially un-dimmed")
         self.call_service("script/lights_set_tv_paused")
       elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
         #CALL SCRIPT
-        self.log("Setting lights to STOPPTED mode :")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
+        self.log("TV stopped : Lights fully un-dimmed")
         self.call_service("script/lights_set_livingroom_kitchen_regular") 
 
     # If the current app, or the old app are linked to the Snips, activate / deactivate Snips
@@ -68,17 +68,14 @@ class watch_tv(hass.Hass):
       if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
         #CALL SCRIPT
         self.log("TV playing : Snips OFF")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
         self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
       elif old == "playing" and new == "paused":
         #CALL SCRIPT
         self.log("TV paused : Snips ON")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
         self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
       elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
         #CALL SCRIPT
         self.log("TV stopped : Snips ON")
-        self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
         self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
 
     self.old_app = current_app
