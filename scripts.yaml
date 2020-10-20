@@ -71,28 +71,6 @@ lights_set_tv_paused:
       entity_id: light.entree
       transition: 2
     service: light.turn_on
-lights_set_eating:
-  alias: lights_set_eating
-  sequence:
-  - data:
-      brightness_pct: 100
-      entity_id: light.cuisine
-      transition: 1
-    service: light.turn_on
-  - data:
-      brightness_pct: 50
-      color_temp: 350
-      entity_id: light.living_room_wall
-      transition: 1
-    service: light.turn_on
-  - data:
-      entity_id: light.living_room_sphere
-      transition: 1
-    service: light.turn_off
-  - data:
-      entity_id: light.entree
-      transition: 1
-    service: light.turn_off
 say_snips:
   alias: say_snips
   sequence:
