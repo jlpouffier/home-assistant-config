@@ -58,12 +58,6 @@
 # https://www.home-assistant.io/integrations/template/
 - platform: template
   sensors:
-      # batterie Level (%)
-      spiroo_battery_level:
-          unit_of_measurement: '%'
-          value_template: "{{state_attr('vacuum.spiroo' , 'battery_level')}}"
-          icon_template: "{{state_attr('vacuum.spiroo' , 'battery_icon')}}"
-
       # time stamp of the last cleaning start
       spiroo_last_cleaning_start_ts:
           value_template: "{{as_timestamp(state_attr('vacuum.spiroo' , 'clean_start'))| timestamp_custom('%d/%m/%Y')}}"

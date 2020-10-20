@@ -16,3 +16,10 @@ exclude:
       - sun.sun
       - sensor.sun_elevation
       - sensor.sun_azimuth
+      - zwave.fibaro_walli_roller_shutter_main_bedroom
+      - zwave.aeon_labs_z_stick
+      - camera.spiroo_cleaning_map
+      - sensor.memory_free
+      - sensor.memory_use
+      - sensor.disk_free
+      - sensor.disk_use
