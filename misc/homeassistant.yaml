@@ -142,26 +142,3 @@ customize:
     cover.all_covers:
         icon: "mdi:blinds"
         friendly_name: "Tous les volets"
-        
-    # Device Trackers
-    device_tracker.livebox_home:
-        friendly_name: Livebox
-        icon: 'mdi:hubspot'
-    device_tracker.jlsphilipshue_home:
-        friendly_name: Hue
-        icon: 'mdi:lightbulb'
-    device_tracker.spiroo_home:
-        friendly_name: Spiroo
-        icon: 'mdi:robot-vacuum-variant'
-    device_tracker.jl_nas_home:
-        friendly_name: NAS
-        icon: 'mdi:nas'
-    device_tracker.snips_home:
-        friendly_name: Snips
-        icon: 'mdi:google-assistant'
-    device_tracker.android_home:
-        friendly_name: TV
-        icon: 'mdi:youtube-tv'
-    device_tracker.imac_de_jean_loic_home:
-        friendly_name: iMac
-        icon: 'mdi:desktop-mac'
