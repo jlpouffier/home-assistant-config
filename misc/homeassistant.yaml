@@ -95,9 +95,6 @@ customize:
     script.lights_set_tv:
         icon: 'mdi:play'
         friendly_name: "Lumières lecture film (Scène)"
-    script.lights_set_eating:
-        icon: 'mdi:food-fork-drink'
-        friendly_name: "Lumières diner (Scène)"
     script.lights_set_livingroom_kitchen_regular:
         icon: 'mdi:home-lightbulb'
         friendly_name: "Lumières normale (Scène)"
