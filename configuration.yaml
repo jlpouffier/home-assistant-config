@@ -23,8 +23,6 @@ light: !include components/light.yaml
 media_player: !include components/media_player.yaml
 sensor: !include components/sensor.yaml
 binary_sensor: !include components/binary_sensor.yaml
-notify: !include components/notify.yaml
-telegram_bot: !include components/telegram_bot.yaml
 cover: !include components/cover.yaml
 spotify: !include components/spotify.yaml
 climate: !include components/climate.yaml

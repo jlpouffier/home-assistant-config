@@ -1,7 +1,0 @@
-# Telegram bot
-# https://www.home-assistant.io/integrations/telegram/
-- platform: webhooks
-  api_key: !secret telegram_api_key
-  parse_mode: html
-  allowed_chat_ids:
-    - !secret telegram_chat_id

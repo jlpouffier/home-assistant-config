@@ -36,7 +36,7 @@ class clean_house(hass.Hass):
         delay = 1800
         # Schedule cleaning in 30 minutes via callback callback_cleaning
         self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
-        # Fire even DELAYED_AUTOMATION_NOTIFICATION with payload clean_house. See app bots.edith that will receive it
+        # Fire even DELAYED_AUTOMATION_NOTIFICATION with payload clean_house. See app "Notify" that will receive it
         self.fire_event("DELAYED_AUTOMATION_NOTIFICATION", payload = "clean_house")
 
 
@@ -53,7 +53,7 @@ class clean_house(hass.Hass):
 
   """
   Callback triggered when the app receives an event DELAYED_AUTOMATION_CANCELED. Only payload clean_house supported in this app.
-  See bots.edith that will fire this event
+  See app "Notify" that will fire this event
   Goals : 
   . Cancel cleaning
   """     

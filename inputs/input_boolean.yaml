@@ -1,9 +1,9 @@
 # https://www.home-assistant.io/integrations/input_boolean/
 
 # Switch to turn on / off Edith (AppDemaon)
-edith_switch:
-  name: Edith
-  icon: mdi:telegram
+notify_switch:
+  name: Notify
+  icon: mdi:bell-ring
 
 # Switch to turn on / off Snips (AppDemaon)
 snips_switch:

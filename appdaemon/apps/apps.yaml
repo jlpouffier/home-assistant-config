@@ -1,6 +1,6 @@
-bot_edith:
-  module: edith
-  class: edith
+bot_notify:
+  module: notify
+  class: notify
   hass_base_url: !secret hass_base_url
   
 bot_snips:
