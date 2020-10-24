@@ -234,6 +234,24 @@ class notify(hass.Hass):
         action_title="Annuler le nettoyage",
         clickURL="/lovelace-rooms/bureau",
         timeout = 300)
+    if payload == "watch_tv_on":
+      # Send notification
+      self.send_actionable_notification(
+        title = "📺 TV intelligente", 
+        message = "La TV intelligente est activée", 
+        action_callback="turn_off_watch_tv",
+        action_title="Annuler",
+        clickURL="/lovelace-rooms/bureau",
+        timeout = 10)
+    if payload == "watch_tv_off":
+      # Send notification
+      self.send_actionable_notification(
+        title = "📺 TV intelligente", 
+        message = "La TV intelligente n'est pas activée", 
+        action_callback="turn_on_watch_tv",
+        action_title="Activer",
+        clickURL="/lovelace-rooms/bureau",
+        timeout = 10)
 
 
   """
@@ -264,6 +282,21 @@ class notify(hass.Hass):
     elif payload == "cancel_planned_clean_house":
       # Send event CANCEL_AUTOMATION with payload = clean_house (See clean_house app that will receive it)
       self.fire_event("CANCEL_AUTOMATION", payload = "clean_house")
+    elif payload == "turn_off_watch_tv":
+      # Turn off watch_tv_automation_switch
+      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.watch_tv_automation_switch")
+      # Turn on lights
+      self.call_service("script/lights_set_livingroom_kitchen_regular") 
+      # Turn on Snips
+      self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
+    elif payload == "turn_on_watch_tv":
+      # Turn off watch_tv_automation_switch
+      self.call_service("input_boolean/turn_on", entity_id = "input_boolean.watch_tv_automation_switch")
+      # Turn on lights
+      self.call_service("script/lights_set_tv") 
+      # Turn off Snips
+      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
+
 
 
 
