@@ -12,7 +12,7 @@ class clean_house(hass.Hass):
   def initialize(self):
     runtime = datetime.time(16,0,0)
     self.run_daily(self.callback_pre_cleaning, runtime)
-    self.listen_event(self.callback_cancel_cleaning , "DELAYED_AUTOMATION_CANCELED")
+    self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION")
     self.log("House cleaning Automation initialized")
 
  
@@ -36,8 +36,8 @@ class clean_house(hass.Hass):
         delay = 1800
         # Schedule cleaning in 30 minutes via callback callback_cleaning
         self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
-        # Fire even DELAYED_AUTOMATION_NOTIFICATION with payload clean_house. See app "Notify" that will receive it
-        self.fire_event("DELAYED_AUTOMATION_NOTIFICATION", payload = "clean_house")
+        # Fire even NOTIFY with payload clean_house. See app "Notify" that will receive it
+        self.fire_event("NOTIFY", payload = "clean_house")
 
 
   """
@@ -52,7 +52,7 @@ class clean_house(hass.Hass):
 
 
   """
-  Callback triggered when the app receives an event DELAYED_AUTOMATION_CANCELED. Only payload clean_house supported in this app.
+  Callback triggered when the app receives an event CANCEL_AUTOMATION. Only payload clean_house supported in this app.
   See app "Notify" that will fire this event
   Goals : 
   . Cancel cleaning

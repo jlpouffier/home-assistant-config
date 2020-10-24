@@ -54,8 +54,8 @@ class notify(hass.Hass):
     self.state_handles.append(self.listen_state(self.callback_spiroo_error, "vacuum.spiroo" , new = "error"))
     self.state_handles.append(self.listen_state(self.callback_spiroo_idle, "vacuum.spiroo" , new = "idle" , duration = 1800))
 
-    # DELAYED AUTOMATION CALLBACK
-    self.event_handles.append(self.listen_event(self.callback_delayed_automation_receveived , "DELAYED_AUTOMATION_NOTIFICATION"))
+    # NOTIFY CALLBACK
+    self.event_handles.append(self.listen_event(self.callback_notify_from_other_app , "NOTIFY"))
 
     # HASS CALLBACKS
     self.state_handles.append(self.listen_state(self.callback_hass_update_available, "binary_sensor.updater" , old = "off" , new = "on"))
@@ -216,15 +216,15 @@ class notify(hass.Hass):
         clickURL="/lovelace-rooms/salon")
 
   """
-  Callback triggered when Notify receives the event DELAYED_AUTOMATION_NOTIFICATION.
+  Callback triggered when Notify receives the event NOTIFY.
   This event is fired by other app that will soon starts automation.
   Notify can cancel these automation thanks to that callback
   Supported :
-  . usecase_manager.clean_house sending DELAYED_AUTOMATION_NOTIFICATION with payload clean_house 30 minutes before Spiroo cleaning.
+  . usecase_manager.clean_house sending NOTIFY with payload clean_house 30 minutes before Spiroo cleaning.
   """
-  def callback_delayed_automation_receveived(self, event_name, data, kwargs):
+  def callback_notify_from_other_app(self, event_name, data, kwargs):
     payload = data["payload"]
-    self.log("Received a delayed automation notification : " + payload)
+    self.log("Received notify event : " + payload)
     if payload == "clean_house":
       # Send notification
       self.send_actionable_notification(
@@ -262,8 +262,8 @@ class notify(hass.Hass):
       # Turn off Climate
       self.call_service("climate/turn_off" , entity_id = "climate.salon")
     elif payload == "cancel_planned_clean_house":
-      # Send event DELAYED_AUTOMATION_CANCELED with payload = clean_house (See clean_house app that will receive it)
-      self.fire_event("DELAYED_AUTOMATION_CANCELED", payload = "clean_house")
+      # Send event CANCEL_AUTOMATION with payload = clean_house (See clean_house app that will receive it)
+      self.fire_event("CANCEL_AUTOMATION", payload = "clean_house")
 
 
 
