@@ -1,12 +1,25 @@
 import hassapi as hass
 
+"""
+monitor_home is an app responsible of the monitoring the home when not occupied
 
+Notifications :
+. Home empty and Lights on 
+. Home empty and TV on
+. Home empty and climate on
+
+"""
 class monitor_home(hass.Hass): 
   def initialize(self):
     self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" , old = "on" , new = "off")
     
     self.log("Monitor Home initialized")
 
+  """
+  Callback triggered when the home becomes not occupied
+  Goals :
+  . Send notification(s)
+  """
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
     # test if lights are still on
     if self.get_state("light.interior_lights") == "on":

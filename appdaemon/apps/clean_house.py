@@ -3,10 +3,17 @@ import datetime
 
 """
 clean_house is an app responsible of the scheduling of Spiroo
-Functionality :
-. Inform Edith of upcomming cleaning (30 minutes before)
-. Starts Spiroo
-. Handle cancelation of cleaning if requested by Edith
+
+Functionalities :
+. Starts Spiroo when needed
+. Handle cancelation of cleaning if requested
+
+Notifications :
+. Cleaning Scheduled
+. Cleaning Started
+. Cleaning Finished
+. Spiroo error
+. Spiroo noton the dock
 """
 class clean_house(hass.Hass):
   def initialize(self):
@@ -31,7 +38,7 @@ class clean_house(hass.Hass):
     the last cleaning happend more than 36 hours ago
   Goals :
   . Schedule cleaning in 30 minutes
-  . Inform Edith that Spiroo will start in 30 minutes
+  . Send a notification
   """ 
   def callback_pre_cleaning(self, kwargs):
     if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("vacuum.spiroo") != "cleaning" and self.get_state("binary_sensor.home_occupied") == "off": 
@@ -59,7 +66,8 @@ class clean_house(hass.Hass):
 
 
   """
-  Callback triggered when the app receives an event CANCEL_AUTOMATION. Only payload clean_house supported in this app.
+  Callback triggered when the app receives an event CANCEL_AUTOMATION. 
+  Only payload clean_house supported in this app.
   See app "Notify" that will fire this event
   Goals : 
   . Cancel cleaning
@@ -72,22 +80,39 @@ class clean_house(hass.Hass):
       self.cancel_timer(self.cleaning_handle)
 
 
+  """
+  Callback triggered when Spiroo is starting
+  Goals : 
+  . Send a notification
+  """   
   def callback_spiroo_stated(self, entity, attribute, old, new, kwargs):
     self.log("Detecting that Spiroo is starting. Notifying it...")
     self.fire_event("NOTIFY", payload = "cleaning_started")
 
-
+  """
+  Callback triggered when Spiroo is finished
+  Goals : 
+  . Send a notification
+  """ 
   def callback_spiroo_finished(self, entity, attribute, old, new, kwargs):
     self.log("Detecting that Spiroo has finished. Notifying it...")
     self.fire_event("NOTIFY", payload = "cleaning_finished")
 
-
+  """
+  Callback triggered when Spiroo is in error
+  Goals : 
+  . Send a notification
+  """ 
   def callback_spiroo_error(self, entity, attribute, old, new, kwargs):
     if old != new:
       self.log("Detecting that Spiroo is in trouble. Notifying it...")
       self.fire_event("NOTIFY", payload = "cleaning_error")
 
-
+  """
+  Callback triggered when is not on the dock since more than 30 mintues
+  Goals : 
+  . Send a notification
+  """ 
   def callback_spiroo_idle(self, entity, attribute, old, new, kwargs):
     if old != new:
       self.log("Detecting that Spiroo is not plugged since more than 30 miuntes. Notifying it...")

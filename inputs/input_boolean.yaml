@@ -1,6 +1,6 @@
 # https://www.home-assistant.io/integrations/input_boolean/
 
-# Switch to turn on / off Edith (AppDemaon)
+# Switch to turn on / off Notify (AppDemaon)
 notify_switch:
   name: Notify
   icon: mdi:bell-ring
@@ -30,7 +30,7 @@ welcome_home_automation_switch:
   name: Bienvenue lumineux
   icon: mdi:home-import-outline
 
-# Switch to turn on / off welcome_home (AppDemaon)
+# Switch to turn on / off monitor_home_switch (AppDemaon)
 monitor_home_switch:
   name: Surveillance de l'appartement
   icon: mdi:eye
