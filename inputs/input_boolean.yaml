@@ -29,3 +29,8 @@ wake_up_automation_switch:
 welcome_home_automation_switch:
   name: Bienvenue lumineux
   icon: mdi:home-import-outline
+
+# Switch to turn on / off welcome_home (AppDemaon)
+monitor_home_switch:
+  name: Surveillance de l'appartement
+  icon: mdi:eye

@@ -13,6 +13,13 @@ class clean_house(hass.Hass):
     runtime = datetime.time(16,0,0)
     self.run_daily(self.callback_pre_cleaning, runtime)
     self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION")
+    self.listen_state(self.callback_spiroo_stated, "vacuum.spiroo" , old = "docked" , new = "cleaning")
+    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "paused" , new = "docked")
+    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "cleaning" , new = "docked")
+    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "returning" , new = "docked")
+    self.listen_state(self.callback_spiroo_error, "vacuum.spiroo" , new = "error")
+    self.listen_state(self.callback_spiroo_idle, "vacuum.spiroo" , new = "idle" , duration = 1800)
+
     self.log("House cleaning Automation initialized")
 
  
@@ -32,12 +39,12 @@ class clean_house(hass.Hass):
       now = self.datetime()
       diff = now - last_cleaning
       if diff > datetime.timedelta(hours = 36):
-        self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Edith")
+        self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Notify")
         delay = 1800
         # Schedule cleaning in 30 minutes via callback callback_cleaning
         self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
-        # Fire even NOTIFY with payload clean_house. See app "Notify" that will receive it
-        self.fire_event("NOTIFY", payload = "clean_house")
+        # Fire even NOTIFY with payload cleaning_scheduled. See app "Notify" that will receive it
+        self.fire_event("NOTIFY", payload = "cleaning_scheduled")
 
 
   """
@@ -63,4 +70,27 @@ class clean_house(hass.Hass):
       self.log("House cleaning canceled")
       # Cancel cleaning
       self.cancel_timer(self.cleaning_handle)
+
+
+  def callback_spiroo_stated(self, entity, attribute, old, new, kwargs):
+    self.log("Detecting that Spiroo is starting. Notifying it...")
+    self.fire_event("NOTIFY", payload = "cleaning_started")
+
+
+  def callback_spiroo_finished(self, entity, attribute, old, new, kwargs):
+    self.log("Detecting that Spiroo has finished. Notifying it...")
+    self.fire_event("NOTIFY", payload = "cleaning_finished")
+
+
+  def callback_spiroo_error(self, entity, attribute, old, new, kwargs):
+    if old != new:
+      self.log("Detecting that Spiroo is in trouble. Notifying it...")
+      self.fire_event("NOTIFY", payload = "cleaning_error")
+
+
+  def callback_spiroo_idle(self, entity, attribute, old, new, kwargs):
+    if old != new:
+      self.log("Detecting that Spiroo is not plugged since more than 30 miuntes. Notifying it...")
+      self.fire_event("NOTIFY", payload = "cleaning_idle")
+
 

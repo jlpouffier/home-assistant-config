@@ -2,7 +2,8 @@ bot_notify:
   module: notify
   class: notify
   hass_base_url: !secret hass_base_url
-  
+  constrain_input_boolean: input_boolean.notify_switch
+
 bot_snips:
   module: snips
   class: snips
@@ -30,3 +31,8 @@ work_arrow:
   module: work_arrow
   class: work_arrow
   constrain_input_boolean: input_boolean.wake_up_automation_switch
+
+monitor_home:
+  module: monitor_home
+  class: monitor_home
+  constrain_input_boolean: input_boolean.monitor_home_switch
