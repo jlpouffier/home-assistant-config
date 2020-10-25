@@ -53,10 +53,12 @@ class watch_tv(hass.Hass):
     if self.get_state("input_boolean.watch_tv_automation_switch") == "on":
       if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
         if self.is_controling_lights(self.old_app, current_app):
-          self.fire_event("NOTIFY", payload = "watch_tv_on")
           #CALL SCRIPT
           self.log("TV playing : Lights dimmed")
-          self.call_service("script/lights_set_tv")        
+          self.call_service("script/lights_set_tv") 
+          # Notify
+          self.log("Sending a notification to check if we really want to lights to be driven by the TV ...")     
+          self.fire_event("NOTIFY", payload = "watch_tv_on")  
         if self.is_controling_snips(self.old_app, current_app):
           #CALL SCRIPT
           self.log("TV playing : Snips OFF")
@@ -87,6 +89,8 @@ class watch_tv(hass.Hass):
     else:
       if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
         if self.is_controling_lights(self.old_app, current_app):
+          # Notify
+          self.log("Sending a notification to check if the lights should be driven by the TV ...") 
           self.fire_event("NOTIFY", payload = "watch_tv_off")
 
     self.old_app = current_app

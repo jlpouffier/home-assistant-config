@@ -214,6 +214,7 @@ class notify(hass.Hass):
   . 
   """
   def callback_button_clicked_rth_spiroo(self, event_name, data, kwargs):
+    self.log("Notification button clicked : RTH Spirro") 
     self.call_service("vacuum/return_to_base" , entity_id = "vacuum.spiroo")
 
   """
@@ -223,6 +224,7 @@ class notify(hass.Hass):
   . Turn off exterior lights
   """
   def callback_button_clicked_turn_off_lights(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off lights") 
     self.call_service("light/turn_off" , entity_id = "light.interior_lights")
     self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
 
@@ -232,6 +234,7 @@ class notify(hass.Hass):
   . Turn off TV
   """
   def callback_button_clicked_turn_off_tv(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off TV") 
     self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
 
   """
@@ -240,6 +243,7 @@ class notify(hass.Hass):
   . Turn off climate
   """
   def callback_button_clicked_turn_off_climate(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off climate") 
     self.call_service("climate/turn_off" , entity_id = "climate.salon")
 
   """
@@ -248,6 +252,7 @@ class notify(hass.Hass):
   . Send event CANCEL_AUTOMATION with paylaod "clean_house". See app clean_house for more details.
   """
   def callback_button_clicked_cancel_planned_clean_house(self, event_name, data, kwargs):
+    self.log("Notification button clicked : canceling scheduled cleaning") 
     self.fire_event("CANCEL_AUTOMATION", payload = "clean_house")
 
   """
@@ -258,6 +263,7 @@ class notify(hass.Hass):
   . Undim lights
   """
   def callback_button_clicked_turn_off_watch_tv(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off watch_tv automations") 
     self.call_service("input_boolean/turn_off", entity_id = "input_boolean.watch_tv_automation_switch")
     self.call_service("script/lights_set_livingroom_kitchen_regular") 
     self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
@@ -270,6 +276,7 @@ class notify(hass.Hass):
   . Dim lights
   """
   def callback_button_clicked_turn_on_watch_tv(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning on watch_tv automations") 
     self.call_service("input_boolean/turn_on", entity_id = "input_boolean.watch_tv_automation_switch")
     self.call_service("script/lights_set_tv") 
     self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
