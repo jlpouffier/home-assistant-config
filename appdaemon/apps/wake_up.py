@@ -57,24 +57,24 @@ class wake_up(hass.Hass):
   '''
   def callback_wake_up(self, kwargs):
     sequence = [
-        {"light/turn_off": {
-          "entity_id": "light.chambre_principale"}},
-        {"light/turn_on": {
-          "entity_id": "light.main_bedroom_bloom",
-          "transition": 300,
-          "brightness_pct": 100,
-          "rgb_color":[255,159,1] }},
-        {"sleep": 300},
-        {"light/turn_on": {
-          "entity_id": "light.main_bedroom_ceiling",
-          "transition": 300,
-          "brightness_pct": 100 }},
-        {"sleep": 600},
-        {"light/turn_on": {
-          "entity_id": "light.main_bedroom_fairy_lights"}},
-        {"cover/open_cover": {
-          "entity_id": "cover.main_bedroom_roller_shutter"}},
-      ]
+      {"light/turn_off": {
+        "entity_id": "light.chambre_principale"}},
+      {"light/turn_on": {
+        "entity_id": "light.main_bedroom_bloom",
+        "transition": 300,
+        "brightness_pct": 100,
+        "rgb_color":[255,159,1] }},
+      {"sleep": 300},
+      {"light/turn_on": {
+        "entity_id": "light.main_bedroom_ceiling",
+        "transition": 300,
+        "brightness_pct": 100 }},
+      {"sleep": 600},
+      {"light/turn_on": {
+        "entity_id": "light.main_bedroom_fairy_lights"}},
+      {"cover/open_cover": {
+        "entity_id": "cover.main_bedroom_roller_shutter"}},
+    ]
 
     self.log("Wake up automation !")
     self.run_sequence(sequence)
