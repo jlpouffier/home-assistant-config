@@ -186,36 +186,48 @@ class snips(hass.Hass):
 
   """
   Helper method:
-  Does : Turn off all lights. Turn off the TV. Verbal feedback via snips
+  Does : Turn off all lights. Turn off the TV. Turn off the A/C. Verbal feedback via snips
   Returns :  Nothing
   """
   def act_on_leaving_home(self, bom):
     if bom["action"]:
       self.say_something("farewell")
-      self.log("Turning off TV")
-      self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
-      sequence = [
-        {"sleep": 1},
-        {"light/turn_off": {
-          "entity_id": "light.chambre_principale",
-          "transition": 5 }},
-        {"light/turn_off": {
-          "entity_id": "light.chambre_secondaire",
-          "transition": 5 }},
-        {"sleep": 4},
-        {"light/turn_off": {
-          "entity_id": "light.cuisine",
-          "transition": 5 }},
-        {"light/turn_off": {
-          "entity_id": "light.salon",
-          "transition": 5 }},
-        {"sleep": 4},
-        {"light/turn_off": {
-          "entity_id": "light.entree",
-          "transition": 5 }}
-      ]
-      self.log("Turning off lights")
-      self.run_sequence(sequence)
+        
+      if self.get_state("media_player.philips_android_tv") not in ["off", "standby", "unavailable"]:
+        self.log("Turning off TV")
+        self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
+      
+      if self.get_state("climate.salon") != "off":
+        self.log("Turning off cliamte")
+        self.call_service("climate/turn_off" , entity_id = "climate.salon")
+      
+      if self.get_state("light.exterior_lights") != "off":
+        self.log("Turning off exterior lights")    
+        self.call_service("light/turn_off", entity_id = "light.exterior_lights",transition = 5)  
+      
+      if self.get_state("light.interior_lights") != "off":
+        self.log("Turning off interior lights")
+        sequence = [
+          {"sleep": 1},
+          {"light/turn_off": {
+            "entity_id": "light.chambre_principale",
+            "transition": 5 }},
+          {"light/turn_off": {
+            "entity_id": "light.chambre_secondaire",
+            "transition": 5 }},
+          {"sleep": 4},
+          {"light/turn_off": {
+            "entity_id": "light.cuisine",
+            "transition": 5 }},
+          {"light/turn_off": {
+            "entity_id": "light.salon",
+            "transition": 5 }},
+          {"sleep": 4},
+          {"light/turn_off": {
+            "entity_id": "light.entree",
+            "transition": 5 }}
+        ]
+        self.run_sequence(sequence)
 
 
   """
@@ -262,7 +274,7 @@ class snips(hass.Hass):
 
       # Close case : Target position is 100 - input 
       elif bom["action"] == "close":
-        target_position = 00 - bom['intensity']
+        target_position = 100 - bom['intensity']
 
     # Set the cover target position ...
 
