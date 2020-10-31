@@ -2,17 +2,6 @@
 
 default_config:
 
-#Added to remove a few things for the Ricardo demo
-#mobile_app:
-#person:
-#scene:
-#ssdp:
-#sun:
-#system_health:
-#tag:
-#updater:
-#zeroconf:
-
 api:
 
 # COMPONENTS

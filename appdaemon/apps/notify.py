@@ -86,7 +86,7 @@ class notify(hass.Hass):
       message = "Spiroo démarrera son nettoyage dans 30 minutes", 
       action_callback="cancel_planned_clean_house",
       action_title="Annuler le nettoyage",
-      clickURL="/lovelace-rooms/bureau",
+      clickURL="/lovelace/bureau",
       timeout = 300)
 
   """
@@ -100,7 +100,7 @@ class notify(hass.Hass):
       message = "Spiroo démarre son nettoyage", 
       action_callback="rth_spiroo",
       action_title="Arrêter Spiroo",
-      clickURL="/lovelace-rooms/bureau")
+      clickURL="/lovelace/bureau")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_finished" is received
@@ -114,7 +114,7 @@ class notify(hass.Hass):
       title = "✅ Nettoyage terminé",
       message = "Surface nettoyée: " + area_cleaned + "m2",
       image = cleaned_map,
-      clickURL = "/lovelace-rooms/bureau")
+      clickURL = "/lovelace/bureau")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_error" is received
@@ -128,7 +128,7 @@ class notify(hass.Hass):
       title = "⚠️ Spiroo est en erreur",
       message = status,
       image = current_location,
-      clickURL = "/lovelace-rooms/bureau")
+      clickURL = "/lovelace/bureau")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_idle" is received
@@ -139,7 +139,7 @@ class notify(hass.Hass):
     self.send_actionable_notification(
       title = "⚠️ Spiroo se décharge",
       message = "Je detecte que Spiroo n'est plus sur sa base depuis plus de 30 minutes",
-      clickURL = "/lovelace-rooms/bureau")
+      clickURL = "/lovelace/bureau")
 
   """
   Callback triggered when event NOTIFY with payload "watch_tv_on" is received
@@ -152,7 +152,7 @@ class notify(hass.Hass):
       message = "La TV intelligente est activée", 
       action_callback="turn_off_watch_tv",
       action_title="Annuler",
-      clickURL="/lovelace-rooms/bureau",
+      clickURL="/lovelace/bureau",
       timeout = 10)
 
   """
@@ -166,7 +166,7 @@ class notify(hass.Hass):
       message = "La TV intelligente n'est pas activée", 
       action_callback="turn_on_watch_tv",
       action_title="Activer",
-      clickURL="/lovelace-rooms/bureau",
+      clickURL="/lovelace/bureau",
       timeout = 10)
 
   """
@@ -180,7 +180,7 @@ class notify(hass.Hass):
       message = "Des lumières sont allumées alors que personne n'est présent", 
       action_callback="turn_off_lights",
       action_title="Éteindre les lumières",
-      clickURL="/lovelace-rooms/salon")
+      clickURL="/lovelace/salon")
 
   """
   Callback triggered when event NOTIFY with payload "tv_still_on" is received
@@ -193,7 +193,7 @@ class notify(hass.Hass):
       message = "La TV est allumée alors que personne n'est présent", 
       action_callback="turn_off_tv",
       action_title="Éteindre la TV",
-      clickURL="/lovelace-rooms/salon")
+      clickURL="/lovelace/salon")
 
   """
   Callback triggered when event NOTIFY with payload "climate_still_on" is received
@@ -206,7 +206,7 @@ class notify(hass.Hass):
       message = "La climatisation est allumée alors que personne n'est présent", 
       action_callback="turn_off_climate",
       action_title="Éteindre la Clim",
-      clickURL="/lovelace-rooms/salon")
+      clickURL="/lovelace/salon")
 
   """
   Callback triggered when button "" is clicked from a notification
