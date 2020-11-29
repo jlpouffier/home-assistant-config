@@ -34,6 +34,7 @@ binary_sensor:
   - platform: homeassistant
     name: "Input Boolean From Home Assistant"
     entity_id: input_boolean.slack_cube_ota
+    internal: True
     on_state:
       then:
         - if:
