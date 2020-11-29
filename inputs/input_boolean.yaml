@@ -34,3 +34,7 @@ welcome_home_automation_switch:
 monitor_home_switch:
   name: Surveillance de l'appartement
   icon: mdi:eye
+
+slack_cube_ota:
+  name: Passer le Cube Slack on mode OTA
+  icon: mdi:cube

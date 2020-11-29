@@ -36,3 +36,7 @@ monitor_home:
   module: monitor_home
   class: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
+
+slack_cube:
+  module: slack_cube
+  class: slack_cube
