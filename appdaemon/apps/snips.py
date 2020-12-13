@@ -198,8 +198,17 @@ class snips(hass.Hass):
         self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
       
       if self.get_state("climate.salon") != "off":
-        self.log("Turning off cliamte")
+        self.log("Turning off cliamte in the living room")
         self.call_service("climate/turn_off" , entity_id = "climate.salon")
+      
+      if self.get_state("climate.chambre") != "off":
+        self.log("Turning off cliamte in the main bedroom")
+        self.call_service("climate/turn_off" , entity_id = "climate.chambre")
+      
+      if self.get_state("climate.bureau") != "off":
+        self.log("Turning off cliamte in the secondary bedroom")
+        self.call_service("climate/turn_off" , entity_id = "climate.bureau")
+      
       
       if self.get_state("light.exterior_lights") != "off":
         self.log("Turning off exterior lights")    

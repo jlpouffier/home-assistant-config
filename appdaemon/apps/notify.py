@@ -203,7 +203,7 @@ class notify(hass.Hass):
   def callback_notify_climate_still_on(self, event_name, data, kwargs):
     self.send_actionable_notification(
       title = "🧊 Clim allumée", 
-      message = "La climatisation est allumée alors que personne n'est présent", 
+      message = "Au moins une climatisation est allumée alors que personne n'est présent", 
       action_callback="turn_off_climate",
       action_title="Éteindre la Clim",
       clickURL="/lovelace/salon")
@@ -243,8 +243,16 @@ class notify(hass.Hass):
   . Turn off climate
   """
   def callback_button_clicked_turn_off_climate(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off climate") 
-    self.call_service("climate/turn_off" , entity_id = "climate.salon")
+    self.log("Notification button clicked : Turning off climate")
+    if self.get_state("climate.salon") != "off":
+      self.call_service("climate/turn_off" , entity_id = "climate.salon")
+      
+    if self.get_state("climate.chambre") != "off":
+      self.call_service("climate/turn_off" , entity_id = "climate.chambre")
+      
+    if self.get_state("climate.bureau") != "off":
+      self.call_service("climate/turn_off" , entity_id = "climate.bureau")
+
 
   """
   Callback triggered when button "cancel_planned_clean_house" is clicked from a notification

@@ -143,4 +143,36 @@
         value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.amadeus_to_home') | int) * 60) | timestamp_custom('%H:%M')}}"
         icon_template: "mdi:home"
 
+
+# Sensibo sensors
+# https://www.home-assistant.io/integrations/template/
+- platform: template
+  sensors:
+    temperature_living_room:
+        friendly_name: Température Salon
+        value_template: "{{state_attr('climate.salon', 'current_temperature')}}"
+        icon_template:  "mdi:thermometer"
+    humidity_living_room:
+        friendly_name: Humidité Salon
+        value_template: "{{state_attr('climate.salon', 'current_humidity')}}"
+        icon_template: "mdi:water-percent"
+    temperature_main_bedroom:
+        friendly_name: Température Chamblre
+        value_template: "{{state_attr('climate.chambre', 'current_temperature')}}"
+        icon_template: "mdi:thermometer"
+    humidity_main_bedroom: 
+        friendly_name: Humidité Chambre
+        value_template: "{{state_attr('climate.chambre', 'current_humidity')}}"
+        icon_template: "mdi:water-percent"
+    temperature_secondary_bedroom:
+        friendly_name: Température Bureau
+        value_template: "{{state_attr('climate.bureau', 'current_temperature')}}"
+        icon_template: "mdi:thermometer"
+    humidity_secondary_bedroom:
+        friendly_name: Hunimidté Bureau
+        value_template: "{{state_attr('climate.bureau', 'current_humidity')}}"
+        icon_template: "mdi:water-percent"
+        
+        
+        
   
