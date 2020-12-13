@@ -2,7 +2,7 @@ esphome:
   name: slack_cube_v2
   platform: ESP32
   board: esp-wrover-kit
-
+  
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
@@ -32,7 +32,7 @@ deep_sleep:
 
 binary_sensor:
   - platform: homeassistant
-    name: "Input Boolean From Home Assistant"
+    id: slack_cube_ota 
     entity_id: input_boolean.slack_cube_ota
     internal: True
     on_state:
@@ -71,7 +71,7 @@ text_sensor:
     name: "Cube Face"
     id: "cude_face"
     lambda: |-
-      if ( abs(id(gyro_x).state) < 2 && abs(id(gyro_y).state) < 2) {
+      if ( abs(id(gyro_x).state) < 3 && abs(id(gyro_y).state) < 3) {
         if (id(gyro_z).state >= 9) {
           return {"FACE_4"};
         } else if (id(gyro_z).state <= -9) {
@@ -79,7 +79,7 @@ text_sensor:
         } else {
           return {};
         }
-      } else if (abs(id(gyro_y).state) < 2 && abs(id(gyro_z).state) < 2) {
+      } else if (abs(id(gyro_y).state) < 3 && abs(id(gyro_z).state) < 3) {
         if (id(gyro_x).state >= 9) {
           return {"FACE_5"};
         } else if (id(gyro_x).state <= -9) {
@@ -87,7 +87,7 @@ text_sensor:
         } else {
           return {};
         }
-      } else if (abs(id(gyro_z).state) < 2 && abs(id(gyro_x).state) < 2) {
+      } else if (abs(id(gyro_z).state) < 3 && abs(id(gyro_x).state) < 3) {
         if (id(gyro_y).state >= 9) {
           return {"FACE_3"};
         } else if (id(gyro_y).state <= -9) {
