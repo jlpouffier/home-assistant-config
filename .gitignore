@@ -1,4 +1,5 @@
 .storage/
+.cloud/
 appdaemon/apps/__pycache__/
 appdaemon/logs
 appdaemon/dashboards/
