@@ -32,10 +32,6 @@ class notify(hass.Hass):
     self.listen_event(self.callback_notify_cleaning_error , "NOTIFY", payload = "cleaning_error")
     self.listen_event(self.callback_notify_cleaning_idle , "NOTIFY", payload = "cleaning_idle")
 
-    # NOTIFY events from watch_tv
-    self.listen_event(self.callback_notify_watch_tv_on , "NOTIFY", payload = "watch_tv_on")
-    self.listen_event(self.callback_notify_watch_tv_off , "NOTIFY", payload = "watch_tv_off")
-
     # NOTIFY events from monitor_home
     self.listen_event(self.callback_notify_lights_still_on , "NOTIFY", payload = "lights_still_on")
     self.listen_event(self.callback_notify_tv_still_on , "NOTIFY", payload = "tv_still_on")
@@ -47,9 +43,7 @@ class notify(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
     self.listen_event(self.callback_button_clicked_turn_off_climate, "mobile_app_notification_action", action = "turn_off_climate")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
-    self.listen_event(self.callback_button_clicked_turn_off_watch_tv, "mobile_app_notification_action", action = "turn_off_watch_tv")
-    self.listen_event(self.callback_button_clicked_turn_on_watch_tv, "mobile_app_notification_action", action = "turn_on_watch_tv")
-    
+
     # log
     self.log("Notify bot initialized")
 
@@ -140,34 +134,6 @@ class notify(hass.Hass):
       title = "⚠️ Spiroo se décharge",
       message = "Je detecte que Spiroo n'est plus sur sa base depuis plus de 30 minutes",
       clickURL = "/lovelace/bureau")
-
-  """
-  Callback triggered when event NOTIFY with payload "watch_tv_on" is received
-  Goals :
-  . Send notification
-  """
-  def callback_notify_watch_tv_on(self, event_name, data, kwargs):
-    self.send_actionable_notification(
-      title = "📺 TV intelligente", 
-      message = "La TV intelligente est activée", 
-      action_callback="turn_off_watch_tv",
-      action_title="Annuler",
-      clickURL="/lovelace/bureau",
-      timeout = 10)
-
-  """
-  Callback triggered when event NOTIFY with payload "watch_tv_off" is received
-  Goals :
-  . Send notification
-  """
-  def callback_notify_watch_tv_off(self, event_name, data, kwargs):
-    self.send_actionable_notification(
-      title = "📺 TV intelligente", 
-      message = "La TV intelligente n'est pas activée", 
-      action_callback="turn_on_watch_tv",
-      action_title="Activer",
-      clickURL="/lovelace/bureau",
-      timeout = 10)
 
   """
   Callback triggered when event NOTIFY with payload "lights_still_on" is received
@@ -262,32 +228,6 @@ class notify(hass.Hass):
   def callback_button_clicked_cancel_planned_clean_house(self, event_name, data, kwargs):
     self.log("Notification button clicked : canceling scheduled cleaning") 
     self.fire_event("CANCEL_AUTOMATION", payload = "clean_house")
-
-  """
-  Callback triggered when button "turn_off_watch_tv" is clicked from a notification
-  Goals :
-  . turn off watch_tv automations
-  . turn on Snips
-  . Undim lights
-  """
-  def callback_button_clicked_turn_off_watch_tv(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off watch_tv automations") 
-    self.call_service("input_boolean/turn_off", entity_id = "input_boolean.watch_tv_automation_switch")
-    self.call_service("script/lights_set_livingroom_kitchen_regular") 
-    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
-
-  """
-  Callback triggered when button "turn_on_watch_tv" is clicked from a notification
-  Goals :
-  . turn on watch_tv automations
-  . turn off Snips
-  . Dim lights
-  """
-  def callback_button_clicked_turn_on_watch_tv(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning on watch_tv automations") 
-    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.watch_tv_automation_switch")
-    self.call_service("script/lights_set_tv") 
-    self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
 
   """
   Helper method:

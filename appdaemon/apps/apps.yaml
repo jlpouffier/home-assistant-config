@@ -11,6 +11,8 @@ bot_snips:
 watch_tv:
   module: watch_tv
   class: watch_tv
+  constrain_input_boolean: input_boolean.watch_tv_automation_switch
+
     
 clean_house:
   module: clean_house

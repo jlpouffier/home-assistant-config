@@ -10,9 +10,8 @@ Functionalities :
 . re-activate Snips when some apps are paused / stopped
 
 List of apps driving Lights:
-. Youtube
+. Netflix
 . Kodi
-. Molotov
 
 List of apps driving Snips
 . Youtube
@@ -20,6 +19,7 @@ List of apps driving Snips
 . Molotiv
 . Cast
 . Spotify
+. Netflix
 """
 class watch_tv(hass.Hass):
   def initialize(self):
@@ -49,49 +49,35 @@ class watch_tv(hass.Hass):
     #LOG
     self.log("[" + self.old_app + " > " + current_app + "] : " + old + " > " + new)
     
-    # If watch_tv_automation_switch is on, drive the entities based on states
-    if self.get_state("input_boolean.watch_tv_automation_switch") == "on":
-      if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
-        if self.is_controling_lights(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV playing : Lights dimmed")
-          self.call_service("script/lights_set_tv") 
-          # Notify
-          self.log("Sending a notification to check if we really want to lights to be driven by the TV ...")     
-          self.fire_event("NOTIFY", payload = "watch_tv_on")  
-        if self.is_controling_snips(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV playing : Snips OFF")
-          self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
+    if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
+      if self.is_controling_lights(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV playing : Lights dimmed")
+        self.call_service("script/lights_set_tv")  
+      if self.is_controling_snips(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV playing : Snips OFF")
+        self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
 
-      elif old == "playing" and new == "paused":
-        if self.is_controling_lights(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV paused : Lights partially un-dimmed")
-          self.call_service("script/lights_set_tv_paused")        
-        if self.is_controling_snips(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV paused : Snips ON")
-          self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
+    elif old == "playing" and new == "paused":
+      if self.is_controling_lights(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV paused : Lights partially un-dimmed")
+        self.call_service("script/lights_set_tv_paused")        
+      if self.is_controling_snips(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV paused : Snips ON")
+        self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
 
-      elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
-        if self.is_controling_lights(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV stopped : Lights fully un-dimmed")
-          self.call_service("script/lights_set_livingroom_kitchen_regular")
-        if self.is_controling_snips(self.old_app, current_app):
-          #CALL SCRIPT
-          self.log("TV stopped : Snips ON")
-          self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
-
-
-    #If watch_tv_automation_switch is off, send notification to see if it should be turned on
-    else:
-      if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle"] and new == "playing":
-        if self.is_controling_lights(self.old_app, current_app):
-          # Notify
-          self.log("Sending a notification to check if the lights should be driven by the TV ...") 
-          self.fire_event("NOTIFY", payload = "watch_tv_off")
+    elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
+      if self.is_controling_lights(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV stopped : Lights fully un-dimmed")
+        self.call_service("script/lights_set_livingroom_kitchen_regular")
+      if self.is_controling_snips(self.old_app, current_app):
+        #CALL SCRIPT
+        self.log("TV stopped : Snips ON")
+        self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
 
     self.old_app = current_app
     
@@ -112,8 +98,6 @@ class watch_tv(hass.Hass):
   def is_controling_lights(self, old_tv_app, current_tv_app):
     supported_app_ids = [
       "org.xbmc.kodi", 
-      "com.google.android.youtube.tv", 
-      "tv.molotov.app", 
       "com.netflix.ninja"]
     if (old_tv_app in supported_app_ids or current_tv_app in supported_app_ids) and self.get_state("sun.sun") == "below_horizon":
       return True
