@@ -75,7 +75,7 @@
             {% if is_state('vacuum.spiroo', 'cleaning') -%}
             {% set a = 100 / (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int - 100)%}
             {% set b = 10000 / ( 100 - (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int )) %}
-            {% set list = (a * states("sensor.spiroo_battery_level") | int + b) | round , 100 %}
+            {% set list = (a * state_attr("vacuum.spiroo", "battery_level") | int + b) | round , 100 %}
             {{list | min}}
             {% else -%}
             100
