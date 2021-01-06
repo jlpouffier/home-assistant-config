@@ -7,7 +7,6 @@ class snips(hass.Hass):
   def initialize(self):
     self.listen_state(self.callback_toggle_snips, "input_boolean.snips_switch")
     self.listen_event(self.callback_snips_event_received, "SNIPS_EVENT")
-    self.listen_event(self.callback_snips_say, "SNIPS_SAY")
     self.log("Snips bot initialized")
 
   """
@@ -48,16 +47,6 @@ class snips(hass.Hass):
     if not bom:
       #self.say_something("not_understood")
       self.call_service("mqtt/publish", topic = "snips/hotword/default/detected" , payload = "{\"siteId\": \"default\",\"modelId\": \"hey_snips\"}")
-
-
-
-  """
-  Callback triggered when 
-  """
-  def callback_snips_say(self, event_name, data, kwargs):
-    if self.get_state("input_boolean.snips_switch") == 'on':
-      self.log("Saying : " + data["payload"])
-      self.say(data['payload'])
 
   """
   Callback triggered when 
