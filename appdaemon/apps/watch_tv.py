@@ -12,6 +12,7 @@ Functionalities :
 List of apps driving Lights:
 . Netflix
 . Kodi
+. Amazon Prime
 
 List of apps driving Snips
 . Youtube
@@ -20,6 +21,7 @@ List of apps driving Snips
 . Cast
 . Spotify
 . Netflix
+. Amazon Prime
 """
 class watch_tv(hass.Hass):
   def initialize(self):
@@ -89,7 +91,8 @@ class watch_tv(hass.Hass):
       "tv.molotov.app", 
       "com.netflix.ninja" , 
       "com.google.android.apps.mediashell", 
-      "com.spotify.tv.android"]
+      "com.spotify.tv.android",
+      "com.amazon.amazonvideo.livingroom"]
     if old_tv_app in supported_app_ids or current_tv_app in supported_app_ids:
       return True
     else:
@@ -98,7 +101,8 @@ class watch_tv(hass.Hass):
   def is_controling_lights(self, old_tv_app, current_tv_app):
     supported_app_ids = [
       "org.xbmc.kodi", 
-      "com.netflix.ninja"]
+      "com.netflix.ninja",
+      "com.amazon.amazonvideo.livingroom"]
     if (old_tv_app in supported_app_ids or current_tv_app in supported_app_ids) and self.get_state("sun.sun") == "below_horizon":
       return True
     else:
