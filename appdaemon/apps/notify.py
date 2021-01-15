@@ -1,4 +1,5 @@
 import hassapi as hass
+import datetime
 
 """
 Notify is a smart notification hub notifying important events.
@@ -44,8 +45,23 @@ class notify(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_climate, "mobile_app_notification_action", action = "turn_off_climate")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
 
+    # Samba back-up daily check
+    runtime = datetime.time(10,0,0)
+    self.run_daily(self.callback_samba_Backup_daily_check, runtime)
+
     # log
     self.log("Notify bot initialized")
+
+  def callback_samba_Backup_daily_check(self, kwargs):
+    last_backup_string = self.get_state("sensor.samba_backup", attribute = 'last_backup') + ":00"
+    last_backup_date = self.parse_datetime(last_backup_string, aware = True)
+    now = self.get_now()
+    if (now - last_backup_date) > datetime.timedelta(hours = 24):
+      self.log("Samba backup issue... Notifying it")
+      self.send_actionable_notification(
+      title = "💾 Sauverage journalière",
+      message = "La sauverage journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
+      clickURL = "/hassio/dashboard")
 
 
   """
