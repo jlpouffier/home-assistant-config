@@ -1,4 +1,4 @@
 # Spiroo, Neato vaccum cleaner
 # https://www.home-assistant.io/integrations/neato/
-username: !secret neato_usr
-password: !secret neato_pwd
+client_id: !secret neato_client_id
+client_secret: !secret neato_secret
