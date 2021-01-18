@@ -19,6 +19,7 @@ Notifications
   . Notify that the lights are not driven by the TV > turn on possible
 . Coming directly from here
   . Notify HASS update
+  . Backup status
 
 """
 class notify(hass.Hass): 
@@ -53,11 +54,12 @@ class notify(hass.Hass):
     self.log("Notify bot initialized")
 
   def callback_samba_Backup_daily_check(self, kwargs):
+    self.log("Checking last Samba backup ...")
     last_backup_string = self.get_state("sensor.samba_backup", attribute = 'last_backup') + ":00"
     last_backup_date = self.parse_datetime(last_backup_string, aware = True)
     now = self.get_now()
     if (now - last_backup_date) > datetime.timedelta(hours = 24):
-      self.log("Samba backup issue... Notifying it")
+      self.log("Samba backup issue found... Notifying it")
       self.send_actionable_notification(
       title = "💾 Sauverage journalière",
       message = "La sauverage journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
