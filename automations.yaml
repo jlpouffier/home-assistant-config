@@ -1,17 +1,11 @@
-- id: send_event_to_snips
-  alias: send_event_to_snips
+- id: '1610726074909'
+  alias: Restore Samba Backup sensor on startup
   trigger:
-  - platform: mqtt
-    topic: snips/intent/Jenova70:ActOnLight
-  - platform: mqtt
-    topic: snips/intent/Jenova70:ActOnVacuum
-  - platform: mqtt
-    topic: snips/intent/Jenova70:LeavingHome
-  - platform: mqtt
-    topic: snips/intent/Jenova70:ArrivingHome
-  - platform: mqtt
-    topic: snips/intent/Jenova70:ActOnCover
+  - event: start
+    platform: homeassistant
   action:
-  - event: SNIPS_EVENT
-    event_data_template:
-      payload: '{{ trigger.payload }}'
+  - service: hassio.addon_stdin
+    data:
+      addon: 15d21743_samba_backup
+      input: restore-sensor
+  mode: single

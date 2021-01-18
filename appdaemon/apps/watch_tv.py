@@ -6,22 +6,12 @@ Functionalities :
 . Dim lights when some apps are playing (only if sun is set)
 . Undim lights partially when some apps are paused (only if sun is set)
 . Undim lights totally when some apps are stopped (only if sun is set)
-. Deactivcate Snips when some app are playing
-. re-activate Snips when some apps are paused / stopped
 
 List of apps driving Lights:
 . Netflix
 . Kodi
 . Amazon Prime
 
-List of apps driving Snips
-. Youtube
-. kodi
-. Molotiv
-. Cast
-. Spotify
-. Netflix
-. Amazon Prime
 """
 class watch_tv(hass.Hass):
   def initialize(self):
@@ -37,8 +27,6 @@ class watch_tv(hass.Hass):
   . Dim lights when some apps are playing
   . Undim lights partially when some apps are paused
   . Undim lights totally when some apps are stopped 
-  . Deactivcate Snips when some app are playing
-  . re-activate Snips when some apps are paused / stopped
   """
   def callback_philips_android_tv(self, entity, attribute, old, new, kwargs):
     # Get attrobutes of the TV and fetch the current app
@@ -56,47 +44,21 @@ class watch_tv(hass.Hass):
         #CALL SCRIPT
         self.log("TV playing : Lights dimmed")
         self.call_service("script/lights_set_tv")  
-      if self.is_controling_snips(self.old_app, current_app):
-        #CALL SCRIPT
-        self.log("TV playing : Snips OFF")
-        self.call_service("input_boolean/turn_off", entity_id = "input_boolean.snips_switch")
-
+      
     elif old == "playing" and new == "paused":
       if self.is_controling_lights(self.old_app, current_app):
         #CALL SCRIPT
         self.log("TV paused : Lights partially un-dimmed")
         self.call_service("script/lights_set_tv_paused")        
-      if self.is_controling_snips(self.old_app, current_app):
-        #CALL SCRIPT
-        self.log("TV paused : Snips ON")
-        self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
-
+ 
     elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
       if self.is_controling_lights(self.old_app, current_app):
         #CALL SCRIPT
         self.log("TV stopped : Lights fully un-dimmed")
         self.call_service("script/lights_set_livingroom_kitchen_regular")
-      if self.is_controling_snips(self.old_app, current_app):
-        #CALL SCRIPT
-        self.log("TV stopped : Snips ON")
-        self.call_service("input_boolean/turn_on", entity_id = "input_boolean.snips_switch")
-
+      
     self.old_app = current_app
     
-
-  def is_controling_snips(self, old_tv_app, current_tv_app):
-    supported_app_ids = [
-      "org.xbmc.kodi", 
-      "com.google.android.youtube.tv", 
-      "tv.molotov.app", 
-      "com.netflix.ninja" , 
-      "com.google.android.apps.mediashell", 
-      "com.spotify.tv.android",
-      "com.amazon.amazonvideo.livingroom"]
-    if old_tv_app in supported_app_ids or current_tv_app in supported_app_ids:
-      return True
-    else:
-      return False
 
   def is_controling_lights(self, old_tv_app, current_tv_app):
     supported_app_ids = [

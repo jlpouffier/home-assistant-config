@@ -102,10 +102,7 @@ customize:
         icon: 'mdi:pause'
         friendly_name: "Lumières film en pause (Scène)"
     
-    #AUTOMATION
-    automation.send_event_to_snips:
-        icon: mdi:google-assistant
-        
+       
     # WAZE SENSORS
     sensor.home_to_amadeus:
         icon: "mdi:briefcase"

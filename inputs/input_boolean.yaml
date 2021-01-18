@@ -5,11 +5,6 @@ notify_switch:
   name: Notify
   icon: mdi:bell-ring
 
-# Switch to turn on / off Snips (AppDemaon)
-snips_switch:
-  name: Snips
-  icon: mdi:google-assistant
-
 # Switch to turn on / off clean_house (AppDemaon)
 spiroo_planification_switch:
   name: Planification Spiroo
