@@ -4,10 +4,6 @@ bot_notify:
   hass_base_url: !secret hass_base_url
   constrain_input_boolean: input_boolean.notify_switch
 
-bot_snips:
-  module: snips
-  class: snips
-
 watch_tv:
   module: watch_tv
   class: watch_tv
