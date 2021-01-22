@@ -1,12 +1,5 @@
 # https://www.home-assistant.io/docs/configuration/customizing-devices/
 customize:
-    #PERSONS
-    person.jenova70:
-        friendly_name: JL
-        entity_picture: /local/jl.jpeg
-    
-    person.valentine:
-        entity_picture: /local/valentine.jpeg
         
     # Individualt lights
     light.living_room_sphere:
