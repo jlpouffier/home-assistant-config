@@ -1,0 +1,68 @@
+esphome:
+  name: laser_schrodie
+  platform: ESP32
+  board: esp-wrover-kit
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pwd
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Laser Schrodie Fallback Hotspot"
+    password: !secret esphome_pwd
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret esphome_pwd
+
+ota:
+  password: !secret esphome_pwd
+
+output:
+  - platform: ledc
+    pin: GPIO13
+    id: gpio_13
+    frequency: 50Hz
+  
+  - platform: ledc
+    pin: GPIO12
+    id: gpio_12
+    frequency: 50Hz
+
+servo:
+  - id: my_servo_1
+    output: gpio_13
+  - id: my_servo_2
+    output: gpio_12
+    
+
+switch:
+  - platform: gpio
+    id: switch_laser
+    pin: GPIO14
+    name: "Laser Schrodie"
+    
+    on_turn_on:
+      - while:
+          condition:
+            switch.is_on: switch_laser
+          then:
+            - servo.write:
+                id: my_servo_1
+                level: !lambda |-
+                  static int position_1 = 0;
+                  position_1 = min( max( int(position_1 + (rand() % 3) - 1) , -100), 100);
+                  return position_1 / 100.0;
+            - servo.write:
+                id: my_servo_2
+                level: !lambda |-
+                  static int position_2 = -40;
+                  position_2 = min( max( int(position_2 + (rand() % 3) - 1) , -80), 0);
+                  return position_2 / 100.0;
+            - delay: 40ms
