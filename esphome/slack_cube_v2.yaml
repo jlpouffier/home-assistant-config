@@ -2,6 +2,18 @@ esphome:
   name: slack_cube_v2
   platform: ESP32
   board: esp-wrover-kit
+  on_boot:
+    priority: -100
+    then:
+      binary_sensor.template.publish:
+        id: slack_cube_connected
+        state: ON
+  on_shutdown:
+    then:
+      binary_sensor.template.publish:
+        id: slack_cube_connected
+        state: OFF
+  
   
 wifi:
   ssid: !secret wifi_ssid
@@ -47,6 +59,9 @@ binary_sensor:
               lambda: return !x;
             then:
               deep_sleep.enter: deep_sleep_1
+  - platform: template
+    id: slack_cube_connected
+    name: "Cube Slack (Connection)"
 
 i2c:
   sda: 21
