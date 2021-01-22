@@ -71,9 +71,7 @@ class wake_up(hass.Hass):
         "brightness_pct": 100 }},
       {"sleep": 600},
       {"light/turn_on": {
-        "entity_id": "light.main_bedroom_fairy_lights"}},
-      {"cover/open_cover": {
-        "entity_id": "cover.main_bedroom_roller_shutter"}},
+        "entity_id": "light.main_bedroom_fairy_lights"}}
     ]
 
     self.log("Wake up automation !")
