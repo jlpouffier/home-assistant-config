@@ -3,7 +3,7 @@
 - platform: nmap_tracker
   hosts: 
     - 192.168.1.34
-    - 192.168.1.18
+    - 192.168.1.21
     - 192.168.1.14
   interval_seconds: 30
   consider_home: 300
