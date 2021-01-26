@@ -1,8 +1,5 @@
 # https://www.home-assistant.io/integrations/binary_sensor/
 
-
-
-
 # Workday (current day)
 # https://www.home-assistant.io/integrations/workday/
 - platform: workday

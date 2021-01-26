@@ -1,24 +1,24 @@
 #https://www.home-assistant.io/integrations/recorder/
 purge_keep_days: 14
+commit_interval: 60
+include:
+    domains:
+      - light
+      - sensor
+      - binary_sensor
+      - vacuum
+      - switch
+      - device_tracker
+      - person
+      - climate
+       
 exclude:
     entities:
-      - sensor.date
-      - sensor.date_time
       - sensor.date_time_iso
-      - sensor.date_time_utc
-      - sensor.time
-      - sensor.time_date
-      - sensor.time_utc
       - sensor.target_arrival_ricardo_to_home
       - sensor.target_arrival_home_to_ricardo
       - sensor.target_arrival_home_to_amadeus
       - sensor.target_arrival_amadeus_to_home
-      - sun.sun
-      - sensor.sun_elevation
-      - sensor.sun_azimuth
-      - zwave.fibaro_walli_roller_shutter_main_bedroom
-      - zwave.aeon_labs_z_stick
-      - camera.spiroo_cleaning_map
       - sensor.memory_free
       - sensor.memory_use
       - sensor.disk_free
