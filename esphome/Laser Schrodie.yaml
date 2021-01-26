@@ -57,12 +57,12 @@ switch:
                 id: my_servo_1
                 level: !lambda |-
                   static int position_1 = 0;
-                  position_1 = min( max( int(position_1 + (rand() % 3) - 1) , -100), 100);
+                  position_1 = min( max( int(position_1 + (rand() % 5) - 2) , -100), 100);
                   return position_1 / 100.0;
             - servo.write:
                 id: my_servo_2
                 level: !lambda |-
                   static int position_2 = -40;
-                  position_2 = min( max( int(position_2 + (rand() % 3) - 1) , -80), 0);
+                  position_2 = min( max( int(position_2 + (rand() % 5) - 2) , -80), 0);
                   return position_2 / 100.0;
-            - delay: 40ms
+            - delay: 200ms
