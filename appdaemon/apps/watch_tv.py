@@ -64,7 +64,8 @@ class watch_tv(hass.Hass):
     supported_app_ids = [
       "org.xbmc.kodi", 
       "com.netflix.ninja",
-      "com.amazon.amazonvideo.livingroom"]
+      "com.amazon.amazonvideo.livingroom",
+      "com.plexapp.android"]
     if (old_tv_app in supported_app_ids or current_tv_app in supported_app_ids) and self.get_state("sun.sun") == "below_horizon":
       return True
     else:
