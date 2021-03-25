@@ -3,9 +3,9 @@
 - platform: group
   name: "kitchen_ceiling"
   entities:
-    - light.kitchen_ceiling_a
-    - light.kitchen_ceiling_b
-    - light.kitchen_ceiling_c
+    - light.cuisine_suspension_a
+    - light.cuisine_suspension_b
+    - light.cuisine_suspension_c
     
     
 
@@ -14,8 +14,8 @@
 - platform: group
   name: "living_room_wall"
   entities:
-    - light.living_room_wall_a
-    - light.living_room_wall_b
+    - light.salon_applique_a
+    - light.salon_applique_b
     
 
 # Group composed of all the ceiling lights of main bed room
@@ -23,8 +23,8 @@
 - platform: group
   name: "main_bedroom_ceiling"
   entities:
-    - light.main_bedroom_ceiling_a
-    - light.main_bedroom_ceiling_b
+    - light.chambre_suspension_blanche
+    - light.chambre_suspension_jaune
 
 # Group composed of all the interior lights
 # https://www.home-assistant.io/integrations/light.group/

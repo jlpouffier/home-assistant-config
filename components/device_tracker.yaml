@@ -2,9 +2,9 @@
 #https://www.home-assistant.io/integrations/nmap_tracker/
 - platform: nmap_tracker
   hosts: 
-    - 192.168.1.34
-    - 192.168.1.21
-    - 192.168.1.14
+    - 192.168.1.200
+    - 192.168.1.201
+    - 192.168.1.203
   interval_seconds: 30
   consider_home: 300
   home_interval: 3

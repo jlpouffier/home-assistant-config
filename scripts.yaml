@@ -17,6 +17,7 @@ lights_set_livingroom_kitchen_regular:
       entity_id: light.entree
       transition: 1
     service: light.turn_on
+  mode: restart
 lights_set_tv:
   alias: lights_set_tv
   sequence:
@@ -28,7 +29,7 @@ lights_set_tv:
     service: light.turn_on
   - data:
       brightness_pct: 10
-      entity_id: light.living_room_sphere
+      entity_id: light.salon_bobby_w_40
       rgb_color:
       - 255
       - 154
@@ -43,6 +44,7 @@ lights_set_tv:
       entity_id: light.entree
       transition: 2
     service: light.turn_off
+  mode: restart
 lights_set_tv_paused:
   alias: lights_set_tv_paused
   sequence:
@@ -54,7 +56,7 @@ lights_set_tv_paused:
     service: light.turn_on
   - data:
       brightness_pct: 50
-      entity_id: light.living_room_sphere
+      entity_id: light.salon_bobby_w_40
       rgb_color:
       - 255
       - 154
@@ -71,3 +73,4 @@ lights_set_tv_paused:
       entity_id: light.entree
       transition: 2
     service: light.turn_on
+  mode: restart

@@ -60,7 +60,7 @@ class wake_up(hass.Hass):
       {"light/turn_off": {
         "entity_id": "light.chambre_principale"}},
       {"light/turn_on": {
-        "entity_id": "light.main_bedroom_bloom",
+        "entity_id": "light.chambre_bloom",
         "transition": 300,
         "brightness_pct": 100,
         "rgb_color":[255,159,1] }},
@@ -71,7 +71,7 @@ class wake_up(hass.Hass):
         "brightness_pct": 100 }},
       {"sleep": 600},
       {"light/turn_on": {
-        "entity_id": "light.main_bedroom_fairy_lights"}}
+        "entity_id": "light.chambre_guirlande"}}
     ]
 
     self.log("Wake up automation !")

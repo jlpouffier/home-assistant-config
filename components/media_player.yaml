@@ -3,7 +3,7 @@
 - platform: androidtv
   name: Philips Android TV
   device_class: androidtv
-  host: 192.168.1.13
+  host: 192.168.1.101
   get_sources: false
   apps:
     com.spotify.tv.android: Spotify
