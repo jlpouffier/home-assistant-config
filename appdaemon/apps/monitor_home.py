@@ -12,7 +12,8 @@ Notifications :
 class monitor_home(hass.Hass): 
   def initialize(self):
     self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" , old = "on" , new = "off")
-    
+    self.listen_state(self.callback_coffee_maker_still_on , "switch.coffee_maker" , new = "on", duration = 5400)
+
     self.log("Monitor Home initialized")
 
   """
@@ -35,3 +36,7 @@ class monitor_home(hass.Hass):
     if self.get_state("climate.salon") != "off" or self.get_state("climate.chambre") != "off" or self.get_state("climate.bureau") != "off":
       self.log("Detecting home empty and climate on. Notifying it...")
       self.fire_event("NOTIFY", payload = "climate_still_on")
+
+  def callback_coffee_maker_still_on(self, entity, attribute, old, new, kwargs):
+    self.log("Detecting coffee maker on for more than 90 minutes. Notifying it...")
+    self.fire_event("NOTIFY", payload = "coffee_maker_still_on")

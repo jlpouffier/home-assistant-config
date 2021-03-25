@@ -14,6 +14,7 @@ Notifications
   . Notify lights are still on when nobody is at home > Turn off light possible
   . Notify TV still on when nobody is at home > Turn off TV possible
   . Notify AC still on when nobody is at home > Turn off AC possible
+  . Notify coffee maker on for more than 90 minutes > Turn coffee maker possible
 . Coming from watch_tv
   . Notify that the lights are driven by the TV > turn off possible
   . Notify that the lights are not driven by the TV > turn on possible
@@ -38,12 +39,14 @@ class notify(hass.Hass):
     self.listen_event(self.callback_notify_lights_still_on , "NOTIFY", payload = "lights_still_on")
     self.listen_event(self.callback_notify_tv_still_on , "NOTIFY", payload = "tv_still_on")
     self.listen_event(self.callback_notify_climate_still_on , "NOTIFY", payload = "climate_still_on")
+    self.listen_event(self.callback_notify_coffee_maker_still_on , "NOTIFY", payload = "coffee_maker_still_on")
 
     # Button clicked events
     self.listen_event(self.callback_button_clicked_rth_spiroo, "mobile_app_notification_action", action = "rth_spiroo")
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
     self.listen_event(self.callback_button_clicked_turn_off_climate, "mobile_app_notification_action", action = "turn_off_climate")
+    self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
 
     # Samba back-up daily check
@@ -164,7 +167,7 @@ class notify(hass.Hass):
       message = "Des lumières sont allumées alors que personne n'est présent", 
       action_callback="turn_off_lights",
       action_title="Éteindre les lumières",
-      clickURL="/lovelace/salon")
+      clickURL="/lovelace/apercu")
 
   """
   Callback triggered when event NOTIFY with payload "tv_still_on" is received
@@ -190,6 +193,17 @@ class notify(hass.Hass):
       message = "Au moins une climatisation est allumée alors que personne n'est présent", 
       action_callback="turn_off_climate",
       action_title="Éteindre la Clim",
+      clickURL="/lovelace/apercu")
+
+  """
+  TODO
+  """
+  def callback_notify_coffee_maker_still_on(self, event_name, data, kwargs):
+    self.send_actionable_notification(
+      title = "☕️ Machine a café allumée", 
+      message = "La machine a café est allumée depuis longtemps", 
+      action_callback="turn_off_coffee_maker",
+      action_title="Éteindre la machine a café",
       clickURL="/lovelace/salon")
 
   """
@@ -236,6 +250,13 @@ class notify(hass.Hass):
       
     if self.get_state("climate.bureau") != "off":
       self.call_service("climate/turn_off" , entity_id = "climate.bureau")
+
+  """
+  TODO
+  """
+  def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off coffee maker")
+    self.call_service("switch/turn_off" , entity_id = "switch.coffee_maker")
 
 
   """

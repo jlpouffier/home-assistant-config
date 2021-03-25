@@ -1,0 +1,15 @@
+# https://www.home-assistant.io/integrations/switch.template/
+- platform: template
+  switches:
+    coffee_maker:
+      friendly_name: "Machine a café"
+      icon_template: "mdi:coffee-maker"
+      value_template: "{{ is_state('light.coffe_machine', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        target:
+          entity_id: light.coffe_machine
+      turn_off:
+        service: light.turn_off
+        target:
+          entity_id: light.coffe_machine

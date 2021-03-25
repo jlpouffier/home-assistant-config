@@ -16,6 +16,7 @@ cover: !include components/cover.yaml
 spotify: !include components/spotify.yaml
 climate: !include components/climate.yaml
 rest_command: !include components/rest_command.yaml
+switch: !include components/switch.yaml
 
 # INPUTS
 input_boolean: !include inputs/input_boolean.yaml
