@@ -2,10 +2,12 @@ import hassapi as hass
 import datetime
 
 """
-wake_up is an app responsible of turning on lights at wake time
+wake_up is an app responsible of the "wake-up experience" of the appartment
 Functionality :
 . Register the wake up time every day at 3 am based on user input time 
-. Only turn on if it' s a work day
+. Only turn on if it's a work day (Week-end and French holidays supported)
+. Progressively turn on lights before and after alarm
+. Turn on the coffee maker 30 minutes before waking up
 """
 class wake_up(hass.Hass):
   def initialize(self):
@@ -28,7 +30,9 @@ class wake_up(hass.Hass):
       today_date = self.date()
       # Wake up time is input time - 5 minutes
       wake_up_datetime = datetime.datetime.combine(today_date , input_time)  - datetime.timedelta(minutes = 5) 
-      
+      # Coffee maker turn on time is input time - 30 minutes
+      coffee_maker_turn_on_time = datetime.datetime.combine(today_date , input_time)  - datetime.timedelta(minutes = 30) 
+
       # Only register callbacks if the wake-up time is in the future (Strict future ! so I have added 1 minute)
       if wake_up_datetime > self.datetime() + datetime.timedelta(minutes = 1) :
           self.log("Wake up automation will be turned on at :")
@@ -39,6 +43,16 @@ class wake_up(hass.Hass):
           self.log("Wake up automation won't be turned on today because wake-up time is in the past :")
           self.log(wake_up_datetime)
 
+      # Only register callbacks if the Coffee maker turn on time is in the future (Strict future ! so I have added 1 minute)
+      if coffee_maker_turn_on_time > self.datetime() + datetime.timedelta(minutes = 1) :
+          self.log("Coffee maker will be turned on at :")
+          self.log(coffee_maker_turn_on_time)
+          # ... and register the wake-up callback
+          self.run_at(self.callback_turn_on_coffee_maker, coffee_maker_turn_on_time)
+      else:
+          self.log("Coffee maker won't be turned on today because <coffee maker turn on> time is in the past :")
+          self.log(coffee_maker_turn_on_time)
+
   '''
   With a wake up time at 6:50:
 
@@ -48,12 +62,11 @@ class wake_up(hass.Hass):
   Wait 5 minutes
 
   6:50
-  Turn on the Ceiling lights 1to 100% in 5 minutes
+  Turn on the Ceiling lights to 100% in 5 minutes
   Wait 10 minutes
 
   7:00
   Turn on the fairy lights
-  Open the cover
   '''
   def callback_wake_up(self, kwargs):
     sequence = [
@@ -77,3 +90,9 @@ class wake_up(hass.Hass):
     self.log("Wake up automation !")
     self.run_sequence(sequence)
 
+  '''
+  Turn on coffee maker
+  '''
+  def callback_turn_on_coffee_maker(self, kwargs):
+    self.log("Turning on coffee maker !")
+    self.call_service("switch/turn_on" , entity_id = "switch.coffee_maker")
