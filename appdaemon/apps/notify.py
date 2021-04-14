@@ -28,6 +28,14 @@ class notify(hass.Hass):
   def initialize(self):
     # State change : Update available
     self.listen_state(self.callback_hass_update_available, "binary_sensor.updater" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.home_assistant_operating_system_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.appdaemon_4_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.check_home_assistant_configuration_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.esphome_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.file_editor_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.samba_backup_update_available" , old = "off" , new = "on")
+    self.listen_state(self.callback_hass_update_available, "binary_sensor.samba_share_update_available" , old = "off" , new = "on")
+    
     
     # NOTIFY events from clean_house
     self.listen_event(self.callback_notify_cleaning_scheduled , "NOTIFY", payload = "cleaning_scheduled")
@@ -74,23 +82,16 @@ class notify(hass.Hass):
   """
   Callback triggered when a new version of HASS is available.
   Goals :
-  . Notify (If the version number can be fetched : Include it in the notification)
+  . Notify
   """
   def callback_hass_update_available(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting an available update for HASS. Notifying it...")
-    # Retreive home assistant version
-    version = self.get_state("binary_sensor.updater", attribute = "newest_version")
-    # Send notification
-    if version is None:
-      self.send_actionable_notification(
-        title = "🎉 Mise a jour disponible",
-        message = "Nouvelle version de Home Assistant est dispo !",
-        clickURL = "/hassio/dashboard")
-    else:
-      self.send_actionable_notification(
-        title = "🎉 Mise a jour disponible",
-        message = "La version " + version + " de Home Assistant est dispo !",
-        clickURL = "/hassio/dashboard")
+    self.log("Detecting an available update for home assistant. Notifying it...")
+
+    self.send_actionable_notification(
+      title = "🎉 Mise a jour disponible",
+      message = "Une mise a jour est disponible !",
+      clickURL = "/hassio/dashboard")
+
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_scheduled" is received
