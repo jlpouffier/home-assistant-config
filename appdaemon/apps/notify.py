@@ -26,16 +26,19 @@ Notifications
 """
 class notify(hass.Hass): 
   def initialize(self):
+
     # State change : Update available
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.updater" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.home_assistant_operating_system_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.appdaemon_4_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.check_home_assistant_configuration_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.esphome_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.file_editor_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.samba_backup_update_available" , old = "off" , new = "on")
-    self.listen_state(self.callback_hass_update_available, "binary_sensor.samba_share_update_available" , old = "off" , new = "on")
-    
+    updaters_monitored = [
+      "binary_sensor.updater",
+      "binary_sensor.home_assistant_operating_system_update_available",
+      "binary_sensor.appdaemon_4_update_available",
+      "binary_sensor.check_home_assistant_configuration_update_available",
+      "binary_sensor.esphome_update_available",
+      "binary_sensor.file_editor_update_available",
+      "binary_sensor.samba_backup_update_available",
+      "binary_sensor.samba_share_update_available"]
+    for updater in updaters_monitored :
+      self.listen_state(self.callback_hass_update_available, updater , old = "off" , new = "on")
     
     # NOTIFY events from clean_house
     self.listen_event(self.callback_notify_cleaning_scheduled , "NOTIFY", payload = "cleaning_scheduled")
