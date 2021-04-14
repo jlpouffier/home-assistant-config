@@ -19,7 +19,7 @@ class clean_house(hass.Hass):
   def initialize(self):
     runtime = datetime.time(16,0,0)
     self.run_daily(self.callback_pre_cleaning, runtime)
-    self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION")
+    self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION", payload = "clean_house")
     self.listen_state(self.callback_spiroo_stated, "vacuum.spiroo" , old = "docked" , new = "cleaning")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "paused" , new = "docked")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "cleaning" , new = "docked")
@@ -42,8 +42,8 @@ class clean_house(hass.Hass):
   """ 
   def callback_pre_cleaning(self, kwargs):
     if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("vacuum.spiroo") != "cleaning" and self.get_state("binary_sensor.home_occupied") == "off": 
-      last_cleaning = self.parse_datetime(self.get_state("vacuum.spiroo", attribute="clean_start"))
-      now = self.datetime()
+      last_cleaning = self.convert_utc(self.get_state("vacuum.spiroo", attribute="clean_start"))
+      now = datetime.datetime.now(datetime.timezone.utc)
       diff = now - last_cleaning
       if diff > datetime.timedelta(hours = 36):
         self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Notify")
@@ -66,18 +66,15 @@ class clean_house(hass.Hass):
 
 
   """
-  Callback triggered when the app receives an event CANCEL_AUTOMATION. 
-  Only payload clean_house supported in this app.
+  Callback triggered when the app receives an event CANCEL_AUTOMATION with payload "clean_house"
   See app "Notify" that will fire this event
   Goals : 
   . Cancel cleaning
   """     
   def callback_cancel_cleaning(self, event_name, data, kwargs):
-    payload = data["payload"]
-    if payload == "clean_house":
-      self.log("House cleaning canceled")
-      # Cancel cleaning
-      self.cancel_timer(self.cleaning_handle)
+    self.log("House cleaning canceled")
+    # Cancel cleaning
+    self.cancel_timer(self.cleaning_handle)
 
 
   """
