@@ -14,6 +14,7 @@ Notifications
   . Notify lights are still on when nobody is at home > Turn off light possible
   . Notify TV still on when nobody is at home > Turn off TV possible
   . Notify AC still on when nobody is at home > Turn off AC possible
+  . Notify coffee maker on when nobody is at home > Turn coffee maker possible
   . Notify coffee maker on for more than 90 minutes > Turn coffee maker possible
 . Coming from watch_tv
   . Notify that the lights are driven by the TV > turn off possible
@@ -40,6 +41,7 @@ class notify(hass.Hass):
     self.listen_event(self.callback_notify_tv_still_on , "NOTIFY", payload = "tv_still_on")
     self.listen_event(self.callback_notify_climate_still_on , "NOTIFY", payload = "climate_still_on")
     self.listen_event(self.callback_notify_coffee_maker_still_on , "NOTIFY", payload = "coffee_maker_still_on")
+    self.listen_event(self.callback_notify_coffee_maker_on_since_too_long , "NOTIFY", payload = "coffee_maker_on_since_too_long")
 
     # Button clicked events
     self.listen_event(self.callback_button_clicked_rth_spiroo, "mobile_app_notification_action", action = "rth_spiroo")
@@ -196,9 +198,24 @@ class notify(hass.Hass):
       clickURL="/lovelace/apercu")
 
   """
-  TODO
+  Callback triggered when event NOTIFY with payload "coffee_maker_still_on" is received
+  Goals :
+  . Send notification
   """
   def callback_notify_coffee_maker_still_on(self, event_name, data, kwargs):
+    self.send_actionable_notification(
+      title = "☕️ Machine a café allumée", 
+      message = "La machine a café est allumée alors que personne n'est présent", 
+      action_callback="turn_off_coffee_maker",
+      action_title="Éteindre la machine a café",
+      clickURL="/lovelace/salon")
+
+  """
+  Callback triggered when event NOTIFY with payload "coffee_maker_on_since_too_long" is received
+  Goals :
+  . Send notification
+  """
+  def callback_notify_coffee_maker_on_since_too_long(self, event_name, data, kwargs):
     self.send_actionable_notification(
       title = "☕️ Machine a café allumée", 
       message = "La machine a café est allumée depuis longtemps", 
@@ -252,7 +269,9 @@ class notify(hass.Hass):
       self.call_service("climate/turn_off" , entity_id = "climate.bureau")
 
   """
-  TODO
+  Callback triggered when button "turn_off_coffee_maker" is clicked from a notification
+  Goals :
+  . Turn off coffee maker
   """
   def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off coffee maker")
