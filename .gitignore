@@ -16,3 +16,5 @@ zwcfg_*.xml
 options.xml
 zwscene.xml
 ip_bans.yaml
+*.db-wal
+*.db-shm
