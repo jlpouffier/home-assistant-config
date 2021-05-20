@@ -74,3 +74,27 @@ lights_set_tv_paused:
       transition: 2
     service: light.turn_on
   mode: restart
+'1619802584518':
+  alias: Quitter l'appartement
+  sequence:
+  - service: climate.turn_off
+    target:
+      entity_id:
+      - climate.bureau
+      - climate.chambre
+      - climate.salon
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.exterior_lights
+      - light.interior_lights
+  - service: media_player.turn_off
+    target:
+      entity_id: media_player.philips_android_tv
+  - service: switch.turn_off
+    target:
+      entity_id:
+      - switch.coffee_maker
+      - switch.google_home
+  mode: single
+  icon: mdi:home-import-outline
