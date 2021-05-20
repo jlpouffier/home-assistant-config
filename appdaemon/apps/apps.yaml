@@ -35,6 +35,12 @@ monitor_home:
   class: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
 
+presence_simulator:
+  module: presence_simulator
+  class: presence_simulator
+  constrain_input_boolean: input_boolean.presence_simulator_switch
+
+
 slack_cube:
   module: slack_cube
   class: slack_cube

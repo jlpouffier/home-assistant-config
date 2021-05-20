@@ -25,10 +25,15 @@ welcome_home_automation_switch:
   name: Bienvenue lumineux
   icon: mdi:home-import-outline
 
-# Switch to turn on / off monitor_home_switch (AppDemaon)
+# Switch to turn on / off monitor_home(AppDemaon)
 monitor_home_switch:
   name: Surveillance de l'appartement
   icon: mdi:eye
+
+# Switch to turn on / off presence_simulator (AppDemaon)
+presence_simulator_switch:
+  name: Simuler présence
+  icon: mdi:arrow-decision-auto-outline
 
 slack_cube_ota:
   name: Passer le Cube Slack on mode OTA
