@@ -62,7 +62,7 @@ class clean_house(hass.Hass):
   def callback_cleaning(self, kwargs):
     self.log("House cleaning will start now")
     # Start Spiroo
-    self.call_service("neato/custom_cleaning" , entity_id = "vacuum.spiroo" , category = 4 , mode  = 1 , navigation = 1)
+    self.call_service("vacuum/start" , entity_id = "vacuum.spiroo")
 
 
   """
