@@ -108,7 +108,7 @@ class notify(hass.Hass):
       action_callback="cancel_planned_clean_house",
       action_title="Annuler le nettoyage",
       clickURL="/lovelace/bureau",
-      timeout = 300)
+      timeout = 1800)
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_started" is received
