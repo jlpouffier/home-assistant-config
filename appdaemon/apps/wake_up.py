@@ -8,6 +8,7 @@ Functionality :
 . Only turn on if it's a work day (Week-end and French holidays supported)
 . Progressively turn on lights before and after alarm
 . Turn on the coffee maker 30 minutes before waking up
+. Play the "Spotify Daily"
 """
 class wake_up(hass.Hass):
   def initialize(self):
@@ -54,19 +55,21 @@ class wake_up(hass.Hass):
           self.log(coffee_maker_turn_on_time)
 
   '''
-  With a wake up time at 6:50:
+  With a wake up time at 6:40:
 
-  6:45
+  6:35
   Make sure the lights are off on the bedroom
   Turn on the bloom to 100% in 5 minutes
   Wait 5 minutes
 
-  6:50
+  6:40
   Turn on the Ceiling lights to 100% in 5 minutes
   Wait 10 minutes
 
-  7:00
+  6:50
   Turn on the fairy lights
+  
+  7:00 : Turn on the Spotify Daily
   '''
   def callback_wake_up(self, kwargs):
     sequence = [
@@ -84,7 +87,14 @@ class wake_up(hass.Hass):
         "brightness_pct": 100 }},
       {"sleep": 600},
       {"light/turn_on": {
-        "entity_id": "light.chambre_guirlande"}}
+        "entity_id": "light.chambre_guirlande"}},
+      {"sleep": 600},
+      {"spotcast/start":{
+          "uri":"spotify:playlist:37i9dQZF1EfNZRwgHh7bYF",
+          "entity_id":"media_player.nest_mini_cuisine"}},
+      {"media_player/volume_set":{
+          "volume_level":0.8,
+          "entity_id":"media_player.nest_mini_cuisine"}}
     ]
 
     self.log("Wake up automation !")
