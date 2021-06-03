@@ -9,3 +9,33 @@
       addon: 15d21743_samba_backup
       input: restore-sensor
   mode: single
+- id: '1622706168523'
+  alias: Long Press on Entry Switch -> Turn On Lights
+  description: ''
+  trigger:
+  - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
+    domain: hue
+    platform: device
+    type: remote_button_long_release
+    subtype: turn_on
+  condition: []
+  action:
+  - service: script.turn_on
+    target:
+      entity_id: script.lights_set_livingroom_kitchen_regular
+  mode: single
+- id: '1622706310024'
+  alias: Long Press on Entry Switch -> Turn Off Lights
+  description: ''
+  trigger:
+  - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
+    domain: hue
+    platform: device
+    type: remote_button_long_release
+    subtype: turn_off
+  condition: []
+  action:
+  - service: script.turn_on
+    target:
+      entity_id: script.1619802584518
+  mode: single
