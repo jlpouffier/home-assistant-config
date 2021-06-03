@@ -52,5 +52,5 @@ class welcome_home(hass.Hass):
     # If no-one came home during the night ...
     self.log("Nobody came home this night ... Canceling the welcome home automation")
     # Abort the welcome home automoation
-    self.cancel_timer(self.callback_welcome_home_handle) 
+    self.cancel_listen_state(self.callback_welcome_home_handle) 
 
