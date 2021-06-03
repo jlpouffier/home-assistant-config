@@ -69,7 +69,7 @@ class wake_up(hass.Hass):
   6:50
   Turn on the fairy lights
   
-  7:00 : Turn on the Spotify Daily
+  7:00 : Turn on the Spotify Daily (And put the volume to 80%)
   '''
   def callback_wake_up(self, kwargs):
     sequence = [
