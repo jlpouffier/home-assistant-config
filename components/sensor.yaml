@@ -3,38 +3,6 @@
   display_options:
     - 'date_time_iso'
 
-# Travel time from Home > Main Site
-# https://www.home-assistant.io/integrations/waze_travel_time/
-- platform: waze_travel_time
-  name: home_to_amadeus
-  origin: !secret coord_home
-  destination: !secret coord_work_amadeus
-  region: 'EU'
-
-# Travel time from Home > Bel Air
-# https://www.home-assistant.io/integrations/waze_travel_time/
-- platform: waze_travel_time
-  name: home_to_ricardo
-  origin: !secret coord_home
-  destination: !secret coord_work_ricardo
-  region: 'EU'
-  
-# Travel time from Main Site > Home
-# https://www.home-assistant.io/integrations/waze_travel_time/
-- platform: waze_travel_time
-  name: amadeus_to_home
-  origin: !secret coord_work_amadeus
-  destination: !secret coord_home
-  region: 'EU'
-
-# Travel time from Bel Air > Home
-# https://www.home-assistant.io/integrations/waze_travel_time/ 
-- platform: waze_travel_time
-  name: ricardo_to_home
-  origin: !secret coord_work_ricardo
-  destination: !secret coord_home
-  region: 'EU'
-
 # System monitoring 
 - platform: systemmonitor
   resources:
@@ -97,5 +65,5 @@
     target_arrival_amadeus_to_home:
         friendly_name: "Arrivé à la maison depuis Amadeus"
         value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.amadeus_to_home') | int) * 60) | timestamp_custom('%H:%M')}}"
-        icon_template: "mdi:home"     
-  
+        icon_template: "mdi:home"  
+        
