@@ -34,43 +34,43 @@ class presence_simulator(hass.Hass):
 
   def callback_wake_up(self, kwargs):
   	self.log("Simulating : Waking up")
-  	#self.call_service("light/turn_on" , entity_id = "light.chambre_principale", brightness_pct = 100)
+  	self.call_service("light/turn_on" , entity_id = "light.chambre_principale", brightness_pct = 100)
   	
 
   def callback_eat_breakfast(self, kwargs):
   	self.log("Simulating : Eating Breakfast")
-  	#self.call_service("light/turn_off" , entity_id = "light.chambre_principale")
-  	#self.call_service("light/turn_on" , entity_id = "light.salon", brightness_pct = 100)
-  	#self.call_service("light/turn_on" , entity_id = "light.cuisine", brightness_pct = 100)
+  	self.call_service("light/turn_off" , entity_id = "light.chambre_principale")
+  	self.call_service("light/turn_on" , entity_id = "light.salon", brightness_pct = 100)
+  	self.call_service("light/turn_on" , entity_id = "light.cuisine", brightness_pct = 100)
   	
 
   def callback_leave(self, kwargs):
   	self.log("Simulating : Leaving home")
-  	#self.call_service("light/turn_off" , entity_id = "light.interior_lights")
-  	#self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
+  	self.call_service("light/turn_off" , entity_id = "light.interior_lights")
+  	self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
 
   	
 
   def callback_return(self, kwargs):
   	self.log("Simulating : Returning home")
-  	#self.call_service("light/turn_on" , entity_id = "light.salon", brightness_pct = 100)
-  	#self.call_service("light/turn_on" , entity_id = "light.cuisine", brightness_pct = 100)
-  	#self.call_service("light/turn_on" , entity_id = "light.terrasse", brightness_pct = 100)
+  	self.call_service("light/turn_on" , entity_id = "light.salon", brightness_pct = 100)
+  	self.call_service("light/turn_on" , entity_id = "light.cuisine", brightness_pct = 100)
+  	self.call_service("light/turn_on" , entity_id = "light.terrasse", brightness_pct = 100)
   	
 
   def callback_go_to_bed(self, kwargs):
   	self.log("Simulating : Going to bed")
-  	#self.call_service("light/turn_off" , entity_id = "light.salon")
-  	#self.call_service("light/turn_off" , entity_id = "light.cuisine")
-  	#self.call_service("light/turn_off" , entity_id = "light.terrasse")
-  	#self.call_service("light/turn_on" , entity_id = "light.chambre_principale", brightness_pct = 100)
-  	
+  	self.call_service("light/turn_off" , entity_id = "light.salon") 
+  	self.call_service("light/turn_off" , entity_id = "light.cuisine")
+  	self.call_service("light/turn_off" , entity_id = "light.terrasse")
+  	self.call_service("light/turn_on" , entity_id = "light.chambre_principale", brightness_pct = 100)
+
 
   def callback_sleep(self, kwargs):
-  	self.log("Simulating : Sleeping")
-  	#self.call_service("light/turn_off" , entity_id = "light.interior_lights")
-  	#self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
-  	
+    self.log("Simulating : Sleeping")
+    self.call_service("light/turn_off" , entity_id = "light.interior_lights")
+    self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
+
 
 
 
