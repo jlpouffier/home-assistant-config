@@ -23,6 +23,13 @@ class wake_up(hass.Hass):
     self.log("Waking-up Automations initialized")
 
 
+  """
+  Callback trigerred every dat at 3am
+  Goals
+  . Check if we are on a work day
+  . Compute the wake-up time based on an home assistant input
+  . Register callbacks to turn on wake-up
+  """
   def callback_schedule_wake_up(self, kwargs):
     # If it' s a workday ...
     if self.get_state("binary_sensor.workday_today") == "on":
@@ -55,23 +62,25 @@ class wake_up(hass.Hass):
           self.log(coffee_maker_turn_on_time)
 
   '''
-  With a wake up time at 6:40:
-
-  6:35
-  Make sure the lights are off on the bedroom
-  Turn on the bloom to 100% in 5 minutes
-  Wait 5 minutes
-
-  6:40
-  Turn on the Ceiling lights to 100% in 5 minutes
-  Wait 10 minutes
-
-  6:50
-  Turn on the fairy lights
-  
-  7:00 : Turn on the Spotify Daily (And put the volume to 80%)
+  Callback trigerred 5 minutes before wake-up time
+  Goals
+  . Light sequence
+  . Register a callback to turn on the Spotify Daily Drive if the kitchen lights are turned on (Auto expire after 2 hours)
   '''
   def callback_wake_up(self, kwargs):
+    '''
+    Light sequence (with a wake up time at 6:40)
+
+    6:35
+    Make sure the lights are off on the bedroom
+    Turn on the bloom to 100% in 5 minutes
+
+    6:40
+    Turn on the Ceiling lights to 100% in 5 minutes
+
+    6:50
+    Turn on the fairy lights
+    '''
     sequence = [
       {"light/turn_off": {
         "entity_id": "light.chambre_principale"}},
@@ -93,19 +102,24 @@ class wake_up(hass.Hass):
     self.log("Wake up automation !")
     self.run_sequence(sequence)
 
-    # If the kitchen ligths are turned on within 2 hours of the wake up, turn on Spotify on the Nest 
+    # If the kitchen ligths are turned on within 2 hours of the wake-up time, turn on Spotify on the Nest 
     self.listen_state(self.callback_start_spotify , "light.cuisine", new = 'on', timeout = 7200, oneshot = True )
 
-  # Turn on Spotify on the Nest 
+  '''
+  Callback trigerred if the kitchen lights are turned on within 2 hours of the wake-up time. 
+  Goals
+  . Stream the Spotify Daily Drive on the Nest Mini in the kitchen (Using custom component spotcast)
+  '''
   def callback_start_spotify(self, entity, attribute, old, new, kwargs):
     self.log("Playing the Spotify Daily Drive on Nest Mini ...")  
     self.call_service("spotcast/start", entity_id = "media_player.nest_mini_cuisine" , uri = "spotify:playlist:37i9dQZF1EfNZRwgHh7bYF")
     self.call_service("media_player/volume_set", entity_id = "media_player.nest_mini_cuisine" , volume_level = 0.6)
 
 
-
   '''
-  Turn on coffee maker
+  Callback trigerred 30 minutes before wake-up time
+  Goals
+  . Turn-on coffee maker (Pre-heating)
   '''
   def callback_turn_on_coffee_maker(self, kwargs):
     self.log("Turning on coffee maker !")

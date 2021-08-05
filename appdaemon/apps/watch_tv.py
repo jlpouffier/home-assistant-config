@@ -59,7 +59,14 @@ class watch_tv(hass.Hass):
       
     self.old_app = current_app
     
+    
+  """
+  Helper method:
+  Does : 
+  . nothing
+  Returns : true if an app is controlling the lightsm false otherwise
 
+  """
   def is_controling_lights(self, old_tv_app, current_tv_app):
     supported_app_ids = [
       "org.xbmc.kodi", 

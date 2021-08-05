@@ -3,7 +3,7 @@ import hassapi as hass
 """
 monitor_home is an app responsible of the monitoring the home 
 
-Goals :
+Functionalities :
 . Turn on and off Google Home based on home occupancy
 
 Notifications :
