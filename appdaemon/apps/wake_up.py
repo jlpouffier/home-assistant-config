@@ -98,8 +98,9 @@ class wake_up(hass.Hass):
 
   # Turn on Spotify on the Nest 
   def callback_start_spotify(self, entity, attribute, old, new, kwargs):
+    self.log("Playing the Spotify Daily Drive on Nest Mini ...")  
     self.call_service("spotcast/start", entity_id = "media_player.nest_mini_cuisine" , uri = "spotify:playlist:37i9dQZF1EfNZRwgHh7bYF")
-    self.call_service("media_player/volume_set", entity_id = "media_player.nest_mini_cuisine" , volume_level = 0.8)
+    self.call_service("media_player/volume_set", entity_id = "media_player.nest_mini_cuisine" , volume_level = 0.6)
 
 
 
