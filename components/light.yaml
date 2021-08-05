@@ -26,6 +26,15 @@
     - light.chambre_suspension_blanche
     - light.chambre_suspension_jaune
 
+# Group composed of all the lights of the living area
+# https://www.home-assistant.io/integrations/light.group/
+- platform: group
+  name: "living_lights"
+  entities:
+    - light.cuisine
+    - light.salon
+    - light.entree
+    
 # Group composed of all the interior lights
 # https://www.home-assistant.io/integrations/light.group/
 - platform: group
@@ -45,4 +54,3 @@
     - light.terrasse
 
 
-      
