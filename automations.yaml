@@ -25,7 +25,7 @@
       entity_id: script.lights_set_livingroom_kitchen_regular
   mode: single
 - id: '1622706310024'
-  alias: Long Press on Entry Switch -> Turn Off Lights
+  alias: Long Press on Entry Switch -> Get Out
   description: ''
   trigger:
   - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
@@ -38,4 +38,37 @@
   - service: script.turn_on
     target:
       entity_id: script.1619802584518
+  mode: single
+- id: '1626873150589'
+  alias: WebCam On > Hue Play On
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.imac_de_jean_loic_active_camera
+    to: Caméra FaceTime HD (intégrée)
+  condition: []
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.hue_play_1
+      - light.hue_play_2
+    data:
+      color_temp: 300
+      brightness_pct: 80
+  mode: single
+- id: '1626873185194'
+  alias: WebCam Off > Hue Play Off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.imac_de_jean_loic_active_camera
+    to: Inactive
+  condition: []
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.hue_play_1
+      - light.hue_play_2
   mode: single
