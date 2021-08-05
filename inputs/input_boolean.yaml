@@ -35,6 +35,11 @@ presence_simulator_switch:
   name: Simuler présence
   icon: mdi:arrow-decision-auto-outline
 
+# Switch to turn on / off smart_climate (AppDemaon)
+smart_climate_switch:
+  name: Climatisation intelligente 
+  icon: mdi:home-thermometer
+
 slack_cube_ota:
   name: Passer le Cube Slack on mode OTA
   icon: mdi:cube

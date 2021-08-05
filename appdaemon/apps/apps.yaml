@@ -40,6 +40,11 @@ presence_simulator:
   class: presence_simulator
   constrain_input_boolean: input_boolean.presence_simulator_switch
 
+smart_climate:
+  module: smart_climate
+  class: smart_climate
+  constrain_input_boolean: input_boolean.smart_climate_switch
+
 
 slack_cube:
   module: slack_cube
