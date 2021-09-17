@@ -26,3 +26,43 @@
         service: light.turn_off
         target:
           entity_id: light.google_home_internal
+          
+    climate_bureau:
+      friendly_name: "Climatisation Bureau"
+      icon_template: "mdi:air-conditioner"
+      value_template: "{{ not is_state('climate.bureau', 'off') }}"
+      turn_on:
+        service: climate.turn_on
+        target:
+          entity_id: climate.bureau
+      turn_off:
+        service: climate.turn_off
+        target:
+          entity_id: climate.bureau
+          
+    climate_chambre:
+      friendly_name: "Climatisation Chambre"
+      icon_template: "mdi:air-conditioner"
+      value_template: "{{ not is_state('climate.chambre', 'off') }}"
+      turn_on:
+        service: climate.turn_on
+        target:
+          entity_id: climate.chambre
+      turn_off:
+        service: climate.turn_off
+        target:
+          entity_id: climate.chambre
+          
+    climate_salon:
+      friendly_name: "Climatisation Salon"
+      icon_template: "mdi:air-conditioner"
+      value_template: "{{ not is_state('climate.salon', 'off') }}"
+      turn_on:
+        service: climate.turn_on
+        target:
+          entity_id: climate.salon
+      turn_off:
+        service: climate.turn_off
+        target:
+          entity_id: climate.salon
+          
