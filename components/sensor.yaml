@@ -67,3 +67,48 @@
         value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.amadeus_to_home') | int) * 60) | timestamp_custom('%H:%M')}}"
         icon_template: "mdi:home"  
         
+        
+# Temperature sensors
+# https://www.home-assistant.io/integrations/template/
+- platform: template
+  sensors:
+    temperature_salon:
+        friendly_name: Température Salon
+        value_template: "{{ state_attr('climate.salon', 'current_temperature') }}"
+        icon_template: "mdi:thermometer"
+        unit_of_measurement: "°C"
+    temperature_bureau:
+        friendly_name: Température Salon
+        value_template: "{{ state_attr('climate.bureau', 'current_temperature') }}"
+        icon_template: "mdi:thermometer"
+        unit_of_measurement: "°C"
+    temperature_chambre:
+        friendly_name: Température Salon
+        value_template: "{{ state_attr('climate.chambre', 'current_temperature') }}"
+        icon_template: "mdi:thermometer"
+        unit_of_measurement: "°C"
+        
+    
+
+# Derivative Temperature sensors
+# https://www.home-assistant.io/integrations/derivative/
+- platform: derivative
+  name: Évolution Température Salon
+  source: sensor.temperature_salon
+  unit_time: h
+  time_window: "00:20:00"
+- platform: derivative
+  name: Évolution Température Chambre
+  source: sensor.temperature_chambre
+  unit_time: h
+  time_window: "00:20:00"
+- platform: derivative
+  name: Évolution Température Bureau
+  source: sensor.temperature_bureau
+  unit_time: h
+  time_window: "00:20:00"
+  
+  
+
+
+
