@@ -88,6 +88,8 @@ lights_set_tv_paused:
       entity_id:
       - light.exterior_lights
       - light.interior_lights
+      - light.guinguette
+      - light.chambre_guirlande
   - service: media_player.turn_off
     target:
       entity_id: media_player.philips_android_tv
@@ -95,6 +97,5 @@ lights_set_tv_paused:
     target:
       entity_id:
       - switch.coffee_maker
-      - switch.google_home
   mode: single
   icon: mdi:home-import-outline
