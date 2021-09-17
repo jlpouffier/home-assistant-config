@@ -49,7 +49,10 @@ class welcome_home(hass.Hass):
       {"light/turn_on": {
         "entity_id": "light.cuisine",
         "transition": 3,
-        "brightness_pct": 100 }}
+        "brightness_pct": 100 }},
+      {"sleep": 3},
+      {"light/turn_on": {
+        "entity_id": "light.guinguette"}}
     ]
     self.log("Welcome home : turning on lights. (This automation won't be run until tomorrow 4pm the soonest)")
     # ... Turn lights on ...
