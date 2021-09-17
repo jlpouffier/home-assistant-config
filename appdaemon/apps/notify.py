@@ -107,7 +107,7 @@ class notify(hass.Hass):
       message = "Spiroo démarrera son nettoyage dans 30 minutes", 
       action_callback="cancel_planned_clean_house",
       action_title="Annuler le nettoyage",
-      clickURL="/lovelace/bureau",
+      clickURL="/lovelace/spiroo",
       timeout = 1800)
 
   """
@@ -121,7 +121,7 @@ class notify(hass.Hass):
       message = "Spiroo démarre son nettoyage", 
       action_callback="rth_spiroo",
       action_title="Arrêter Spiroo",
-      clickURL="/lovelace/bureau")
+      clickURL="/lovelace/spiroo")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_finished" is received
@@ -135,7 +135,7 @@ class notify(hass.Hass):
       title = "✅ Nettoyage terminé",
       message = "Surface nettoyée: " + area_cleaned + "m2",
       image = cleaned_map,
-      clickURL = "/lovelace/bureau")
+      clickURL = "/lovelace/spiroo")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_error" is received
@@ -149,7 +149,7 @@ class notify(hass.Hass):
       title = "⚠️ Spiroo est en erreur",
       message = status,
       image = current_location,
-      clickURL = "/lovelace/bureau")
+      clickURL = "/lovelace/spiroo")
 
   """
   Callback triggered when event NOTIFY with payload "cleaning_idle" is received
@@ -160,7 +160,7 @@ class notify(hass.Hass):
     self.send_actionable_notification(
       title = "⚠️ Spiroo se décharge",
       message = "Je detecte que Spiroo n'est plus sur sa base depuis plus de 30 minutes",
-      clickURL = "/lovelace/bureau")
+      clickURL = "/lovelace/spiroo")
 
   """
   Callback triggered when event NOTIFY with payload "lights_still_on" is received
