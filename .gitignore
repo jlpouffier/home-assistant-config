@@ -8,6 +8,7 @@ OpenZWave/
 *.db
 *.sqlite
 *.log
+*.log.*
 OZW_Log.txt
 .spotify-token-cache
 secrets.yaml
