@@ -313,7 +313,7 @@ class notify(hass.Hass):
       notification_data["timeout"] = timeout
     if clickURL:
       notification_data["clickAction"] = clickURL
-    self.call_service("notify/mobile_app_oneplus_a6013", title = title, message = message, data = notification_data)
+    self.call_service("notify/mobile_app_pixel_6", title = title, message = message, data = notification_data)
 
 
   """
