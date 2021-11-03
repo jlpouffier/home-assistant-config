@@ -17,6 +17,7 @@ from .const import (
     CONF_SPOTIFY_ACCOUNT,
     CONF_SPOTIFY_DEVICE_ID,
     CONF_SPOTIFY_URI,
+    CONF_SPOTIFY_SEARCH,
     CONF_START_VOL,
     DOMAIN,
     SCHEMA_PLAYLISTS,
@@ -41,6 +42,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def setup(hass, config):
+    
+    # get spotify core integration status
+    if not helpers.get_spotify_install_status(hass):
+        _LOGGER.error("Spotify integration was not found, aborting setup...")
+        return False
+    
     """Setup the Spotcast service."""
     conf = config[DOMAIN]
 
@@ -49,6 +56,10 @@ def setup(hass, config):
     accounts = conf.get(CONF_ACCOUNTS)
 
     spotcast_controller = SpotcastController(hass, sp_dc, sp_key, accounts)
+
+    if DOMAIN not in hass.data:
+        hass.data[DOMAIN] = {}
+    hass.data[DOMAIN]["controller"] = spotcast_controller
 
     @callback
     def websocket_handle_playlists(hass, connection, msg):
@@ -124,6 +135,7 @@ def setup(hass, config):
     def start_casting(call):
         """service called."""
         uri = call.data.get(CONF_SPOTIFY_URI)
+        search = call.data.get(CONF_SPOTIFY_SEARCH)
         random_song = call.data.get(CONF_RANDOM, False)
         repeat = call.data.get(CONF_REPEAT, False)
         shuffle = call.data.get(CONF_SHUFFLE, False)
@@ -144,7 +156,7 @@ def setup(hass, config):
                 account, spotify_device_id, device_name, entity_id
             )
 
-        if uri is None or uri.strip() == "":
+        if (uri is None or uri.strip() == "") and (search is None or search.strip() == ""):
             _LOGGER.debug("Transfering playback")
             current_playback = client.current_playback()
             if current_playback is not None:
@@ -155,6 +167,11 @@ def setup(hass, config):
                 device_id=spotify_device_id, force_play=force_playback
             )
         else:
+
+            if uri is None or uri.strip() == "":
+                # get uri from search request
+                uri = helpers.get_search_results(search, client)
+
             spotcast_controller.play(
                 client,
                 spotify_device_id,
