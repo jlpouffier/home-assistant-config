@@ -8,7 +8,6 @@ Functionality :
 . Only turn on if it's a work day (Week-end and French holidays supported)
 . Progressively turn on lights before and after alarm
 . Turn on the coffee maker 30 minutes before waking up
-. Play the "Spotify Daily" as soon if we are awake (Kitchen lights on)
 """
 class wake_up(hass.Hass):
   def initialize(self):
@@ -101,20 +100,6 @@ class wake_up(hass.Hass):
 
     self.log("Wake up automation !")
     self.run_sequence(sequence)
-
-    # If the kitchen ligths are turned on within 2 hours of the wake-up time, turn on Spotify on the Nest 
-    self.listen_state(self.callback_start_spotify , "light.cuisine", new = 'on', timeout = 7200, oneshot = True )
-
-  '''
-  Callback trigerred if the kitchen lights are turned on within 2 hours of the wake-up time. 
-  Goals
-  . Stream the Spotify Daily Drive on the Nest Mini in the kitchen (Using custom component spotcast)
-  '''
-  def callback_start_spotify(self, entity, attribute, old, new, kwargs):
-    self.log("Playing the Spotify Daily Drive on Nest Mini ...")  
-    self.call_service("spotcast/start", entity_id = "media_player.nest_mini_cuisine" , uri = "spotify:playlist:37i9dQZF1EfNZRwgHh7bYF")
-    self.call_service("media_player/volume_set", entity_id = "media_player.nest_mini_cuisine" , volume_level = 0.6)
-
 
   '''
   Callback trigerred 30 minutes before wake-up time
