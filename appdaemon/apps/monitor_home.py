@@ -86,25 +86,28 @@ class monitor_home(hass.Hass):
   . Play the "Dog mode" playlist on Spotify
   """     
   def callback_dog_mode_on(self, entity, attribute, old, new, kwargs):
-    self.log("Turning on dog mode ...")
-
     # Turn off all lights
     self.call_service("script/1619802584518")
 
-    #Turn on living room and kitchen
-    self.call_service("light/turn_on", entity_id = "light.cuisine", brightness_pct = 1)
-    self.call_service("light/turn_on", entity_id = "light.salon", brightness_pct = 1)
+    sequence = [
+      {"sleep": 5},
+      {"light/turn_on": {
+        "entity_id": "light.cuisine",
+        "brightness_pct": 1}},
+      {"light/turn_on": {
+        "entity_id": "light.salon",
+        "brightness_pct": 1}},
+      {"sleep": 2},
+      {"spotcast/start": {
+        "entity_id": "media_player.nest_mini_cuisine",
+        "uri": "spotify:playlist:5eR0Js0wFpA9X9hkGMv7uq",
+        "shuffle" : True,
+        "random_song" : True,
+        "start_volume" : 35}}
+    ]
 
-    # Start playback
-    try:
-      self.call_service("spotcast/start", 
-        entity_id = "media_player.nest_mini_cuisine", 
-        uri = "spotify:playlist:5eR0Js0wFpA9X9hkGMv7uq",
-        shuffle = True,
-        random_song = True,
-        start_volume = 35)
-    except:
-      pass
+    self.log("Turning on dog mode ...")
+    self.run_sequence(sequence)
 
   """
   Callback triggered when Dog Mode is deactivated
