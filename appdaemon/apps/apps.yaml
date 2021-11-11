@@ -35,6 +35,10 @@ monitor_home:
   class: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
 
+dog_mode:
+  module: dog_mode
+  class: dog_mode
+
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
