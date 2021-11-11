@@ -114,14 +114,7 @@ class dog_mode(hass.Hass):
   """  
   def callback_sunrise(self, entity, attribute, old, new, kwargs):
     if self.get_state("light.cuisine") == "on" or self.get_state("light.salon") == "on":
-      sequence = [
-        {"light/turn_on": {
-          "entity_id": "light.cuisine",
-          "brightness_pct": 1}},
-        {"light/turn_on": {
-          "entity_id": "light.salon",
-          "brightness_pct": 1}}]
-
+      
       self.log("Dog is on house, sun is up : Turning lights off ...")
       self.call_service("light/turn_off" , entity_id = "light.cuisine")
       self.call_service("light/turn_off" , entity_id = "light.salon")
