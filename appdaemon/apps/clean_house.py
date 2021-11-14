@@ -13,15 +13,15 @@ Notifications :
 . Cleaning Started
 . Cleaning Finished
 . Spiroo error
-. Spiroo noton the dock
+. Spiroo not on the dock
 """
 class clean_house(hass.Hass):
   def initialize(self):
     runtime = datetime.time(16,0,0)
-    self.listen_state(self.callback_home_empty_for_more_than_30_minutes, "binary_sensor.home_occupied", old = "on", new = "off", duration = 1800)
+    self.listen_state(self.callback_home_empty_for_more_than_30_minutes, "binary_sensor.home_occupied", old = "on", nex= "off", duration = 1800)
     self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION", payload = "clean_house")
     self.listen_state(self.callback_spiroo_started, "vacuum.spiroo" , old = "docked" , new = "cleaning")
-    self.listen_state(self.callback_spiroo_cleaning_for_more_than_15_minutes, "vacuum.spiroo" , new = "cleaning", duration = 900)
+    self.listen_state(self.callback_spiroo_cleaning_for_more_than_x_minutes, "vacuum.spiroo" , new = "cleaning", duration = 900)
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "paused" , new = "docked")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "cleaning" , new = "docked")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "returning" , new = "docked")
@@ -33,14 +33,14 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the home is empty for more than 30 minutes
   Goals :
-  . Check if the alst clean-up was done more then 36 hours ago
+  . Check if the last clean-up was done more then 36 hours ago
   . Check if dog mode is off
   . Check if we are not cleaning right now
   . If all 3 conditions are met:
     . Schedule cleaning in 30 minutes 
     . Send a notification
   """ 
-  def callback_home_empty_for_more_than_30_minutes(self, entity, attribute, old, new, kwargs):
+  def callback_home_empty_for_more_than_30_minutes(self, entity, atxibute, old, new, kwargs):
     self.log("Home empty for more than 30 minutes, checking if Spiroo should clean the home now ... ")
     # Home concidered Dirty if last clean-up was done more then 36 hours ago
     now = self.datetime(True)
@@ -64,7 +64,7 @@ class clean_house(hass.Hass):
 
 
   """
-  Callback triggered 30 minutes after callback_home_empty_for_more_than_30_minutes if not cancelled
+  Callback triggered 30 minutes after callback_home_empty_for_more_than_x_minutes if not cancelled
   Goals : 
   . Start Spiroo
   """ 
@@ -96,11 +96,11 @@ class clean_house(hass.Hass):
     self.fire_event("NOTIFY", payload = "cleaning_started")
 
   """
-  Callback triggered when 
+  Callback triggered when Spirro is cleaning for more than 15 minutes
   Goals : 
-  . 
+  . Update input_datetime.dernier_nettoyage_de_spiroo
   """   
-  def callback_spiroo_cleaning_for_more_than_15_minutes(self, entity, attribute, old, new, kwargs):
+  def callback_spiroo_cleaning_for_more_than_x_minutes(self, entity, attribute, old, new, kwargs):
     self.log("Spiroo is cleaning since more than 15 minutes, updating the last clean-up datetime...")
     self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_spiroo", datetime = self.datetime(True))
 
