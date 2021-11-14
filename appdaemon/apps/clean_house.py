@@ -31,9 +31,14 @@ class clean_house(hass.Hass):
     self.log("House cleaning Automation initialized")
 
   """
-  Callback triggered when
+  Callback triggered when the home is empty for more than 30 minutes
   Goals :
-  . 
+  . Check if the alst clean-up was done more then 36 hours ago
+  . Check if dog mode is off
+  . Check if we are not cleaning right now
+  . If all 3 conditions are met:
+    . Schedule cleaning in 30 minutes 
+    . Send a notification
   """ 
   def callback_home_empty_for_more_than_30_minutes(self, entity, attribute, old, new, kwargs):
     self.log("Home empty for more than 30 minutes, checking if Spiroo should clean the home now ... ")
@@ -59,7 +64,7 @@ class clean_house(hass.Hass):
 
 
   """
-  Callback triggered 30 minutes after callback_pre_cleaning if not cancelled
+  Callback triggered 30 minutes after callback_home_empty_for_more_than_30_minutes if not cancelled
   Goals : 
   . Start Spiroo
   """ 
