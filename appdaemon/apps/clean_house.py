@@ -18,9 +18,10 @@ Notifications :
 class clean_house(hass.Hass):
   def initialize(self):
     runtime = datetime.time(16,0,0)
-    self.run_daily(self.callback_pre_cleaning, runtime)
+    self.listen_state(self.callback_home_empty_for_more_than_30_minutes, "binary_sensor.home_occupied", old = "on", new = "off", duration = 1800)
     self.listen_event(self.callback_cancel_cleaning , "CANCEL_AUTOMATION", payload = "clean_house")
-    self.listen_state(self.callback_spiroo_stated, "vacuum.spiroo" , old = "docked" , new = "cleaning")
+    self.listen_state(self.callback_spiroo_started, "vacuum.spiroo" , old = "docked" , new = "cleaning")
+    self.listen_state(self.callback_spiroo_cleaning_for_more_than_15_minutes, "vacuum.spiroo" , new = "cleaning", duration = 900)
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "paused" , new = "docked")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "cleaning" , new = "docked")
     self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "returning" , new = "docked")
@@ -29,29 +30,32 @@ class clean_house(hass.Hass):
 
     self.log("House cleaning Automation initialized")
 
- 
   """
-  Callback triggered everyday at 16:00. A test will be made to check if 
-    we are on a working day (binary_sensor.workday_today) 
-    we are not, right now, in cleaning state
-    the home is not occupied
-    the last cleaning happend more than 36 hours ago
+  Callback triggered when
   Goals :
-  . Schedule cleaning in 30 minutes
-  . Send a notification
+  . 
   """ 
-  def callback_pre_cleaning(self, kwargs):
-    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("vacuum.spiroo") != "cleaning" and self.get_state("binary_sensor.home_occupied") == "off": 
-      last_cleaning = self.convert_utc(self.get_state("vacuum.spiroo", attribute="clean_start"))
-      now = datetime.datetime.now(datetime.timezone.utc)
-      diff = now - last_cleaning
-      if diff > datetime.timedelta(hours = 36):
-        self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Notify")
-        delay = 1800
-        # Schedule cleaning in 30 minutes via callback callback_cleaning
-        self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
-        # Fire even NOTIFY with payload cleaning_scheduled. See app "Notify" that will receive it
-        self.fire_event("NOTIFY", payload = "cleaning_scheduled")
+  def callback_home_empty_for_more_than_30_minutes(self, entity, attribute, old, new, kwargs):
+    self.log("Home empty for more than 30 minutes, checking if Spiroo should clean the home now ... ")
+    # Home concidered Dirty if last clean-up was done more then 36 hours ago
+    now = self.datetime(True)
+    last_cleaning = self.parse_datetime(self.get_state("input_datetime.dernier_nettoyage_de_spiroo"), aware = True) 
+    diff = now - last_cleaning
+    is_home_dirty = True if diff > datetime.timedelta(hours = 36) else False
+
+    # Getting Dog mode status
+    is_dog_mode = True if self.get_state("input_boolean.dog_mode") == "on" else False
+
+    # Are we cleaning right now ?
+    is_cleaning_right_now = True if self.get_state("vacuum.spiroo") == "cleaning" else False
+
+    if is_home_dirty and not is_dog_mode and not is_cleaning_right_now:
+      self.log("House cleaning will start in 30 minutes. Sending event for potential cancel by Notify")
+      delay = 1800
+      # Schedule cleaning in 30 minutes via callback callback_cleaning
+      self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
+      # Fire even NOTIFY with payload cleaning_scheduled. See app "Notify" that will receive it
+      self.fire_event("NOTIFY", payload = "cleaning_scheduled")
 
 
   """
@@ -82,9 +86,18 @@ class clean_house(hass.Hass):
   Goals : 
   . Send a notification
   """   
-  def callback_spiroo_stated(self, entity, attribute, old, new, kwargs):
+  def callback_spiroo_started(self, entity, attribute, old, new, kwargs):
     self.log("Detecting that Spiroo is starting. Notifying it...")
     self.fire_event("NOTIFY", payload = "cleaning_started")
+
+  """
+  Callback triggered when 
+  Goals : 
+  . 
+  """   
+  def callback_spiroo_cleaning_for_more_than_15_minutes(self, entity, attribute, old, new, kwargs):
+    self.log("Spiroo is cleaning since more than 15 minutes, updating the last clean-up datetime...")
+    self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_spiroo", datetime = self.datetime(True))
 
   """
   Callback triggered when Spiroo is finished
