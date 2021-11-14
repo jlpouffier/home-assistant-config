@@ -20,11 +20,6 @@
 # https://www.home-assistant.io/integrations/template/
 - platform: template
   sensors:
-      # time stamp of the last cleaning start
-      spiroo_last_cleaning_start_ts:
-          value_template: "{{as_timestamp(state_attr('vacuum.spiroo' , 'clean_start'))| timestamp_custom('%d/%m/%Y')}}"
-          icon_template: "mdi:calendar"
-
       # Last cleaned area (m2)
       spiroo_last_cleaning_area:
           value_template: "{{state_attr('vacuum.spiroo' , 'clean_area') | round(0) }}"
