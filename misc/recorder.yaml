@@ -11,7 +11,9 @@ include:
       - device_tracker
       - person
       - climate
-       
+      - media_player
+      - input_boolean
+
 exclude:
     entities:
       - sensor.date_time_iso
