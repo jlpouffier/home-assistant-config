@@ -48,8 +48,3 @@ smart_climate:
   module: smart_climate
   class: smart_climate
   constrain_input_boolean: input_boolean.smart_climate_switch
-
-
-slack_cube:
-  module: slack_cube
-  class: slack_cube
