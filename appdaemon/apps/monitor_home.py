@@ -19,7 +19,7 @@ class monitor_home(hass.Hass):
   def initialize(self):
     self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" , old = "on" , new = "off")
     self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
-    self.listen_state(self.callback_coffee_maker_on_since_too_long , "switch.coffee_maker" , new = "on", duration = 5400)
+    self.listen_state(self.callback_coffee_maker_on_since_too_long , "switch.coffeemaker" , new = "on", duration = 5400)
     
     self.log("Monitor Home initialized")
 
@@ -53,7 +53,7 @@ class monitor_home(hass.Hass):
       self.fire_event("NOTIFY", payload = "climate_still_on")
 
     # test is coffe maker still on
-    if self.get_state("switch.coffee_maker") == "on":
+    if self.get_state("switch.coffeemaker") == "on":
       self.log("Detecting home empty and coffee maker on. Notifying it...")
       self.fire_event("NOTIFY", payload = "coffee_maker_still_on")
 

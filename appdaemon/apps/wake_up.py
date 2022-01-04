@@ -108,4 +108,4 @@ class wake_up(hass.Hass):
   '''
   def callback_turn_on_coffee_maker(self, kwargs):
     self.log("Turning on coffee maker !")
-    self.call_service("switch/turn_on" , entity_id = "switch.coffee_maker")
+    self.call_service("switch/turn_on" , entity_id = "switch.coffeemaker")

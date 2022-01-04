@@ -86,16 +86,13 @@ lights_set_tv_paused:
   - service: light.turn_off
     target:
       entity_id:
-      - light.exterior_lights
-      - light.interior_lights
-      - light.guinguette
-      - light.chambre_guirlande
+      - light.all_lights
   - service: media_player.turn_off
     target:
       entity_id: media_player.philips_android_tv
   - service: switch.turn_off
     target:
       entity_id:
-      - switch.coffee_maker
+      - switch.coffeemaker
   mode: single
   icon: mdi:home-import-outline

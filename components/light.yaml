@@ -53,4 +53,10 @@
   entities:
     - light.terrasse
 
-
+# Group composed of all the lights
+# https://www.home-assistant.io/integrations/light.group/
+- platform: group
+  name: "all_lights"
+  entities:
+    - light.interior_lights
+    - light.exterior_lights

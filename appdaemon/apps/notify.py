@@ -279,7 +279,7 @@ class notify(hass.Hass):
   """
   def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off coffee maker")
-    self.call_service("switch/turn_off" , entity_id = "switch.coffee_maker")
+    self.call_service("switch/turn_off" , entity_id = "switch.coffeemaker")
 
 
   """
