@@ -1,0 +1,13 @@
+distance_jl_home:
+    zone: home
+    devices:
+        - person.jenova70
+    tolerance: 50
+    unit_of_measurement: km
+
+distance_valentine_home:
+    zone: home
+    devices:
+        - person.valentine
+    tolerance: 50
+    unit_of_measurement: km

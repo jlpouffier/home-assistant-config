@@ -16,6 +16,7 @@ climate: !include components/climate.yaml
 rest_command: !include components/rest_command.yaml
 switch: !include components/switch.yaml
 spotcast: !include components/spotcast.yaml
+proximity: !include components/proximity.yaml
 
 
 # INPUTS
