@@ -47,19 +47,47 @@
   sensors:
     target_arrival_home_to_ricardo:
         friendly_name: "Arrivé à Ricardo depuis la maison"
-        value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.home_to_ricardo') | int) * 60) | timestamp_custom('%H:%M')}}"
+        value_template: >-
+            {% if states('sensor.home_to_ricardo') != 'unknown' %}
+            {% set time = states('sensor.home_to_ricardo') | int * 60 %}
+            {% else %}
+            {% set time = 0 %}
+            {% endif %}
+            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
+            {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:briefcase-outline"
     target_arrival_home_to_amadeus:
         friendly_name: "Arrivé à Amadeus depuis la maison"
-        value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.home_to_amadeus') | int) * 60) | timestamp_custom('%H:%M')}}"
+        value_template: >-
+            {% if states('sensor.home_to_amadeus') != 'unknown' %}
+            {% set time = states('sensor.home_to_amadeus') | int * 60 %}
+            {% else %}
+            {% set time = 0 %}
+            {% endif %}
+            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
+            {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:briefcase"
     target_arrival_ricardo_to_home:
         friendly_name: "Arrivé à la maison depuis Ricardo"
-        value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.ricardo_to_home') | int) * 60) | timestamp_custom('%H:%M')}}"
+        value_template: >-
+            {% if states('sensor.ricardo_to_home') != 'unknown' %}
+            {% set time = states('sensor.ricardo_to_home') | int * 60 %}
+            {% else %}
+            {% set time = 0 %}
+            {% endif %}
+            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
+            {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:home-outline"
     target_arrival_amadeus_to_home:
         friendly_name: "Arrivé à la maison depuis Amadeus"
-        value_template: "{{(as_timestamp(states('sensor.date_time_iso')) | int + (states('sensor.amadeus_to_home') | int) * 60) | timestamp_custom('%H:%M')}}"
+        value_template: >-
+            {% if states('sensor.amadeus_to_home') != 'unknown' %}
+            {% set time = states('sensor.amadeus_to_home') | int * 60 %}
+            {% else %}
+            {% set time = 0 %}
+            {% endif %}
+            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
+            {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:home"  
         
         
@@ -73,36 +101,30 @@
         icon_template: "mdi:thermometer"
         unit_of_measurement: "°C"
     temperature_bureau:
-        friendly_name: Température Salon
+        friendly_name: Température Bureau
         value_template: "{{ state_attr('climate.bureau', 'current_temperature') }}"
         icon_template: "mdi:thermometer"
         unit_of_measurement: "°C"
     temperature_chambre:
-        friendly_name: Température Salon
+        friendly_name: Température Chambre
         value_template: "{{ state_attr('climate.chambre', 'current_temperature') }}"
         icon_template: "mdi:thermometer"
         unit_of_measurement: "°C"
-        
-    
-
-# Derivative Temperature sensors
-# https://www.home-assistant.io/integrations/derivative/
-- platform: derivative
-  name: Évolution Température Salon
-  source: sensor.temperature_salon
-  unit_time: h
-  time_window: "00:20:00"
-- platform: derivative
-  name: Évolution Température Chambre
-  source: sensor.temperature_chambre
-  unit_time: h
-  time_window: "00:20:00"
-- platform: derivative
-  name: Évolution Température Bureau
-  source: sensor.temperature_bureau
-  unit_time: h
-  time_window: "00:20:00"
-  
+    humidity_salon:
+        friendly_name: Humidité Salon
+        value_template: "{{ state_attr('climate.salon', 'current_humidity') }}"
+        icon_template: "mdi:water-percent"
+        unit_of_measurement: "%"
+    humidity_bureau:
+        friendly_name: Humidité Bureau
+        value_template: "{{ state_attr('climate.bureau', 'current_humidity') }}"
+        icon_template: "mdi:water-percent"
+        unit_of_measurement: "%"
+    humidity_chambre:
+        friendly_name: Humidité Chambre
+        value_template: "{{ state_attr('climate.chambre', 'current_humidity') }}"
+        icon_template: "mdi:water-percent"
+        unit_of_measurement: "%"        
   
 
 
