@@ -16,8 +16,9 @@
   - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
     domain: hue
     platform: device
-    type: remote_button_long_release
-    subtype: turn_on
+    type: repeat
+    subtype: 1
+    unique_id: 88c6f5c9-d652-4bf8-ba4d-1502d403814d
   condition: []
   action:
   - service: script.turn_on
@@ -31,8 +32,9 @@
   - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
     domain: hue
     platform: device
-    type: remote_button_long_release
-    subtype: turn_off
+    type: repeat
+    subtype: 4
+    unique_id: 4b685eee-4bfb-484d-8e84-fbd7cc33bfa0
   condition: []
   action:
   - service: script.turn_on
