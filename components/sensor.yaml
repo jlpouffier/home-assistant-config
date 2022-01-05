@@ -56,17 +56,6 @@
             {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
             {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:briefcase-outline"
-    target_arrival_home_to_amadeus:
-        friendly_name: "Arrivé à Amadeus depuis la maison"
-        value_template: >-
-            {% if states('sensor.home_to_amadeus') != 'unknown' %}
-            {% set time = states('sensor.home_to_amadeus') | int * 60 %}
-            {% else %}
-            {% set time = 0 %}
-            {% endif %}
-            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
-            {{(now + time) | timestamp_custom('%H:%M') }}
-        icon_template: "mdi:briefcase"
     target_arrival_ricardo_to_home:
         friendly_name: "Arrivé à la maison depuis Ricardo"
         value_template: >-
@@ -78,17 +67,6 @@
             {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
             {{(now + time) | timestamp_custom('%H:%M') }}
         icon_template: "mdi:home-outline"
-    target_arrival_amadeus_to_home:
-        friendly_name: "Arrivé à la maison depuis Amadeus"
-        value_template: >-
-            {% if states('sensor.amadeus_to_home') != 'unknown' %}
-            {% set time = states('sensor.amadeus_to_home') | int * 60 %}
-            {% else %}
-            {% set time = 0 %}
-            {% endif %}
-            {% set now = as_timestamp(states('sensor.date_time_iso'),0) | int %}
-            {{(now + time) | timestamp_custom('%H:%M') }}
-        icon_template: "mdi:home"  
         
         
 # Temperature sensors
