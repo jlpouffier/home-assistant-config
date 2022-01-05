@@ -63,16 +63,24 @@ class monitor_home(hass.Hass):
   Goals :
   . Turn on Google home (If turned of)
   . Stop Dog mode (If turned on)
+  . Stop Spiroo if spirroo is on
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
+    self.log("Detecting home occupied...")
     if self.get_state("switch.google_home") == "off":
       # home occupied >> starting google home
-      self.log("Detecting home occupied... Starting Google Home")
+      self.log("Starting Google Home")
       self.call_service("switch/turn_on" , entity_id = "switch.google_home")
 
     if self.get_state("input_boolean.dog_mode") == "on":
       # Stopping Dog Mode
+      self.log("Stopping Dog Mode")
       self.call_service("input_boolean/toggle", entity_id = "input_boolean.dog_mode")
+
+    if self.get_state("vacuum.spiroo") == 'cleaning':
+      # Stopping Spiroo
+      self.log("RTH Spirro") 
+      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.spiroo")
 
   """
   Callback triggered when coffee maker on for more than 90 minutes
