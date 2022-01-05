@@ -40,7 +40,7 @@ class clean_house(hass.Hass):
     . Schedule cleaning in 30 minutes 
     . Send a notification
   """ 
-  def callback_home_empty_for_more_than_30_minutes(self, entity, atxibute, old, new, kwargs):
+  def callback_home_empty_for_more_than_30_minutes(self, entity, attribute, old, new, kwargs):
     self.log("Home empty for more than 30 minutes, checking if Spiroo should clean the home now ... ")
     # Home concidered Dirty if last clean-up was done more then 36 hours ago
     now = self.datetime(True)
