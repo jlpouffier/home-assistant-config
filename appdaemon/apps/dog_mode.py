@@ -36,6 +36,7 @@ class dog_mode(hass.Hass):
     # Turn on living room and Kitchen at 1% (If the sun us down)
     if self.get_state("sun.sun") == "below_horizon":
       sequence.extend([
+        {"sleep": 5},
         {"light/turn_on": {
           "entity_id": "light.cuisine",
           "brightness_pct": 1}},
@@ -45,6 +46,7 @@ class dog_mode(hass.Hass):
 
     # Play the "Dog mode" playlist on Spotify
     sequence.extend([
+      {"sleep": 5},
       {"spotcast/start": {
         "entity_id": "media_player.nest_mini_cuisine",
         "uri": "spotify:playlist:5eR0Js0wFpA9X9hkGMv7uq",
