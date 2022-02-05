@@ -24,3 +24,8 @@ appdaemon:
     HASS:
       type: hass
       ha_url: http://hassio/homeassistant
+      
+http:
+    url: http://192.168.1.102:5050
+
+admin:
