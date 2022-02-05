@@ -14,7 +14,8 @@ class wake_up(hass.Hass):
     # Run every day at 3 am the preparation of the wake-up
     runtime = datetime.time(3,0,0)
     self.run_daily(self.callback_schedule_wake_up, runtime)
-    
+    self.listen_state(self.callback_jl_phone_alarm_changed, "sensor.pixel6_prochaine_alarme")
+
     # Fallback if the app starts after 3am and before the wakeup time...
     if self.now_is_between("03:00:00" , self.get_state("input_datetime.wake_up_time")):
       self.run_in(self.callback_schedule_wake_up, 0)
@@ -109,3 +110,15 @@ class wake_up(hass.Hass):
   def callback_turn_on_coffee_maker(self, kwargs):
     self.log("Turning on coffee maker !")
     self.call_service("switch/turn_on" , entity_id = "switch.coffeemaker")
+
+  def callback_jl_phone_alarm_changed(self, entity, attribute, old, new, kwargs):
+    if new != "unavailable":
+      jl_home_alarm_time = (self.convert_utc(new) + datetime.timedelta(minutes = self.get_tz_offset())).time()
+      current_wake_up_time = self.parse_time(self.get_state("input_datetime.wake_up_time"))
+      if jl_home_alarm_time != current_wake_up_time:
+        # Current Wake-up time and Phone Alarm time are different : Notifying it
+        self.log("Phone alarmed different than Wake-up time. Notifying")
+        self.fire_event("NOTIFY", payload = "jl_phone_alarm_changed")
+
+        
+

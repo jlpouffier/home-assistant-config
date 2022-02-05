@@ -54,6 +54,9 @@ class notify(hass.Hass):
     self.listen_event(self.callback_notify_coffee_maker_still_on , "NOTIFY", payload = "coffee_maker_still_on")
     self.listen_event(self.callback_notify_coffee_maker_on_since_too_long , "NOTIFY", payload = "coffee_maker_on_since_too_long")
 
+    # NOTIFY events from wake_up
+    self.listen_event(self.callback_notify_jl_phone_alarm_changed , "NOTIFY", payload = "jl_phone_alarm_changed")
+
     # Button clicked events
     self.listen_event(self.callback_button_clicked_rth_spiroo, "mobile_app_notification_action", action = "rth_spiroo")
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
@@ -61,6 +64,7 @@ class notify(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_climate, "mobile_app_notification_action", action = "turn_off_climate")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
+    self.listen_event(self.callback_button_clicked_set_new_wake_up_time, "mobile_app_notification_action", action = "set_new_wake_up_time")
 
     # Samba back-up daily check
     runtime = datetime.time(10,0,0)
@@ -227,6 +231,21 @@ class notify(hass.Hass):
       action_title="Éteindre la machine a café",
       clickURL="/lovelace/salon")
 
+
+  """
+  Callback triggered when TODO
+  Goals :
+  . TODO
+  """
+  def callback_notify_jl_phone_alarm_changed(self, event_name, data, kwargs):
+    new_time = self.get_state('sensor.pixel6_prochaine_alarme')
+    new_time = (self.convert_utc(new_time) + datetime.timedelta(minutes = self.get_tz_offset())).time()
+    self.send_actionable_notification(
+      title = "⏰ Reveil réglé pour " + str(new_time), 
+      message = "Utiliser pour le reveil inteligent ?", 
+      action_callback="set_new_wake_up_time",
+      action_title="OUI")
+
   """
   Callback triggered when button "" is clicked from a notification
   Goals :
@@ -290,6 +309,17 @@ class notify(hass.Hass):
   def callback_button_clicked_cancel_planned_clean_house(self, event_name, data, kwargs):
     self.log("Notification button clicked : canceling scheduled cleaning") 
     self.fire_event("CANCEL_AUTOMATION", payload = "clean_house")
+
+  """
+  Callback triggered when TODO
+  Goals :
+  . TODO
+  """
+  def callback_button_clicked_set_new_wake_up_time(self, event_name, data, kwargs):
+    new_time = self.get_state('sensor.pixel6_prochaine_alarme')
+    new_time = (self.convert_utc(new_time) + datetime.timedelta(minutes = self.get_tz_offset())).time()
+    self.log("Notification button clicked : Setting wake_up_time to JL's phone alarm time ... ") 
+    self.call_service("input_datetime/set_datetime", entity_id = 'input_datetime.wake_up_time', time = new_time)
 
   """
   Helper method:
