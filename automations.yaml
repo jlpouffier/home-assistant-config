@@ -74,3 +74,18 @@
       - light.hue_play_1
       - light.hue_play_2
   mode: single
+- id: '1642490367044'
+  alias: Éteindre la fleche au démarrage
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition:
+  - condition: state
+    entity_id: light.wled_work_arrow
+    state: 'on'
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.wled_work_arrow
+  mode: single
