@@ -5,6 +5,7 @@ monitor_home is an app responsible of the monitoring the home
 
 Functionalities :
 . Turn on and off Google Home based on home occupancy (If Dog Mode is off)
+. RTH Spirro if home becomes occupied
 
 Notifications :
 . Home empty and Lights on (If Dog Mode is off)
