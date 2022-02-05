@@ -69,9 +69,12 @@ class clean_house(hass.Hass):
   . Start Spiroo
   """ 
   def callback_cleaning(self, kwargs):
-    self.log("House cleaning will start now")
-    # Start Spiroo
-    self.call_service("vacuum/start" , entity_id = "vacuum.spiroo")
+    if self.get_state("binary_sensor.home_occupied") == 'on':
+      self.log("House cleaning canceled : Home occupied")
+    else:
+      self.log("House cleaning will start now")
+      # Start Spiroo
+      self.call_service("vacuum/start" , entity_id = "vacuum.spiroo")
 
 
   """
