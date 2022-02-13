@@ -19,3 +19,5 @@ zwscene.xml
 ip_bans.yaml
 *.db-wal
 *.db-shm
+hass.sublime-project
+hass.sublime-workspace
