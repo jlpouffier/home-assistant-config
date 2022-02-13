@@ -6,6 +6,8 @@ monitor_home is an app responsible of the monitoring the home
 Functionalities :
 . Turn on and off Google Home based on home occupancy (If Dog Mode is off)
 . RTH Spirro if home becomes occupied
+. Stop dog mode if home becomes occupied
+. Stop presence simulator if home becomes occupied
 
 Notifications :
 . Home empty and Lights on (If Dog Mode is off)
@@ -62,9 +64,10 @@ class monitor_home(hass.Hass):
   """
   Callback triggered when the home becomes occupied
   Goals :
-  . Turn on Google home (If turned of)
+  . Turn on Google home (If turned off)
   . Stop Dog mode (If turned on)
-  . Stop Spiroo if spirroo is on
+  . Stop presence simulator (If turned on)
+  . Stop Spiroo (if spirroo  on) 
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     self.log("Detecting home occupied...")
@@ -77,6 +80,11 @@ class monitor_home(hass.Hass):
       # Stopping Dog Mode
       self.log("Stopping Dog Mode")
       self.call_service("input_boolean/toggle", entity_id = "input_boolean.dog_mode")
+
+    if self.get_state("input_boolean.presence_simulator_switch") == "on":
+      # Stopping Dog Mode
+      self.log("Stopping Presence Simulator")
+      self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
 
     if self.get_state("vacuum.spiroo") == 'cleaning':
       # Stopping Spiroo
