@@ -14,7 +14,7 @@ class wake_up(hass.Hass):
     # Run every day at 3 am the preparation of the wake-up
     runtime = datetime.time(3,0,0)
     self.run_daily(self.callback_schedule_wake_up, runtime)
-    self.listen_state(self.callback_jl_phone_alarm_changed, "sensor.pixel6_prochaine_alarme")
+    self.listen_state(self.callback_jl_phone_alarm_changed, "sensor.pixel_6_next_alarm")
 
     # Fallback if the app starts after 3am and before the wakeup time...
     if self.now_is_between("03:00:00" , self.get_state("input_datetime.wake_up_time")):
@@ -83,7 +83,7 @@ class wake_up(hass.Hass):
     '''
     sequence = [
       {"light/turn_off": {
-        "entity_id": "light.chambre_principale"}},
+        "entity_id": "light.chambre"}},
       {"light/turn_on": {
         "entity_id": "light.chambre_bloom",
         "transition": 300,
@@ -91,9 +91,17 @@ class wake_up(hass.Hass):
         "rgb_color":[255,159,1] }},
       {"sleep": 300},
       {"light/turn_on": {
-        "entity_id": "light.main_bedroom_ceiling",
+        "entity_id": "light.chambre_suspension",
         "transition": 300,
         "brightness_pct": 100 }},
+      {"light/turn_on": {
+        "entity_id": "light.chambre_chevet_jl",
+        "transition": 300,
+        "brightness_pct": 100 }},
+      {"light/turn_on": {
+        "entity_id": "light.chambre_chevet_valentine",
+        "transition": 300,
+        "brightness_pct": 100 }},  
       {"sleep": 600},
       {"light/turn_on": {
         "entity_id": "light.chambre_guirlande"}}
