@@ -1,9 +1,0 @@
-# https://www.home-assistant.io/integrations/rest_command/
-slack_change_status:
-    url: https://slack.com/api/users.profile.set
-    method: post
-    content_type: application/json
-    headers:
-      authorization: !secret slack_OAuth_Access_Token
-      accept: "*/*"
-    payload: '{"profile":{"status_text":"{{status}}","status_emoji":"{{emoji}}","status_expiration":0}}'
