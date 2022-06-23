@@ -108,7 +108,8 @@ class watch_tv(hass.Hass):
       "com.google.android.tvlauncher":"Home",
       "com.spotify.tv.android":"Spotify",
       "com.google.android.youtube.tv":"YouTube",
-      "com.google.android.apps.mediashell":"Cast"
+      "com.google.android.apps.mediashell":"Cast",
+      "com.aspiro.tidal":"Tidal"
     }
     if tv_app in translations:
       return translations[tv_app]
