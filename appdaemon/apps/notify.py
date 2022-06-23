@@ -13,7 +13,6 @@ Notifications
 . Coming from monitor_home
   . Notify lights are still on when nobody is at home > Turn off light possible
   . Notify TV still on when nobody is at home > Turn off TV possible
-  . Notify AC still on when nobody is at home > Turn off AC possible
   . Notify coffee maker on when nobody is at home > Turn coffee maker possible
   . Notify coffee maker on for more than 90 minutes > Turn coffee maker possible
 . Coming from watch_tv
@@ -27,18 +26,8 @@ Notifications
 class notify(hass.Hass): 
   def initialize(self):
 
-    # State change : Update available
-    updaters_monitored = [
-      "binary_sensor.updater",
-      "binary_sensor.home_assistant_operating_system_update_available",
-      "binary_sensor.appdaemon_4_update_available",
-      "binary_sensor.check_home_assistant_configuration_update_available",
-      "binary_sensor.esphome_update_available",
-      "binary_sensor.file_editor_update_available",
-      "binary_sensor.samba_backup_update_available",
-      "binary_sensor.samba_share_update_available"]
-    for updater in updaters_monitored :
-      self.listen_state(self.callback_hass_update_available, updater , old = "off" , new = "on")
+    # Listen to all updater state change
+    self.listen_state(self.callback_hass_update_available, "update" , old = "off" , new = "on")
     
     # NOTIFY events from clean_house
     self.listen_event(self.callback_notify_cleaning_scheduled , "NOTIFY", payload = "cleaning_scheduled")
@@ -50,7 +39,6 @@ class notify(hass.Hass):
     # NOTIFY events from monitor_home
     self.listen_event(self.callback_notify_lights_still_on , "NOTIFY", payload = "lights_still_on")
     self.listen_event(self.callback_notify_tv_still_on , "NOTIFY", payload = "tv_still_on")
-    self.listen_event(self.callback_notify_climate_still_on , "NOTIFY", payload = "climate_still_on")
     self.listen_event(self.callback_notify_coffee_maker_still_on , "NOTIFY", payload = "coffee_maker_still_on")
     self.listen_event(self.callback_notify_coffee_maker_on_since_too_long , "NOTIFY", payload = "coffee_maker_on_since_too_long")
 
@@ -61,7 +49,6 @@ class notify(hass.Hass):
     self.listen_event(self.callback_button_clicked_rth_spiroo, "mobile_app_notification_action", action = "rth_spiroo")
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
-    self.listen_event(self.callback_button_clicked_turn_off_climate, "mobile_app_notification_action", action = "turn_off_climate")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
     self.listen_event(self.callback_button_clicked_set_new_wake_up_time, "mobile_app_notification_action", action = "set_new_wake_up_time")
@@ -92,12 +79,14 @@ class notify(hass.Hass):
   . Notify
   """
   def callback_hass_update_available(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting an available update for home assistant. Notifying it...")
+    self.log("Detecting an available update... Notifying it...")
+
+    app_title = self.get_state(entity, attribute = "title")
 
     self.send_actionable_notification(
       title = "🎉 Mise a jour disponible",
-      message = "Une mise a jour est disponible !",
-      clickURL = "/hassio/dashboard")
+      message = "Une mise a jour est disponible pour " + app_title,
+      clickURL = "/config/dashboard")
 
 
   """
@@ -193,19 +182,6 @@ class notify(hass.Hass):
       clickURL="/lovelace/salon")
 
   """
-  Callback triggered when event NOTIFY with payload "climate_still_on" is received
-  Goals :
-  . Send notification
-  """
-  def callback_notify_climate_still_on(self, event_name, data, kwargs):
-    self.send_actionable_notification(
-      title = "🧊 Clim allumée", 
-      message = "Au moins une climatisation est allumée alors que personne n'est présent", 
-      action_callback="turn_off_climate",
-      action_title="Éteindre la Clim",
-      clickURL="/lovelace/apercu")
-
-  """
   Callback triggered when event NOTIFY with payload "coffee_maker_still_on" is received
   Goals :
   . Send notification
@@ -238,7 +214,7 @@ class notify(hass.Hass):
   . TODO
   """
   def callback_notify_jl_phone_alarm_changed(self, event_name, data, kwargs):
-    new_time = self.get_state('sensor.pixel6_prochaine_alarme')
+    new_time = self.get_state('sensor.pixel_6_next_alarm')
     new_time = (self.convert_utc(new_time) + datetime.timedelta(minutes = self.get_tz_offset())).time()
     self.send_actionable_notification(
       title = "⏰ Reveil réglé pour " + str(new_time), 
@@ -263,8 +239,7 @@ class notify(hass.Hass):
   """
   def callback_button_clicked_turn_off_lights(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off lights") 
-    self.call_service("light/turn_off" , entity_id = "light.interior_lights")
-    self.call_service("light/turn_off" , entity_id = "light.exterior_lights")
+    self.call_service("light/turn_off" , entity_id = "light.all_lights")
 
   """
   Callback triggered when button "turn_off_tv" is clicked from a notification
@@ -274,22 +249,6 @@ class notify(hass.Hass):
   def callback_button_clicked_turn_off_tv(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off TV") 
     self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
-
-  """
-  Callback triggered when button "turn_off_climate" is clicked from a notification
-  Goals :
-  . Turn off climate
-  """
-  def callback_button_clicked_turn_off_climate(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off climate")
-    if self.get_state("climate.salon") != "off":
-      self.call_service("climate/turn_off" , entity_id = "climate.salon")
-      
-    if self.get_state("climate.chambre") != "off":
-      self.call_service("climate/turn_off" , entity_id = "climate.chambre")
-      
-    if self.get_state("climate.bureau") != "off":
-      self.call_service("climate/turn_off" , entity_id = "climate.bureau")
 
   """
   Callback triggered when button "turn_off_coffee_maker" is clicked from a notification
@@ -316,7 +275,7 @@ class notify(hass.Hass):
   . TODO
   """
   def callback_button_clicked_set_new_wake_up_time(self, event_name, data, kwargs):
-    new_time = self.get_state('sensor.pixel6_prochaine_alarme')
+    new_time = self.get_state('sensor.pixel_6_next_alarm')
     new_time = (self.convert_utc(new_time) + datetime.timedelta(minutes = self.get_tz_offset())).time()
     self.log("Notification button clicked : Setting wake_up_time to JL's phone alarm time ... ") 
     self.call_service("input_datetime/set_datetime", entity_id = 'input_datetime.wake_up_time', time = new_time)
