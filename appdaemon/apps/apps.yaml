@@ -8,7 +8,6 @@ watch_tv:
   module: watch_tv
   class: watch_tv
   constrain_input_boolean: input_boolean.watch_tv_automation_switch
-
     
 clean_house:
   module: clean_house
@@ -24,27 +23,13 @@ welcome_home:
   module: welcome_home
   class: welcome_home
   constrain_input_boolean: input_boolean.welcome_home_automation_switch
-  
-work_arrow:
-  module: work_arrow
-  class: work_arrow
-  constrain_input_boolean: input_boolean.wake_up_automation_switch
 
 monitor_home:
   module: monitor_home
   class: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
 
-dog_mode:
-  module: dog_mode
-  class: dog_mode
-
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
   constrain_input_boolean: input_boolean.presence_simulator_switch
-
-smart_climate:
-  module: smart_climate
-  class: smart_climate
-  constrain_input_boolean: input_boolean.smart_climate_switch
