@@ -13,79 +13,33 @@
   alias: Long Press on Entry Switch -> Turn On Lights
   description: ''
   trigger:
-  - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
+  - device_id: 64185ca2086c2ebd7b976a43ef0c89fd
     domain: hue
     platform: device
     type: repeat
     subtype: 1
-    unique_id: 88c6f5c9-d652-4bf8-ba4d-1502d403814d
+    unique_id: c1c9f277-e27a-4340-9962-2206cc0d7e3a
   condition: []
   action:
   - service: script.turn_on
     target:
       entity_id: script.lights_set_livingroom_kitchen_regular
+    data: {}
   mode: single
 - id: '1622706310024'
   alias: Long Press on Entry Switch -> Get Out
   description: ''
   trigger:
-  - device_id: 0774f1cf681c26ddfb69ceb6aa913fd9
+  - device_id: 64185ca2086c2ebd7b976a43ef0c89fd
     domain: hue
     platform: device
     type: repeat
     subtype: 4
-    unique_id: 4b685eee-4bfb-484d-8e84-fbd7cc33bfa0
+    unique_id: 7564eab9-3cc9-4321-890c-1b9f1465f108
   condition: []
   action:
   - service: script.turn_on
     target:
       entity_id: script.1619802584518
-  mode: single
-- id: '1626873150589'
-  alias: WebCam On > Hue Play On
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: sensor.imac_de_jean_loic_active_camera
-    to: Caméra FaceTime HD (intégrée)
-  condition: []
-  action:
-  - service: light.turn_on
-    target:
-      entity_id:
-      - light.hue_play_1
-      - light.hue_play_2
-    data:
-      color_temp: 300
-      brightness_pct: 80
-  mode: single
-- id: '1626873185194'
-  alias: WebCam Off > Hue Play Off
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: sensor.imac_de_jean_loic_active_camera
-    to: Inactive
-  condition: []
-  action:
-  - service: light.turn_off
-    target:
-      entity_id:
-      - light.hue_play_1
-      - light.hue_play_2
-  mode: single
-- id: '1642490367044'
-  alias: Éteindre la fleche au démarrage
-  description: ''
-  trigger:
-  - platform: homeassistant
-    event: start
-  condition:
-  - condition: state
-    entity_id: light.wled_work_arrow
-    state: 'on'
-  action:
-  - service: light.turn_off
-    target:
-      entity_id: light.wled_work_arrow
+    data: {}
   mode: single
