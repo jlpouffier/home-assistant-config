@@ -4,13 +4,13 @@
 # https://www.home-assistant.io/integrations/workday/
 - platform: workday
   name: 'workday_today' 
-  country: FRA
+  country: FR
 
 # Workday (Tomorrow)
 # https://www.home-assistant.io/integrations/workday/
 - platform: workday
   name: 'workday_tomorrow' 
-  country: FRA
+  country: FR
   days_offset: 1
   
 # Home Occupancy
@@ -28,12 +28,6 @@
                   mdi:home
               {%- endif %}
 
-# Spotify Usage
-# https://www.home-assistant.io/integrations/binary_sensor.template/
-- platform: template
-  sensors:
-      is_spotify_used:
-          value_template: "{{is_state('media_player.spotify_jlp', 'playing') or is_state('media_player.spotify_jlp', 'paused')}}"
 
 # TV usage
 # https://www.home-assistant.io/integrations/binary_sensor.template/
@@ -41,7 +35,14 @@
   sensors:
       is_tv_used:
           value_template: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
-          
+
+# PS5 Usage
+# https://www.home-assistant.io/integrations/binary_sensor.template/
+- platform: template
+  sensors:
+      is_ps5_used:
+          value_template: "{{is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW5')}}"
+
 # Sun rising
 # https://www.home-assistant.io/integrations/binary_sensor.template/
 - platform: template
