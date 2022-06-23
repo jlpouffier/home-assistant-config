@@ -1,8 +1,0 @@
-# https://www.home-assistant.io/integrations/zone/
-
-#Home
-- name: Home
-  latitude: !secret latitude
-  longitude: !secret longitude
-  radius: 200
-  icon: mdi:home
