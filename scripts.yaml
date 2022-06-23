@@ -1,98 +1,60 @@
 lights_set_livingroom_kitchen_regular:
   alias: lights_set_livingroom_kitchen_regular
   sequence:
-  - data:
-      brightness_pct: 100
-      color_temp: 350
-      entity_id: light.salon
-      transition: 1
-    service: light.turn_on
-  - data:
-      brightness_pct: 100
-      entity_id: light.cuisine
-      transition: 1
-    service: light.turn_on
-  - data:
-      brightness_pct: 100
-      entity_id: light.entree
-      transition: 1
-    service: light.turn_on
+  - service: hue.activate_scene
+    data:
+      transition: 2
+    target:
+      entity_id:
+      - scene.salon_salon_100
+      - scene.entree_entree_100
+      - scene.cuisine_cuisine_100
   mode: restart
 lights_set_tv:
   alias: lights_set_tv
   sequence:
   - data:
-      brightness_pct: 20
-      color_temp: 500
-      entity_id: light.living_room_wall
-      transition: 2
-    service: light.turn_on
-  - data:
-      brightness_pct: 10
-      entity_id: light.salon_bobby_w_40
-      rgb_color:
-      - 255
-      - 154
-      - 46
-      transition: 2
-    service: light.turn_on
-  - data:
-      entity_id: light.cuisine
       transition: 2
     service: light.turn_off
-  - data:
-      entity_id: light.entree
+    target:
+      entity_id:
+      - light.cuisine
+      - light.entree
+  - service: hue.activate_scene
+    data:
       transition: 2
-    service: light.turn_off
+    target:
+      entity_id: scene.salon_salon_tv_playing
   mode: restart
 lights_set_tv_paused:
   alias: lights_set_tv_paused
   sequence:
-  - data:
-      brightness_pct: 50
-      color_temp: 500
-      entity_id: light.living_room_wall
+  - service: hue.activate_scene
+    data:
       transition: 2
-    service: light.turn_on
-  - data:
-      brightness_pct: 50
-      entity_id: light.salon_bobby_w_40
-      rgb_color:
-      - 255
-      - 154
-      - 46
-      transition: 2
-    service: light.turn_on
-  - data:
-      brightness_pct: 30
-      entity_id: light.cuisine
-      transition: 2
-    service: light.turn_on
-  - data:
-      brightness_pct: 30
-      entity_id: light.entree
-      transition: 2
-    service: light.turn_on
+    target:
+      entity_id:
+      - scene.cuisine_cuisine_tv_paused
+      - scene.entree_entree_tv_paused
+      - scene.salon_salon_tv_paused
   mode: restart
 '1619802584518':
   alias: Quitter l'appartement
   sequence:
-  - service: climate.turn_off
-    target:
-      entity_id:
-      - climate.bureau
-      - climate.chambre
-      - climate.salon
   - service: light.turn_off
+    data:
+      transition: 2
     target:
       entity_id:
       - light.all_lights
   - service: media_player.turn_off
     target:
       entity_id: media_player.philips_android_tv
+    data: {}
   - service: switch.turn_off
     target:
       entity_id:
       - switch.coffeemaker
+    data: {}
   mode: single
   icon: mdi:home-import-outline
