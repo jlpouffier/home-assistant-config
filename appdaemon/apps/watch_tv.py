@@ -15,8 +15,12 @@ List of apps driving Lights:
 """
 class watch_tv(hass.Hass):
   def initialize(self):
-    # KODI CALLBACKS
+    # TV CALLBACK
     self.listen_state(self.callback_philips_android_tv, "media_player.philips_android_tv")
+
+    # PS5 Callback
+    self.listen_state(self.callback_ps5, "binary_sensor.is_ps5_used")
+
     self.log("Watch TV Automation initialized")
     # Variable to store the old app to detect app changes. Initialized to the Android Home page
     self.old_app = "com.google.android.tvlauncher"
@@ -58,7 +62,20 @@ class watch_tv(hass.Hass):
         self.call_service("script/lights_set_livingroom_kitchen_regular")
       
     self.old_app = current_app
-    
+
+  """
+  Callback trigerred every time is_ps5_used changes
+  Goals
+  . Dim lights when ps5 used
+  . Undim lights totally when when ps5 stopped
+  """
+  def callback_ps5(self, entity, attribute, old, new, kwargs):
+    if new == 'on' and self.get_state("sun.sun") == "below_horizon":
+        self.log("PS5 is use : Lights dimmed")
+        self.call_service("script/lights_set_tv") 
+    elif new == 'off' and self.get_state("sun.sun") == "below_horizon":
+        self.log("PS5 stopped : Lights fully un-dimmed")
+        self.call_service("script/lights_set_livingroom_kitchen_regular")
     
   """
   Helper method:
