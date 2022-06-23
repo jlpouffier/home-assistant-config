@@ -36,23 +36,17 @@ class welcome_home(hass.Hass):
     # When presence is detected ....
     sequence = [
       {"sleep": 1},
-      {"light/turn_on": {
-        "entity_id": "light.entree",
-        "transition": 3,
-        "brightness_pct": 100 }},
+      {"hue/activate_scene": {
+        "entity_id": "scene.entree_entree_100",
+        "transition": 3}},
       {"sleep": 2},
-      {"light/turn_on": {
-        "entity_id": "light.salon",
-        "transition": 3,
-        "brightness_pct": 100 }},
+      {"hue/activate_scene": {
+        "entity_id": "scene.salon_salon_100",
+        "transition": 3}},
       {"sleep": 2},
-      {"light/turn_on": {
-        "entity_id": "light.cuisine",
-        "transition": 3,
-        "brightness_pct": 100 }},
-      {"sleep": 3},
-      {"light/turn_on": {
-        "entity_id": "light.guinguette"}}
+      {"hue/activate_scene": {
+        "entity_id": "scene.cuisine_cuisine_100",
+        "transition": 3}}
     ]
     self.log("Welcome home : turning on lights. (This automation won't be run until tomorrow 4pm the soonest)")
     # ... Turn lights on ...
