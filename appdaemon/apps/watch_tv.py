@@ -1,8 +1,14 @@
 import hassapi as hass
 
 """
+watch_tv is an app responsible of the TV watching experience
 
+Functionalities :
+. Turn on and off light when watching a movie
+. Turn on and off light when playing the PS5
 
+Notifications :
+. None
 """
 class watch_tv(hass.Hass):
   def initialize(self):
@@ -16,12 +22,14 @@ class watch_tv(hass.Hass):
     # Variable to store the old app to detect app changes. Initialized to the Android Home page
     self.old_app = "com.google.android.tvlauncher"
 
+    # log
     self.log("Watch TV Automations initialized")
  
   """
-
-
-  """
+  Callback triggered when the sun is below horizon
+  Goals :
+  . Start listing to TV state changes
+  """ 
   def callback_initialize_automations(self, entity, attribute, old, new, kwargs):
     # Register TV state change callbacks 
     callback_tv_state_change_handle = self.listen_state(self.callback_tv_state_change, "media_player.philips_android_tv", immediate = True)
@@ -34,8 +42,9 @@ class watch_tv(hass.Hass):
     self.log("Watch TV Automations starting now ...")
 
   """
-
-
+  Callback triggered when the sun is above horizon
+  Goals :
+  . Stop listening to TV state changes 
   """
   def callback_stop_automations(self, entity, attribute, old, new, kwargs):
     # Deregister TV state change callbacks
@@ -45,8 +54,9 @@ class watch_tv(hass.Hass):
     self.log("Watch TV Automations stopping for now ...")
 
   """
-
-
+  Callback triggered when TV state changes
+  Goals :
+  . Turn on and off lights depending the on the TV state and the current app used 
   """
   def callback_tv_state_change(self, entity, attribute, old, new, kwargs):
     # Get attributes of the TV and fetch the current app
@@ -80,8 +90,9 @@ class watch_tv(hass.Hass):
     self.old_app = current_app
 
   """
-
-
+  Callback triggered when the PS5 state change
+  Goals :
+  . Turn on and off lights based on PS5 state
   """
   def callback_ps5_state_change(self, entity, attribute, old, new, kwargs):
     if old in ["off" , None] and new == 'on':
