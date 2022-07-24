@@ -17,16 +17,14 @@ Notifications :
 """
 class clean_house(hass.Hass):
   def initialize(self):
-    runtime = datetime.time(16,0,0)
     self.listen_state(self.callback_home_empty_for_more_than_x_minutes, "binary_sensor.home_occupied", old = "on", nex= "off", duration = 600)
     self.listen_state(self.callback_spiroo_started, "vacuum.spiroo" , old = "docked" , new = "cleaning")
     self.listen_state(self.callback_spiroo_cleaning_for_more_than_x_minutes, "vacuum.spiroo" , new = "cleaning", duration = 900)
-    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "paused" , new = "docked")
-    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "cleaning" , new = "docked")
-    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo" , old = "returning" , new = "docked")
-    self.listen_state(self.callback_spiroo_error, "vacuum.spiroo" , new = "error")
+    self.listen_state(self.callback_spiroo_finished, "vacuum.spiroo",  new = "docked")
+    self.listen_state(self.callback_spiroo_error, "vacuum.spiroo" , new = "error", immediate = True)
     self.listen_state(self.callback_spiroo_idle, "vacuum.spiroo" , new = "idle" , duration = 1800)
     
+    #Listen to button press from notification
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house, "mobile_app_notification_action", action = "cancel_planned_clean_house")
     self.listen_event(self.callback_button_clicked_cancel_planned_clean_house_and_start_now, "mobile_app_notification_action", action = "cancel_planned_clean_house_and_start_now")
     self.listen_event(self.callback_button_clicked_rth_spiroo, "mobile_app_notification_action", action = "rth_spiroo")
@@ -38,7 +36,7 @@ class clean_house(hass.Hass):
   Goals :
   . Check if the last clean-up was done more then 36 hours ago
   . Check if we are not cleaning right now
-  . If all 3 conditions are met:
+  . If all 2 conditions are met:
     . Schedule cleaning in 30 minutes 
     . Send a notification
   """ 
@@ -88,7 +86,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when Spiroo is starting
   Goals : 
-  . Send a notification
+  . Notify
   """   
   def callback_spiroo_started(self, entity, attribute, old, new, kwargs):
     self.log("Detecting that Spiroo is starting. Notifying it...")
@@ -114,25 +112,26 @@ class clean_house(hass.Hass):
   """
   Callback triggered when Spiroo is finished
   Goals : 
-  . Send a notification
+  . Notify
   """ 
   def callback_spiroo_finished(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting that Spiroo has finished. Notifying it...")
-    area_cleaned = self.get_state("sensor.spiroo_last_cleaning_area")
-    cleaned_map = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
-    self.fire_event("NOTIFIER",
-      action = "send_to_nearest",
-      title = "✅ Nettoyage terminé",
-      message = "Surface nettoyée: " + area_cleaned + "m2",
-      image_url = cleaned_map,
-      click_url="/lovelace/spiroo",
-      icon =  "mdi:robot-vacuum-variant",
-      color = "#07ffc1")
+    if old in ["paused", "cleaning", "returning"]:
+      self.log("Detecting that Spiroo has finished. Notifying it...")
+      area_cleaned = self.get_state("sensor.spiroo_last_cleaning_area")
+      cleaned_map = self.args["hass_base_url"] + self.get_state("camera.spiroo_cleaning_map" , attribute = "entity_picture")
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "✅ Nettoyage terminé",
+        message = "Surface nettoyée: " + area_cleaned + "m2",
+        image_url = cleaned_map,
+        click_url="/lovelace/spiroo",
+        icon =  "mdi:robot-vacuum-variant",
+        color = "#07ffc1")
 
   """
   Callback triggered when Spiroo is in error
   Goals : 
-  . Send a notification
+  . Notify
   """ 
   def callback_spiroo_error(self, entity, attribute, old, new, kwargs):
     if old != new:
@@ -151,7 +150,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when is not on the dock since more than 30 mintues
   Goals : 
-  . Send a notification
+  . Notify
   """ 
   def callback_spiroo_idle(self, entity, attribute, old, new, kwargs):
     if old != new:
