@@ -5,7 +5,7 @@ import datetime
 clean_house is an app responsible of the scheduling of Spiroo
 
 Functionalities :
-. Starts Spiroo when needed
+. Starts Spiroo when needed 
 . Handle cancelation of cleaning if requested
 
 Notifications :
@@ -160,7 +160,7 @@ class clean_house(hass.Hass):
         action = "send_to_present",
         title = "️🪫 Spiroo se décharge",
         message = "Je detecte que Spiroo n'est plus sur sa base depuis plus de 30 minutes",
-        click_url="/lovelace/spiroo"
+        click_url="/lovelace/spiroo",
         icon =  "mdi:robot-vacuum-variant",
         color = "#ff6e07")
 
