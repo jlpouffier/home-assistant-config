@@ -1,24 +1,24 @@
-bot_notify:
-  module: notify
-  class: notify
-  hass_base_url: !secret hass_base_url
+notifier:
+  module: notifier
+  class: notifier
   constrain_input_boolean: input_boolean.notify_switch
 
 watch_tv:
   module: watch_tv
   class: watch_tv
   constrain_input_boolean: input_boolean.watch_tv_automation_switch
-    
+
 clean_house:
   module: clean_house
   class: clean_house
+  hass_base_url: !secret hass_base_url
   constrain_input_boolean: input_boolean.spiroo_planification_switch
 
 wake_up:
   module: wake_up
   class: wake_up
   constrain_input_boolean: input_boolean.wake_up_automation_switch
-  
+
 welcome_home:
   module: welcome_home
   class: welcome_home
@@ -33,3 +33,8 @@ presence_simulator:
   module: presence_simulator
   class: presence_simulator
   constrain_input_boolean: input_boolean.presence_simulator_switch
+
+monitor_system:
+  module: monitor_system
+  class: monitor_system
+  constrain_input_boolean: input_boolean.monitor_system_switch
