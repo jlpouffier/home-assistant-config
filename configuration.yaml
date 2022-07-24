@@ -8,11 +8,7 @@ api:
 sensor: !include components/sensor.yaml
 binary_sensor: !include components/binary_sensor.yaml
 proximity: !include components/proximity.yaml
-
-
-# INPUTS
-input_boolean: !include inputs/input_boolean.yaml
-input_datetime: !include inputs/input_datetime.yaml
+template: !include components/template.yaml
 
 # MISC
 http: !include misc/http.yaml
@@ -24,4 +20,5 @@ automation: !include automations.yaml
 # SCRIPTS
 script: !include scripts.yaml
 
-
+frontend:
+  themes: !include_dir_merge_named themes

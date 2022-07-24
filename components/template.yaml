@@ -1,0 +1,57 @@
+# https://www.home-assistant.io/integrations/template/
+sensor:
+  - name: spiroo_last_cleaning_area
+    unique_id: spiroo_last_cleaning_area
+    state: "{{state_attr('vacuum.spiroo' , 'clean_area') | round(1,'half',0) }}"
+    unit_of_measurement: "m2"
+    icon: mdi:checkbox-blank-outline
+    
+  - name: spiroo_cleaning_progress
+    unique_id: spiroo_cleaning_progress
+    state: >-
+      {% if is_state('vacuum.spiroo', 'cleaning') -%}
+      {% set a = 100 / (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int - 100)%}
+      {% set b = 10000 / ( 100 - (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int )) %}
+      {% set list = (a * state_attr("vacuum.spiroo", "battery_level") | int + b) | round , 100 %}
+      {{list | min}}
+      {% else -%}
+      100
+      {%- endif %}
+    unit_of_measurement: "%"
+    icon: "mdi:progress-clock"
+
+binary_sensor:
+  - name: home_occupied
+    unique_id: home_occupied
+    state: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
+    device_class: occupancy
+    icon: >-
+        {% if is_state("binary_sensor.home_occupied", "on") -%}
+        mdi:home-account
+        {%- else -%}
+        mdi:home
+        {%- endif %}
+    
+  - name: is_tv_used
+    unique_id: is_tv_used
+    state: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
+
+  - name: is_ps5_used
+    unique_id: is_ps5_used
+    state: "{{is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW5')}}"
+
+  - name: is_sun_rising
+    unique_id: is_sun_rising
+    state: "{{is_state_attr('sun.sun', 'rising', true)}}"
+    
+  - name: is_washing_machine_running
+    unique_id: is_washing_machine_running
+    state: "{{ states('sensor.machine_a_laver_power') | float(default = 0) > 5 }}"
+    device_class: running
+    delay_on: '0:01:00'
+    delay_off: '0:01:00'
+    
+    
+    
+    
+    

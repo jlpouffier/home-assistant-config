@@ -1,7 +1,0 @@
-# https://www.home-assistant.io/integrations/input_datetime/
-
-# Time of wake-up (use in wake_up app in AppDemaon)
-wake_up_time:
-  name: Heure de réveil
-  has_time: true
-  has_date: false
