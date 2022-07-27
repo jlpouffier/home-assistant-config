@@ -20,7 +20,7 @@ class watch_tv(hass.Hass):
     self.state_handles = []
 
     # Variable to store the old app to detect app changes. Initialized to the Android Home page
-    self.old_app = "com.google.android.tvlauncher"
+    self.old_app = "Android TV Launcher"
 
     # log
     self.log("Watch TV Automations initialized")
@@ -59,30 +59,28 @@ class watch_tv(hass.Hass):
   . Turn on and off lights depending the on the TV state and the current app used 
   """
   def callback_tv_state_change(self, entity, attribute, old, new, kwargs):
-    # Get attributes of the TV and fetch the current app
-    tv_attributes = self.get_state(entity, attribute = "all")
-    if 'attributes' in tv_attributes and 'app_id' in tv_attributes["attributes"]:
-      current_app = tv_attributes["attributes"]["app_id"] 
-    else:
-      current_app = "com.google.android.tvlauncher"
-    
-    #LOG
-    self.log("State changed: " + str(old) + " @ " + self.translate_app(self.old_app) + " > " + str(new) + " @ " + self.translate_app(current_app))
-    
+    # Fetch the current app
+    current_app = self.get_state(entity, attribute = "app_name")
+    if current_app is None:
+      current_app = "Android TV Launcher"
+
     if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle", None] and new == "playing":
       if self.is_app_controling_lights(current_app):
+        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV playing : Lights dimmed")
         self.call_service("script/lights_set_tv")  
-      
+    
     elif old in ["playing" , None] and new == "paused":
       if self.is_app_controling_lights(current_app):
+        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV paused : Lights partially un-dimmed")
         self.call_service("script/lights_set_tv_paused")        
- 
+
     elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
-      if (self.is_app_controling_lights(self.old_app) or self.is_app_controling_lights(current_app)):
+      if self.is_app_controling_lights(self.old_app):
+        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV stopped : Lights fully un-dimmed")
         self.call_service("script/lights_set_livingroom_kitchen_regular")
@@ -109,11 +107,11 @@ class watch_tv(hass.Hass):
   Returns : true if an app is controlling the light, false otherwise
   """
   def is_app_controling_lights(self, tv_app):
-    supported_app_ids = [ 
-      "com.netflix.ninja",
-      "com.amazon.amazonvideo.livingroom",
-      "com.plexapp.android"]
-    if tv_app in supported_app_ids:
+    supported_apps = [ 
+      "Netflix",
+      "Plex",
+      "Prime Video"]
+    if tv_app in supported_apps:
       return True
     else:
       return False
@@ -121,25 +119,9 @@ class watch_tv(hass.Hass):
   """
   Helper method:
   Does : 
-  . nothing
-  Returns : A human readable format of the app_id if known (the app_id otherwise)
+  . logs a human-reedable TV state change 
+  Returns : nothing
   """
-  def translate_app(self, tv_app):
-    translations = {
-      "com.netflix.ninja":"Netflix",
-      "com.amazon.amazonvideo.livingroom":"Amazon Prime",
-      "com.plexapp.android":"Plex",
-      "tv.molotov.app":"Molotov",
-      "com.google.android.tvlauncher":"Home",
-      "com.spotify.tv.android":"Spotify",
-      "com.google.android.youtube.tv":"YouTube",
-      "com.google.android.apps.mediashell":"Cast",
-      "com.aspiro.tidal":"Tidal",
-      "org.droidtv.playtv": "HDMI Output",
-      "org.droidtv.channels": "Source Selector"
-    }
-    if tv_app in translations:
-      return translations[tv_app]
-    else:
-      return tv_app
+  def log_state_change(self, old, old_app, new, new_app):
+    self.log("State changed: " + str(old) + " @ " + old_app + " > " + str(new) + " @ " + new_app)
 
