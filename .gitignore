@@ -21,3 +21,4 @@ ip_bans.yaml
 *.db-shm
 hass.sublime-project
 hass.sublime-workspace
+.vscode/settings.json
