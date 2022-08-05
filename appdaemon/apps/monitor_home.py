@@ -11,6 +11,7 @@ Notifications :
 . Home empty and Lights on > Turn off possible
 . Home empty and TV on > Turn off possible
 . Home empty and coffee maker on > Turn off possible
+. Home empty and doors / window still opened
 . Coffe maker on for more than 90 minutes > Turn off possible
 . Washing Machine over
 
@@ -27,7 +28,7 @@ class monitor_home(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     
     self.log("Monitor Home initialized")
-
+    
   """
   Callback triggered when the home becomes not occupied
   Goals :
@@ -77,6 +78,34 @@ class monitor_home(hass.Hass):
         icon =  "mdi:coffee",
         color = "#ff6e07")
 
+    # test if doors or windows are still open
+    if self.get_state("binary_sensor.all_doors") == "on":
+      self.log("... some doors are still opened. notifying it")
+      doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
+      for door in doors:
+        if self.get_state(door) == "on":
+          friendly_name_door = self.get_state(door, attribute = "friendly_name")
+          self.fire_event("NOTIFIER",
+            action = "send_to_nearest",
+            title = "️🚪 Porte ouverte !", 
+            message = "La " + friendly_name_door + " est toujours ouverte alors que personne n'est présent !",
+            icon =  "mdi:door-open",
+            color = "#ff6e07")
+    
+    if self.get_state("binary_sensor.all_windows") == "on":
+      self.log("... some windows are still opened. notifying it")
+      windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
+      for window in windows:
+        if self.get_state(window) == "on":
+          friendly_name_window = self.get_state(window, attribute = "friendly_name")
+          self.fire_event("NOTIFIER",
+            action = "send_to_nearest",
+            title = "️🚪 Fenêtre ouverte !", 
+            message = "La " + friendly_name_window + " est toujours ouverte alors que personne n'est présent !",
+            icon =  "mdi:window-open",
+            color = "#ff6e07")
+
+
 
   """
   Callback triggered when the home becomes occupied
@@ -110,7 +139,7 @@ class monitor_home(hass.Hass):
           "title" : "Éteindre la machine a café",
           "event" : "turn_off_coffee_maker"}],
         click_url="/lovelace/day",
-        icon = "mdi:heat-wave",
+        icon = "mdi:coffee",
         color = "#ff6e07")
 
   """
