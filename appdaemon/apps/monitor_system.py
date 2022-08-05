@@ -12,8 +12,6 @@ Notifications :
   . Notify HASS update
   . Notify HACS update
   . Notify if RPI power is not OK
-  . Notify if coffee maker is overpowering / overheating > shut down possible
-  . Notify if washing machine is overpowering / overheating > shut down possible
   . Notify last back-up older than 24 hours.
   . Notify low batteries on all battery poweered devices 
 
@@ -35,18 +33,6 @@ class monitor_system(hass.Hass):
         # Samba back-up daily check
         samba_backup_daily_check_runtime = datetime.time(10,0,0)
         self.run_daily(self.callback_samba_backup_daily_check, samba_backup_daily_check_runtime)
-
-        # Listen to overpower status from connected plugs
-        self.listen_state(self.callback_cofee_maker_overpowering, "binary_sensor.machine_a_cafe_overpowering", new = "on" , immediate = True)
-        self.listen_state(self.callback_washing_machine_overpowering, "binary_sensor.machine_a_laver_overpowering", new = "on" , immediate = True)
-
-        #Listen to overheat status from connected plugs
-        self.listen_state(self.callback_cofee_maker_overheating, "binary_sensor.machine_a_cafe_overheating", new = "on" , immediate = True)
-        self.listen_state(self.callback_washing_machine_overheating, "binary_sensor.machine_a_laver_overheating", new = "on" , immediate = True)
-
-        #Listen to button press from notification
-        self.listen_event(self.callback_button_clicked_shut_down_coffee_maker, "mobile_app_notification_action", action = "shut_down_coffee_maker")
-        self.listen_event(self.callback_button_clicked_shut_down_washing_machine, "mobile_app_notification_action", action = "shut_down_washing_machine")
         
         # Battery daily check
         battery_daily_check_runtime = datetime.time(19,0,0)
@@ -124,100 +110,13 @@ class monitor_system(hass.Hass):
                 color = "#ff6e07")
 
     """
-    Callback triggered when coffe maker plug overpowering
-    Goals :
-    . Notify
-    """
-    def callback_cofee_maker_overpowering(self, entity, attribute, old, new, kwargs):
-        self.log("A plug is overpowring ... Notifying it...")
-        self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
-            title = "⚡️ Surcharge",
-            message = "La prise de la machine à café est en surcharge",
-            icon = "mdi:power-plug",
-            color = "#ff6e07",
-            callback = [{
-                "title" : "Éteindre la prise",
-                "event" : "shut_down_coffee_maker"}])
-
-    """
-    Callback triggered when washing machine plug is overpowering
-    Goals :
-    . Notify
-    """
-    def callback_washing_machine_overpowering(self, entity, attribute, old, new, kwargs):
-        self.log("A plug is overpowring ... Notifying it...")
-        self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
-            title = "⚡️ Surcharge",
-            message = "La prise de la machine à laver est en surcharge",
-            icon = "mdi:power-plug",
-            color = "#ff6e07",
-            callback = [{
-                "title" : "Éteindre la prise",
-                "event" : "shut_down_washing_machine"}])
-
-    """
-    Callback triggered when coffe maker plug is overheating
-    Goals :
-    . Notify
-    """
-    def callback_cofee_maker_overheating(self, entity, attribute, old, new, kwargs):
-        self.log("A plus is overheating ... Notifying it...")
-        self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
-            title = "🌡 Surchauffe",
-            message = "La prise de la machine à café est en surchauffe",
-            icon = "mdi:power-plug",
-            color = "#ff6e07",
-            callback = [{
-                "title" : "Éteindre la prise",
-                "event" : "shut_down_coffee_maker"}])
-
-    """
-    Callback triggered when washing machine plug overheating
-    Goals :
-    . Notify
-    """
-    def callback_washing_machine_overheating(self, entity, attribute, old, new, kwargs):
-        self.log("A plus is overheating ... Notifying it...")
-        self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
-            title = "🌡 Surchauffe",
-            message = "La prise de la machine à laver est en surchauffe",
-            icon = "mdi:power-plug",
-            color = "#ff6e07",
-            callback = [{
-                "title" : "Éteindre la prise",
-                "event" : "shut_down_washing_machine"}])
-    
-    """
-    Callback triggered when button "shut_down_coffee_maker" is clicked from a notification
-    Goals :
-    . Shut down coffee maker
-    """
-    def callback_button_clicked_shut_down_coffee_maker(self, event_name, data, kwargs):
-        self.log("Notification button clicked : Shutting down coffee maker") 
-        self.call_service("switch/turn_off" , entity_id = "switch.coffeemaker")
-
-    """
-    Callback triggered when button "shut_down_washing_machine" is clicked from a notification
-    Goals :
-    . Shut down washing machine
-    """
-    def callback_button_clicked_shut_down_washing_machine(self, event_name, data, kwargs):
-        self.log("Notification button clicked : Shutting down washing machine") 
-        self.call_service("switch/turn_off" , entity_id = "switch.machine_a_laver")
-
-    
-    """
     Callback triggered when the last available back-up is older than 24 hours.
     Goals :
     . Notify
     """
     def callback_battery_daily_check(self, kwargs):
         self.log("Checking battery levels  ...")
-        battery_threshold = 25
+        battery_threshold = 20
         
         entities_to_check = [
             "sensor.bureau_switch_battery",
@@ -228,7 +127,18 @@ class monitor_system(hass.Hass):
             "sensor.exterieur_switch_battery",
             "sensor.salon_couloir_switch_battery",
             "sensor.salon_switch_battery",
-            "sensor.netatmo_cloud_battery_percent"]
+            "sensor.netatmo_cloud_battery_percent",
+            "sensor.capteur_thp_salon_battery",
+            "sensor.capteur_thp_chambre_battery",
+            "sensor.capteur_thp_bureau_battery",
+            "sensor.capteur_thp_chambre_d_amis_battery",
+            "sensor.capteur_ouverture_fenetre_chambre_battery",
+            "sensor.capteur_ouverture_fenetre_bureau_battery",
+            "sensor.capteur_ouverture_fenetre_chambre_d_amis_battery",
+            "sensor.capteur_ouverture_porte_fenetre_salon_battery",
+            "sensor.capteur_ouverture_fenetre_cellier_battery",
+            "sensor.capteur_ouverture_fenetre_cuisine_battery",
+            "sensor.capteur_ouverture_porte_entree_battery"]
         
         for entity in entities_to_check:
             if int(self.get_state(entity)) < battery_threshold:
