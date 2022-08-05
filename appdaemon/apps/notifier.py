@@ -98,7 +98,7 @@ class notifier(hass.Hass):
         self.call_service("notify/mobile_app_pixel_4a", title = data["title"], message = data["message"], data = notification_data)
     
     def send_to_present(self, data):
-        proximity_threshold = 5
+        proximity_threshold = 1
         number_of_notification_sent = 0
         if self.get_state("person.valentine") == "home" or int(self.get_state("proximity.distance_valentine_home")) <= proximity_threshold:
             self.send_to_valetnine(data)
@@ -112,7 +112,7 @@ class notifier(hass.Hass):
     def send_to_nearest(self, data):
         jl_proximity = int(self.get_state("proximity.distance_jl_home"))
         valentine_proximity = int(self.get_state("proximity.distance_valentine_home"))
-        proximity_threshold = 5
+        proximity_threshold = 1
         
         if math.fabs(jl_proximity - valentine_proximity) <= proximity_threshold:
             self.send_to_jl(data)
