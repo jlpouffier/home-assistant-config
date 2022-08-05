@@ -22,3 +22,4 @@ ip_bans.yaml
 hass.sublime-project
 hass.sublime-workspace
 .vscode/settings.json
+zigbee2mqtt/
