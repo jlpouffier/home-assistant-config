@@ -5,7 +5,7 @@ sensor:
     state: "{{state_attr('vacuum.spiroo' , 'clean_area') | round(1,'half',0) }}"
     unit_of_measurement: "m2"
     icon: mdi:checkbox-blank-outline
-    
+
   - name: spiroo_cleaning_progress
     unique_id: spiroo_cleaning_progress
     state: >-
@@ -26,12 +26,16 @@ binary_sensor:
     state: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
     device_class: occupancy
     icon: >-
-        {% if is_state("binary_sensor.home_occupied", "on") -%}
-        mdi:home-account
-        {%- else -%}
-        mdi:home
-        {%- endif %}
-    
+      {% if is_state("binary_sensor.home_occupied", "on") -%}
+      mdi:home-account
+      {%- else -%}
+      mdi:home
+      {%- endif %}
+
+  - name: far_away
+    unique_id: far_away
+    state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80 and states('proximity.distance_valentine_home') | int(default = 0) > 80 }}"
+
   - name: is_tv_used
     unique_id: is_tv_used
     state: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
@@ -43,15 +47,10 @@ binary_sensor:
   - name: is_sun_rising
     unique_id: is_sun_rising
     state: "{{is_state_attr('sun.sun', 'rising', true)}}"
-    
+
   - name: is_washing_machine_running
     unique_id: is_washing_machine_running
     state: "{{ states('sensor.machine_a_laver_power') | float(default = 0) > 5 }}"
     device_class: running
-    delay_on: '0:01:00'
-    delay_off: '0:01:00'
-    
-    
-    
-    
-    
+    delay_on: "0:01:00"
+    delay_off: "0:01:00"
