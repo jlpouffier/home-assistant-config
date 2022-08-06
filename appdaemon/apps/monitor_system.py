@@ -66,15 +66,16 @@ class monitor_system(hass.Hass):
     . Notify
     """
     def callback_hacs_update_available(self, entity, attribute, old, new, kwargs):
-        number_of_available_update = int(new)
-        if number_of_available_update > 0:
-            self.log("Detecting an available update... Notifying it...")
-            self.fire_event("NOTIFIER",
-                action = "sent_to_jl",
-                title = "🎉 Mise a jour HACS disponible",
-                message = "Une mise a jour HACS est disponible",
-                click_url = "/hacs/entry",
-                icon = "mdi:cellphone-arrow-down")
+        if new != "unknown":
+            number_of_available_update = int(new)
+            if number_of_available_update > 0:
+                self.log("Detecting an available update... Notifying it...")
+                self.fire_event("NOTIFIER",
+                    action = "sent_to_jl",
+                    title = "🎉 Mise a jour HACS disponible",
+                    message = "Une mise a jour HACS est disponible",
+                    click_url = "/hacs/entry",
+                    icon = "mdi:cellphone-arrow-down")
 
     """
     Callback triggered when a power issue is detected on the RPI
