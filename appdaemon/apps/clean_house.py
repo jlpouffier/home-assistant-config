@@ -15,8 +15,8 @@ Notifications :
 """
 class clean_house(hass.Hass):
   def initialize(self):
-    self.listen_state(self.callback_home_empty_for_more_than_x_minutes, "binary_sensor.home_occupied", old = "on", nex= "off", duration = 300)
-    self.listen_state(self.callback_first_floor_dirty, "binary_sensor.should_teuteu_run" , new = "on")
+    self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off", immediate = True)
+    self.listen_state(self.callback_first_floor_dirty, "binary_sensor.should_teuteu_run" , new = "on", immediate = True)
     
     self.listen_state(self.callback_teuteu_started, "vacuum.teuteu" , old = "docked" , new = "cleaning")
     self.listen_state(self.callback_teuteu_cleaning_for_more_than_x_minutes, "vacuum.teuteu" , new = "cleaning", duration = 900)
@@ -30,15 +30,15 @@ class clean_house(hass.Hass):
     self.log("House cleaning Automation initialized")
 
   """
-  Callback triggered when the home is empty for more than 5 minutes
+  Callback triggered when the home is empty
   Goals :
   . Check if home dirtly
   . Check if we are not cleaning right now
   . If all 2 conditions are met:
     . Start cleaning
   """ 
-  def callback_home_empty_for_more_than_x_minutes(self, entity, attribute, old, new, kwargs):
-    self.log("Home empty for more than 5 minutes, Checking if TeuTeu can run now ... ")
+  def callback_home_empty(self, entity, attribute, old, new, kwargs):
+    self.log("Home empty, Checking if TeuTeu can run now ... ")
     # Is First floor dirty
     is_first_floor_dirty = True if self.get_state("binary_sensor.should_teuteu_run") == "on" else False
     # Are we cleaning right now ?
