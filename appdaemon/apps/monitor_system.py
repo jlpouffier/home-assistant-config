@@ -139,7 +139,9 @@ class monitor_system(hass.Hass):
             "sensor.capteur_ouverture_porte_fenetre_salon_battery",
             "sensor.capteur_ouverture_fenetre_cellier_battery",
             "sensor.capteur_ouverture_fenetre_cuisine_battery",
-            "sensor.capteur_ouverture_porte_entree_battery"]
+            "sensor.capteur_ouverture_porte_entree_battery",
+            "sensor.capteur_mouvement_litiere_battery",
+            "sensor.capteur_mouvement_boite_aux_lettres_battery"]
         
         for entity in entities_to_check:
             if int(self.get_state(entity)) < battery_threshold:
