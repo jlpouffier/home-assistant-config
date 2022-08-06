@@ -1,18 +1,18 @@
 # https://www.home-assistant.io/integrations/template/
 sensor:
-  - name: spiroo_last_cleaning_area
-    unique_id: spiroo_last_cleaning_area
-    state: "{{state_attr('vacuum.spiroo' , 'clean_area') | round(1,'half',0) }}"
+  - name: teuteu_last_cleaning_area
+    unique_id: teuteu_last_cleaning_area
+    state: "{{state_attr('vacuum.teuteu' , 'clean_area') | round(1,'half',0) }}"
     unit_of_measurement: "m2"
     icon: mdi:checkbox-blank-outline
 
-  - name: spiroo_cleaning_progress
-    unique_id: spiroo_cleaning_progress
+  - name: teuteu_cleaning_progress
+    unique_id: teuteu_cleaning_progress
     state: >-
-      {% if is_state('vacuum.spiroo', 'cleaning') -%}
-      {% set a = 100 / (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int - 100)%}
-      {% set b = 10000 / ( 100 - (state_attr("vacuum.spiroo", "battery_level_at_clean_end") | int )) %}
-      {% set list = (a * state_attr("vacuum.spiroo", "battery_level") | int + b) | round , 100 %}
+      {% if is_state('vacuum.teuteu', 'cleaning') -%}
+      {% set a = 100 / (state_attr("vacuum.teuteu", "battery_level_at_clean_end") | int - 100)%}
+      {% set b = 10000 / ( 100 - (state_attr("vacuum.teuteu", "battery_level_at_clean_end") | int )) %}
+      {% set list = (a * state_attr("vacuum.teuteu", "battery_level") | int + b) | round , 100 %}
       {{list | min}}
       {% else -%}
       100
@@ -58,4 +58,14 @@ binary_sensor:
   - name: is_litter_full
     unique_id: is_litter_full
     state: "{{states('input_number.litter_tracking') | float(default = 0) >= 5 }}"
+    device_class: problem
+
+  - name: should_teuteu_run
+    unique_id: should_teuteu_run
+    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 22 * 60 * 60 }}"
+    device_class: problem
+
+  - name: should_teuteu_run_urgently
+    unique_id: should_teuteu_run_urgently
+    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 3 * 24 * 60 * 60 }}"
     device_class: problem

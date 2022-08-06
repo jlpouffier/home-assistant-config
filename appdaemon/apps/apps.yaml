@@ -12,7 +12,7 @@ clean_house:
   module: clean_house
   class: clean_house
   hass_base_url: !secret hass_base_url
-  constrain_input_boolean: input_boolean.spiroo_planification_switch
+  constrain_input_boolean: input_boolean.teuteu_planification_switch
 
 wake_up:
   module: wake_up
