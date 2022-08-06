@@ -14,6 +14,8 @@ Notifications :
 . Home empty and doors / window still opened
 . Coffe maker on for more than 90 minutes > Turn off possible
 . Washing Machine over
+. Mailbox full
+. Cat Litter full
 
 """
 class monitor_home(hass.Hass): 
@@ -22,10 +24,14 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
     self.listen_state(self.callback_coffee_maker_on_since_too_long , "switch.coffeemaker" , new = "on", duration = 5400)
     self.listen_state(self.callback_washing_mashine_over, "binary_sensor.is_washing_machine_running" , old = "on", new = "off")
-    
+    self.listen_state(self.callback_mailbox_occupancy_detected, "binary_sensor.capteur_mouvement_boite_aux_lettres" , new = "on")
+    self.listen_state(self.callback_litter_occupancy_detected, "binary_sensor.capteur_mouvement_litiere" , new = "on")
+    self.listen_state(self.callback_litter_full, "binary_sensor.is_litter_full", new = "on")
+
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
+    self.listen_event(self.callback_button_clicked_reset_litter_tracking, "mobile_app_notification_action", action = "reset_litter_tracking")
     
     self.log("Monitor Home initialized")
     
@@ -158,6 +164,49 @@ class monitor_home(hass.Hass):
 
 
   """
+  Callback triggered when mailbox occupancy is detected
+  Goals :
+  . Send notification
+  """
+  def callback_mailbox_occupancy_detected(self, entity, attribute, old, new, kwargs):
+    self.log("Occupancy detected in the mailbox. Notifying it...")
+    self.fire_event("NOTIFIER",
+        action = "send_when_present",
+        title = "📬  Boite aux lettres",
+        message = "Vous avez du courrier !",
+        icon =  "mdi:mailbox-up",
+        color = "#07ffc1")
+  
+
+  """
+  Callback triggered when litter occupancy is detected
+  Goals :
+  . Increase litter tracking
+  """
+  def callback_litter_occupancy_detected(self, entity, attribute, old, new, kwargs):
+    self.log("Occupancy detected in the litter. Incrementing litter tracking...")
+    self.call_service("input_number/increment", entity_id = "input_number.litter_tracking")
+
+  """
+  Callback triggered when litter is full
+  Goals :
+  . notify is litter is full
+  """
+  def callback_litter_full(self, entity, attribute, old, new, kwargs):
+    self.log("Litter full. notifying it ...")
+    self.fire_event("NOTIFIER",
+        action = "send_when_present",
+        title = "🐈  Litière",
+        message = "Penser a nettoyer la litière !",
+        callback = [{
+          "title" : "Litière Nettoyée",
+          "event" : "reset_litter_tracking"}],
+        icon =  "mdi:cat",
+        color = "#ff6e07")
+
+
+
+  """
   Callback triggered when button "turn_off_lights" is clicked from a notification
   Goals :
   . Turn off all lights
@@ -183,4 +232,13 @@ class monitor_home(hass.Hass):
   def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off coffee maker")
     self.call_service("switch/turn_off" , entity_id = "switch.coffeemaker")
+
+  """
+  Callback triggered when button "reset_litter_tracking" is clicked from a notification
+  Goals :
+  . Reset Littter Tracking
+  """
+  def callback_button_clicked_reset_litter_tracking(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Resseting Litter Tracking")
+    self.call_service("input_number/set_value" , entity_id = "input_number.litter_tracking", value = 0)
     

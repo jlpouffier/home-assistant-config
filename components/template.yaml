@@ -50,7 +50,12 @@ binary_sensor:
 
   - name: is_washing_machine_running
     unique_id: is_washing_machine_running
-    state: "{{ states('sensor.machine_a_laver_power') | float(default = 0) > 5 }}"
+    state: "{{ states('sensor.machine_a_laver_power_2') | float(default = 0) > 5 }}"
     device_class: running
     delay_on: "0:01:00"
     delay_off: "0:01:00"
+
+  - name: is_litter_full
+    unique_id: is_litter_full
+    state: "{{states('input_number.litter_tracking') | float(default = 0) >= 5 }}"
+    device_class: problem
