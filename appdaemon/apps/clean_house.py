@@ -5,11 +5,9 @@ import datetime
 clean_house is an app responsible of the scheduling of TeuTeu and NeuNeu
 
 Functionalities :
-. Starts TeuTeu when needed 
-. Handle cancelation of cleaning if requested
+. Starts TeuTeu when needed
 
 Notifications :
-. Cleaning Scheduled > Start now or Cancel possible
 . Cleaning Started > RTH possible
 . Cleaning Finished
 . TeuTeu error
@@ -17,7 +15,9 @@ Notifications :
 """
 class clean_house(hass.Hass):
   def initialize(self):
-    self.listen_state(self.callback_home_empty_for_more_than_x_minutes, "binary_sensor.home_occupied", old = "on", nex= "off", duration = 600)
+    self.listen_state(self.callback_home_empty_for_more_than_x_minutes, "binary_sensor.home_occupied", old = "on", nex= "off", duration = 300)
+    self.listen_state(self.callback_first_floor_dirty, "binary_sensor.should_teuteu_run" , new = "on")
+    
     self.listen_state(self.callback_teuteu_started, "vacuum.teuteu" , old = "docked" , new = "cleaning")
     self.listen_state(self.callback_teuteu_cleaning_for_more_than_x_minutes, "vacuum.teuteu" , new = "cleaning", duration = 900)
     self.listen_state(self.callback_teuteu_finished, "vacuum.teuteu",  new = "docked")
@@ -25,62 +25,46 @@ class clean_house(hass.Hass):
     self.listen_state(self.callback_teuteu_idle, "vacuum.teuteu" , new = "idle" , duration = 1800)
     
     #Listen to button press from notification
-    self.listen_event(self.callback_button_clicked_cancel_planned_teuteu, "mobile_app_notification_action", action = "cancel_planned_teuteu")
-    self.listen_event(self.callback_button_clicked_cancel_planned_teuteu_and_start_now, "mobile_app_notification_action", action = "cancel_planned_teuteu_and_start_now")
     self.listen_event(self.callback_button_clicked_rth_teuteu, "mobile_app_notification_action", action = "rth_teuteu")
 
     self.log("House cleaning Automation initialized")
 
   """
-  Callback triggered when the home is empty for more than 30 minutes
+  Callback triggered when the home is empty for more than 5 minutes
   Goals :
-  . Check if the last clean-up was done more then 36 hours ago
+  . Check if home dirtly
   . Check if we are not cleaning right now
   . If all 2 conditions are met:
-    . Schedule cleaning in 30 minutes 
-    . Send a notification
+    . Start cleaning
   """ 
   def callback_home_empty_for_more_than_x_minutes(self, entity, attribute, old, new, kwargs):
-    self.log("Home empty for more than 10 minutes, checking if TeuTeu should clean the home now ... ")
-    # Home concidered Dirty if last clean-up was done more then 36 hours ago
-    now = self.datetime(True)
-    last_cleaning = self.parse_datetime(self.get_state("input_datetime.dernier_nettoyage_de_teuteu"), aware = True) 
-    diff = now - last_cleaning
-    is_home_dirty = True if diff > datetime.timedelta(hours = 36) else False
-
+    self.log("Home empty for more than 5 minutes, Checking if TeuTeu can run now ... ")
+    # Is First floor dirty
+    is_first_floor_dirty = True if self.get_state("binary_sensor.should_teuteu_run") == "on" else False
     # Are we cleaning right now ?
-    is_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
+    is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
 
-    if is_home_dirty  and not is_cleaning_right_now:
-      self.log("House cleaning will start in 30 minutes... Notifying it")
-      delay = 1800
-      # Schedule cleaning in 30 minutes via callback callback_cleaning
-      self.cleaning_handle = self.run_in(self.callback_cleaning, delay)
-      # Notify
-      self.fire_event("NOTIFIER",
-        action = "send_to_nearest",
-        title = "⏰ Nettoyage plannifié", 
-        message = "TeuTeu démarrera son nettoyage dans 30 minutes",
-        callback = [{
-          "title" : "Démarrer maintenant",
-          "event" : "cancel_planned_teuteu_and_start_now"},{
-          "title" : "Annuler le nettoyage",
-          "event" : "cancel_planned_teuteu"}],
-        click_url="/lovelace/teuteu",
-        timeout = delay,
-        icon = "mdi:robot-vacuum-variant")
+    if is_first_floor_dirty  and not is_teuteu_cleaning_right_now:
+      self.log("TeuTeu will start cleaning now ...")
+      self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
 
   """
-  Callback triggered 30 minutes after callback_home_empty_for_more_than_x_minutes if not cancelled
-  Goals : 
-  . Start TeuTeu
+  Callback triggered when the home is dirty
+  Goals :
+  . Check if home empty
+  . Check if we are not cleaning right now
+  . If all 2 conditions are met:
+    . Start cleaning
   """ 
-  def callback_cleaning(self, kwargs):
-    if self.get_state("binary_sensor.home_occupied") == 'on':
-      self.log("House cleaning canceled : Home occupied")
-    else:
-      self.log("House cleaning will start now")
-      # Start TeuTeu
+  def callback_first_floor_dirty(self, entity, attribute, old, new, kwargs):
+    self.log("First floor dirtly now ... Checking if TeuTeu can run now ...  ")
+    # Are we cleaning right now ?
+    is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
+    # Is home occupied ?
+    is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
+
+    if is_home_empty and not is_teuteu_cleaning_right_now:
+      self.log("TeuTeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
 
   """
@@ -162,33 +146,6 @@ class clean_house(hass.Hass):
         click_url="/lovelace/teuteu",
         icon =  "mdi:robot-vacuum-variant",
         color = "#ff6e07")
-
-
-  """
-  Callback triggered when button "cancel_planned_teuteu" is clicked from a notification
-  Goals :
-  . Cancel planned cleaning
-  """
-  def callback_button_clicked_cancel_planned_teuteu(self, event_name, data, kwargs):
-    self.log("Notification button clicked : canceling scheduled cleaning") 
-    self.log("House cleaning canceled")
-    # Cancel cleaning
-    self.cancel_timer(self.cleaning_handle)
-
-  """
-  Callback triggered when button "cancel_planned_teuteu_and_start_now" is clicked from a notification
-  Goals :
-  . Cancel planned cleaning
-  . Clean now
-  """
-  def callback_button_clicked_cancel_planned_teuteu_and_start_now(self, event_name, data, kwargs):
-    self.log("Notification button clicked : canceling scheduled cleaning and starting cleaning now") 
-    # Cancel cleaning
-    self.cancel_timer(self.cleaning_handle)
-    self.log("House cleaning will start now")
-    # Start TeuTeu
-    self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
-
 
   """
   Callback triggered when button "rth_teuteu" is clicked from a notification
