@@ -9,11 +9,12 @@ sensor: !include components/sensor.yaml
 binary_sensor: !include components/binary_sensor.yaml
 proximity: !include components/proximity.yaml
 template: !include components/template.yaml
+camera: !include components/camera.yaml
 
 # MISC
 http: !include misc/http.yaml
 recorder: !include misc/recorder.yaml
-    
+
 # AUTOMATIONS
 automation: !include automations.yaml
 

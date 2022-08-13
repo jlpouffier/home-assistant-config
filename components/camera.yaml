@@ -1,0 +1,39 @@
+- platform: xiaomi_cloud_map_extractor
+  name: NeuNeu Cleaning Map
+  host: !secret xiaomi_vacuum_ip
+  token: !secret xiaomi_token
+  username: !secret xiaomi_usr
+  password: !secret xiaomi_pwd
+  country: !secret xiaomi_server_country
+  draw:
+    - charger
+    - obstacles
+    - path
+    - vacuum_position
+  colors:
+    color_charger: [66, 245, 147]
+    color_map_outside: [0, 0, 0]
+    color_unknown: [0, 0, 0]
+    color_scan: [0, 0, 0]
+    color_map_wall_v2: [80, 80, 80]
+    color_grey_wall: [80, 80, 80]
+    color_map_wall: [80, 80, 80]
+    color_robo: [255, 255, 255]
+    color_obstacle: [80, 80, 80]
+    color_path: [82, 146, 242]
+
+  room_colors:
+    1: [255, 254, 227] #Cellier
+    2: [227, 255, 232] #SDB
+    3: [227, 230, 255] #Cuisine
+    4: [227, 253, 255] #Entrée
+    5: [245, 227, 255] #Salon
+
+  map_transformation:
+    scale: 5
+    rotate: 180
+
+  sizes:
+    charger_radius: 30
+    vacuum_radius: 25
+    path_width: 3

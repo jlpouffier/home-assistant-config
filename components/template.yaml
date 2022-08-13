@@ -6,19 +6,11 @@ sensor:
     unit_of_measurement: "m2"
     icon: mdi:checkbox-blank-outline
 
-  - name: teuteu_cleaning_progress
-    unique_id: teuteu_cleaning_progress
-    state: >-
-      {% if is_state('vacuum.teuteu', 'cleaning') -%}
-      {% set a = 100 / (state_attr("vacuum.teuteu", "battery_level_at_clean_end") | int - 100)%}
-      {% set b = 10000 / ( 100 - (state_attr("vacuum.teuteu", "battery_level_at_clean_end") | int )) %}
-      {% set list = (a * state_attr("vacuum.teuteu", "battery_level") | int + b) | round , 100 %}
-      {{list | min}}
-      {% else -%}
-      100
-      {%- endif %}
-    unit_of_measurement: "%"
-    icon: "mdi:progress-clock"
+  - name: neuneu_last_cleaning_area
+    unique_id: neuneu_last_cleaning_area
+    state: "{{state_attr('vacuum.neuneu' , 'vacuum_extend.cleaning_area') | round(1,'half',0) }}"
+    unit_of_measurement: "m2"
+    icon: mdi:checkbox-blank-outline
 
 binary_sensor:
   - name: home_occupied
@@ -39,6 +31,10 @@ binary_sensor:
   - name: is_tv_used
     unique_id: is_tv_used
     state: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
+
+  - name: is_tv_on
+    unique_id: is_tv_on
+    state: "{{not (is_state('media_player.philips_android_tv', 'off') or is_state('media_player.philips_android_tv', 'unavailable') or is_state('media_player.philips_android_tv', 'unknown'))}}"
 
   - name: is_ps5_used
     unique_id: is_ps5_used
@@ -68,4 +64,14 @@ binary_sensor:
   - name: should_teuteu_run_urgently
     unique_id: should_teuteu_run_urgently
     state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 3 * 24 * 60 * 60 }}"
+    device_class: problem
+
+  - name: should_neuneu_run
+    unique_id: should_neuneu_run
+    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 1 * 24 * 60 * 60 }}"
+    device_class: problem
+
+  - name: should_neuneu_run_urgently
+    unique_id: should_neuneu_run_urgently
+    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 3 * 24 * 60 * 60 }}"
     device_class: problem
