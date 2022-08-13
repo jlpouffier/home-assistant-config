@@ -1,60 +1,60 @@
 lights_set_livingroom_kitchen_regular:
   alias: lights_set_livingroom_kitchen_regular
   sequence:
-  - service: hue.activate_scene
-    data:
-      transition: 2
-    target:
-      entity_id:
-      - scene.salon_salon_100
-      - scene.entree_entree_100
-      - scene.cuisine_cuisine_100
+    - service: hue.activate_scene
+      data:
+        transition: 2
+      target:
+        entity_id:
+          - scene.salon_salon_100
+          - scene.entree_entree_100
+          - scene.cuisine_cuisine_100
   mode: restart
 lights_set_tv:
   alias: lights_set_tv
   sequence:
-  - data:
-      transition: 2
-    service: light.turn_off
-    target:
-      entity_id:
-      - light.cuisine
-      - light.entree
-  - service: hue.activate_scene
-    data:
-      transition: 2
-    target:
-      entity_id: scene.salon_salon_tv_playing
+    - data:
+        transition: 2
+      service: light.turn_off
+      target:
+        entity_id:
+          - light.cuisine
+          - light.entree
+    - service: hue.activate_scene
+      data:
+        transition: 2
+      target:
+        entity_id: scene.salon_salon_tv_playing
   mode: restart
 lights_set_tv_paused:
   alias: lights_set_tv_paused
   sequence:
-  - service: hue.activate_scene
-    data:
-      transition: 2
-    target:
-      entity_id:
-      - scene.cuisine_cuisine_tv_paused
-      - scene.entree_entree_tv_paused
-      - scene.salon_salon_tv_paused
+    - service: hue.activate_scene
+      data:
+        transition: 2
+      target:
+        entity_id:
+          - scene.cuisine_cuisine_tv_paused
+          - scene.entree_entree_tv_paused
+          - scene.salon_salon_tv_paused
   mode: restart
-'1619802584518':
+"1619802584518":
   alias: Quitter l'appartement
   sequence:
-  - service: light.turn_off
-    data:
-      transition: 2
-    target:
-      entity_id:
-      - light.all_lights
-  - service: media_player.turn_off
-    target:
-      entity_id: media_player.philips_android_tv
-    data: {}
-  - service: switch.turn_off
-    target:
-      entity_id:
-      - switch.coffeemaker
-    data: {}
+    - service: light.turn_off
+      data:
+        transition: 2
+      target:
+        entity_id:
+          - light.all_lights
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.philips_android_tv
+      data: {}
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.coffeemaker
+      data: {}
   mode: single
   icon: mdi:home-import-outline
