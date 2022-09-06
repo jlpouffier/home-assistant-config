@@ -4,7 +4,7 @@ import hassapi as hass
 monitor_home is an app responsible of the monitoring the home 
 
 Functionalities :
-. RTH Spirro if home becomes occupied
+. RTH Vacuums if home becomes occupied
 . Stop presence simulator if home becomes occupied
 
 Notifications :
@@ -117,7 +117,7 @@ class monitor_home(hass.Hass):
   Callback triggered when the home becomes occupied
   Goals :
   . Stop presence simulator (If turned on)
-  . Stop Spiroo (if spirroo  on) 
+  . Stop Vacuums (if cleaning) 
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     self.log("Detecting home occupied...")
@@ -125,10 +125,15 @@ class monitor_home(hass.Hass):
       self.log("Stopping Presence Simulator")
       self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
 
-    if self.get_state("vacuum.spiroo") == 'cleaning':
-      # Stopping Spiroo
-      self.log("RTH Spirro") 
-      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.spiroo")
+    if self.get_state("vacuum.teuteu") == 'cleaning':
+      # Stopping TeuTeu
+      self.log("RTH TeuTeu") 
+      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
+    
+    if self.get_state("vacuum.neuneu") == 'cleaning':
+      # Stopping NeuNeu
+      self.log("RTH NeuNeu") 
+      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
 
   """
   Callback triggered when coffee maker on for more than 90 minutes
@@ -203,8 +208,6 @@ class monitor_home(hass.Hass):
           "event" : "reset_litter_tracking"}],
         icon =  "mdi:cat",
         color = "#ff6e07")
-
-
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification
