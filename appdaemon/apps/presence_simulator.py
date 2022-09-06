@@ -103,8 +103,3 @@ class presence_simulator(hass.Hass):
   def callback_sleep(self, kwargs):
     self.log("Simulating : Sleeping")
     self.call_service("light/turn_off" , entity_id = "light.all_lights")
-
-
-
-
-  

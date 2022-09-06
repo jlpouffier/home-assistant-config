@@ -75,7 +75,8 @@ class monitor_system(hass.Hass):
                     title = "🎉 Mise a jour HACS disponible",
                     message = "Une mise a jour HACS est disponible",
                     click_url = "/hacs/entry",
-                    icon = "mdi:cellphone-arrow-down")
+                    icon = "mdi:cellphone-arrow-down",
+                    persistent = True)
 
     """
     Callback triggered when a power issue is detected on the RPI
@@ -89,7 +90,8 @@ class monitor_system(hass.Hass):
             title = "🔌 Alimentation Home Assistant",
             message = "Problème détecté sur l'alimentation de Home Assistant",
             icon = "mdi:power-plug",
-            color = "#ff6e07")
+            color = "#ff6e07",
+            persistent = True)
     """
     Callback triggered when the last available back-up is older than 24 hours.
     Goals :
@@ -108,7 +110,8 @@ class monitor_system(hass.Hass):
                 message = "La sauverage journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
                 click_url = "/lovelace-system/overview",
                 icon =  "mdi:cloud-upload",
-                color = "#ff6e07")
+                color = "#ff6e07",
+                persistent = True)
 
     """
     Callback triggered when the last available back-up is older than 24 hours.
@@ -143,13 +146,29 @@ class monitor_system(hass.Hass):
             "sensor.capteur_mouvement_litiere_battery",
             "sensor.capteur_mouvement_boite_aux_lettres_battery"]
         
+        entities_to_notify = []
+
         for entity in entities_to_check:
             if int(self.get_state(entity)) < battery_threshold:
-                self.log("Low battery... Notifying it")
                 friendly_name = self.get_state(entity, attribute = "friendly_name")
-                self.fire_event("NOTIFIER",
-                    action = "sent_to_jl",
-                    title = "Batterie 🪫",
-                    message= "Pensez a changer les piles de l'appareil suivant: " + friendly_name,
-                    icon =  "mdi:battery-20",
-                    color = "#ff6e07")
+                entities_to_notify.append(friendly_name)
+            
+        if len(entities_to_notify) == 1:
+            self.log("Low battery... Notifying it")
+            self.fire_event("NOTIFIER",
+                action = "sent_to_jl",
+                title = "Batterie 🪫",
+                message= "Pensez a changer les piles de l'appareil suivant: " + entities_to_notify[0],
+                icon =  "mdi:battery-20",
+                color = "#ff6e07",
+                persistent = True)
+        
+        elif len(entities_to_notify) > 1:
+            self.log("Low battery... Notifying it")
+            self.fire_event("NOTIFIER",
+                action = "sent_to_jl",
+                title = "Batterie 🪫",
+                message= "Pensez a changer les piles des appareils suivants: " + ", ".join(entities_to_notify),
+                icon =  "mdi:battery-20",
+                color = "#ff6e07",
+                persistent = True)

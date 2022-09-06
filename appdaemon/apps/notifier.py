@@ -5,7 +5,6 @@ import math
 
 Grammar : 
 action: notify_jl
-label: lights_still_on
 title: TITLE
 message: MESSAGE
 callback:
@@ -18,12 +17,16 @@ image_url: url
 click_url: url
 icon: mdi:icon
 color: color
+tag: tag
+persistent: True
 
 """
 class notifier(hass.Hass): 
     def initialize(self):
         # Listen to all NOTIFIER events
         self.listen_event(self.callback_notifier_called , "NOTIFIER")
+        self.listen_event(self.callback_button_clicked, "mobile_app_notification_action")
+        self.listen_event(self.callback_notification_cleared, "mobile_app_notification_cleared")
         
         self.staged_notifications = []
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
@@ -58,6 +61,24 @@ class notifier(hass.Hass):
             #send_to_jl
             self.send_to_jl(data)
         
+        if "persistent" in data:
+            if data["persistent"]:
+                self.log("Persisting the notification on Home Assistant Front-end ...")
+                self.call_service("notify/persistent_notification", title = data["title"], message = data["message"])
+    
+    def callback_button_clicked(self, event_name, data, kwargs):
+        if "tag" in data:
+            self.clear_notifications(data["tag"])
+
+    def callback_notification_cleared(self, event_name, data, kwargs):
+        if "tag" in data:
+            self.clear_notifications(data["tag"])
+    
+    def clear_notifications(self, tag):
+        notification_data = {}
+        notification_data["tag"] = tag
+        self.call_service("notify/mobile_app_pixel_6", message = "clear_notification", data = notification_data)
+        self.call_service("notify/mobile_app_pixel_4a", message = "clear_notification", data = notification_data)
         
     def build_notification_data(self, data):
         notification_data = {}
@@ -69,22 +90,18 @@ class notifier(hass.Hass):
                     "title":callback["title"]
                 }
                 notification_data["actions"].append(action)
-
         if "timeout" in data:
             notification_data["timeout"] = data["timeout"]
-        
         if "click_url" in data:
             notification_data["clickAction"] = data["click_url"]
-        
         if "image_url" in data:
             notification_data["image"] = data["image_url"]
-
         if "icon" in data:
             notification_data["notification_icon"] = data["icon"]
-        
         if "color" in data:
             notification_data["color"] = data["color"]
-        
+        if "tag" in data:
+            notification_data["tag"] = data["tag"]
         return notification_data
     
     def send_to_jl(self, data):
@@ -113,14 +130,11 @@ class notifier(hass.Hass):
         jl_proximity = int(self.get_state("proximity.distance_jl_home"))
         valentine_proximity = int(self.get_state("proximity.distance_valentine_home"))
         proximity_threshold = 1
-        
         if math.fabs(jl_proximity - valentine_proximity) <= proximity_threshold:
             self.send_to_jl(data)
             self.send_to_valetnine(data)
-        
         elif jl_proximity < valentine_proximity:
             self.send_to_jl(data)
-        
         elif valentine_proximity < jl_proximity:
             self.send_to_valetnine(data)
     

@@ -142,7 +142,8 @@ class wake_up(hass.Hass):
             "title" : "Oui",
             "event" : "set_new_wake_up_time"}],
           click_url="/lovelace/night",
-          icon = "mdi:alarm")
+          icon = "mdi:alarm",
+          tag = "jl_phone_alarm_changed")
 
   """
   Callback triggered when button "set_new_wake_up_time" is clicked from a notification
@@ -154,6 +155,3 @@ class wake_up(hass.Hass):
     new_time = (self.convert_utc(new_time) + datetime.timedelta(minutes = self.get_tz_offset())).time()
     self.log("Notification button clicked : Setting wake_up_time to JL's phone alarm time ... ") 
     self.call_service("input_datetime/set_datetime", entity_id = 'input_datetime.wake_up_time', time = new_time)
-
-        
-

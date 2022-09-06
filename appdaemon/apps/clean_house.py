@@ -41,11 +41,6 @@ class clean_house(hass.Hass):
     self.listen_event(self.callback_button_clicked_rth_neuneu, "mobile_app_notification_action", action = "rth_neuneu")
     self.listen_event(self.callback_button_clicked_start_neuneu, "mobile_app_notification_action", action = "start_neuneu")
 
-
-    #NEUNEU
-    # Listen to all NOTIFIER events
-    
-    
     self.log("House cleaning Automation initialized")
 
   """
@@ -113,7 +108,8 @@ class clean_house(hass.Hass):
         "event" : "start_neuneu"}],
       click_url="/lovelace/vacuums",
       icon = "mdi:liquid-spot",
-      color = "#ff6e07")
+      color = "#ff6e07",
+      tag = "first_floor_very_dirty")
 
   """
   Callback triggered when the second floor is dirty
@@ -150,7 +146,8 @@ class clean_house(hass.Hass):
         "event" : "start_teuteu"}],
       click_url="/lovelace/vacuums",
       icon = "mdi:liquid-spot",
-      color = "#ff6e07")
+      color = "#ff6e07",
+      tag = "second_floor_very_dirty")
 
   """
   Callback triggered when a vacuum is starting
@@ -177,7 +174,8 @@ class clean_house(hass.Hass):
         "title" : "Arrêter " + vacuum_name,
         "event" : event}],
       click_url="/lovelace/vacuums",
-      icon = icon)
+      icon = icon,
+      tag = vacuum_name.lower())
 
 
 
@@ -226,7 +224,8 @@ class clean_house(hass.Hass):
         image_url = cleaned_map,
         click_url="/lovelace/vacuums",
         icon =  icon,
-        color = "#07ffc1")
+        color = "#07ffc1",
+        tag = vacuum_name.lower())
 
 
         
@@ -249,7 +248,8 @@ class clean_house(hass.Hass):
         image_url = current_location,
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum-variant",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "teuteu")
     
     if entity == "vacuum.neuneu":
       # TO EXPLORE ONCE NEUNEU STARTS RAISING ERRORS
@@ -259,7 +259,8 @@ class clean_house(hass.Hass):
         title = "⚠️ NeuNeu est en erreur", 
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "neuneu")
 
   """
   Callback triggered when is not on the dock since more than 30 mintues
@@ -275,7 +276,8 @@ class clean_house(hass.Hass):
         message = "Je detecte que TeuTeu n'est plus sur sa base depuis plus de 30 minutes",
         click_url="/lovelace/vacuums",
         icon =  "mdi:robot-vacuum-variant",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "teuteu")
 
   """
   Callback triggered when button "rth_teuteu" is clicked from a notification
@@ -336,4 +338,3 @@ class clean_house(hass.Hass):
       return translations[status]
     else:
       return status
-    

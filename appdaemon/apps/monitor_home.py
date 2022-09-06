@@ -54,7 +54,8 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_lights"}],
         click_url="/lovelace/apercu",
         icon =  "mdi:lightbulb-alert",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "home_empty_lights_still_on")
 
     # test if TV is still on
     if self.get_state("media_player.philips_android_tv") not in ["off", "standby", "unavailable"]:
@@ -68,7 +69,8 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_tv"}],
         click_url="/lovelace/day",
         icon =  "mdi:television",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "home_empty_tv_still_on")
 
     # test is coffe maker still on
     if self.get_state("switch.coffeemaker") == "on":
@@ -82,36 +84,60 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_coffee_maker"}],
         click_url="/lovelace/day",
         icon =  "mdi:coffee",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "home_empty_cofee_maker_still_on")
 
-    # test if doors or windows are still open
+    # test if doors are still open
     if self.get_state("binary_sensor.all_doors") == "on":
       self.log("... some doors are still opened. notifying it")
       doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
+      open_doors = []
       for door in doors:
         if self.get_state(door) == "on":
           friendly_name_door = self.get_state(door, attribute = "friendly_name")
-          self.fire_event("NOTIFIER",
-            action = "send_to_nearest",
-            title = "️🚪 Porte ouverte !", 
-            message = "La " + friendly_name_door + " est toujours ouverte alors que personne n'est présent !",
-            icon =  "mdi:door-open",
-            color = "#ff6e07")
-    
+          open_doors.append(friendly_name_door)
+      if len(open_doors) == 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_nearest",
+          title = "️🚪 Porte ouverte !", 
+          message = "La " + open_doors[0] + " est toujours ouverte alors que personne n'est présent !",
+          icon =  "mdi:door-open",
+          color = "#ff6e07",
+          tag = "home_empty_door_open")
+      elif len(open_doors) > 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_nearest",
+          title = "️🚪 Porte ouverte !", 
+          message = "Les portes suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_doors),
+          icon =  "mdi:door-open",
+          color = "#ff6e07",
+          tag = "home_empty_door_open")
+
+    # test if windows are still open
     if self.get_state("binary_sensor.all_windows") == "on":
       self.log("... some windows are still opened. notifying it")
       windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
+      open_windows = []
       for window in windows:
         if self.get_state(window) == "on":
           friendly_name_window = self.get_state(window, attribute = "friendly_name")
-          self.fire_event("NOTIFIER",
-            action = "send_to_nearest",
-            title = "️🚪 Fenêtre ouverte !", 
-            message = "La " + friendly_name_window + " est toujours ouverte alors que personne n'est présent !",
-            icon =  "mdi:window-open",
-            color = "#ff6e07")
-
-
+          open_windows.append(friendly_name_window)
+      if len(open_windows) == 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_nearest",
+          title = "️🚪 Fenêtre ouverte !", 
+          message = "La " + open_windows[0] + " est toujours ouverte alors que personne n'est présent !",
+          icon =  "mdi:window-open",
+          color = "#ff6e07",
+          tag = "home_empty_window_open")
+      elif len(open_windows) > 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_nearest",
+          title = "️🚪 Fenêtre ouverte !", 
+          message = "Les fenêtres suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_windows),
+          icon =  "mdi:window-open",
+          color = "#ff6e07",
+          tag = "home_empty_window_open")
 
   """
   Callback triggered when the home becomes occupied
@@ -151,7 +177,8 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_coffee_maker"}],
         click_url="/lovelace/day",
         icon = "mdi:coffee",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "coffee_maker_on_since_too_long")
 
   """
   Callback triggered when washing machine is over
@@ -165,7 +192,8 @@ class monitor_home(hass.Hass):
         title = "🫧 Machine à laver",
         message = "Cycle de lavage terminé !",
         icon =  "mdi:washing-machine",
-        color = "#07ffc1")
+        color = "#07ffc1",
+        tag = "washing_mashine_over")
 
 
   """
@@ -180,7 +208,8 @@ class monitor_home(hass.Hass):
         title = "📬  Boite aux lettres",
         message = "Vous avez du courrier !",
         icon =  "mdi:mailbox-up",
-        color = "#07ffc1")
+        color = "#07ffc1",
+        tag = "you_got_mail")
   
 
   """
@@ -207,7 +236,8 @@ class monitor_home(hass.Hass):
           "title" : "Litière Nettoyée",
           "event" : "reset_litter_tracking"}],
         icon =  "mdi:cat",
-        color = "#ff6e07")
+        color = "#ff6e07",
+        tag = "litter_full")
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification
@@ -244,4 +274,3 @@ class monitor_home(hass.Hass):
   def callback_button_clicked_reset_litter_tracking(self, event_name, data, kwargs):
     self.log("Notification button clicked : Resseting Litter Tracking")
     self.call_service("input_number/set_value" , entity_id = "input_number.litter_tracking", value = 0)
-    
