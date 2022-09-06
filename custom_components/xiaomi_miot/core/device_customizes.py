@@ -122,6 +122,12 @@ DEVICE_CUSTOMIZES = {
             'indicator_light.on': {'siid': 3, 'piid': 1},
         },
     },
+    'cuco.plug.cp2:power_cost_today': {
+        'value_ratio': 0.001,
+    },
+    'cuco.plug.cp2:power_cost_month': {
+        'value_ratio': 0.001,
+    },
     'cuco.plug.cp2a': {
         'main_miot_services': 'switch-2',
     },
@@ -144,6 +150,9 @@ DEVICE_CUSTOMIZES = {
         'sensor_properties': 'voltage,electric_current',
         'sensor_attributes': 'power_cost_today,power_cost_month',
         'stat_power_cost_key': '10.1',
+    },
+    'cuco.plug.cp5pro:electric_current': {
+        'unit_of_measurement': 'A',
     },
     'cuco.plug.cp5pro:power_cost_today': {
         'value_ratio': 1,
@@ -195,6 +204,10 @@ DEVICE_CUSTOMIZES = {
         'state_class': 'measurement',
         'device_class': 'voltage',
         'unit_of_measurement': 'V',
+    },
+    'cuco.switch.*': {
+        'main_miot_services': 'switch-2',
+        'exclude_miot_services': 'setting,wireless_switch',
     },
     'deerma.humidifier.jsq5': {
         'chunk_properties': 4,
@@ -502,6 +515,12 @@ DEVICE_CUSTOMIZES = {
     'suittc.airrtc.wk168': {
         'switch_properties': 'on',
     },
+    'topwit.bhf_light.rz01': {
+        'main_miot_services': 'light-2',
+        'sensor_properties': 'temperature',
+        'switch_properties': 'heating,blow,ventilation',
+        'number_properties': 'ventilation_cnt_down',
+    },
     'viomi.vacuum.*': {
         'sensor_attributes': 'miio.s_area,miio.s_time',
         'sensor_properties': 'vacuum.status,main_brush_life,side_brush_life,hypa_life,mop_life',
@@ -518,6 +537,10 @@ DEVICE_CUSTOMIZES = {
     'wise.wifispeaker.x7': {
         'switch_properties': 'key_one,key_two,key_three,key_four,key_five,key_six,key_seven,key_eight,key_nine,'
                              'key_ten,key_eleven,key_twelve,key_thirteen,key_fourteen,key_fifteen,key_sixteen',
+    },
+    'xiaomi.aircondition.mt0': {
+        'exclude_miot_services': 'iot_linkage,machine_state,screen_show',
+        'exclude_miot_properties': 'enhance.timer,humidity_range,filter_core_rest,sleep_diy_sign',
     },
     'xiaomi.aircondition.mt6': {
         'exclude_miot_services': 'iot_linkage,machine_state,screen_show',
@@ -578,6 +601,10 @@ DEVICE_CUSTOMIZES = {
         'select_properties': 'mode',
         'number_properties': 'speed_level,clamp_strength',
         'target2current_position': True,
+    },
+    'yunmi.ysj.*': {
+        'switch_properties': 'icing,child_lock,drink_remind,switch_button,buzzer_enable',
+        'number_properties': 'store_timeout',
     },
     'zhimi.airfresh.*': {
         'switch_properties': 'heater,alarm',
@@ -668,7 +695,7 @@ DEVICE_CUSTOMIZES = {
     },
     'zinguo.switch.b5m': {
         'main_miot_services': 'switch-2',
-        'sensor_attributes': 'temperature',
+        'sensor_properties': 'temperature',
         'switch_properties': 'heating,blow,ventilation',
         'select_properties': 'link',
         'light_services': 'light',
@@ -714,7 +741,21 @@ DEVICE_CUSTOMIZES = {
         'select_properties': 'mode,desk_control',
         'number_properties': 'altitude,target_height,stand_height,sit_height,target_position',
     },
+    '*.dishwasher.*': {
+        'sensor_properties': 'temperature,left_time,door_state,soft_water_salt,tds',
+        'switch_properties': 'on,dryer,auto_dryer',
+        'select_properties': 'mode',
+        'button_actions': 'start_wash,pause,stop_washing',
+    },
     '*.door.*': {},
+    '*.dry.*': {
+        'sensor_properties': 'temperature,left_time',
+        'switch_properties': 'on,uv',
+        'select_properties': 'mode,drying_level',
+        'number_properties': 'drying_time,delaytime',
+        'button_actions': 'start_drying,pause',
+    },
+    '*.dryer.*': {},
     '*.f_washer.*': {
         'sensor_properties': 'left_time,water',
         'switch_properties': 'on',
@@ -825,4 +866,5 @@ DEVICE_CUSTOMIZES = {
 
 DEVICE_CUSTOMIZES.update({
     '*.door.*': DEVICE_CUSTOMIZES.get('*.lock.*') or {},
+    '*.dryer.*': DEVICE_CUSTOMIZES.get('*.dry.*') or {},
 })
