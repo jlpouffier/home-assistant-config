@@ -24,7 +24,7 @@ class watch_tv(hass.Hass):
 
     # log
     self.log("Watch TV Automations initialized")
- 
+
   """
   Callback triggered when the sun is below horizon
   Goals :
@@ -48,7 +48,8 @@ class watch_tv(hass.Hass):
   """
   def callback_stop_automations(self, entity, attribute, old, new, kwargs):
     # Deregister TV state change callbacks
-    for handle in self.state_handles:
+    while len(self.state_handles) >=1:
+      handle = self.state_handles.pop()
       self.cancel_listen_state(handle)
 
     self.log("Watch TV Automations stopping for now ...")
