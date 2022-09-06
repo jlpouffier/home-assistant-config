@@ -14,13 +14,8 @@ Notifications :
 """
 class clean_house(hass.Hass):
   def initialize(self):
-    '''
-    Minimum Cleaning Duration. 
-    If the vacuum stops before, it will be restarted in fallback mode (Teuteu only). 
-    If it cleans for more, the cleaning will be concidered sucessful
-    '''
+    # Minimum Cleaning Duration. 
     self.minimum_cleaning_duration = 15 * 60
-    self.teuteu_start_ts = self.get_now_ts()
 
     self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off", immediate = True)
     self.listen_state(self.callback_first_floor_dirty, "binary_sensor.should_neuneu_run" , new = "on", immediate = True)
@@ -30,15 +25,15 @@ class clean_house(hass.Hass):
     
     # Shared callbacks between TeuTeu and NeuNeu
     self.listen_state(self.callback_vacuum_started, "vacuum" , new = "cleaning")
-    self.listen_state(self.callback_vacuum_cleaning_for_more_than_x_minutes, "vacuum" , new = "cleaning", duration = self.minimum_cleaning_duration)
     self.listen_state(self.callback_vacuum_finished, "vacuum",  new = "docked")
     self.listen_state(self.callback_vacuum_error, "vacuum" , new = "error", immediate = True)
 
     # TEUTEU CALLBACKS
+    self.listen_state(self.callback_vacuum_cleaning_for_more_than_x_minutes, "vacuum.teuteu" , new = "cleaning", duration = self.minimum_cleaning_duration)
     self.listen_state(self.callback_teuteu_idle, "vacuum.teuteu" , new = "idle" , duration = 1800)
 
     # NEUNEU CALLBACKS
-
+    self.listen_state(self.callback_vacuum_cleaning_for_more_than_x_minutes, "vacuum.neuneu" , new = "cleaning", duration = self.minimum_cleaning_duration)
 
     #Listen to button press from notification
     self.listen_event(self.callback_button_clicked_rth_teuteu, "mobile_app_notification_action", action = "rth_teuteu")
@@ -77,7 +72,7 @@ class clean_house(hass.Hass):
 
     if is_second_floor_dirty  and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
-      self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
     
     if is_first_floor_dirty and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
@@ -137,7 +132,7 @@ class clean_house(hass.Hass):
 
     if is_home_empty and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
-      self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
 
   """
   Callback triggered when the second floor is very dirty
@@ -167,8 +162,6 @@ class clean_house(hass.Hass):
       event = "rth_teuteu"
       vacuum_name = "TeuTeu"
       icon = "mdi:robot-vacuum-variant"
-      # Saving start time time for potential fallback
-      self.teuteu_start_ts = self.get_now_ts()
 
     if entity == "vacuum.neuneu":
       event = "rth_neuneu"
@@ -212,35 +205,30 @@ class clean_house(hass.Hass):
     if old in ["paused", "cleaning", "returning"]:
       now = self.get_now_ts()
 
-      if now - self.teuteu_start_ts >= self.minimum_cleaning_duration:
-        self.log("Detecting that a vacuum has finished. Notifying it...")
+      self.log("Detecting that a vacuum has finished. Notifying it...")
 
-        if entity == "vacuum.teuteu":
-          area_cleaned = self.get_state("sensor.teuteu_last_cleaning_area")
-          cleaned_map = self.args["hass_base_url"] + self.get_state("camera.teuteu_cleaning_map" , attribute = "entity_picture")
-          vacuum_name = "TeuTeu"
-          icon = "mdi:robot-vacuum-variant"
-        
-        if entity == "vacuum.neuneu":
-          area_cleaned = self.get_state("sensor.neuneu_last_cleaning_area")
-          cleaned_map = self.args["hass_base_url"] + self.get_state("camera.neuneu_cleaning_map" , attribute = "entity_picture")
-          vacuum_name = "NeuNeu"
-          icon = "mdi:robot-vacuum"
-        
-        self.fire_event("NOTIFIER",
-          action = "send_to_nearest",
-          title = "✅ " + vacuum_name + "a terminé",
-          message = "Surface nettoyée: " + area_cleaned + "m2",
-          image_url = cleaned_map,
-          click_url="/lovelace/vacuums",
-          icon =  icon,
-          color = "#07ffc1")
+      if entity == "vacuum.teuteu":
+        area_cleaned = self.get_state("sensor.teuteu_last_cleaning_area")
+        cleaned_map = self.args["hass_base_url"] + self.get_state("camera.teuteu_cleaning_map" , attribute = "entity_picture")
+        vacuum_name = "TeuTeu"
+        icon = "mdi:robot-vacuum-variant"
+      
+      if entity == "vacuum.neuneu":
+        area_cleaned = self.get_state("sensor.neuneu_last_cleaning_area")
+        cleaned_map = self.args["hass_base_url"] + self.get_state("camera.neuneu_cleaning_map" , attribute = "entity_picture")
+        vacuum_name = "NeuNeu"
+        icon = "mdi:robot-vacuum"
+      
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "✅ " + vacuum_name + "a terminé",
+        message = "Surface nettoyée: " + area_cleaned + "m2",
+        image_url = cleaned_map,
+        click_url="/lovelace/vacuums",
+        icon =  icon,
+        color = "#07ffc1")
 
-      else:
-        if entity == "vacuum.teuteu":
-          self.log("Detecting that TeuTeu has finished too soon. Restarting it in fallback mode")
-          self.teuteu_start_ts = 0
-          self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
+
         
 
   """
@@ -264,9 +252,10 @@ class clean_house(hass.Hass):
         color = "#ff6e07")
     
     if entity == "vacuum.neuneu":
-      # TO EXPLORE ONCE NEUNEU IS IN ERROR
+      # TO EXPLORE ONCE NEUNEU STARTS RAISING ERRORS
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
+        message = "NeuNeu est en erreur",
         title = "⚠️ NeuNeu est en erreur", 
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum",
@@ -295,10 +284,6 @@ class clean_house(hass.Hass):
   """
   def callback_button_clicked_rth_teuteu(self, event_name, data, kwargs):
     self.log("Notification button clicked : RTH TeuTeu") 
-
-    # Set self.teuteu_start_ts to 0 so that TeuTeu does not start again
-    self.teuteu_start_ts = 0
-
     # RTH TeuTeu
     self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
 
@@ -309,7 +294,7 @@ class clean_house(hass.Hass):
   """
   def callback_button_clicked_start_teuteu(self, event_name, data, kwargs):
     self.log("Notification button clicked : Start TeuTeu") 
-    self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+    self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
 
   """
   Callback triggered when button "rth_neuneu" is clicked from a notification
