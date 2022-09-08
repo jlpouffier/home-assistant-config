@@ -28,7 +28,7 @@ until:
  - entity_id: <string>
    new_state: <string>
 
-Here are detialed explanation for every field:
+Here are detailed explanations for every fields:
 
 action can be the following:
 - send_to_jl: Send a notification directly to JL
