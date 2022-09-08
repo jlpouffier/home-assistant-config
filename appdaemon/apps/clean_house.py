@@ -109,7 +109,10 @@ class clean_house(hass.Hass):
       click_url="/lovelace/vacuums",
       icon = "mdi:liquid-spot",
       color = "#ff6e07",
-      tag = "first_floor_very_dirty")
+      tag = "first_floor_very_dirty",
+      until =  [{
+        "entity_id" : "vacuum.neuneu",
+        "new_state" : "cleaning"}])
 
   """
   Callback triggered when the second floor is dirty
@@ -147,7 +150,10 @@ class clean_house(hass.Hass):
       click_url="/lovelace/vacuums",
       icon = "mdi:liquid-spot",
       color = "#ff6e07",
-      tag = "second_floor_very_dirty")
+      tag = "second_floor_very_dirty",
+      until =  [{
+        "entity_id" : "vacuum.teuteu",
+        "new_state" : "cleaning"}])
 
   """
   Callback triggered when a vacuum is starting
@@ -277,7 +283,10 @@ class clean_house(hass.Hass):
         click_url="/lovelace/vacuums",
         icon =  "mdi:robot-vacuum-variant",
         color = "#ff6e07",
-        tag = "teuteu")
+        tag = "teuteu",
+        until =  [{
+          "entity_id" : "vacuum.teuteu",
+          "new_state" : "docked"}])
 
   """
   Callback triggered when button "rth_teuteu" is clicked from a notification

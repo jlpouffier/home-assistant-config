@@ -2,25 +2,89 @@ import hassapi as hass
 import math
 
 """
-
-Grammar : 
-action: notify_jl
-title: TITLE
-message: MESSAGE
+ 
+Notify is an app responsible for notifying the right occupant(s) at the right time, and making sure to discard notifications once they are not relevant anymore.
+ 
+The complete app can be called from anywhere by sending a custom event NOTIFIER with the following grammar:
+ 
+action: <string>
+title: <string>
+message: <string>
 callback:
-  - title: TITLE
-    event: CALLBACK_EVENT
-  - title: TITLE2
-    event: CALLBACK_EVENT2
-timeout: 1800
-image_url: url
-click_url: url
-icon: mdi:icon
-color: color
-tag: tag
-persistent: True
+ - title: <string>
+   event: <string>
+ - title: <string>
+   event: <string>
+timeout: <number>
+image_url: <url>
+click_url: <url>
+icon: <string>
+color: <string>
+tag: <string>
+persistent: <boolean>
+until:
+ - entity_id: <string>
+   new_state: <string>
+ - entity_id: <string>
+   new_state: <string>
 
+Here are detialed explanation for every field:
+
+action can be the following:
+- send_to_jl: Send a notification directly to JL
+- send_to_valentine: Send a notification directly to Valentine
+- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_jl in case the home is empty
+- send_to_nearest: Send a notification to the nearest occupant(s) of the home
+- send_when_present:
+   - if the home is occupied: Send a notification directly to all present occupant of the home
+   - if the home is empty: Stage the notification and send it once the home becomes occupied
+If action is omitted, or if action has any other value,: fallback to send_to_jl
+ 
+title: Title of the notification
+ 
+message: Body of the notification
+ 
+callback: Actionable buttons of the notification
+   - title: Title of the button
+   - event: a string that will be used the catch back the event when the button is pressed.
+     If event: turn_off_lights, then an event "mobile_app_notification_action" with action = "turn_off_lights" will be triggered once the button is pressed.
+     Up to the app / automation creating the notification to listen to this event and perform some action.
+ 
+timeout: Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically.
+ 
+image_url: url of an image that will be embedded on the notification. Useful for cameras, vacuum maps, etc.
+ 
+click_url: url of the target location if the notification is pressed.
+If you have a lovelace view called "/lovelace/vacuums" for your vacuum, then putting click_url: "/lovelace/vacuums" will lead to this view if the notification is clicked
+ 
+icon: Icon of the notification. format mdi:<string>. Visit https://materialdesignicons.com/ for supported icons
+ 
+color: color of the notification.
+Format can be "red" or "#ff6e07"
+ 
+tag: The concept of tag is complex to understand. So I'll explain the behavior you will experience while using tags.
+  - A subsequent notification with a tag will replace an old notification with the same tag.
+    For example if you want to notify that a vacuum is starting, and then finishing: use the same tag for both (like "vacuum") and the "Cleaning complete" notification will replace the "Cleaning started" notification, as it is not relevant anymore.
+  - If you notify more than one person with the same tag:
+    - Discarding the notification on a device will discard it on every other devices
+    - Acting on the notification (a button) on a device will discard it on every other devices
+    Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
+  - The next field "until" requires the field tag to work too (See below)
+
+until (note: "tag" is required for "until" to work)
+until dynamically creates watcher(s) to clear notification.
+I prefer to explain it with an example:
+If you want to notify all occupants that the lights are still on while the home is empty, you can specify
+until:
+ - entity_id: binary_sensor.home_occupied
+   new_state : on
+ - entity_id: light.all_lights
+   new_state : off
+This will make the notification(s) disappear as soon as the lights are off, or the home becomes occupied.
+That way, you make sure notifications are only displayed when relevant.
+ 
 """
+
 class notifier(hass.Hass): 
     def initialize(self):
         # Listen to all NOTIFIER events
@@ -30,6 +94,8 @@ class notifier(hass.Hass):
         
         self.staged_notifications = []
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
+
+        self.watchers_handles = []
 
         # log
         self.log("Notifier initialized")  
@@ -65,7 +131,19 @@ class notifier(hass.Hass):
             if data["persistent"]:
                 self.log("Persisting the notification on Home Assistant Front-end ...")
                 self.call_service("notify/persistent_notification", title = data["title"], message = data["message"])
-    
+        
+        if "until" in data and 'tag' in data:
+            until = data["until"]
+            for watcher in until:
+                watcher_handle = {}
+                watcher_handle["id"] = self.listen_state(self.callback_until_watcher, watcher["entity_id"], new = str(watcher["new_state"]), oneshot = True, tag = data["tag"])
+                watcher_handle["tag"] = data["tag"]
+                self.watchers_handles.append(watcher_handle)
+                self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]))
+
+    def callback_until_watcher(self, entity, attribute, old, new, kwargs):
+        self.clear_notifications(kwargs["tag"])
+
     def callback_button_clicked(self, event_name, data, kwargs):
         if "tag" in data:
             self.clear_notifications(data["tag"])
@@ -75,10 +153,18 @@ class notifier(hass.Hass):
             self.clear_notifications(data["tag"])
     
     def clear_notifications(self, tag):
+        self.log("Clearing notifications with tag " + tag + " (if any) ...")
         notification_data = {}
         notification_data["tag"] = tag
         self.call_service("notify/mobile_app_pixel_6", message = "clear_notification", data = notification_data)
         self.call_service("notify/mobile_app_pixel_4a", message = "clear_notification", data = notification_data)
+        self.cancel_watchers(tag)
+
+    def cancel_watchers(self, tag):
+        self.log("Removing watchers with tag " + tag + " (if any) ...")
+        for watcher in list(self.watchers_handles):
+            if watcher["tag"] == tag:
+                self.watchers_handles.remove(watcher)
         
     def build_notification_data(self, data):
         notification_data = {}

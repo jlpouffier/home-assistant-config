@@ -133,7 +133,7 @@ class wake_up(hass.Hass):
       current_wake_up_time = self.parse_time(self.get_state("input_datetime.wake_up_time"))
       if jl_home_alarm_time != current_wake_up_time:
         # Current Wake-up time and Phone Alarm time are different : Notifying it
-        self.log("Phone alarmed different than Wake-up time. Notifying")
+        self.log("Phone alarmed different than Wake-up time. Notifying it ...")
         self.fire_event("NOTIFIER",
           action = "sent_to_jl",
           title = "⏰ Alarme réglée pour " +  str(jl_home_alarm_time), 

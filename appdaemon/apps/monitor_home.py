@@ -55,10 +55,15 @@ class monitor_home(hass.Hass):
         click_url="/lovelace/apercu",
         icon =  "mdi:lightbulb-alert",
         color = "#ff6e07",
-        tag = "home_empty_lights_still_on")
+        tag = "home_empty_lights_still_on",
+        until =  [{
+          "entity_id" : "binary_sensor.home_occupied",
+          "new_state" : "on"},{
+          "entity_id" : "light.all_lights",
+          "new_state" : "off"}])
 
     # test if TV is still on
-    if self.get_state("media_player.philips_android_tv") not in ["off", "standby", "unavailable"]:
+    if self.get_state("binary_sensor.is_tv_on") == "on":
       self.log("... TV on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -70,7 +75,12 @@ class monitor_home(hass.Hass):
         click_url="/lovelace/day",
         icon =  "mdi:television",
         color = "#ff6e07",
-        tag = "home_empty_tv_still_on")
+        tag = "home_empty_tv_still_on",
+        until =  [{
+          "entity_id" : "binary_sensor.home_occupied",
+          "new_state" : "on"},{
+          "entity_id" : "binary_sensor.is_tv_on",
+          "new_state" : "off"}])
 
     # test is coffe maker still on
     if self.get_state("switch.coffeemaker") == "on":
@@ -85,7 +95,12 @@ class monitor_home(hass.Hass):
         click_url="/lovelace/day",
         icon =  "mdi:coffee",
         color = "#ff6e07",
-        tag = "home_empty_cofee_maker_still_on")
+        tag = "home_empty_cofee_maker_still_on",
+        until =  [{
+          "entity_id" : "binary_sensor.home_occupied",
+          "new_state" : "on"},{
+          "entity_id" : "switch.coffeemaker",
+          "new_state" : "off"}])
 
     # test if doors are still open
     if self.get_state("binary_sensor.all_doors") == "on":
@@ -103,7 +118,12 @@ class monitor_home(hass.Hass):
           message = "La " + open_doors[0] + " est toujours ouverte alors que personne n'est présent !",
           icon =  "mdi:door-open",
           color = "#ff6e07",
-          tag = "home_empty_door_open")
+          tag = "home_empty_door_open",
+          until =  [{
+            "entity_id" : "binary_sensor.home_occupied",
+            "new_state" : "on"},{
+            "entity_id" : "binary_sensor.all_doors",
+            "new_state" : "off"}])
       elif len(open_doors) > 1:
         self.fire_event("NOTIFIER",
           action = "send_to_nearest",
@@ -111,7 +131,12 @@ class monitor_home(hass.Hass):
           message = "Les portes suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_doors),
           icon =  "mdi:door-open",
           color = "#ff6e07",
-          tag = "home_empty_door_open")
+          tag = "home_empty_door_open",
+          until =  [{
+            "entity_id" : "binary_sensor.home_occupied",
+            "new_state" : "on"},{
+            "entity_id" : "binary_sensor.all_doors",
+            "new_state" : "off"}])
 
     # test if windows are still open
     if self.get_state("binary_sensor.all_windows") == "on":
@@ -129,7 +154,12 @@ class monitor_home(hass.Hass):
           message = "La " + open_windows[0] + " est toujours ouverte alors que personne n'est présent !",
           icon =  "mdi:window-open",
           color = "#ff6e07",
-          tag = "home_empty_window_open")
+          tag = "home_empty_window_open",
+          until =  [{
+            "entity_id" : "binary_sensor.home_occupied",
+            "new_state" : "on"},{
+            "entity_id" : "binary_sensor.all_windows",
+            "new_state" : "off"}])
       elif len(open_windows) > 1:
         self.fire_event("NOTIFIER",
           action = "send_to_nearest",
@@ -137,7 +167,12 @@ class monitor_home(hass.Hass):
           message = "Les fenêtres suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_windows),
           icon =  "mdi:window-open",
           color = "#ff6e07",
-          tag = "home_empty_window_open")
+          tag = "home_empty_window_open",
+          until =  [{
+            "entity_id" : "binary_sensor.home_occupied",
+            "new_state" : "on"},{
+            "entity_id" : "binary_sensor.all_windows",
+            "new_state" : "off"}])
 
   """
   Callback triggered when the home becomes occupied
@@ -178,7 +213,10 @@ class monitor_home(hass.Hass):
         click_url="/lovelace/day",
         icon = "mdi:coffee",
         color = "#ff6e07",
-        tag = "coffee_maker_on_since_too_long")
+        tag = "coffee_maker_on_since_too_long",
+        until =  [{
+          "entity_id" : "switch.coffeemaker",
+          "new_state" : "off"}])
 
   """
   Callback triggered when washing machine is over
@@ -237,7 +275,10 @@ class monitor_home(hass.Hass):
           "event" : "reset_litter_tracking"}],
         icon =  "mdi:cat",
         color = "#ff6e07",
-        tag = "litter_full")
+        tag = "litter_full",
+        until =  [{
+          "entity_id" : "binary_sensor.is_litter_full",
+          "new_state" : "off"}])
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification

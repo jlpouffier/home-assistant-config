@@ -58,7 +58,11 @@ class monitor_system(hass.Hass):
             title = "🎉 Mise a jour disponible",
             message = "Une mise a jour est disponible pour " + app_title,
             click_url = "/config/dashboard",
-            icon = "mdi:cellphone-arrow-down")
+            icon = "mdi:cellphone-arrow-down",
+            tag = entity,
+            until =  [{
+                "entity_id" : entity,
+                "new_state" : "off"}])
 
     """
     Callback triggered when a new upate is available on the HACS domain.
@@ -76,7 +80,11 @@ class monitor_system(hass.Hass):
                     message = "Une mise a jour HACS est disponible",
                     click_url = "/hacs/entry",
                     icon = "mdi:cellphone-arrow-down",
-                    persistent = True)
+                    persistent = True,
+                    tag = "hacs_update",
+                    until =  [{
+                        "entity_id" : entity,
+                        "new_state" : 0}])
 
     """
     Callback triggered when a power issue is detected on the RPI
