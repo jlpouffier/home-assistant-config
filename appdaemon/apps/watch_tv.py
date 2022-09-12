@@ -65,23 +65,23 @@ class watch_tv(hass.Hass):
     if current_app is None:
       current_app = "Android TV Launcher"
 
+    # Log state change
+    self.log_state_change(old, self.old_app, new, current_app)
+
     if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle", None] and new == "playing":
       if self.is_app_controling_lights(current_app):
-        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV playing : Lights dimmed")
         self.call_service("script/lights_set_tv")  
     
     elif old in ["playing" , None] and new == "paused":
       if self.is_app_controling_lights(current_app):
-        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV paused : Lights partially un-dimmed")
         self.call_service("script/lights_set_tv_paused")        
 
     elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
       if self.is_app_controling_lights(self.old_app):
-        self.log_state_change(old, self.old_app, new, current_app)
         #CALL SCRIPT
         self.log("TV stopped : Lights fully un-dimmed")
         self.call_service("script/lights_set_livingroom_kitchen_regular")
