@@ -147,12 +147,14 @@ class monitor_system(hass.Hass):
             "sensor.capteur_ouverture_fenetre_chambre_battery",
             "sensor.capteur_ouverture_fenetre_bureau_battery",
             "sensor.capteur_ouverture_fenetre_chambre_d_amis_battery",
+            "sensor.capteur_ouverture_fenetre_salle_de_bain_battery",
             "sensor.capteur_ouverture_porte_fenetre_salon_battery",
             "sensor.capteur_ouverture_fenetre_cellier_battery",
             "sensor.capteur_ouverture_fenetre_cuisine_battery",
             "sensor.capteur_ouverture_porte_entree_battery",
             "sensor.capteur_mouvement_litiere_battery",
-            "sensor.capteur_mouvement_boite_aux_lettres_battery"]
+            "sensor.capteur_mouvement_boite_aux_lettres_battery",
+            "sensor.the_cube_battery"]
         
         entities_to_notify = []
 
