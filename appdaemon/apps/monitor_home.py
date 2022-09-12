@@ -6,6 +6,7 @@ monitor_home is an app responsible of the monitoring the home
 Functionalities :
 . RTH Vacuums if home becomes occupied
 . Stop presence simulator if home becomes occupied
+. Turn off Alexa if the home is not occupied
 
 Notifications :
 . Home empty and Lights on > Turn off possible
@@ -38,10 +39,16 @@ class monitor_home(hass.Hass):
   """
   Callback triggered when the home becomes not occupied
   Goals :
+  . Turn off Alexa
   . Send notification(s)
   """
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
     self.log("Detecting home empty ...")
+
+    # turning off Alexa
+    self.log("... Turning off Alexa.")
+    self.call_service("switch/turn_off", entity_id = "switch.alexa")
+
     # test if lights are still on
     if self.get_state("light.all_lights") == "on":
       self.log("... Lights on. Notifying it...")
@@ -177,11 +184,17 @@ class monitor_home(hass.Hass):
   """
   Callback triggered when the home becomes occupied
   Goals :
+  . Turn on Alexa
   . Stop presence simulator (If turned on)
   . Stop Vacuums (if cleaning) 
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     self.log("Detecting home occupied...")
+
+    # turning on Alexa
+    self.log("... Turning on Alexa.")
+    self.call_service("switch/turn_on", entity_id = "switch.alexa")
+
     if self.get_state("input_boolean.presence_simulator_switch") == "on":
       self.log("Stopping Presence Simulator")
       self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
