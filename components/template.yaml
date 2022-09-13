@@ -77,6 +77,6 @@ binary_sensor:
     device_class: problem
 
   - name: is_front_door_recently_open
-    unique_id: :is_front_door_recently_open
+    unique_id: is_front_door_recently_open
     state: "{{ is_state('binary_sensor.capteur_ouverture_porte_entree', 'on') }}"
     delay_off: "0:00:45"
