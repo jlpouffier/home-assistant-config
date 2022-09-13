@@ -75,3 +75,8 @@ binary_sensor:
     unique_id: should_neuneu_run_urgently
     state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 3 * 24 * 60 * 60 }}"
     device_class: problem
+
+  - name: is_front_door_recently_open
+    unique_id: :is_front_door_recently_open
+    state: "{{ is_state('binary_sensor.capteur_ouverture_porte_entree', 'on') }}"
+    delay_off: "0:00:45"
