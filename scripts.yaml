@@ -51,6 +51,10 @@ lights_set_tv_paused:
       target:
         entity_id: media_player.philips_android_tv
       data: {}
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.kef
+      data: {}
     - service: switch.turn_off
       target:
         entity_id:
