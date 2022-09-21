@@ -11,6 +11,7 @@ Functionalities :
 Notifications :
 . Home empty and Lights on > Turn off possible
 . Home empty and TV on > Turn off possible
+. Home empty and LSX still on > Turn off possible
 . Home empty and coffee maker on > Turn off possible
 . Home empty and doors / window still opened
 . Coffe maker on for more than 90 minutes > Turn off possible
@@ -31,6 +32,7 @@ class monitor_home(hass.Hass):
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
+    self.listen_event(self.callback_button_clicked_turn_off_lsx, "mobile_app_notification_action", action = "turn_off_lsx")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_reset_litter_tracking, "mobile_app_notification_action", action = "reset_litter_tracking")
     
@@ -87,6 +89,26 @@ class monitor_home(hass.Hass):
           "entity_id" : "binary_sensor.home_occupied",
           "new_state" : "on"},{
           "entity_id" : "binary_sensor.is_tv_on",
+          "new_state" : "off"}])
+
+    # test if LSX is still on
+    if self.get_state("media_player.kef") == "on":
+      self.log("... LSX on. Notifying it...")
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "🔊 LSX allumées", 
+        message = "Les enceintes LSX sont allumées alors que personne n'est présent",
+        callback = [{
+          "title" : "Éteindre les LSX",
+          "event" : "turn_off_lsx"}],
+        click_url="/lovelace/day",
+        icon =  "mdi:speaker-wireless",
+        color = "#ff6e07",
+        tag = "home_empty_lsx_still_on",
+        until =  [{
+          "entity_id" : "binary_sensor.home_occupied",
+          "new_state" : "on"},{
+          "entity_id" : "media_player.kef",
           "new_state" : "off"}])
 
     # test is coffe maker still on
@@ -289,6 +311,7 @@ class monitor_home(hass.Hass):
           "event" : "reset_litter_tracking"}],
         icon =  "mdi:cat",
         color = "#ff6e07",
+        persistent = True,
         tag = "litter_full",
         until =  [{
           "entity_id" : "binary_sensor.is_litter_full",
@@ -311,6 +334,16 @@ class monitor_home(hass.Hass):
   def callback_button_clicked_turn_off_tv(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off TV") 
     self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
+
+  """
+  Callback triggered when button "turn_off_lsx" is clicked from a notification
+  Goals :
+  . Turn off LSX
+  """
+  def callback_button_clicked_turn_off_lsx(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Turning off LSX") 
+    self.call_service("media_player/turn_off" , entity_id = "media_player.kef")
+
 
   """
   Callback triggered when button "turn_off_coffee_maker" is clicked from a notification
