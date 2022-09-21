@@ -1,82 +1,151 @@
 # https://www.home-assistant.io/integrations/template/
-sensor:
-  - name: teuteu_last_cleaning_area
-    unique_id: teuteu_last_cleaning_area
-    state: "{{state_attr('vacuum.teuteu' , 'clean_area') | round(1,'half',0) }}"
-    unit_of_measurement: "m2"
-    icon: mdi:checkbox-blank-outline
+- sensor:
+    - name: teuteu_last_cleaning_area
+      unique_id: teuteu_last_cleaning_area
+      state: "{{state_attr('vacuum.teuteu' , 'clean_area') | round(1,'half',0) }}"
+      unit_of_measurement: "m2"
+      icon: mdi:checkbox-blank-outline
 
-  - name: neuneu_last_cleaning_area
-    unique_id: neuneu_last_cleaning_area
-    state: "{{state_attr('vacuum.neuneu' , 'vacuum_extend.cleaning_area') | round(1,'half',0) }}"
-    unit_of_measurement: "m2"
-    icon: mdi:checkbox-blank-outline
+    - name: neuneu_last_cleaning_area
+      unique_id: neuneu_last_cleaning_area
+      state: "{{state_attr('vacuum.neuneu' , 'vacuum_extend.cleaning_area') | round(1,'half',0) }}"
+      unit_of_measurement: "m2"
+      icon: mdi:checkbox-blank-outline
 
-binary_sensor:
-  - name: home_occupied
-    unique_id: home_occupied
-    state: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
-    device_class: occupancy
-    icon: >-
-      {% if is_state("binary_sensor.home_occupied", "on") -%}
-      mdi:home-account
-      {%- else -%}
-      mdi:home
-      {%- endif %}
+    - name: teuteu_simplified_state
+      unique_id: teuteu_simplified_state
+      state: >
+        {% if is_state('vacuum.teuteu', 'cleaning') or is_state('vacuum.teuteu', 'paused') or is_state('vacuum.teuteu', 'returning') -%}
+        cleaning
+        {% elif is_state('vacuum.teuteu', 'docked') or is_state('vacuum.teuteu', 'idle') -%}
+        docked
+        {% elif is_state('vacuum.teuteu', 'error') %}
+        error
+        {% else -%}
+        unknonw
+        {% endif -%}
 
-  - name: far_away
-    unique_id: far_away
-    state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80 and states('proximity.distance_valentine_home') | int(default = 0) > 80 }}"
+    - name: neuneu_simplified_state
+      unique_id: neuneu_simplified_state
+      state: >
+        {% if is_state('vacuum.neuneu', 'cleaning') or is_state('vacuum.neuneu', 'paused') or is_state('vacuum.neuneu', 'returning') -%}
+        cleaning
+        {% elif is_state('vacuum.neuneu', 'docked') or is_state('vacuum.neuneu', 'idle') -%}
+        docked
+        {% elif is_state('vacuum.neuneu', 'error') %}
+        error
+        {% else -%}
+        unknonw
+        {% endif -%}
 
-  - name: is_tv_used
-    unique_id: is_tv_used
-    state: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
+- binary_sensor:
+    - name: home_occupied
+      unique_id: home_occupied
+      state: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
+      device_class: occupancy
+      icon: >-
+        {% if is_state("binary_sensor.home_occupied", "on") -%}
+        mdi:home-account
+        {%- else -%}
+        mdi:home
+        {%- endif %}
 
-  - name: is_tv_on
-    unique_id: is_tv_on
-    state: "{{not (is_state('media_player.philips_android_tv', 'off') or is_state('media_player.philips_android_tv', 'unavailable') or is_state('media_player.philips_android_tv', 'standby') or is_state('media_player.philips_android_tv', 'unknown'))}}"
+    - name: far_away
+      unique_id: far_away
+      state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80 and states('proximity.distance_valentine_home') | int(default = 0) > 80 }}"
 
-  - name: is_ps5_used
-    unique_id: is_ps5_used
-    state: "{{is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW5')}}"
+    - name: is_tv_used
+      unique_id: is_tv_used
+      state: "{{is_state('media_player.philips_android_tv', 'playing') or is_state('media_player.philips_android_tv', 'paused')}}"
 
-  - name: is_sun_rising
-    unique_id: is_sun_rising
-    state: "{{is_state_attr('sun.sun', 'rising', true)}}"
+    - name: is_tv_on
+      unique_id: is_tv_on
+      state: "{{not (is_state('media_player.philips_android_tv', 'off') or is_state('media_player.philips_android_tv', 'unavailable') or is_state('media_player.philips_android_tv', 'standby') or is_state('media_player.philips_android_tv', 'unknown'))}}"
 
-  - name: is_washing_machine_running
-    unique_id: is_washing_machine_running
-    state: "{{ states('sensor.machine_a_laver_power_2') | float(default = 0) > 5 }}"
-    device_class: running
-    delay_on: "0:01:00"
-    delay_off: "0:01:00"
+    - name: is_ps5_used
+      unique_id: is_ps5_used
+      state: "{{is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW5')}}"
 
-  - name: is_litter_full
-    unique_id: is_litter_full
-    state: "{{states('input_number.litter_tracking') | float(default = 0) >= 5 }}"
-    device_class: problem
+    - name: is_sun_rising
+      unique_id: is_sun_rising
+      state: "{{is_state_attr('sun.sun', 'rising', true)}}"
 
-  - name: should_teuteu_run
-    unique_id: should_teuteu_run
-    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 1 * 24 * 60 * 60 }}"
-    device_class: problem
+    - name: is_washing_machine_running
+      unique_id: is_washing_machine_running
+      state: "{{ states('sensor.machine_a_laver_power_2') | float(default = 0) > 5 }}"
+      device_class: running
+      delay_on: "0:01:00"
+      delay_off: "0:01:00"
 
-  - name: should_teuteu_run_urgently
-    unique_id: should_teuteu_run_urgently
-    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 3 * 24 * 60 * 60 }}"
-    device_class: problem
+    - name: is_litter_full
+      unique_id: is_litter_full
+      state: "{{states('input_number.litter_tracking') | float(default = 0) >= 5 }}"
+      device_class: problem
 
-  - name: should_neuneu_run
-    unique_id: should_neuneu_run
-    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 1 * 24 * 60 * 60 }}"
-    device_class: problem
+    - name: should_teuteu_run
+      unique_id: should_teuteu_run
+      state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 1 * 24 * 60 * 60 }}"
+      device_class: problem
 
-  - name: should_neuneu_run_urgently
-    unique_id: should_neuneu_run_urgently
-    state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 3 * 24 * 60 * 60 }}"
-    device_class: problem
+    - name: should_teuteu_run_urgently
+      unique_id: should_teuteu_run_urgently
+      state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_teuteu') , 0 ) > 3 * 24 * 60 * 60 }}"
+      device_class: problem
 
-  - name: is_front_door_recently_open
-    unique_id: is_front_door_recently_open
-    state: "{{ is_state('binary_sensor.capteur_ouverture_porte_entree', 'on') }}"
-    delay_off: "0:00:45"
+    - name: should_neuneu_run
+      unique_id: should_neuneu_run
+      state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 1 * 24 * 60 * 60 }}"
+      device_class: problem
+
+    - name: should_neuneu_run_urgently
+      unique_id: should_neuneu_run_urgently
+      state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 3 * 24 * 60 * 60 }}"
+      device_class: problem
+
+    - name: is_front_door_recently_open
+      unique_id: is_front_door_recently_open
+      state: "{{ is_state('binary_sensor.capteur_ouverture_porte_entree', 'on') }}"
+      delay_off: "0:00:45"
+
+    - name: clio
+      unique_id: clio
+      state: "{{this.attributes.connection in ['jl','valentine'] | default(false) }}"
+      attributes:
+        connection: >
+          {% set jl_connected_to_clio = namespace(value = false) -%}
+          {% for device in state_attr('sensor.pixel_6_bluetooth_connection' , 'connected_paired_devices') -%}
+            {% if '04:4E:AF:AD:CA:B4' in device -%}
+              {% set jl_connected_to_clio.value = true -%}
+            {% endif -%}
+          {% endfor -%}
+          {% set valentine_connected_to_clio = namespace(value = false) -%}
+          {% for device in state_attr('sensor.pixel_4a_bluetooth_connection' , 'connected_paired_devices') -%}
+            {% if '04:4E:AF:AD:CA:B4' in device -%}
+              {% set valentine_connected_to_clio.value = true -%}
+            {% endif -%}
+          {% endfor -%}
+          {% if jl_connected_to_clio.value -%}
+          jl
+          {% elif valentine_connected_to_clio.value -%}
+          valentine
+          {% else %}
+          -
+          {% endif %}
+        latitude: >
+          {% if this.attributes.connection == 'jl' -%}
+          {{state_attr('person.jenova70', 'latitude')}}
+          {% elif this.attributes.connection == 'valentine' -%}
+          {{state_attr('person.valentine', 'latitude')}}
+          {% else -%}
+          {{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}
+          {% endif -%}
+        longitude: >
+          {% if this.attributes.connection == 'jl' -%}
+          {{state_attr('person.jenova70', 'longitude')}}
+          {% elif this.attributes.connection == 'valentine' -%}
+          {{state_attr('person.valentine', 'longitude')}}
+          {% else -%}
+          {{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}
+          {% endif -%}
+        entity_picture: "/local/clio.jpg"
+        direction_url: "https://www.google.com/maps/dir/?api=1&destination={{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}%2C{{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}"
