@@ -38,3 +38,7 @@ monitor_system:
   module: monitor_system
   class: monitor_system
   constrain_input_boolean: input_boolean.monitor_system_switch
+
+smart_cube:
+  module: smart_cube
+  class: smart_cube
