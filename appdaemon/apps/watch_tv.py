@@ -12,6 +12,8 @@ Notifications :
 """
 class watch_tv(hass.Hass):
   def initialize(self):
+    self.media_player_id = "media_player.philips_android_tv"
+
     # The TV automations will only run if the sun is down.  
     self.listen_state(self.callback_initialize_automations, "sun.sun", new = "below_horizon", immediate = True)
     self.listen_state(self.callback_stop_automations, "sun.sun", new = "above_horizon", immediate = True)
@@ -32,7 +34,7 @@ class watch_tv(hass.Hass):
   """ 
   def callback_initialize_automations(self, entity, attribute, old, new, kwargs):
     # Register TV state change callbacks 
-    callback_tv_state_change_handle = self.listen_state(self.callback_tv_state_change, "media_player.philips_android_tv", immediate = True)
+    callback_tv_state_change_handle = self.listen_state(self.callback_tv_state_change, self.media_player_id, immediate = True)
     callback_ps5_state_change_handle = self.listen_state(self.callback_ps5_state_change, "binary_sensor.is_ps5_used", immediate = True)
 
     # Store handles to deregister later.

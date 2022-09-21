@@ -10,6 +10,9 @@ binary_sensor: !include components/binary_sensor.yaml
 proximity: !include components/proximity.yaml
 template: !include components/template.yaml
 camera: !include components/camera.yaml
+media_player: !include components/media_player.yaml
+switch: !include components/switch.yaml
+wake_on_lan:
 
 # MISC
 http: !include misc/http.yaml
