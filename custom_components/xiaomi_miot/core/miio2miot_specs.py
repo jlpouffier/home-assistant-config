@@ -189,12 +189,13 @@ MIIO_TO_MIOT_SPECS = {
                 'setter': True,
                 'set_template': '{{ {"method": "set_on" if value else "set_off"} }}',
             },
-            'prop.3.1': {'prop': 'wifi_led', 'setter': True, 'format': 'onoff'},
-            'prop.200.201': {
+            'prop.3.1': {
                 'prop': 'usb_on',
                 'setter': True,
                 'set_template': '{{ {"method": "set_usb_on" if value else "set_usb_off"} }}',
             },
+            'prop.2.101': {'prop': 'temperature'},
+            'prop.300.301': {'prop': 'wifi_led', 'setter': True, 'format': 'onoff'},
         },
     },
     'chuangmi.plug.v3': {
@@ -269,6 +270,7 @@ MIIO_TO_MIOT_SPECS = {
             'action.2.101': {'setter': 'set_func', 'set_template': '{{ ["end030307"] }}'},
         },
     },
+    'chunmi.ihcooker.v1': 'chunmi.ihcooker.chefnic',
     'chunmi.microwave.n23l01': {
         'without_props': True,
         'miio_commands': [
@@ -804,6 +806,36 @@ MIIO_TO_MIOT_SPECS = {
                 'MID':  3,
                 'HIGH': 4,
             }, 'default': 1},
+        },
+    },
+
+    'ows.towel_w.mj1x0': {
+        'without_props': True,
+        'miio_commands': [
+            {
+                'method': 'get_props',
+                'values': [
+                    'power', 'mode', 'tempdry', 'tempheat', 'drytime',
+                    'temprog', 'tempsurf', 'tempind', 'percent', 'errflag',
+                ],
+            },
+        ],
+        'miio_specs': {
+            'prop.2.1': {'prop': 'power', 'setter': True, 'set_template': '{{ [value|int(0)] }}'},
+            'prop.2.2': {'prop': 'mode', 'setter': True},
+            'prop.2.3': {
+                'prop': 'tempheat',
+                'setter': True,
+                'template': '{{ [props.tempdry,value,value,props.temprog][props.mode]|default(value)/2 }}',
+                'set_template': '{{ {"method": '
+                                '"set_tempdry" if props.mode == 0 else '
+                                '"set_tempheat" if props.mode == 1 else '
+                                '"set_temprog",'
+                                '"params": [value * 2],'
+                                '} }}',
+            },
+            'prop.2.4': {'prop': 'tempsurf', 'template': '{{ value|int(0)/2 }}'},
+            'prop.2.101': {'prop': 'drytime', 'setter': True},
         },
     },
 
@@ -1598,7 +1630,7 @@ MIIO_TO_MIOT_SPECS = {
     'yeelink.light.ceiling19': 'yeelink.light.ceiling10',
     'yeelink.light.ceiling20': 'yeelink.light.ceiling6',
     'yeelink.light.ceiling21': {
-        'extend_model': 'yeelink.light.ceiling6',
+        'extend_model': 'yeelink.light.ceiling22',
         'miio_specs': {
             'prop.2.4': {
                 'prop': 'nl_br',
@@ -1606,11 +1638,15 @@ MIIO_TO_MIOT_SPECS = {
                 'template': '{{ 1 if value|int else 0 }}',
                 'set_template': '{{ ["nightlight","on" if value == 1 else "off"] }}',
             },
+        },
+    },
+    'yeelink.light.ceiling22': {
+        'extend_model': 'yeelink.light.ceiling6',
+        'miio_specs': {
             'prop.2.5': {'prop': 'smart_switch'},
         },
     },
-    'yeelink.light.ceiling22': 'yeelink.light.ceiling21',
-    'yeelink.light.ceiling23': 'yeelink.light.ceiling21',
+    'yeelink.light.ceiling23': 'yeelink.light.ceiling22',
     'yeelink.light.ceiling24': 'yeelink.light.ceiling16',
     'yeelink.light.lamp2': 'yeelink.light.ceiling16',
     'yeelink.light.lamp3': {
@@ -1778,6 +1814,11 @@ MIIO_TO_MIOT_SPECS = {
             'prop.2.4': {'prop': 'ptc', 'setter': True, 'format': 'onoff'},
             'prop.2.5': {'prop': 'silent', 'setter': True, 'format': 'onoff'},
             'prop.3.1': {'prop': 'speed_level', 'setter': 'set_spd_level', 'dict': {
+                0: 1,
+                1: 2,
+                2: 3,
+                3: 4,
+                4: 5,
                 5: 0,  # auto
             }},
             'prop.3.2': {'prop': 'vertical_swing', 'setter': 'set_vertical', 'format': 'onoff'},
