@@ -260,4 +260,4 @@ turn_off_media_center:
       alias: IF LSK ON THEN TURN OFF LSX
     alias: TURN OFF TV AND LSX IN PARALLEL
   mode: single
-  icon: mdi:television
+  icon: mdi:television-off

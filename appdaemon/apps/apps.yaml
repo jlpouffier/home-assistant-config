@@ -2,6 +2,17 @@ notifier:
   module: notifier
   class: notifier
   constrain_input_boolean: input_boolean.notify_switch
+  home_occupancy_sensor_id: binary_sensor.home_occupied
+  proximity_threshold: 1
+  persons:
+    - name: jl
+      id: person.jenova70
+      notification_service: notify/mobile_app_pixel_6
+      proximity_id: proximity.distance_jl_home
+    - name: valentine
+      id: person.valentine
+      notification_service: notify/mobile_app_pixel_4a
+      proximity_id: proximity.distance_valentine_home
 
 watch_tv:
   module: watch_tv

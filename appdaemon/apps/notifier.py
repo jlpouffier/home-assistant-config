@@ -31,14 +31,13 @@ until:
 Here are detailed explanations for every fields:
 
 action can be the following:
-- send_to_jl: Send a notification directly to JL
-- send_to_valentine: Send a notification directly to Valentine
-- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_jl in case the home is empty
+- send_to_<person_name>: Send a notification directly to the person called <person_name>
+- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_first_name in case the home is empty
 - send_to_nearest: Send a notification to the nearest occupant(s) of the home
 - send_when_present:
    - if the home is occupied: Send a notification directly to all present occupant of the home
    - if the home is empty: Stage the notification and send it once the home becomes occupied
-If action is omitted, or if action has any other value,: fallback to send_to_jl
+If action is omitted, or if action has any other value,: fallback to send_to_first_name
  
 title: Title of the notification
  
@@ -92,9 +91,11 @@ class notifier(hass.Hass):
         self.listen_event(self.callback_button_clicked, "mobile_app_notification_action")
         self.listen_event(self.callback_notification_cleared, "mobile_app_notification_cleared")
         
+        # Staged notification 
         self.staged_notifications = []
-        self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
+        self.listen_state(self.callback_home_occupied , self.args["home_occupancy_sensor_id"] , old = "off" , new = "on")
 
+        # Temporary watchers
         self.watchers_handles = []
 
         # log
@@ -102,16 +103,12 @@ class notifier(hass.Hass):
 
     def callback_notifier_called(self, event_name, data, kwargs):
         self.log("NOTIFIER event received")  
-        
         if "action" in data:
-            action = data["action"] 
-            if action == "sent_to_jl":
-                # send_to_jl
-                self.send_to_jl(data)
-            elif action == "send_to_valentine":
-                #send_to_valentine
-                self.send_to_valetnine(data)
-            elif action == "send_to_present":
+            action = data["action"]
+            for person in self.args["persons"]:
+                if action == "send_to_" + person["name"]:
+                    self.send_to_person(data, person)
+            if action == "send_to_present":
                 #send_to_present
                 self.send_to_present(data)
             elif action == "send_to_nearest":
@@ -121,11 +118,11 @@ class notifier(hass.Hass):
                 #send_when_present
                 self.send_when_present(data) 
             else: 
-                #send_to_jl
-                self.send_to_jl(data)
+                #defaulting to first person
+                self.send_to_person(data, self.args["persons"][0])
         else: 
-            #send_to_jl
-            self.send_to_jl(data)
+            #defaulting to first person
+            self.send_to_person(data, self.args["persons"][0])
         
         if "persistent" in data:
             if data["persistent"]:
@@ -156,8 +153,8 @@ class notifier(hass.Hass):
         self.log("Clearing notifications with tag " + tag + " (if any) ...")
         notification_data = {}
         notification_data["tag"] = tag
-        self.call_service("notify/mobile_app_pixel_6", message = "clear_notification", data = notification_data)
-        self.call_service("notify/mobile_app_pixel_4a", message = "clear_notification", data = notification_data)
+        for person in self.args["persons"]:
+            self.call_service(person["notification_service"], message = "clear_notification", data = notification_data)
         self.cancel_watchers(tag)
 
     def cancel_watchers(self, tag):
@@ -189,43 +186,36 @@ class notifier(hass.Hass):
         if "tag" in data:
             notification_data["tag"] = data["tag"]
         return notification_data
-    
-    def send_to_jl(self, data):
-        self.log("Sending notification to JL ...")
+
+    def send_to_person(self, data, person):
+        self.log("Sending notification to " + person["name"])
         notification_data = self.build_notification_data(data)
-        self.call_service("notify/mobile_app_pixel_6", title = data["title"], message = data["message"], data = notification_data)
-    
-    def send_to_valetnine(self, data):
-        self.log("Sending notification to Valetine ...")
-        notification_data = self.build_notification_data(data)
-        self.call_service("notify/mobile_app_pixel_4a", title = data["title"], message = data["message"], data = notification_data)
+        self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
     
     def send_to_present(self, data):
-        proximity_threshold = 1
         number_of_notification_sent = 0
-        if self.get_state("person.valentine") == "home" or int(self.get_state("proximity.distance_valentine_home")) <= proximity_threshold:
-            self.send_to_valetnine(data)
-            number_of_notification_sent += 1
-        if self.get_state("person.jenova70") == "home" or int(self.get_state("proximity.distance_jl_home")) <= proximity_threshold:
-            self.send_to_jl(data)
-            number_of_notification_sent +=1
+        for person in self.args["persons"]:
+            if self.get_state(person["id"]) == "home" or int(self.get_state(person["proximity_id"])) <= self.args["proximity_threshold"]:
+                self.send_to_person(data, person)
+                number_of_notification_sent += 1
         if number_of_notification_sent == 0:
-            self.send_to_jl(data)
-        
+            #defaulting to first person
+            self.send_to_person(data, self.args["persons"][0])
+
     def send_to_nearest(self, data):
-        jl_proximity = int(self.get_state("proximity.distance_jl_home"))
-        valentine_proximity = int(self.get_state("proximity.distance_valentine_home"))
-        proximity_threshold = 1
-        if math.fabs(jl_proximity - valentine_proximity) <= proximity_threshold:
-            self.send_to_jl(data)
-            self.send_to_valetnine(data)
-        elif jl_proximity < valentine_proximity:
-            self.send_to_jl(data)
-        elif valentine_proximity < jl_proximity:
-            self.send_to_valetnine(data)
+        min_proximity = 0
+        for person in self.args["persons"]:
+            person_proximity = int(self.get_state(person["proximity_id"]))
+            if person_proximity <= min_proximity:
+                min_proximity = person_proximity
+
+        for person in self.args["persons"]:
+            person_proximity = int(self.get_state(person["proximity_id"]))
+            if person_proximity <= min_proximity + self.args["proximity_threshold"]:
+                self.send_to_person(data, person)
     
     def send_when_present(self, data):
-        if self.get_state("binary_sensor.home_occupied") == "on":
+        if self.get_state(self.args["home_occupancy_sensor_id"]) == "on":
             self.send_to_present(data)
         else:
             self.log("Staging notification for when home becomes occupied ...")
