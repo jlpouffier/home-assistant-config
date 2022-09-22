@@ -5,8 +5,25 @@ import math
  
 Notify is an app responsible for notifying the right occupant(s) at the right time, and making sure to discard notifications once they are not relevant anymore.
  
-The complete app can be called from anywhere by sending a custom event NOTIFIER with the following grammar:
- 
+Here is a exmaple on how to initialize the app in app.yaml
+
+notifier:
+  module: notifier
+  class: notifier
+  home_occupancy_sensor_id: binary_sensor.home_occupied
+  proximity_threshold: 1000
+  persons:
+    - name: jl
+      id: person.jenova70
+      notification_service: notify/mobile_app_pixel_6
+      proximity_id: proximity.distance_jl_home
+    - name: valentine
+      id: person.valentine
+      notification_service: notify/mobile_app_pixel_4a
+      proximity_id: proximity.distance_valentine_home
+
+The complete app can be called from anywhere by sending a custom event NOTIFIER with the following schema:
+
 action: <string>
 title: <string>
 message: <string>
@@ -37,7 +54,6 @@ action can be the following:
 - send_when_present:
    - if the home is occupied: Send a notification directly to all present occupant of the home
    - if the home is empty: Stage the notification and send it once the home becomes occupied
-If action is omitted, or if action has any other value,: fallback to send_to_first_name
  
 title: Title of the notification
  
@@ -111,18 +127,12 @@ class notifier(hass.Hass):
             if action == "send_to_present":
                 #send_to_present
                 self.send_to_present(data)
-            elif action == "send_to_nearest":
+            if action == "send_to_nearest":
                 #send_to_nearest
                 self.send_to_nearest(data)
-            elif action == "send_when_present":
+            if action == "send_when_present":
                 #send_when_present
                 self.send_when_present(data) 
-            else: 
-                #defaulting to first person
-                self.send_to_person(data, self.args["persons"][0])
-        else: 
-            #defaulting to first person
-            self.send_to_person(data, self.args["persons"][0])
         
         if "persistent" in data:
             if data["persistent"]:
@@ -203,7 +213,7 @@ class notifier(hass.Hass):
             self.send_to_person(data, self.args["persons"][0])
 
     def send_to_nearest(self, data):
-        min_proximity = 0
+        min_proximity = int(self.get_state(self.args["persons"][0]["proximity_id"]))
         for person in self.args["persons"]:
             person_proximity = int(self.get_state(person["proximity_id"]))
             if person_proximity <= min_proximity:

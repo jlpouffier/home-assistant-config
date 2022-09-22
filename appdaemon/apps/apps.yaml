@@ -3,7 +3,7 @@ notifier:
   class: notifier
   constrain_input_boolean: input_boolean.notify_switch
   home_occupancy_sensor_id: binary_sensor.home_occupied
-  proximity_threshold: 1
+  proximity_threshold: 1000
   persons:
     - name: jl
       id: person.jenova70
