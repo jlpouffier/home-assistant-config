@@ -198,11 +198,8 @@ class smart_cube(hass.Hass):
 
     def callback_vacuum_knock(self, entity, attribute, old, new, kwargs):
         #self.log("callback_vacuum_knock")
-        if self.current_vacuum == "vacuum.neuneu":
-            self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
-            
-        if self.current_vacuum == "vacuum.teuteu":
-            self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
+        self.call_service("vacuum/start" , entity_id = self.current_vacuum)
+
             
         
     def callback_vacuum_slide(self, entity, attribute, old, new, kwargs):
