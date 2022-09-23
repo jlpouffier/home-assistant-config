@@ -1,14 +1,3 @@
-- id: '1610726074909'
-  alias: Restore Samba Backup sensor on startup
-  trigger:
-  - event: start
-    platform: homeassistant
-  action:
-  - service: hassio.addon_stdin
-    data:
-      addon: 15d21743_samba_backup
-      input: restore-sensor
-  mode: single
 - id: '1622706168523'
   alias: Long Press on Entry Switch -> Turn On Lights
   description: ''
@@ -23,7 +12,7 @@
   action:
   - service: script.turn_on
     target:
-      entity_id: script.lights_set_livingroom_kitchen_regular
+      entity_id: script.reset_lights_day_area
     data: {}
   mode: single
 - id: '1622706310024'
@@ -40,6 +29,6 @@
   action:
   - service: script.turn_on
     target:
-      entity_id: script.1619802584518
+      entity_id: script.leave_home
     data: {}
   mode: single

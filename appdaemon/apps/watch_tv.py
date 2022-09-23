@@ -86,7 +86,7 @@ class watch_tv(hass.Hass):
       if self.is_app_controling_lights(self.old_app):
         #CALL SCRIPT
         self.log("TV stopped : Lights fully un-dimmed")
-        self.call_service("script/lights_set_livingroom_kitchen_regular")
+        self.call_service("script/reset_lights_day_area")
       
     self.old_app = current_app
 
@@ -101,7 +101,7 @@ class watch_tv(hass.Hass):
         self.call_service("script/lights_set_tv") 
     elif old == "on" and new == 'off':
         self.log("PS5 stopped : Lights fully un-dimmed")
-        self.call_service("script/lights_set_livingroom_kitchen_regular")
+        self.call_service("script/reset_lights_day_area")
 
   """
   Helper method:
