@@ -114,8 +114,8 @@ class monitor_system(hass.Hass):
             self.log("Samba backup issue found... Notifying it")
             self.fire_event("NOTIFIER",
                 action = "sent_to_jl",
-                title = "💾 Sauverage journalière",
-                message = "La sauverage journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
+                title = "💾 Sauvegarde journalière",
+                message = "La sauvegarde journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
                 click_url = "/lovelace-system/overview",
                 icon =  "mdi:cloud-upload",
                 color = "#ff6e07",
