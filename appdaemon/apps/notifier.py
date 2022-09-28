@@ -5,7 +5,18 @@ import math
  
 Notify is an app responsible for notifying the right occupant(s) at the right time, and making sure to discard notifications once they are not relevant anymore.
  
-Here is a exmaple on how to initialize the app in app.yaml
+Here is the list of parameter that you NEED to set in order to run the app:
+
+home_occupancy_sensor_id: the id of a binary sensor that will be true if someone is at home, and false otherwise
+proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for exmaple (Both will be pinged)
+persons: A list of person, including
+    name: their name
+    id: the id of the person entity in home assistant
+    notification_service: the name of the notification service used to ping the phone of this person.
+    proximity_id: the id of the proximity entity linked to this person 
+
+
+Here is an exmaple on how to instantiate the app:
 
 notifier:
   module: notifier
@@ -45,19 +56,19 @@ until:
  - entity_id: <string>
    new_state: <string>
 
-Here are detailed explanations for every fields:
+Here are detailed explanations for each field: (fields with a star * are mandatory)
 
 action can be the following:
 - send_to_<person_name>: Send a notification directly to the person called <person_name>
-- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_first_name in case the home is empty
+- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_nearest in case the home is empty
 - send_to_nearest: Send a notification to the nearest occupant(s) of the home
 - send_when_present:
    - if the home is occupied: Send a notification directly to all present occupant of the home
    - if the home is empty: Stage the notification and send it once the home becomes occupied
  
-title: Title of the notification
+*title: Title of the notification
  
-message: Body of the notification
+*message: Body of the notification
  
 callback: Actionable buttons of the notification
    - title: Title of the button
@@ -205,22 +216,22 @@ class notifier(hass.Hass):
     def send_to_present(self, data):
         number_of_notification_sent = 0
         for person in self.args["persons"]:
-            if self.get_state(person["id"]) == "home" or int(self.get_state(person["proximity_id"])) <= self.args["proximity_threshold"]:
+            if self.get_state(person["id"]) == "home" or float(self.get_state(person["proximity_id"])) <= self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
                 number_of_notification_sent += 1
         if number_of_notification_sent == 0:
-            #defaulting to first person
-            self.send_to_person(data, self.args["persons"][0])
+            #defaulting to nearest
+            self.send_to_nearest(data)
 
     def send_to_nearest(self, data):
-        min_proximity = int(self.get_state(self.args["persons"][0]["proximity_id"]))
+        min_proximity = float(self.get_state(self.args["persons"][0]["proximity_id"]))
         for person in self.args["persons"]:
-            person_proximity = int(self.get_state(person["proximity_id"]))
+            person_proximity = float(self.get_state(person["proximity_id"]))
             if person_proximity <= min_proximity:
                 min_proximity = person_proximity
 
         for person in self.args["persons"]:
-            person_proximity = int(self.get_state(person["proximity_id"]))
+            person_proximity = float(self.get_state(person["proximity_id"]))
             if person_proximity <= min_proximity + self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
     
