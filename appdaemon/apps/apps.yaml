@@ -18,6 +18,11 @@ watch_tv:
   module: watch_tv
   class: watch_tv
   constrain_input_boolean: input_boolean.watch_tv_automation_switch
+  media_player_id: media_player.philips_android_tv
+  supported_apps:
+    - Netflix
+    - Plex
+    - Prime Video
 
 clean_house:
   module: clean_house
@@ -44,11 +49,44 @@ presence_simulator:
   module: presence_simulator
   class: presence_simulator
   constrain_input_boolean: input_boolean.presence_simulator_switch
+  random_offset: 15
+  wake_up_time: "07:00:00"
+  eat_breakfast_time: "08:00:00"
+  leave_time: "09:00:00"
+  return_time: "20:00:00"
+  go_to_bed_time: "22:00:00"
+  sleep_time: "23:00:00"
 
 monitor_system:
   module: monitor_system
   class: monitor_system
   constrain_input_boolean: input_boolean.monitor_system_switch
+  battery_threshold: 20
+  battery_sensors_to_check:
+    - sensor.bureau_switch_battery
+    - sensor.chambre_switch_battery
+    - sensor.couloir_switch_etage_battery
+    - sensor.cuisine_switch_battery
+    - sensor.entree_switch_battery
+    - sensor.exterieur_switch_battery
+    - sensor.salon_couloir_switch_battery
+    - sensor.salon_switch_battery
+    - sensor.netatmo_cloud_battery_percent
+    - sensor.capteur_thp_salon_battery
+    - sensor.capteur_thp_chambre_battery
+    - sensor.capteur_thp_bureau_battery
+    - sensor.capteur_thp_chambre_d_amis_battery
+    - sensor.capteur_ouverture_fenetre_chambre_battery
+    - sensor.capteur_ouverture_fenetre_bureau_battery
+    - sensor.capteur_ouverture_fenetre_chambre_d_amis_battery
+    - sensor.capteur_ouverture_fenetre_salle_de_bain_battery
+    - sensor.capteur_ouverture_porte_fenetre_salon_battery
+    - sensor.capteur_ouverture_fenetre_cellier_battery
+    - sensor.capteur_ouverture_fenetre_cuisine_battery
+    - sensor.capteur_ouverture_porte_entree_battery
+    - sensor.capteur_mouvement_litiere_battery
+    - sensor.capteur_mouvement_boite_aux_lettres_battery
+    - sensor.the_cube_battery
 
 smart_cube:
   module: smart_cube

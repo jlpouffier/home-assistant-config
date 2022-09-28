@@ -54,7 +54,7 @@ class monitor_system(hass.Hass):
         app_title = self.get_state(entity, attribute = "title")
     
         self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
+            action = "send_to_jl",
             title = "🎉 Mise a jour disponible",
             message = "Une mise a jour est disponible pour " + app_title,
             click_url = "/config/dashboard",
@@ -75,7 +75,7 @@ class monitor_system(hass.Hass):
             if number_of_available_update > 0:
                 self.log("Detecting an available update... Notifying it...")
                 self.fire_event("NOTIFIER",
-                    action = "sent_to_jl",
+                    action = "send_to_jl",
                     title = "🎉 Mise a jour HACS disponible",
                     message = "Une mise a jour HACS est disponible",
                     click_url = "/hacs/entry",
@@ -94,7 +94,7 @@ class monitor_system(hass.Hass):
     def callback_rpi_power_problem_detected(self, entity, attribute, old, new, kwargs):
         self.log("Detecting power issue on RPI... Notifying it...")
         self.fire_event("NOTIFIER",
-            action = "sent_to_jl",
+            action = "send_to_jl",
             title = "🔌 Alimentation Home Assistant",
             message = "Problème détecté sur l'alimentation de Home Assistant",
             icon = "mdi:power-plug",
@@ -113,7 +113,7 @@ class monitor_system(hass.Hass):
         if (now - last_backup_date) > datetime.timedelta(hours = 24):
             self.log("Samba backup issue found... Notifying it")
             self.fire_event("NOTIFIER",
-                action = "sent_to_jl",
+                action = "send_to_jl",
                 title = "💾 Sauvegarde journalière",
                 message = "La sauvegarde journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
                 click_url = "/lovelace-system/overview",
@@ -128,45 +128,19 @@ class monitor_system(hass.Hass):
     """
     def callback_battery_daily_check(self, kwargs):
         self.log("Checking battery levels  ...")
-        battery_threshold = 20
         
-        entities_to_check = [
-            "sensor.bureau_switch_battery",
-            "sensor.chambre_switch_battery",
-            "sensor.couloir_switch_etage_battery",
-            "sensor.cuisine_switch_battery",
-            "sensor.entree_switch_battery",
-            "sensor.exterieur_switch_battery",
-            "sensor.salon_couloir_switch_battery",
-            "sensor.salon_switch_battery",
-            "sensor.netatmo_cloud_battery_percent",
-            "sensor.capteur_thp_salon_battery",
-            "sensor.capteur_thp_chambre_battery",
-            "sensor.capteur_thp_bureau_battery",
-            "sensor.capteur_thp_chambre_d_amis_battery",
-            "sensor.capteur_ouverture_fenetre_chambre_battery",
-            "sensor.capteur_ouverture_fenetre_bureau_battery",
-            "sensor.capteur_ouverture_fenetre_chambre_d_amis_battery",
-            "sensor.capteur_ouverture_fenetre_salle_de_bain_battery",
-            "sensor.capteur_ouverture_porte_fenetre_salon_battery",
-            "sensor.capteur_ouverture_fenetre_cellier_battery",
-            "sensor.capteur_ouverture_fenetre_cuisine_battery",
-            "sensor.capteur_ouverture_porte_entree_battery",
-            "sensor.capteur_mouvement_litiere_battery",
-            "sensor.capteur_mouvement_boite_aux_lettres_battery",
-            "sensor.the_cube_battery"]
-        
+        battery_threshold = self.args["battery_threshold"]
         entities_to_notify = []
 
-        for entity in entities_to_check:
-            if int(self.get_state(entity)) < battery_threshold:
-                friendly_name = self.get_state(entity, attribute = "friendly_name")
+        for battery_sensor in self.args["battery_sensors_to_check"]:
+            if int(self.get_state(battery_sensor)) < battery_threshold:
+                friendly_name = self.get_state(battery_sensor, attribute = "friendly_name")
                 entities_to_notify.append(friendly_name)
             
         if len(entities_to_notify) == 1:
             self.log("Low battery... Notifying it")
             self.fire_event("NOTIFIER",
-                action = "sent_to_jl",
+                action = "send_to_jl",
                 title = "Batterie 🪫",
                 message= "Pensez a changer les piles de l'appareil suivant: " + entities_to_notify[0],
                 icon =  "mdi:battery-20",
@@ -176,7 +150,7 @@ class monitor_system(hass.Hass):
         elif len(entities_to_notify) > 1:
             self.log("Low battery... Notifying it")
             self.fire_event("NOTIFIER",
-                action = "sent_to_jl",
+                action = "send_to_jl",
                 title = "Batterie 🪫",
                 message= "Pensez a changer les piles des appareils suivants: " + ", ".join(entities_to_notify),
                 icon =  "mdi:battery-20",

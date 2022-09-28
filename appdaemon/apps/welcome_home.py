@@ -34,23 +34,9 @@ class welcome_home(hass.Hass):
   """
   def callback_welcome_home(self, entity, attribute, old, new, kwargs):
     # When presence is detected ....
-    sequence = [
-      {"sleep": 1},
-      {"hue/activate_scene": {
-        "entity_id": "scene.entree_entree_100",
-        "transition": 3}},
-      {"sleep": 2},
-      {"hue/activate_scene": {
-        "entity_id": "scene.salon_salon_100",
-        "transition": 3}},
-      {"sleep": 2},
-      {"hue/activate_scene": {
-        "entity_id": "scene.cuisine_cuisine_100",
-        "transition": 3}}
-    ]
     self.log("Welcome home : turning on lights. (This automation won't be run until tomorrow 4pm the soonest)")
     # ... Turn lights on ...
-    self.run_sequence(sequence)
+    self.call_service("script/reset_lights_day_area")
     # ... abort the cancel
     self.cancel_timer(self.callback_cancel_welcome_home_handle)
 
