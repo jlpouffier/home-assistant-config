@@ -60,7 +60,9 @@ Here are detailed explanations for each field: (fields with a star * are mandato
 
 action can be the following:
 - send_to_<person_name>: Send a notification directly to the person called <person_name>
-- send_to_present: Send a notification directly to all present occupant of the home, fallback to send_to_nearest in case the home is empty
+- send_to_all: Send to all 
+- send_to_present: Send a notification directly to all present occupants of the home
+- send_to_absent:  Send a notification directly to all absent occupants of the home
 - send_to_nearest: Send a notification to the nearest occupant(s) of the home
 - send_when_present:
    - if the home is occupied: Send a notification directly to all present occupant of the home
@@ -96,6 +98,8 @@ tag: The concept of tag is complex to understand. So I'll explain the behavior y
     - Acting on the notification (a button) on a device will discard it on every other devices
     Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
   - The next field "until" requires the field tag to work too (See below)
+
+persistent: Notify the front-end of Home Assistant (with the service "notify/persistent_notification")
 
 until (note: "tag" is required for "until" to work)
 until dynamically creates watcher(s) to clear notification.
@@ -135,9 +139,15 @@ class notifier(hass.Hass):
             for person in self.args["persons"]:
                 if action == "send_to_" + person["name"]:
                     self.send_to_person(data, person)
+            if action == "send_to_all":
+                #send_to_all
+                self.send_to_all(data)
             if action == "send_to_present":
                 #send_to_present
                 self.send_to_present(data)
+            if action == "send_to_absent":
+                #send_to_absent
+                self.send_to_absent(data)
             if action == "send_to_nearest":
                 #send_to_nearest
                 self.send_to_nearest(data)
@@ -212,16 +222,20 @@ class notifier(hass.Hass):
         self.log("Sending notification to " + person["name"])
         notification_data = self.build_notification_data(data)
         self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
-    
+
+    def send_to_all(self, data):
+        for person in self.args["persons"]:
+            self.send_to_person(data, person)
+
     def send_to_present(self, data):
-        number_of_notification_sent = 0
         for person in self.args["persons"]:
             if self.get_state(person["id"]) == "home" or float(self.get_state(person["proximity_id"])) <= self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
-                number_of_notification_sent += 1
-        if number_of_notification_sent == 0:
-            #defaulting to nearest
-            self.send_to_nearest(data)
+                
+    def send_to_absent(self, data):
+        for person in self.args["persons"]:
+            if self.get_state(person["id"]) != "home" or float(self.get_state(person["proximity_id"])) > self.args["proximity_threshold"]:
+                self.send_to_person(data, person)
 
     def send_to_nearest(self, data):
         min_proximity = float(self.get_state(self.args["persons"][0]["proximity_id"]))
