@@ -257,7 +257,8 @@ class notifier(hass.Hass):
             self.staged_notifications.append(data)
     
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-        self.log("Home is occupied ... Checking if we need to send some notification now ...")
+        if len(self.staged_notifications) >= 1:
+            self.log("Home is occupied ... Sending stagged notifications now ...")
         while len(self.staged_notifications) >= 1:
             current_data = self.staged_notifications.pop(0)
             self.send_to_present(current_data)
