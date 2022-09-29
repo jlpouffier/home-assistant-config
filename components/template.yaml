@@ -46,7 +46,7 @@
 
     - name: far_away
       unique_id: far_away
-      state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80 and states('proximity.distance_valentine_home') | int(default = 0) > 80 }}"
+      state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80000 and states('proximity.distance_valentine_home') | int(default = 0) > 80000 }}"
 
     - name: is_tv_used
       unique_id: is_tv_used
