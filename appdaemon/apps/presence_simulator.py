@@ -13,16 +13,104 @@ class presence_simulator(hass.Hass):
     # Define random off-set
     random_offset_seconds = 60 * self.args["random_offset"] 
 
-    # Declare all callbacks
-    self.run_daily(self.callback_wake_up, self.args["wake_up_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds)
-    self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds)
-    self.run_daily(self.callback_leave, self.args["leave_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds)
-    self.run_daily(self.callback_return, self.args["return_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds)
-    self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds)
-    self.run_daily(self.callback_sleep, self.args["sleep_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds) 
+    # Storage for simulation handles
+    self.timer_handles = []
+
+    # variable to handle the far_away notification
+    self.callback_occupants_far_away_enabled = False
+
+    # Listen to presence_simulator_switch state change
+    self.listen_state(self.callback_start_presence_simulation , "input_boolean.presence_simulator_switch" , new = "on", immediate = True)
+    self.listen_state(self.callback_stop_presence_simulation , "input_boolean.presence_simulator_switch" , new = "off", immediate = True)
+
+    # listen to home state change
+    self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" ,  new = "off", immediate = True)
+    self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" ,  new = "on", immediate = True)
+
+    # listen to button press form notification
+    self.listen_event(self.callback_button_clicked_start_presence_simulation, "mobile_app_notification_action", action = "start_presence_simulation")
 
     #Log
     self.log("Presence simulation Automations initialized")
+  
+  """
+  Callback triggered when the presence_simulator_switch is activated
+  Goals :
+  . Start the presence simulation routine
+  """
+  def callback_start_presence_simulation(self, entity, attribute, old, new, kwargs):
+    self.log("Starting Presence Simulation")
+    self.timer_handles.append(self.run_daily(self.callback_wake_up, self.args["wake_up_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_leave, self.args["leave_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_return, self.args["return_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+
+  """
+  Callback triggered when the presence_simulator_switch is deactivated
+  Goals :
+  . Stop the presence simulation routine
+  """
+  def callback_stop_presence_simulation(self, entity, attribute, old, new, kwargs):
+    self.log("Stoping Presence Simulation")
+    while len(self.timer_handles) >=1:
+      handle = self.timer_handles.pop()
+      self.cancel_timer(handle)
+
+
+  """
+  Callback triggered when the home is empty
+  Goals :
+  . Start to listen to far_away event
+  """
+  def callback_home_empty(self, entity, attribute, old, new, kwargs):
+    self.log("Home empty, starting to listen for far_away event to enable presence simulation")
+    self.callback_occupants_far_away_enabled = True
+    self.callback_occupants_far_away_handle = self.listen_state(self.callback_occupants_far_away , "binary_sensor.far_away" , new = "on", oneshot = True)
+
+  """
+  Callback triggered when the home is occupied
+  Goals :
+  . If needed stop listening to far_away event
+  """
+  def callback_home_occupied(self, entity, attribute, old, new, kwargs):
+    if self.callback_occupants_far_away_enabled:
+      self.log("Home occupied, stopping to listen for far_away event")
+      self.cancel_listen_state(self.callback_occupants_far_away_handle)
+    
+  """
+  Callback triggered when the occupants are all far away
+  Goals :
+  . Notify them to turn on presence simulation
+  """
+  def callback_occupants_far_away(self, entity, attribute, old, new, kwargs):
+    self.callback_occupants_far_away_enabled = False
+    if self.get_state("input_boolean.presence_simulator_switch") == "off":
+      self.log("Occupant far away and presence simulation not activated... Notifying it ... (once)")
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "🌍 Vous etes loin", 
+        message = "Vous vous trouvez loin du domicile, activer la simulation de présence?",
+        callback = [{
+          "title" : "simuler une présence",
+          "event" : "start_presence_simulation"}],
+        click_url="/lovelace/apercu",
+        icon =  "mdi:compass",
+        tag = "far_away",
+        until =  [{
+          "entity_id" : "binary_sensor.home_occupied",
+          "new_state" : "on"}])
+
+  """
+  Callback triggered when button "start_presence_simulation" is clicked from a notification
+  Goals :
+  . Start Presence Simulation
+  """
+  def callback_button_clicked_start_presence_simulation(self, event_name, data, kwargs):
+    self.log("Notification button clicked : Starting Presence Simulation") 
+    self.call_service("input_boolean/turn_on" , entity_id = "input_boolean.presence_simulator_switch")
+
 
   """
   Callback triggered near wake up time.

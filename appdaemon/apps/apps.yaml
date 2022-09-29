@@ -48,7 +48,6 @@ monitor_home:
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
-  constrain_input_boolean: input_boolean.presence_simulator_switch
   random_offset: 15
   wake_up_time: "07:00:00"
   eat_breakfast_time: "08:00:00"
@@ -91,3 +90,7 @@ monitor_system:
 smart_cube:
   module: smart_cube
   class: smart_cube
+
+  #sandbox:
+#  module: sandbox
+#  class: sandbox
