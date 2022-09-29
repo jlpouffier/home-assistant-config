@@ -244,7 +244,10 @@ class smart_cube(hass.Hass):
     
     def callback_tv_knock(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_knock")
-        self.call_service("media_player/media_play_pause", entity_id = "media_player.philips_android_tv")
+        if self.get_state("switch.media_center") == "on":
+            self.call_service("media_player/media_play_pause", entity_id = "media_player.philips_android_tv")
+        else:
+            self.call_service("switch/turn_on", entity_id = "switch.media_center")
     
     def callback_tv_slide(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_slide")
