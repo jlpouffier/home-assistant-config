@@ -1,3 +1,34 @@
 #https://www.home-assistant.io/integrations/recorder/
 purge_keep_days: 14
 commit_interval: 60
+exclude:
+  domains:
+    - automation
+    - script
+    - zone
+    - sun
+    - button
+    - camera
+    - scene
+  entities:
+    - sensor.memory_free
+    - sensor.memory_use
+    - sensor.memory_use_percent
+    - sensor.processor_temperature
+    - sensor.jl_nas_memory_available_real
+    - sensor.jl_nas_download_throughput
+    - sensor.jl_nas_upload_throughput
+    - sensor.jl_nas_cpu_load_average_5_min
+    - sensor.jl_nas_temperature
+    - sensor.jl_nas_cpu_utilization_total
+    - sensor.jl_nas_cpu_load_average_15_min
+    - sensor.jl_nas_cpu_utilization_user
+    - media_player.jl_s_tv_cast
+    - binary_sensor.machine_a_cafe_update_available
+    - switch.machine_a_cafe_power_outage_memory
+    - binary_sensor.machine_a_laver_update_available
+    - switch.machine_a_laver_power_outage_memory
+    - binary_sensor.alexa_update_available
+    - switch.alexa_power_outage_memory
+    - sensor.the_cube_action
+    - sensor.the_cube_battery
