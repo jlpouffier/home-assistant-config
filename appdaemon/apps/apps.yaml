@@ -56,6 +56,10 @@ presence_simulator:
   go_to_bed_time: "22:00:00"
   sleep_time: "23:00:00"
 
+jarvis:
+  module: jarvis
+  class: jarvis
+
 monitor_system:
   module: monitor_system
   class: monitor_system
@@ -90,6 +94,10 @@ monitor_system:
 smart_cube:
   module: smart_cube
   class: smart_cube
+
+track_car:
+  module: track_car
+  class: track_car
 
   #sandbox:
 #  module: sandbox
