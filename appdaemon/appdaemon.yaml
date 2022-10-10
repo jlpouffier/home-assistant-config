@@ -23,4 +23,3 @@ appdaemon:
   plugins:
     HASS:
       type: hass
-      ha_url: http://hassio/homeassistant
