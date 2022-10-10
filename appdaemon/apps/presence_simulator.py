@@ -10,10 +10,7 @@ Functionalities :
 """
 class presence_simulator(hass.Hass): 
   def initialize(self):
-    # Define random off-set
-    random_offset_seconds = 60 * self.args["random_offset"] 
-
-    # Storage for simulation handles
+    # Storage for simulation handles 
     self.timer_handles = []
 
     # variable to handle the far_away notification
@@ -40,12 +37,12 @@ class presence_simulator(hass.Hass):
   """
   def callback_start_presence_simulation(self, entity, attribute, old, new, kwargs):
     self.log("Starting Presence Simulation")
-    self.timer_handles.append(self.run_daily(self.callback_wake_up, self.args["wake_up_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
-    self.timer_handles.append(self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
-    self.timer_handles.append(self.run_daily(self.callback_leave, self.args["leave_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
-    self.timer_handles.append(self.run_daily(self.callback_return, self.args["return_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
-    self.timer_handles.append(self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
-    self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_wake_up, self.args["wake_up_time"]))
+    self.timer_handles.append(self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"]))
+    self.timer_handles.append(self.run_daily(self.callback_leave, self.args["leave_time"]))
+    self.timer_handles.append(self.run_daily(self.callback_return, self.args["return_time"]))
+    self.timer_handles.append(self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"]))
+    self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"]))
 
   """
   Callback triggered when the presence_simulator_switch is deactivated

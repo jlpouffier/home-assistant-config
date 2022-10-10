@@ -48,13 +48,12 @@ monitor_home:
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
-  random_offset: 15
-  wake_up_time: "07:00:00"
-  eat_breakfast_time: "08:00:00"
-  leave_time: "09:00:00"
-  return_time: "20:00:00"
-  go_to_bed_time: "22:00:00"
-  sleep_time: "23:00:00"
+  wake_up_time: "sunrise - 01:00:00"
+  eat_breakfast_time: "sunrise"
+  leave_time: "sunrise + 00:30:00"
+  return_time: "sunset - 01:00:00"
+  go_to_bed_time: "sunset + 00:30:00"
+  sleep_time: "sunset + 01:00:00"
 
 jarvis:
   module: jarvis
