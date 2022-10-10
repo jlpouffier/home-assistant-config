@@ -225,7 +225,7 @@ class clean_house(hass.Hass):
       
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
-        title = "✅ " + vacuum_name + "a terminé",
+        title = "✅ " + vacuum_name + " a terminé",
         message = "Surface nettoyée: " + area_cleaned + "m2",
         image_url = cleaned_map,
         click_url="/lovelace/vacuums",
