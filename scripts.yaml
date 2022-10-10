@@ -48,25 +48,22 @@ lights_set_tv_paused:
 leave_home:
   alias: Quitter l'appartement
   sequence:
-  - service: light.turn_off
-    data:
-      transition: 2
-    target:
-      entity_id:
-      - light.all_lights
-  - service: media_player.turn_off
-    target:
-      entity_id: media_player.philips_android_tv
-    data: {}
-  - service: media_player.turn_off
-    target:
-      entity_id: media_player.kef
-    data: {}
-  - service: switch.turn_off
-    target:
-      entity_id:
-      - switch.coffeemaker
-    data: {}
+  - parallel:
+    - service: light.turn_off
+      target:
+        entity_id:
+        - light.all_lights
+      data: {}
+    - service: media_player.turn_off
+      data: {}
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.philips_android_tv
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.coffeemaker
   mode: single
   icon: mdi:home-import-outline
 turn_on_media_center:
