@@ -122,7 +122,88 @@
           jl
           {% elif valentine_connected_to_clio.value -%}
           valentine
+          {% else -%}
+          -
+          {% endif %}
+        latitude: >
+          {% if this.attributes.connection == 'jl' -%}
+          {{state_attr('person.jenova70', 'latitude')}}
+          {% elif this.attributes.connection == 'valentine' -%}
+          {{state_attr('person.valentine', 'latitude')}}
+          {% else -%}
+          {{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}
+          {% endif -%}
+        longitude: >
+          {% if this.attributes.connection == 'jl' -%}
+          {{state_attr('person.jenova70', 'longitude')}}
+          {% elif this.attributes.connection == 'valentine' -%}
+          {{state_attr('person.valentine', 'longitude')}}
+          {% else -%}
+          {{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}
+          {% endif -%}
+        entity_picture: "/local/clio.jpg"
+        direction_url: "https://www.google.com/maps/dir/?api=1&destination={{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}%2C{{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}"
+
+    - name: clio_used_by_jl
+      unique_id: clio_used_by_jl
+      state: >
+        {% set jl_connected_to_clio = namespace(value = false) -%}
+        {% for device in state_attr('sensor.pixel_6_bluetooth_connection' , 'connected_paired_devices') -%}
+          {% if '04:4E:AF:AD:CA:B4' in device -%}
+            {% set jl_connected_to_clio.value = true -%}
+          {% endif -%}
+        {% endfor -%}
+        {{ jl_connected_to_clio.value }}
+      delay_off: "0:00:30"
+      attributes:
+        will_soon_turn_off: >
+          {% if this.state == "off" %}
+          {{false}}
           {% else %}
+          {% set jl_connected_to_clio = namespace(value = false) -%}
+          {% for device in state_attr('sensor.pixel_6_bluetooth_connection' , 'connected_paired_devices') -%}
+            {% if '04:4E:AF:AD:CA:B4' in device -%}
+              {% set jl_connected_to_clio.value = true -%}
+            {% endif -%}
+          {% endfor -%}
+          {{ not jl_connected_to_clio.value }}
+          {% endif -%}
+
+    - name: clio_used_by_valentine
+      unique_id: clio_used_by_valentine
+      state: >
+        {% set valentine_connected_to_clio = namespace(value = false) -%}
+        {% for device in state_attr('sensor.pixel_4a_bluetooth_connection' , 'connected_paired_devices') -%}
+          {% if '04:4E:AF:AD:CA:B4' in device -%}
+            {% set valentine_connected_to_clio.value = true -%}
+          {% endif -%}
+        {% endfor -%}
+        {{ valentine_connected_to_clio.value }}
+      delay_off: "0:00:30"
+      attributes:
+        will_soon_turn_off: >
+          {% if this.state == "off" %}
+          {{false}}
+          {% else %}
+          {% set valentine_connected_to_clio = namespace(value = false) -%}
+          {% for device in state_attr('sensor.pixel_4a_bluetooth_connection' , 'connected_paired_devices') -%}
+            {% if '04:4E:AF:AD:CA:B4' in device -%}
+              {% set valentine_connected_to_clio.value = true -%}
+            {% endif -%}
+          {% endfor -%}
+          {{ not valentine_connected_to_clio.value }}
+          {% endif -%}
+
+    - name: clio_v2
+      unique_id: clio_v2
+      state: "{{this.attributes.connection in ['jl','valentine'] | default(false) }}"
+      attributes:
+        connection: >
+          {% if states("binary_sensor.clio_used_by_jl") == "on" -%}
+          jl
+          {% elif states("binary_sensor.clio_used_by_valentine") == "on" -%}
+          valentine
+          {% else -%}
           -
           {% endif %}
         latitude: >
