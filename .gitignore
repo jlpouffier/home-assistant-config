@@ -12,3 +12,6 @@ ip_bans.yaml
 .vscode/settings.json
 zigbee2mqtt/
 appdaemon/apps/sandbox.py
+custom_components/
+www/
+image/
