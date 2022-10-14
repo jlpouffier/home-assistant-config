@@ -18,6 +18,7 @@ class clean_house(hass.Hass):
     self.minimum_cleaning_duration = 15 * 60
 
     self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off", immediate = True)
+    self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
     self.listen_state(self.callback_first_floor_dirty, "binary_sensor.should_neuneu_run" , new = "on", immediate = True)
     self.listen_state(self.callback_first_floor_very_dirty, "binary_sensor.should_neuneu_run_urgently" , new = "on", immediate = True)
     self.listen_state(self.callback_second_floor_dirty, "binary_sensor.should_teuteu_run" , new = "on", immediate = True)
@@ -72,6 +73,22 @@ class clean_house(hass.Hass):
     if is_first_floor_dirty and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
+    
+  """
+  Callback triggered when the home is occupied
+  Goals :
+  . RTH vacuums
+  """ 
+  def callback_home_occupied(self, entity, attribute, old, new, kwargs):
+    if self.get_state("vacuum.teuteu") == 'cleaning':
+      # Stopping TeuTeu
+      self.log("RTH TeuTeu") 
+      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
+    
+    if self.get_state("vacuum.neuneu") == 'cleaning':
+      # Stopping NeuNeu
+      self.log("RTH NeuNeu") 
+      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
 
   """
   Callback triggered when the first floor is dirty

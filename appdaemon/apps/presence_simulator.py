@@ -70,11 +70,16 @@ class presence_simulator(hass.Hass):
   Callback triggered when the home is occupied
   Goals :
   . If needed stop listening to far_away event
+  . If needed stop presence simulation
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     if self.callback_occupants_far_away_enabled:
       self.log("Home occupied, stopping to listen for far_away event")
       self.cancel_listen_state(self.callback_occupants_far_away_handle)
+    
+    if self.get_state("input_boolean.presence_simulator_switch") == "on":
+      self.log("Stopping Presence Simulator")
+      self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
     
   """
   Callback triggered when the occupants are all far away

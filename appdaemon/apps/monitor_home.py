@@ -4,9 +4,8 @@ import hassapi as hass
 monitor_home is an app responsible of the monitoring the home 
 
 Functionalities :
-. RTH Vacuums if home becomes occupied
-. Stop presence simulator if home becomes occupied
 . Turn off Alexa if the home is not occupied
+. Turn on and off lights, TV, KEF, coffee maker based on entry hue switch (long press)
 
 Notifications :
 . Home empty and Lights on > Turn off possible
@@ -29,6 +28,9 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_mailbox_occupancy_detected, "binary_sensor.capteur_mouvement_boite_aux_lettres" , new = "on")
     self.listen_state(self.callback_litter_occupancy_detected, "binary_sensor.capteur_mouvement_litiere" , new = "on")
     self.listen_state(self.callback_litter_full, "binary_sensor.is_litter_full", new = "on")
+    self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
+    self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
+    
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
@@ -217,20 +219,6 @@ class monitor_home(hass.Hass):
     self.log("... Turning on Alexa.")
     self.call_service("switch/turn_on", entity_id = "switch.alexa")
 
-    if self.get_state("input_boolean.presence_simulator_switch") == "on":
-      self.log("Stopping Presence Simulator")
-      self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
-
-    if self.get_state("vacuum.teuteu") == 'cleaning':
-      # Stopping TeuTeu
-      self.log("RTH TeuTeu") 
-      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
-    
-    if self.get_state("vacuum.neuneu") == 'cleaning':
-      # Stopping NeuNeu
-      self.log("RTH NeuNeu") 
-      self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
-
   """
   Callback triggered when coffee maker on for more than 90 minutes
   Goals :
@@ -316,6 +304,24 @@ class monitor_home(hass.Hass):
         until =  [{
           "entity_id" : "binary_sensor.is_litter_full",
           "new_state" : "off"}])
+
+  """
+  Callback triggered when Long press on entry switch (button ON)
+  Goals :
+  . Turn on lights
+  """
+  def callback_long_press_on_entry_switch_button_on(self, event_name, data, kwargs):
+    self.log("Long press on entry switch (button ON), turning on lights ...")
+    self.call_service("script/reset_lights_day_area")
+
+  """
+  Callback triggered when Long press on entry switch (button OFF)
+  Goals :
+  . Turn off lights, TV, KEF, coffee maker ...
+  """
+  def callback_long_press_on_entry_switch_button_off(self, event_name, data, kwargs):
+    self.log("Long press on entry switch (button OFF), turning on lights, TV, KEF, coffee maker ...")
+    self.call_service("script/leave_home")
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification
