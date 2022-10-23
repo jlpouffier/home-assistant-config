@@ -10,16 +10,20 @@ class jarvis(hass.Hass):
         self.log("Jarvis initialized")
     
     def callback_act_on_switch_entity(self, event_name, data, kwargs):
+        self.log("callback_act_on_switch_entity")
         self.call_service(data["action"], entity_id = data["entity"])
     
     def callback_act_on_light_entity(self, event_name, data, kwargs):
+        self.log("callback_act_on_light_entity")
         if data["action"] == "light/turn_on":
             self.call_service(data["action"], entity_id = data["entity"], brightness_pct = 100)
         else:
             self.call_service(data["action"], entity_id = data["entity"])
 
     def callback_act_on_cover_entity(self, event_name, data, kwargs):
+        self.log("callback_act_on_cover_entity")
         self.call_service(data["action"], entity_id = "cover.living_room_cover")
     
     def callback_act_on_cover_position_entity(self, event_name, data, kwargs):
+        self.log("callback_act_on_cover_position_entity")
         self.call_service("cover/set_cover_position", entity_id = "cover.living_room_cover", position = data["position"])
