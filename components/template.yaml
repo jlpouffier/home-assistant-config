@@ -104,6 +104,7 @@
     - name: clio
       unique_id: clio
       state: "{{ this.attributes.connexion in ['jl', 'valentine'] | default(false)}}"
+      picture: "/local/clio.jpg"
       attributes:
         connexion: >
           {% set jl_connected = namespace(value = false) -%}
@@ -150,5 +151,4 @@
           {% else -%}
             {{ this.attributes.gps_accuracy | default(0) }}
           {% endif -%}
-        entity_picture: "/local/clio.jpg"
         direction_url: "https://www.google.com/maps/dir/?api=1&destination={{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}%2C{{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}"
