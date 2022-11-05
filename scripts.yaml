@@ -94,8 +94,8 @@ turn_on_media_center:
           alias: WAIT UNTIL TV IS AVAILABLE
           timeout:
             hours: 0
-            minutes: 0
-            seconds: 30
+            minutes: 1
+            seconds: 0
             milliseconds: 0
           continue_on_timeout: true
         alias: IF TV UNAVAILABLE THEN WOL TV
