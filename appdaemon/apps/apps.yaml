@@ -45,15 +45,20 @@ monitor_home:
   class: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
 
+heat_home:
+  module: heat_home
+  class: heat_home
+  constrain_input_boolean: input_boolean.heat_home_switch
+
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
   wake_up_time: "sunrise - 01:00:00"
   eat_breakfast_time: "sunrise"
-  leave_time: "sunrise + 00:30:00"
+  leave_time: "sunrise + 01:00:00"
   return_time: "sunset - 01:00:00"
-  go_to_bed_time: "sunset + 00:30:00"
-  sleep_time: "sunset + 01:00:00"
+  go_to_bed_time: "sunset + 02:00:00"
+  sleep_time: "sunset + 03:00:00"
 
 jarvis:
   module: jarvis
