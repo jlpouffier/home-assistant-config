@@ -76,9 +76,6 @@ class smart_cube(hass.Hass):
             self.mode_handles.append(self.listen_state(self.callback_tv_rotate_right, "sensor.the_cube_action", new = "rotate_right"))
             self.mode_handles.append(self.listen_state(self.callback_tv_rotate_left, "sensor.the_cube_action", new = "rotate_left"))
             
-
-
-
     
     def cancel_current_mode_handles(self):
         #self.log("cancel_current_mode_handles")
@@ -121,7 +118,8 @@ class smart_cube(hass.Hass):
     
     def callback_light_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_light_filp")
-        current_side = self.get_state(entity , attribute = "side")
+        #current_side = self.get_state(entity , attribute = "side")
+        current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_light_rooms(current_side)
 
     def callback_change_light(self, entity, attribute, old, new, kwargs):
@@ -193,7 +191,8 @@ class smart_cube(hass.Hass):
     
     def callback_vacuum_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_vacuum_filp")
-        current_side = self.get_state(entity , attribute = "side")
+        #current_side = self.get_state(entity , attribute = "side")
+        current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_vacuums(current_side)
 
     def callback_vacuum_knock(self, entity, attribute, old, new, kwargs):
@@ -220,7 +219,7 @@ class smart_cube(hass.Hass):
         if side == 4:
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_tv_sources" , option = "Molotov")
         if side == 5:
-            self.call_service("input_select/select_option", entity_id = "input_select.the_cube_tv_sources" , option = "Amazon Prime")
+            self.call_service("input_select/select_option", entity_id = "input_select.the_cube_tv_sources" , option = "Allumer / Éteindre")
 
     def callback_change_tv_sources(self, entity, attribute, old, new, kwargs):
         #self.log("callback_change_tv_sources")
@@ -234,24 +233,25 @@ class smart_cube(hass.Hass):
             self.current_tv_source = "com.aspiro.tidal"
         if new == "Molotov":
             self.current_tv_source = "Molotov"
-        if new == "Amazon Prime":
-            self.current_tv_source = "Prime Video"
+        if new == "Allumer / Éteindre":
+            self.current_tv_source = "Power"
     
     def callback_tv_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_filp")
-        current_side = self.get_state(entity , attribute = "side")
+        #current_side = self.get_state(entity , attribute = "side")
+        current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_tv_sources(current_side)
     
     def callback_tv_knock(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_knock")
-        if self.get_state("switch.media_center") == "on":
-            self.call_service("media_player/media_play_pause", entity_id = "media_player.philips_android_tv")
-        else:
-            self.call_service("switch/turn_on", entity_id = "switch.media_center")
+        self.call_service("media_player/media_play_pause", entity_id = "media_player.philips_android_tv")
     
     def callback_tv_slide(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_slide")
-        self.call_service("media_player/select_source", entity_id = "media_player.philips_android_tv", source = self.current_tv_source)
+        if self.current_tv_source == "Power":
+            self.call_service("switch/toggle", entity_id = "switch.media_center")
+        else:
+            self.call_service("media_player/select_source", entity_id = "media_player.philips_android_tv", source = self.current_tv_source)
     
     def callback_tv_rotate_left(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_rotate_left")
