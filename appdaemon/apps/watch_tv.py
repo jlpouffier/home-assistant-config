@@ -4,6 +4,7 @@ import hassapi as hass
 watch_tv is an app responsible of the TV watching experience
 
 Functionalities :
+. Turn on and off Speaker based on TV state
 . Turn on and off light when watching a movie
 . Turn on and off light when playing the PS5
 
@@ -12,7 +13,12 @@ Notifications :
 """
 class watch_tv(hass.Hass):
   def initialize(self):
-    # The TV automations will only run if the sun is down.  
+
+    # Listener to turn on or off the speakers based on the TV state.
+    self.listen_state(self.callback_tv_on, "binary_sensor.is_tv_on", new = "on")
+    self.listen_state(self.callback_tv_off, "binary_sensor.is_tv_on", new = "off")
+
+    # The Light-TV automations will only run if the sun is down.  
     self.listen_state(self.callback_initialize_automations, "sun.sun", new = "below_horizon", immediate = True)
     self.listen_state(self.callback_stop_automations, "sun.sun", new = "above_horizon", immediate = True)
 
@@ -25,6 +31,24 @@ class watch_tv(hass.Hass):
     # log
     self.log("Watch TV Automations initialized")
 
+  """
+  Callback triggered when the TV is on
+  Goals :
+  . Start KEF LSX (and change source) if not turned on yet
+  """ 
+  def callback_tv_on(self, entity, attribute, old, new, kwargs):
+    if self.get_state("media_player.kef") == "off" and self.get_state("script.turn_on_media_center") == "off":
+      self.call_service("script/turn_on_media_center")
+
+  """
+  Callback triggered when the TV is off
+  Goals :
+  . Stop KEF LSX if still on
+  """ 
+  def callback_tv_off(self, entity, attribute, old, new, kwargs):
+    if self.get_state("media_player.kef") == "on"  and self.get_state("script.turn_off_media_center") == "off":
+      self.call_service("script/turn_off_media_center")
+  
   """
   Callback triggered when the sun is below horizon
   Goals :
