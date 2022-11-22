@@ -255,8 +255,8 @@ class smart_cube(hass.Hass):
     
     def callback_tv_rotate_left(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_rotate_left")
-        self.call_service("media_player/volume_down", entity_id = "media_player.lsx")
+        self.call_service("media_player/volume_down", entity_id = "media_player.kef")
     
     def callback_tv_rotate_right(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_rotate_right")
-        self.call_service("media_player/volume_up", entity_id = "media_player.lsx")
+        self.call_service("media_player/volume_up", entity_id = "media_player.kef")
