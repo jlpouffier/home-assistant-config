@@ -1,3 +1,6 @@
 - platform: kef
   host: !secret kef_host
   type: LSX
+  maximum_volume: 1
+  inverse_speaker_mode: true
+  standby_time: 60
