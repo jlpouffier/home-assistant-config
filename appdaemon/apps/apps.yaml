@@ -99,10 +99,6 @@ smart_cube:
   module: smart_cube
   class: smart_cube
 
-take_out_trash:
-  module: take_out_trash
-  class: take_out_trash
-
   #sandbox:
 #  module: sandbox
 #  class: sandbox

@@ -16,7 +16,8 @@ Notifications :
 . Coffe maker on for more than 90 minutes > Turn off possible
 . Washing Machine over
 . Mailbox full
-. Cat Litter full
+. Cat Litter full > Cleaning possible
+. Take out trash
 
 """
 class monitor_home(hass.Hass): 
@@ -28,9 +29,12 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_mailbox_occupancy_detected, "binary_sensor.capteur_mouvement_boite_aux_lettres" , new = "on")
     self.listen_state(self.callback_litter_occupancy_detected, "binary_sensor.capteur_mouvement_litiere" , new = "on")
     self.listen_state(self.callback_litter_full, "binary_sensor.is_litter_full", new = "on")
+    self.listen_state(self.callback_black_trash_schedule_begining, "schedule.planning_poubelle_noire", new = "on")
+    self.listen_state(self.callback_green_trash_schedule_begining, "schedule.planning_poubelle_verte", new = "on")
+    self.listen_state(self.callback_black_trash_schedule_end, "schedule.planning_poubelle_noire", new = "off")
+    self.listen_state(self.callback_green_trash_schedule_end, "schedule.planning_poubelle_verte", new = "off")
     self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
     self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
-    
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
@@ -249,12 +253,12 @@ class monitor_home(hass.Hass):
   def callback_washing_mashine_over(self, entity, attribute, old, new, kwargs):
     self.log("Washing machine over. Notifying it...")
     self.fire_event("NOTIFIER",
-        action = "send_when_present",
-        title = "🫧 Machine à laver",
-        message = "Cycle de lavage terminé !",
-        icon =  "mdi:washing-machine",
-        color = "#07ffc1",
-        tag = "washing_mashine_over")
+      action = "send_when_present",
+      title = "🫧 Machine à laver",
+      message = "Cycle de lavage terminé !",
+      icon =  "mdi:washing-machine",
+      color = "#07ffc1",
+      tag = "washing_mashine_over")
 
 
   """
@@ -266,12 +270,12 @@ class monitor_home(hass.Hass):
     if self.get_state("binary_sensor.is_front_door_recently_open") == "off":
       self.log("Occupancy detected in the mailbox. Notifying it...")
       self.fire_event("NOTIFIER",
-          action = "send_when_present",
-          title = "📬  Boite aux lettres",
-          message = "Vous avez du courrier !",
-          icon =  "mdi:mailbox-up",
-          color = "#07ffc1",
-          tag = "you_got_mail")
+        action = "send_when_present",
+        title = "📬  Boite aux lettres",
+        message = "Vous avez du courrier !",
+        icon =  "mdi:mailbox-up",
+        color = "#07ffc1",
+        tag = "you_got_mail")
   
 
   """
@@ -304,6 +308,59 @@ class monitor_home(hass.Hass):
         until =  [{
           "entity_id" : "binary_sensor.is_litter_full",
           "new_state" : "off"}])
+
+
+  """
+  Callback triggered when black trash can be taken out
+  Goals :
+  . Turn on input boolean to notify user on Home Assistant dashboard
+  """
+  def callback_black_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
+    self.log("It's time to take out black trash, turning on input boolean so it can be displayed on the dashboards ...'")
+    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_noire_a_sortir")
+  
+  """
+  Callback triggered when green trash can be taken out
+  Goals :
+  . Turn on input boolean to notify user on Home Assistant dashboard
+  """
+  def callback_green_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
+    self.log("It's time to take out green trash, turning on input boolean so it can be displayed on the dashboards ...'")
+    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_verte_a_sortir")
+
+  """
+  Callback triggered when it's almost too late to take out black trash (and it's not yet done)
+  Goals :
+  . Notify present occupants
+  """
+  def callback_black_trash_schedule_end(self, entity, attribute, old, new, kwargs):
+    if self.get_state("input_boolean.poubelle_noire_a_sortir") == "on":
+      self.log("Black trash has not been taken out. Notifying it ...'")
+      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_noire_a_sortir")
+      self.fire_event("NOTIFIER",
+        action = "send_to_present",
+        title = "🗑 Poubelle Noire", 
+        message = "N'oublie pas de sortir la poubelle noire",
+        icon =  "mdi:delete",
+        color = "#ff6e07",
+        tag = "black_trash")
+
+  """
+  Callback triggered when it's almost too late to take out green trash (and it's not yet done)
+  Goals :
+  . Notify present occupants
+  """
+  def callback_green_trash_schedule_end(self, entity, attribute, old, new, kwargs):
+    if self.get_state("input_boolean.poubelle_verte_a_sortir") == "on":
+      self.log("Green trash has not been taken out. Notifying it ...'")
+      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_verte_a_sortir")
+      self.fire_event("NOTIFIER",
+        action = "send_to_present",
+        title = "♻️ Poubelle Verte", 
+        message = "N'oublie pas de sortir la poubelle verte",
+        icon =  "mdi:recycle",
+        color = "#ff6e07",
+        tag = "green_trash")
 
   """
   Callback triggered when Long press on entry switch (button ON)
