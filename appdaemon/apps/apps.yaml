@@ -49,6 +49,7 @@ heat_home:
   module: heat_home
   class: heat_home
   constrain_input_boolean: input_boolean.heat_home_switch
+  open_time_allowed_before_stopping_thermostat: 60
 
 presence_simulator:
   module: presence_simulator

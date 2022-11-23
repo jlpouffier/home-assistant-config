@@ -9,7 +9,7 @@ Functionalities :
 """
 class heat_home(hass.Hass): 
     def initialize(self):
-        self.listen_state(self.callback_openings_open, "binary_sensor.all_openings", new = "on", duration = 60)
+        self.listen_state(self.callback_openings_open, "binary_sensor.all_openings", new = "on", duration = self.args["open_time_allowed_before_stopping_thermostat"])
         self.listen_state(self.callback_openings_closed, "binary_sensor.all_openings", new = "off")
         self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off")
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , new = "on")
