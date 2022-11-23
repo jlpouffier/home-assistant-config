@@ -264,11 +264,14 @@ class monitor_home(hass.Hass):
   """
   Callback triggered when mailbox occupancy is detected
   Goals :
-  . Send notification (not when the main door is opened (rencently) - that's how I pick my mail)
+  . Send notification, not when the main door is opened (rencently)
+  . Discard notification when the main door is opened (rencently)
+    (that's how I pick my mail)
   """
   def callback_mailbox_occupancy_detected(self, entity, attribute, old, new, kwargs):
+    # if the main door was opened recently .. send notification
     if self.get_state("binary_sensor.is_front_door_recently_open") == "off":
-      self.log("Occupancy detected in the mailbox. Notifying it...")
+      self.log("Occupancy detected in the mailbox + Door not opened recently: Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_when_present",
         title = "📬  Boite aux lettres",
@@ -276,6 +279,10 @@ class monitor_home(hass.Hass):
         icon =  "mdi:mailbox-up",
         color = "#07ffc1",
         tag = "you_got_mail")
+    # else discard
+    else:
+      self.log("Occupancy detected in the mailbox + Door opened recently: Discarding notification...")
+      self.fire_event("NOTIFIER_DISCARD", tag = "you_got_mail")
   
 
   """

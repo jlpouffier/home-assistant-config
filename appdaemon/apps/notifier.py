@@ -118,7 +118,8 @@ That way, you make sure notifications are only displayed when relevant.
 class notifier(hass.Hass): 
     def initialize(self):
         # Listen to all NOTIFIER events
-        self.listen_event(self.callback_notifier_called , "NOTIFIER")
+        self.listen_event(self.callback_notifier_event_received , "NOTIFIER")
+        self.listen_event(self.callback_notifier_discard_event_received , "NOTIFIER_DISCARD")
         self.listen_event(self.callback_button_clicked, "mobile_app_notification_action")
         self.listen_event(self.callback_notification_cleared, "mobile_app_notification_cleared")
         
@@ -132,7 +133,7 @@ class notifier(hass.Hass):
         # log
         self.log("Notifier initialized")  
 
-    def callback_notifier_called(self, event_name, data, kwargs):
+    def callback_notifier_event_received(self, event_name, data, kwargs):
         self.log("NOTIFIER event received")  
         if "action" in data:
             action = data["action"]
@@ -168,6 +169,9 @@ class notifier(hass.Hass):
                 watcher_handle["tag"] = data["tag"]
                 self.watchers_handles.append(watcher_handle)
                 self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]))
+
+    def callback_notifier_discard_event_received(self, event_name, data, kwargs):
+        self.clear_notifications(data["tag"])
 
     def callback_until_watcher(self, entity, attribute, old, new, kwargs):
         self.clear_notifications(kwargs["tag"])
