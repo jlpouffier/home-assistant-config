@@ -29,6 +29,7 @@ captive_portal:
 switch:
   - platform: gpio
     id: living_room_cover_up
+    name: "Volet Salon - Bouton UP (Fallback)"
     pin: 
       number: 13
       inverted: true
@@ -41,6 +42,7 @@ switch:
     
   - platform: gpio
     id: living_room_cover_stop
+    name: "Volet Salon - Bouton STOP (Fallback)"
     pin: 
       number: 12
       inverted: true
@@ -53,6 +55,7 @@ switch:
     
   - platform: gpio
     id: living_room_cover_down
+    name: "Volet Salon - Bouton DOWN (Fallback)"
     pin: 
       number: 27
       inverted: true
@@ -84,4 +87,3 @@ cover:
       then:
         - delay: 1s
         - switch.turn_on: living_room_cover_down
-        

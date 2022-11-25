@@ -6,6 +6,7 @@ monitor_home is an app responsible of the monitoring the home
 Functionalities :
 . Turn off Alexa if the home is not occupied
 . Turn on and off lights, TV, KEF, coffee maker based on entry hue switch (long press)
+. Deal with desynchronization edge case with my living room cover
 
 Notifications :
 . Home empty and Lights on > Turn off possible
@@ -35,6 +36,8 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_green_trash_schedule_end, "schedule.planning_poubelle_verte", new = "off")
     self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
     self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
+    self.listen_event(self.callback_cover_open_service_called, "call_service", domain = "cover", service = "open_cover" , service_data = {"entity_id" : "cover.living_room_cover"})
+    self.listen_event(self.callback_cover_close_service_called, "call_service", domain = "cover", service = "close_cover" , service_data = {"entity_id" : "cover.living_room_cover"})
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
@@ -386,6 +389,26 @@ class monitor_home(hass.Hass):
   def callback_long_press_on_entry_switch_button_off(self, event_name, data, kwargs):
     self.log("Long press on entry switch (button OFF), turning on lights, TV, KEF, coffee maker ...")
     self.call_service("script/leave_home")
+
+  """
+  Callback triggered when the service open_cover is called on cover.living_room_cover
+  Goals :
+  . If the over are already fully opened, press again the open button to tackle edge case of desynchronization between the different remotes.
+  """
+  def callback_cover_open_service_called(self, event_name, data, kwargs):
+    if self.get_state("cover.living_room_cover") == "open" and self.get_state("cover.living_room_cover", attribute = "current_position") == 100:
+      self.log("Action open cover fired, but cover already opened at 100%: Making sure they are opened")
+      self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_up_fallback")
+
+  """
+  Callback triggered when the service close_cover is called on cover.living_room_cover
+  Goals :
+  . If the over are already fully closed, press again the close button to tackle edge case of desynchronization between the different remotes.
+  """
+  def callback_cover_close_service_called(self, event_name, data, kwargs):
+    if self.get_state("cover.living_room_cover") == "closed" and self.get_state("cover.living_room_cover", attribute = "current_position") == 0:
+      self.log("Action close cover fired, but cover already closed at 0%: Making sure they are closed")
+      self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_down_fallback")
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification
