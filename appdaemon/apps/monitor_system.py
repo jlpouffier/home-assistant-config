@@ -38,10 +38,10 @@ class monitor_system(hass.Hass):
         battery_daily_check_runtime = datetime.time(19,0,0)
         self.run_daily(self.callback_battery_daily_check, battery_daily_check_runtime)
         
-        self.log("Monitor System Initializing, Restauring Samba Backup sensor ...")
+        self.log("Monitor System Initializing, Restauring Samba Backup sensor ..." , log = 'user_log')
         self.call_service("hassio/addon_stdin", addon = "15d21743_samba_backup" , input = "restore-sensor")
         
-        self.log("Monitor System initialized")
+        self.log("Monitor System initialized" , log = 'user_log')
 
     """
     Callback triggered when new upate is available on the HASS domain.
@@ -49,7 +49,7 @@ class monitor_system(hass.Hass):
     . Notify
     """
     def callback_hass_update_available(self, entity, attribute, old, new, kwargs):
-        self.log("Detecting an available update... Notifying it...")
+        self.log("Detecting an available update... Notifying it..." , log = 'user_log')
     
         app_title = self.get_state(entity, attribute = "title")
     
@@ -73,7 +73,7 @@ class monitor_system(hass.Hass):
         if new != "unknown":
             number_of_available_update = int(new)
             if number_of_available_update > 0:
-                self.log("Detecting an available update... Notifying it...")
+                self.log("Detecting an available update... Notifying it..." , log = 'user_log')
                 self.fire_event("NOTIFIER",
                     action = "send_to_jl",
                     title = "🎉 Mise a jour HACS disponible",
@@ -92,7 +92,7 @@ class monitor_system(hass.Hass):
     . Notify
     """
     def callback_rpi_power_problem_detected(self, entity, attribute, old, new, kwargs):
-        self.log("Detecting power issue on RPI... Notifying it...")
+        self.log("Detecting power issue on RPI... Notifying it..." , log = 'user_log')
         self.fire_event("NOTIFIER",
             action = "send_to_jl",
             title = "🔌 Alimentation Home Assistant",
@@ -106,12 +106,12 @@ class monitor_system(hass.Hass):
     . Notify
     """
     def callback_samba_backup_daily_check(self, kwargs):
-        self.log("Checking last Samba backup ...")
+        self.log("Checking last Samba backup ..." , log = 'user_log')
         last_backup_string = self.get_state("sensor.samba_backup", attribute = 'last_backup') + ":00"
         last_backup_date = self.parse_datetime(last_backup_string, aware = True)
         now = self.get_now()
         if (now - last_backup_date) > datetime.timedelta(hours = 24):
-            self.log("Samba backup issue found... Notifying it")
+            self.log("Samba backup issue found... Notifying it" , log = 'user_log')
             self.fire_event("NOTIFIER",
                 action = "send_to_jl",
                 title = "💾 Sauvegarde journalière",
@@ -127,7 +127,7 @@ class monitor_system(hass.Hass):
     . Notify
     """
     def callback_battery_daily_check(self, kwargs):
-        self.log("Checking battery levels  ...")
+        self.log("Checking battery levels  ..." , log = 'user_log')
         
         battery_threshold = self.args["battery_threshold"]
         entities_to_notify = []
@@ -138,7 +138,7 @@ class monitor_system(hass.Hass):
                 entities_to_notify.append(friendly_name)
             
         if len(entities_to_notify) == 1:
-            self.log("Low battery... Notifying it")
+            self.log("Low battery... Notifying it" , log = 'user_log')
             self.fire_event("NOTIFIER",
                 action = "send_to_jl",
                 title = "Batterie 🪫",
@@ -148,7 +148,7 @@ class monitor_system(hass.Hass):
                 persistent = True)
         
         elif len(entities_to_notify) > 1:
-            self.log("Low battery... Notifying it")
+            self.log("Low battery... Notifying it" , log = 'user_log')
             self.fire_event("NOTIFIER",
                 action = "send_to_jl",
                 title = "Batterie 🪫",

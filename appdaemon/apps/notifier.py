@@ -131,10 +131,10 @@ class notifier(hass.Hass):
         self.watchers_handles = []
 
         # log
-        self.log("Notifier initialized")  
+        self.log("Notifier initialized" , log = 'user_log')  
 
     def callback_notifier_event_received(self, event_name, data, kwargs):
-        self.log("NOTIFIER event received")  
+        self.log("NOTIFIER event received" , log = 'user_log')  
         if "action" in data:
             action = data["action"]
             for person in self.args["persons"]:
@@ -158,7 +158,7 @@ class notifier(hass.Hass):
         
         if "persistent" in data:
             if data["persistent"]:
-                self.log("Persisting the notification on Home Assistant Front-end ...")
+                self.log("Persisting the notification on Home Assistant Front-end ..." , log = 'user_log')
                 self.call_service("notify/persistent_notification", title = data["title"], message = data["message"])
         
         if "until" in data and 'tag' in data:
@@ -168,7 +168,7 @@ class notifier(hass.Hass):
                 watcher_handle["id"] = self.listen_state(self.callback_until_watcher, watcher["entity_id"], new = str(watcher["new_state"]), oneshot = True, tag = data["tag"])
                 watcher_handle["tag"] = data["tag"]
                 self.watchers_handles.append(watcher_handle)
-                self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]))
+                self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]) , log = 'user_log')
 
     def callback_notifier_discard_event_received(self, event_name, data, kwargs):
         self.clear_notifications(data["tag"])
@@ -185,7 +185,7 @@ class notifier(hass.Hass):
             self.clear_notifications(data["tag"])
     
     def clear_notifications(self, tag):
-        self.log("Clearing notifications with tag " + tag + " (if any) ...")
+        self.log("Clearing notifications with tag " + tag + " (if any) ..." , log = 'user_log')
         notification_data = {}
         notification_data["tag"] = tag
         for person in self.args["persons"]:
@@ -193,7 +193,7 @@ class notifier(hass.Hass):
         self.cancel_watchers(tag)
 
     def cancel_watchers(self, tag):
-        self.log("Removing watchers with tag " + tag + " (if any) ...")
+        self.log("Removing watchers with tag " + tag + " (if any) ..." , log = 'user_log')
         for watcher in list(self.watchers_handles):
             if watcher["tag"] == tag:
                 self.watchers_handles.remove(watcher)
@@ -223,7 +223,7 @@ class notifier(hass.Hass):
         return notification_data
 
     def send_to_person(self, data, person):
-        self.log("Sending notification to " + person["name"])
+        self.log("Sending notification to " + person["name"] , log = 'user_log')
         notification_data = self.build_notification_data(data)
         self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
 
@@ -257,12 +257,12 @@ class notifier(hass.Hass):
         if self.get_state(self.args["home_occupancy_sensor_id"]) == "on":
             self.send_to_present(data)
         else:
-            self.log("Staging notification for when home becomes occupied ...")
+            self.log("Staging notification for when home becomes occupied ..." , log = 'user_log')
             self.staged_notifications.append(data)
     
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
         if len(self.staged_notifications) >= 1:
-            self.log("Home is occupied ... Sending stagged notifications now ...")
+            self.log("Home is occupied ... Sending stagged notifications now ..." , log = 'user_log')
         while len(self.staged_notifications) >= 1:
             current_data = self.staged_notifications.pop(0)
             self.send_to_present(current_data)

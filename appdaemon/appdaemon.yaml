@@ -13,6 +13,10 @@ logs:
   diag_log:
     filename: /config/appdaemon/logs/diag.log
     log_generations: 3
+  user_log:
+    name: user_log
+    filename: /config/appdaemon/logs/user.log
+    log_generations: 3
 
 appdaemon:
   latitude: !secret latitude
