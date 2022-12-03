@@ -13,9 +13,53 @@ logs:
   diag_log:
     filename: /config/appdaemon/logs/diag.log
     log_generations: 3
-  user_log:
-    name: user_log
-    filename: /config/appdaemon/logs/user.log
+  clean_house:
+    name: clean_house
+    filename: /config/appdaemon/logs/clean_house.log
+    log_generations: 3
+  heat_home:
+    name: heat_home
+    filename: /config/appdaemon/logs/heat_home.log
+    log_generations: 3
+  jarvis:
+    name: jarvis
+    filename: /config/appdaemon/logs/jarvis.log
+    log_generations: 3
+  monitor_home:
+    name: monitor_home
+    filename: /config/appdaemon/logs/monitor_home.log
+    log_generations: 3
+  monitor_system:
+    name: monitor_system
+    filename: /config/appdaemon/logs/monitor_system.log
+    log_generations: 3
+  notifier:
+    name: notifier
+    filename: /config/appdaemon/logs/notifier.log
+    log_generations: 3
+  presence_simulator:
+    name: presence_simulator
+    filename: /config/appdaemon/logs/presence_simulator.log
+    log_generations: 3
+  sandbox:
+    name: sandbox
+    filename: /config/appdaemon/logs/sandbox.log
+    log_generations: 3
+  smart_cube:
+    name: smart_cube
+    filename: /config/appdaemon/logs/smart_cube.log
+    log_generations: 3
+  wake_up:
+    name: wake_up
+    filename: /config/appdaemon/logs/wake_up.log
+    log_generations: 3
+  watch_tv:
+    name: watch_tv
+    filename: /config/appdaemon/logs/watch_tv.log
+    log_generations: 3
+  welcome_home:
+    name: welcome_home
+    filename: /config/appdaemon/logs/welcome_home.log
     log_generations: 3
 
 appdaemon:

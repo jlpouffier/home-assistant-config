@@ -1,6 +1,7 @@
 notifier:
   module: notifier
   class: notifier
+  log: notifier
   constrain_input_boolean: input_boolean.notify_switch
   home_occupancy_sensor_id: binary_sensor.home_occupied
   proximity_threshold: 1000
@@ -17,6 +18,7 @@ notifier:
 watch_tv:
   module: watch_tv
   class: watch_tv
+  log: watch_tv
   constrain_input_boolean: input_boolean.watch_tv_automation_switch
   media_player_id: media_player.philips_android_tv
   supported_apps:
@@ -27,33 +29,39 @@ watch_tv:
 clean_house:
   module: clean_house
   class: clean_house
+  log: clean_house
   hass_base_url: !secret hass_base_url
   constrain_input_boolean: input_boolean.house_cleaning_switch
 
 wake_up:
   module: wake_up
   class: wake_up
+  log: wake_up
   constrain_input_boolean: input_boolean.wake_up_automation_switch
 
 welcome_home:
   module: welcome_home
   class: welcome_home
+  log: welcome_home
   constrain_input_boolean: input_boolean.welcome_home_automation_switch
 
 monitor_home:
   module: monitor_home
   class: monitor_home
+  log: monitor_home
   constrain_input_boolean: input_boolean.monitor_home_switch
 
 heat_home:
   module: heat_home
   class: heat_home
+  log: heat_home
   constrain_input_boolean: input_boolean.heat_home_switch
   open_time_allowed_before_stopping_thermostat: 60
 
 presence_simulator:
   module: presence_simulator
   class: presence_simulator
+  log: presence_simulator
   wake_up_time: "sunrise - 01:00:00"
   eat_breakfast_time: "sunrise"
   leave_time: "sunrise + 01:00:00"
@@ -64,10 +72,12 @@ presence_simulator:
 jarvis:
   module: jarvis
   class: jarvis
+  log: jarvis
 
 monitor_system:
   module: monitor_system
   class: monitor_system
+  log: monitor_system
   constrain_input_boolean: input_boolean.monitor_system_switch
   battery_threshold: 20
   battery_sensors_to_check:
@@ -99,7 +109,9 @@ monitor_system:
 smart_cube:
   module: smart_cube
   class: smart_cube
+  log: smart_cube
 
-  #sandbox:
-#  module: sandbox
-#  class: sandbox
+sandbox:
+  module: sandbox
+  class: sandbox
+  log: sandbox

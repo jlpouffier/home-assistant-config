@@ -45,7 +45,7 @@ class monitor_home(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_reset_litter_tracking, "mobile_app_notification_action", action = "reset_litter_tracking")
     
-    self.log("Monitor Home initialized" , log = 'user_log')
+    self.log("Initialized")
     
   """
   Callback triggered when the home becomes not occupied
@@ -54,15 +54,15 @@ class monitor_home(hass.Hass):
   . Send notification(s)
   """
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting home empty ..." , log = 'user_log')
+    self.log("Detecting home empty ...")
 
     # turning off Alexa
-    self.log("... Turning off Alexa." , log = 'user_log')
+    self.log("... Turning off Alexa.")
     self.call_service("switch/turn_off", entity_id = "switch.alexa")
 
     # test if lights are still on
     if self.get_state("light.all_lights") == "on":
-      self.log("... Lights on. Notifying it..." , log = 'user_log')
+      self.log("... Lights on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         title = "💡 Lumières allumées", 
@@ -82,7 +82,7 @@ class monitor_home(hass.Hass):
 
     # test if TV is still on
     if self.get_state("binary_sensor.is_tv_on") == "on":
-      self.log("... TV on. Notifying it..." , log = 'user_log')
+      self.log("... TV on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         title = "📺 TV allumée", 
@@ -102,7 +102,7 @@ class monitor_home(hass.Hass):
 
     # test if LSX is still on
     if self.get_state("media_player.kef") == "on":
-      self.log("... LSX on. Notifying it..." , log = 'user_log')
+      self.log("... LSX on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         title = "🔊 LSX allumées", 
@@ -122,7 +122,7 @@ class monitor_home(hass.Hass):
 
     # test is coffe maker still on
     if self.get_state("switch.coffeemaker") == "on":
-      self.log("... Coffee maker on. Notifying it..." , log = 'user_log')
+      self.log("... Coffee maker on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         title = "️☕️ Machine a café allumé", 
@@ -142,7 +142,7 @@ class monitor_home(hass.Hass):
 
     # test if doors are still open
     if self.get_state("binary_sensor.all_doors") == "on":
-      self.log("... some doors are still opened. notifying it" , log = 'user_log')
+      self.log("... some doors are still opened. notifying it")
       doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
       open_doors = []
       for door in doors:
@@ -178,7 +178,7 @@ class monitor_home(hass.Hass):
 
     # test if windows are still open
     if self.get_state("binary_sensor.all_windows") == "on":
-      self.log("... some windows are still opened. notifying it" , log = 'user_log')
+      self.log("... some windows are still opened. notifying it")
       windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
       open_windows = []
       for window in windows:
@@ -216,14 +216,9 @@ class monitor_home(hass.Hass):
   Callback triggered when the home becomes occupied
   Goals :
   . Turn on Alexa
-  . Stop presence simulator (If turned on)
-  . Stop Vacuums (if cleaning) 
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting home occupied..." , log = 'user_log')
-
-    # turning on Alexa
-    self.log("... Turning on Alexa." , log = 'user_log')
+    self.log("Detecting home occupied... Turning on Alexa.")
     self.call_service("switch/turn_on", entity_id = "switch.alexa")
 
   """
@@ -232,7 +227,7 @@ class monitor_home(hass.Hass):
   . Send notification
   """
   def callback_coffee_maker_on_since_too_long(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting coffee maker on for more than 90 minutes. Notifying it..." , log = 'user_log')
+    self.log("Detecting coffee maker on for more than 90 minutes. Notifying it...")
     self.fire_event("NOTIFIER",
         action = "send_to_present",
         title = "☕️ Machine a café allumé", 
@@ -254,7 +249,7 @@ class monitor_home(hass.Hass):
   . Send notification
   """
   def callback_washing_mashine_over(self, entity, attribute, old, new, kwargs):
-    self.log("Washing machine over. Notifying it..." , log = 'user_log')
+    self.log("Washing machine over. Notifying it...")
     self.fire_event("NOTIFIER",
       action = "send_when_present",
       title = "🫧 Machine à laver",
@@ -274,7 +269,7 @@ class monitor_home(hass.Hass):
   def callback_mailbox_occupancy_detected(self, entity, attribute, old, new, kwargs):
     # if the main door was opened recently .. send notification
     if self.get_state("binary_sensor.is_front_door_recently_open") == "off":
-      self.log("Occupancy detected in the mailbox + Door not opened recently: Notifying it..." , log = 'user_log')
+      self.log("Occupancy detected in the mailbox + Door not opened recently: Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_when_present",
         title = "📬  Boite aux lettres",
@@ -284,7 +279,7 @@ class monitor_home(hass.Hass):
         tag = "you_got_mail")
     # else discard
     else:
-      self.log("Occupancy detected in the mailbox + Door opened recently: Discarding notification..." , log = 'user_log')
+      self.log("Occupancy detected in the mailbox + Door opened recently: Discarding notification...")
       self.fire_event("NOTIFIER_DISCARD", tag = "you_got_mail")
   
 
@@ -294,7 +289,7 @@ class monitor_home(hass.Hass):
   . Increase litter tracking
   """
   def callback_litter_occupancy_detected(self, entity, attribute, old, new, kwargs):
-    self.log("Occupancy detected in the litter. Incrementing litter tracking..." , log = 'user_log')
+    self.log("Occupancy detected in the litter. Incrementing litter tracking...")
     self.call_service("input_number/increment", entity_id = "input_number.litter_tracking")
 
   """
@@ -303,7 +298,7 @@ class monitor_home(hass.Hass):
   . notify is litter is full
   """
   def callback_litter_full(self, entity, attribute, old, new, kwargs):
-    self.log("Litter full. notifying it ..." , log = 'user_log')
+    self.log("Litter full. notifying it ...")
     self.fire_event("NOTIFIER",
         action = "send_when_present",
         title = "🐈  Litière",
@@ -326,7 +321,7 @@ class monitor_home(hass.Hass):
   . Turn on input boolean to notify user on Home Assistant dashboard
   """
   def callback_black_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
-    self.log("It's time to take out black trash, turning on input boolean so it can be displayed on the dashboards ...'" , log = 'user_log')
+    self.log("It's time to take out black trash, turning on input boolean so it can be displayed on the dashboards ...")
     self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_noire_a_sortir")
   
   """
@@ -335,7 +330,7 @@ class monitor_home(hass.Hass):
   . Turn on input boolean to notify user on Home Assistant dashboard
   """
   def callback_green_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
-    self.log("It's time to take out green trash, turning on input boolean so it can be displayed on the dashboards ...'" , log = 'user_log')
+    self.log("It's time to take out green trash, turning on input boolean so it can be displayed on the dashboards ...")
     self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_verte_a_sortir")
 
   """
@@ -345,7 +340,7 @@ class monitor_home(hass.Hass):
   """
   def callback_black_trash_schedule_end(self, entity, attribute, old, new, kwargs):
     if self.get_state("input_boolean.poubelle_noire_a_sortir") == "on":
-      self.log("Black trash has not been taken out. Notifying it ...'" , log = 'user_log')
+      self.log("Black trash has not been taken out. Notifying it ...'")
       self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_noire_a_sortir")
       self.fire_event("NOTIFIER",
         action = "send_to_present",
@@ -362,7 +357,7 @@ class monitor_home(hass.Hass):
   """
   def callback_green_trash_schedule_end(self, entity, attribute, old, new, kwargs):
     if self.get_state("input_boolean.poubelle_verte_a_sortir") == "on":
-      self.log("Green trash has not been taken out. Notifying it ...'" , log = 'user_log')
+      self.log("Green trash has not been taken out. Notifying it ...'")
       self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_verte_a_sortir")
       self.fire_event("NOTIFIER",
         action = "send_to_present",
@@ -378,7 +373,7 @@ class monitor_home(hass.Hass):
   . Turn on lights
   """
   def callback_long_press_on_entry_switch_button_on(self, event_name, data, kwargs):
-    self.log("Long press on entry switch (button ON), turning on lights ..." , log = 'user_log')
+    self.log("Long press on entry switch (button ON), turning on lights ...")
     self.call_service("script/reset_lights_day_area")
 
   """
@@ -387,7 +382,7 @@ class monitor_home(hass.Hass):
   . Turn off lights, TV, KEF, coffee maker ...
   """
   def callback_long_press_on_entry_switch_button_off(self, event_name, data, kwargs):
-    self.log("Long press on entry switch (button OFF), turning on lights, TV, KEF, coffee maker ..." , log = 'user_log')
+    self.log("Long press on entry switch (button OFF), turning off lights, TV, KEF, coffee maker ...")
     self.call_service("script/leave_home")
 
   """
@@ -397,7 +392,7 @@ class monitor_home(hass.Hass):
   """
   def callback_cover_open_service_called(self, event_name, data, kwargs):
     if self.get_state("cover.living_room_cover") == "open" and self.get_state("cover.living_room_cover", attribute = "current_position") == 100:
-      self.log("Action open cover fired, but cover already opened at 100%: Making sure they are opened" , log = 'user_log')
+      self.log("Action open cover fired, but cover already opened at 100%: Making sure they are opened")
       self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_up_fallback")
 
   """
@@ -407,7 +402,7 @@ class monitor_home(hass.Hass):
   """
   def callback_cover_close_service_called(self, event_name, data, kwargs):
     if self.get_state("cover.living_room_cover") == "closed" and self.get_state("cover.living_room_cover", attribute = "current_position") == 0:
-      self.log("Action close cover fired, but cover already closed at 0%: Making sure they are closed" , log = 'user_log')
+      self.log("Action close cover fired, but cover already closed at 0%: Making sure they are closed")
       self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_down_fallback")
 
   """
@@ -416,7 +411,7 @@ class monitor_home(hass.Hass):
   . Turn off all lights
   """
   def callback_button_clicked_turn_off_lights(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off lights" , log = 'user_log') 
+    self.log("Notification button clicked : Turning off lights") 
     self.call_service("light/turn_off" , entity_id = "light.all_lights")
 
   """
@@ -425,7 +420,7 @@ class monitor_home(hass.Hass):
   . Turn off TV
   """
   def callback_button_clicked_turn_off_tv(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off TV" , log = 'user_log') 
+    self.log("Notification button clicked : Turning off TV") 
     self.call_service("media_player/turn_off" , entity_id = "media_player.philips_android_tv")
 
   """
@@ -434,7 +429,7 @@ class monitor_home(hass.Hass):
   . Turn off LSX
   """
   def callback_button_clicked_turn_off_lsx(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off LSX" , log = 'user_log') 
+    self.log("Notification button clicked : Turning off LSX") 
     self.call_service("media_player/turn_off" , entity_id = "media_player.kef")
 
 
@@ -444,7 +439,7 @@ class monitor_home(hass.Hass):
   . Turn off coffee maker
   """
   def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Turning off coffee maker" , log = 'user_log')
+    self.log("Notification button clicked : Turning off coffee maker")
     self.call_service("switch/turn_off" , entity_id = "switch.coffeemaker")
 
   """
@@ -453,5 +448,5 @@ class monitor_home(hass.Hass):
   . Reset Littter Tracking
   """
   def callback_button_clicked_reset_litter_tracking(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Resseting Litter Tracking" , log = 'user_log')
+    self.log("Notification button clicked : Resseting Litter Tracking")
     self.call_service("input_number/set_value" , entity_id = "input_number.litter_tracking", value = 0)

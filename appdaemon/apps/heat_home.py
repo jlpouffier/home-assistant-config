@@ -14,7 +14,7 @@ class heat_home(hass.Hass):
         self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off")
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , new = "on")
 
-        self.log("Heat Home automations initialized", log = 'user_log')
+        self.log("Initialized")
 
     """
     Callback triggered when window / door opened for too long.
@@ -23,7 +23,7 @@ class heat_home(hass.Hass):
     """
     def callback_openings_open(self, entity, attribute, old, new, kwargs):
         if self.get_state("climate.netatmo") != 'off':
-            self.log("Window or door opened, and thermostat not stopped ... stopping thermostat temporarly.", log = 'user_log')
+            self.log("Window or door opened, and thermostat not stopped ... stopping thermostat temporarly.")
             self.call_service("climate/turn_off", entity_id = "climate.netatmo")
 
     """
@@ -33,7 +33,7 @@ class heat_home(hass.Hass):
     """
     def callback_openings_closed(self, entity, attribute, old, new, kwargs):
         if self.get_state("climate.netatmo") == 'off':
-            self.log("Window or door closed, and thermostat stopped ... restating thermostat.", log = 'user_log')
+            self.log("Window or door closed, and thermostat stopped ... restating thermostat.")
             self.call_service("climate/turn_on", entity_id = "climate.netatmo")
 
     """
@@ -42,7 +42,7 @@ class heat_home(hass.Hass):
     . set thermostat mode to Away
     """
     def callback_home_empty(self, entity, attribute, old, new, kwargs):
-        self.log("Home empty: Setting the thermostat mode to Away", log = 'user_log')
+        self.log("Home empty: Setting the thermostat mode to Away")
         self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")
 
     """
@@ -51,6 +51,6 @@ class heat_home(hass.Hass):
     . set thermostat mode to Present
     """
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-        self.log("Home empty: Setting the thermostat mode to Present", log = 'user_log')
+        self.log("Home empty: Setting the thermostat mode to Present")
         self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
 

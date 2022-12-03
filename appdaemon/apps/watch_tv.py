@@ -29,7 +29,7 @@ class watch_tv(hass.Hass):
     self.old_app = "Android TV Launcher"
 
     # log
-    self.log("Watch TV Automations initialized" , log = 'user_log')
+    self.log("Watch TV Automations initialized")
 
   """
   Callback triggered when the TV is on
@@ -63,7 +63,7 @@ class watch_tv(hass.Hass):
     self.state_handles.append(callback_tv_state_change_handle)
     self.state_handles.append(callback_ps5_state_change_handle)
 
-    self.log("Watch TV Automations starting now ..." , log = 'user_log')
+    self.log("Initialized")
 
   """
   Callback triggered when the sun is above horizon
@@ -76,7 +76,7 @@ class watch_tv(hass.Hass):
       handle = self.state_handles.pop()
       self.cancel_listen_state(handle)
 
-    self.log("Watch TV Automations stopping for now ..." , log = 'user_log')
+    self.log("Watch TV Automations stopping for now ...")
 
   """
   Callback triggered when TV state changes
@@ -95,19 +95,19 @@ class watch_tv(hass.Hass):
     if old in ["off", "standby", "unavailable" , "paused", "unknown", "idle", None] and new == "playing":
       if self.is_app_controling_lights(current_app):
         #CALL SCRIPT
-        self.log("TV playing : Lights dimmed" , log = 'user_log')
+        self.log("TV playing : Lights dimmed")
         self.call_service("script/lights_set_tv")  
     
     elif old in ["playing" , None] and new == "paused":
       if self.is_app_controling_lights(current_app):
         #CALL SCRIPT
-        self.log("TV paused : Lights partially un-dimmed" , log = 'user_log')
+        self.log("TV paused : Lights partially un-dimmed")
         self.call_service("script/lights_set_tv_paused")        
 
     elif old in ["playing" , "paused"] and new in ["standby" , "off" , "unavailable", "unknown", "idle"]:
       if self.is_app_controling_lights(self.old_app):
         #CALL SCRIPT
-        self.log("TV stopped : Lights fully un-dimmed" , log = 'user_log')
+        self.log("TV stopped : Lights fully un-dimmed")
         self.call_service("script/reset_lights_day_area")
       
     self.old_app = current_app
@@ -119,10 +119,10 @@ class watch_tv(hass.Hass):
   """
   def callback_ps5_state_change(self, entity, attribute, old, new, kwargs):
     if old in ["off" , None] and new == 'on':
-        self.log("PS5 is use : Lights dimmed" , log = 'user_log')
+        self.log("PS5 is use : Lights dimmed")
         self.call_service("script/lights_set_tv") 
     elif old == "on" and new == 'off':
-        self.log("PS5 stopped : Lights fully un-dimmed" , log = 'user_log')
+        self.log("PS5 stopped : Lights fully un-dimmed")
         self.call_service("script/reset_lights_day_area")
 
   """
@@ -144,5 +144,5 @@ class watch_tv(hass.Hass):
   Returns : nothing
   """
   def log_state_change(self, old, old_app, new, new_app):
-    self.log("State changed: " + str(old) + " @ " + old_app + " > " + str(new) + " @ " + new_app , log = 'user_log')
+    self.log("State changed: " + str(old) + " @ " + old_app + " > " + str(new) + " @ " + new_app)
 

@@ -11,33 +11,35 @@ class smart_cube(hass.Hass):
         self.listen_state(self.callback_wakeup_trigger, "sensor.the_cube_action", new = "shake")
         self.listen_state(self.callback_turn_on_cube, "input_boolean.the_cube", new = "on")
         self.listen_state(self.callback_turn_off_cube, "input_boolean.the_cube", new = "off")
+
+        self.log("Initialized")
     
     def callback_wakeup_trigger(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_wakeup_trigger" , log = 'user_log')
+        #self.log("callback_wakeup_trigger")
         self.call_service("input_boolean/turn_on", entity_id = "input_boolean.the_cube")
     
     def callback_turn_on_cube(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_turn_on_cube" , log = 'user_log')
+        #self.log("callback_turn_on_cube")
         self.global_handles.append(self.listen_state(self.callback_sleep_trigger, "sensor.the_cube_action", new = "", duration = "30" , immediate = True))
         self.global_handles.append(self.listen_state(self.callback_mode_change_trigger, "sensor.the_cube_action", new = "fall"))
         self.global_handles.append(self.listen_state(self.callback_mode_change, "input_select.the_cube_modes", immediate = True))
         
     def callback_turn_off_cube(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_turn_off_cube" , log = 'user_log')
+        #self.log("callback_turn_off_cube")
         self.cancel_global_handles()
         self.cancel_current_mode_handles()
         self.call_service("input_select/select_first", entity_id = "input_select.the_cube_modes")
     
     def callback_sleep_trigger(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_sleep_trigger" , log = 'user_log')
+        #self.log("callback_sleep_trigger")
         self.call_service("input_boolean/turn_off", entity_id = "input_boolean.the_cube")
 
     def callback_mode_change_trigger(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_mode_change_trigger" , log = 'user_log')
+        #self.log("callback_mode_change_trigger")
         self.call_service("input_select/select_next", entity_id = "input_select.the_cube_modes")
     
     def callback_mode_change(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_mode_change" , log = 'user_log')
+        #self.log("callback_mode_change")
         self.cancel_current_mode_handles()
         if new == "light":
             current_side = self.get_state("sensor.the_cube_action" , attribute = "side")
@@ -78,13 +80,13 @@ class smart_cube(hass.Hass):
             
     
     def cancel_current_mode_handles(self):
-        #self.log("cancel_current_mode_handles" , log = 'user_log')
+        #self.log("cancel_current_mode_handles")
         while len(self.mode_handles) >= 1:
             handle = self.mode_handles.pop()
             self.cancel_listen_state(handle)
     
     def cancel_global_handles(self):
-        #self.log("cancel_global_handles" , log = 'user_log')
+        #self.log("cancel_global_handles")
         while len(self.global_handles) >= 1:
             handle = self.global_handles.pop()
             self.cancel_listen_state(handle)
@@ -92,11 +94,11 @@ class smart_cube(hass.Hass):
 
     # LIGHTS 
     def callback_light_knock(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_light_knock" , log = 'user_log')
+        #self.log("callback_light_knock")
         self.call_service("light/toggle" , entity_id = self.current_light, brightness_pct = 100)
 
     def callback_light_rotate_right(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_light_rotate_right" , log = 'user_log')
+        #self.log("callback_light_rotate_right")
         current_brightness = self.get_state(self.current_light, attribute = "brightness")
         if current_brightness == None:
             current_brightness = 0
@@ -104,7 +106,7 @@ class smart_cube(hass.Hass):
         self.call_service("light/turn_on" , entity_id = self.current_light, brightness = target_brightness)
 
     def callback_light_rotate_left(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_light_rotate_left" , log = 'user_log')
+        #self.log("callback_light_rotate_left")
         self.call_service("light/toggle" , entity_id = self.current_light)
         current_brightness = self.get_state(self.current_light, attribute = "brightness")
         if current_brightness == None:
@@ -113,17 +115,17 @@ class smart_cube(hass.Hass):
         self.call_service("light/turn_on" , entity_id = self.current_light, brightness = target_brightness)
 
     def callback_light_slide(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_light_slide" , log = 'user_log')
+        #self.log("callback_light_slide")
         self.call_service("light/toggle" , entity_id = "light.all_lights", brightness_pct = 100)
     
     def callback_light_filp(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_light_filp" , log = 'user_log')
+        #self.log("callback_light_filp")
         #current_side = self.get_state(entity , attribute = "side")
         current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_light_rooms(current_side)
 
     def callback_change_light(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_change_light" , log = 'user_log')
+        #self.log("callback_change_light")
         if new == "Bureau":
             self.current_light = "light.bureau"
         if new == "Salon":
@@ -138,7 +140,7 @@ class smart_cube(hass.Hass):
             self.current_light = "light.exterieur"
 
     def change_the_cube_light_rooms(self, side):
-        #self.log("change_the_cube_light_rooms" , log = 'user_log')
+        #self.log("change_the_cube_light_rooms")
         if side == 0:
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_light_rooms" , option = "Bureau")
         if side == 1:
@@ -154,21 +156,21 @@ class smart_cube(hass.Hass):
     
     # COVER
     def callback_cover_knock(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_cover_knock" , log = 'user_log')
+        #self.log("callback_cover_knock")
         self.call_service("cover/stop_cover", entity_id = "cover.living_room_cover")
     
     def callback_cover_rotate_right(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_cover_rotate_right" , log = 'user_log')
+        #self.log("callback_cover_rotate_right")
         self.call_service("cover/open_cover", entity_id = "cover.living_room_cover")
         
     
     def callback_cover_rotate_left(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_cover_rotate_left" , log = 'user_log')
+        #self.log("callback_cover_rotate_left")
         self.call_service("cover/close_cover", entity_id = "cover.living_room_cover")
     
     # VACUUM
     def change_the_cube_vacuums(self, side):
-        #self.log("change_the_cube_vacuums" , log = 'user_log')
+        #self.log("change_the_cube_vacuums")
         if side == 0:
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_vacuums" , option = "NeuNeu")
         if side == 1:
@@ -183,31 +185,31 @@ class smart_cube(hass.Hass):
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_vacuums" , option = "TeuTeu")
 
     def callback_change_vacuum(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_change_vacuum" , log = 'user_log')
+        #self.log("callback_change_vacuum")
         if new == "TeuTeu":
             self.current_vacuum = "vacuum.teuteu"
         if new == "NeuNeu":
             self.current_vacuum = "vacuum.neuneu"
     
     def callback_vacuum_filp(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_vacuum_filp" , log = 'user_log')
+        #self.log("callback_vacuum_filp")
         #current_side = self.get_state(entity , attribute = "side")
         current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_vacuums(current_side)
 
     def callback_vacuum_knock(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_vacuum_knock" , log = 'user_log')
+        #self.log("callback_vacuum_knock")
         self.call_service("vacuum/start" , entity_id = self.current_vacuum)
 
             
         
     def callback_vacuum_slide(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_vacuum_slide" , log = 'user_log')
+        #self.log("callback_vacuum_slide")
         self.call_service("vacuum/return_to_base" , entity_id = self.current_vacuum)
 
     # TV
     def change_the_cube_tv_sources(self, side):
-        #self.log("change_the_cube_tv_sources" , log = 'user_log')
+        #self.log("change_the_cube_tv_sources")
         if side == 0:
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_tv_sources" , option = "YouTube")
         if side == 1:
@@ -222,7 +224,7 @@ class smart_cube(hass.Hass):
             self.call_service("input_select/select_option", entity_id = "input_select.the_cube_tv_sources" , option = "Allumer / Éteindre")
 
     def callback_change_tv_sources(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_change_tv_sources" , log = 'user_log')
+        #self.log("callback_change_tv_sources")
         if new == "YouTube":
             self.current_tv_source = "YouTube"
         if new == "Plex":
@@ -237,26 +239,26 @@ class smart_cube(hass.Hass):
             self.current_tv_source = "Power"
     
     def callback_tv_filp(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_tv_filp" , log = 'user_log')
+        #self.log("callback_tv_filp")
         #current_side = self.get_state(entity , attribute = "side")
         current_side = int(self.get_state("sensor.the_cube_side"))
         self.change_the_cube_tv_sources(current_side)
     
     def callback_tv_knock(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_tv_knock" , log = 'user_log')
+        #self.log("callback_tv_knock")
         self.call_service("media_player/media_play_pause", entity_id = "media_player.philips_android_tv")
     
     def callback_tv_slide(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_tv_slide" , log = 'user_log')
+        #self.log("callback_tv_slide")
         if self.current_tv_source == "Power":
             self.call_service("switch/toggle", entity_id = "switch.media_center")
         else:
             self.call_service("media_player/select_source", entity_id = "media_player.philips_android_tv", source = self.current_tv_source)
     
     def callback_tv_rotate_left(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_tv_rotate_left" , log = 'user_log')
+        #self.log("callback_tv_rotate_left")
         self.call_service("media_player/volume_down", entity_id = "media_player.kef")
     
     def callback_tv_rotate_right(self, entity, attribute, old, new, kwargs):
-        #self.log("callback_tv_rotate_right" , log = 'user_log')
+        #self.log("callback_tv_rotate_right")
         self.call_service("media_player/volume_up", entity_id = "media_player.kef")

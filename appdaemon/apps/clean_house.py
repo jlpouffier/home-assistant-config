@@ -42,7 +42,7 @@ class clean_house(hass.Hass):
     self.listen_event(self.callback_button_clicked_rth_neuneu, "mobile_app_notification_action", action = "rth_neuneu")
     self.listen_event(self.callback_button_clicked_start_neuneu, "mobile_app_notification_action", action = "start_neuneu")
 
-    self.log("House cleaning Automation initialized" , log = 'user_log')
+    self.log("Initialized")
 
   """
   Callback triggered when the home is empty
@@ -53,7 +53,7 @@ class clean_house(hass.Hass):
     . Start cleaning
   """ 
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
-    self.log("Home empty, Checking if TeuTeu can run now ... " , log = 'user_log')
+    self.log("Home empty, Checking if vacuums can run now ... ")
     # Is first floor dirty
     is_first_floor_dirty = True if self.get_state("binary_sensor.should_neuneu_run") == "on" else False
 
@@ -67,11 +67,11 @@ class clean_house(hass.Hass):
     is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
 
     if is_second_floor_dirty  and not is_teuteu_cleaning_right_now:
-      self.log("TeuTeu will start cleaning now ..." , log = 'user_log')
+      self.log("TeuTeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
     
     if is_first_floor_dirty and not is_neuneu_cleaning_right_now:
-      self.log("NeuNeu will start cleaning now ..." , log = 'user_log')
+      self.log("NeuNeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
     
   """
@@ -80,14 +80,15 @@ class clean_house(hass.Hass):
   . RTH vacuums
   """ 
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
+    self.log("Home occupied, Checking if vacuums should stop now ... ")
     if self.get_state("vacuum.teuteu") == 'cleaning':
       # Stopping TeuTeu
-      self.log("RTH TeuTeu" , log = 'user_log') 
+      self.log("RTH TeuTeu") 
       self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
     
     if self.get_state("vacuum.neuneu") == 'cleaning':
       # Stopping NeuNeu
-      self.log("RTH NeuNeu" , log = 'user_log') 
+      self.log("RTH NeuNeu") 
       self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
 
   """
@@ -99,14 +100,14 @@ class clean_house(hass.Hass):
     . Start cleaning
   """ 
   def callback_first_floor_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("First floor dirtly now ... Checking if NeuNeu can run now ...  " , log = 'user_log')
+    self.log("First floor dirtly now ... Checking if NeuNeu can run now ...  ")
     # Are we cleaning right now ?
     is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
     # Is home occupied ?
     is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
 
     if is_home_empty and not is_neuneu_cleaning_right_now:
-      self.log("NeuNeu will start cleaning now ..." , log = 'user_log')
+      self.log("NeuNeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
 
   """
@@ -115,7 +116,7 @@ class clean_house(hass.Hass):
   . Notify
   """ 
   def callback_first_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("First floor super dirtly now ... Notifying it.  " , log = 'user_log')
+    self.log("First floor super dirtly now ... Notifying it.  ")
     self.fire_event("NOTIFIER",
       action = "send_to_nearest",
       title = "🧹 Rez-de-chaussé sale", 
@@ -140,14 +141,14 @@ class clean_house(hass.Hass):
     . Start cleaning
   """ 
   def callback_second_floor_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("Second floor dirtly now ... Checking if TeuTeu can run now ...  " , log = 'user_log')
+    self.log("Second floor dirtly now ... Checking if TeuTeu can run now ...  ")
     # Are we cleaning right now ?
     is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
     # Is home occupied ?
     is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
 
     if is_home_empty and not is_teuteu_cleaning_right_now:
-      self.log("TeuTeu will start cleaning now ..." , log = 'user_log')
+      self.log("TeuTeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
 
   """
@@ -156,7 +157,7 @@ class clean_house(hass.Hass):
   . Notify
   """ 
   def callback_second_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("Second floor super dirtly now ... Notifying it.  " , log = 'user_log')
+    self.log("Second floor super dirtly now ... Notifying it.  ")
     self.fire_event("NOTIFIER",
       action = "send_to_nearest",
       title = "🧹 Premier étage sale", 
@@ -188,7 +189,7 @@ class clean_house(hass.Hass):
       vacuum_name = "NeuNeu"
       icon = "mdi:robot-vacuum"
 
-    self.log("Detecting that a vacuum is starting. Notifying it..." , log = 'user_log')
+    self.log("Detecting that a vacuum is starting. Notifying it...")
     self.fire_event("NOTIFIER",
       action = "send_to_nearest",
       title = "🧹 Nettoyage", 
@@ -208,7 +209,7 @@ class clean_house(hass.Hass):
   . Update input_datetime.dernier_nettoyage_de_teuteu or input_datetime.dernier_nettoyage_de_neuneu
   """   
   def callback_vacuum_cleaning_for_more_than_x_minutes(self, entity, attribute, old, new, kwargs):
-    self.log("A vacuum is cleaning since more than 15 minutes, updating the last clean-up datetime..." , log = 'user_log')
+    self.log("A vacuum is cleaning since more than 15 minutes, updating the last clean-up datetime...")
 
     if entity == "vacuum.teuteu":
       self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_teuteu", datetime = self.datetime(aware = True))
@@ -226,7 +227,7 @@ class clean_house(hass.Hass):
     if old in ["paused", "cleaning", "returning"]:
       now = self.get_now_ts()
 
-      self.log("Detecting that a vacuum has finished. Notifying it..." , log = 'user_log')
+      self.log("Detecting that a vacuum has finished. Notifying it...")
 
       if entity == "vacuum.teuteu":
         area_cleaned = self.get_state("sensor.teuteu_last_cleaning_area")
@@ -259,7 +260,7 @@ class clean_house(hass.Hass):
   . Notify
   """ 
   def callback_vacuum_error(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting that a vacuum is in trouble. Notifying it..." , log = 'user_log')
+    self.log("Detecting that a vacuum is in trouble. Notifying it...")
 
     if entity == "vacuum.teuteu":
       current_location = self.args["hass_base_url"] + self.get_state("camera.teuteu_cleaning_map" , attribute = "entity_picture")
@@ -292,7 +293,7 @@ class clean_house(hass.Hass):
   """ 
   def callback_teuteu_idle(self, entity, attribute, old, new, kwargs):
     if old != new:
-      self.log("Detecting that teuteu is not plugged since more than 30 miuntes. Notifying it..." , log = 'user_log')
+      self.log("Detecting that teuteu is not plugged since more than 30 miuntes. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_present",
         title = "️🪫 TeuTeu se décharge",
@@ -311,7 +312,7 @@ class clean_house(hass.Hass):
   . RTH TeuTeu
   """
   def callback_button_clicked_rth_teuteu(self, event_name, data, kwargs):
-    self.log("Notification button clicked : RTH TeuTeu" , log = 'user_log') 
+    self.log("Notification button clicked : RTH TeuTeu") 
     # RTH TeuTeu
     self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
 
@@ -321,7 +322,7 @@ class clean_house(hass.Hass):
   . Start TeuTeu
   """
   def callback_button_clicked_start_teuteu(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Start TeuTeu" , log = 'user_log') 
+    self.log("Notification button clicked : Start TeuTeu") 
     self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
 
   """
@@ -330,7 +331,7 @@ class clean_house(hass.Hass):
   . RTH NeuNeu
   """
   def callback_button_clicked_rth_neuneu(self, event_name, data, kwargs):
-    self.log("Notification button clicked : RTH neuneu" , log = 'user_log') 
+    self.log("Notification button clicked : RTH neuneu") 
 
     # RTH neuneu
     self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
@@ -341,7 +342,7 @@ class clean_house(hass.Hass):
   . Start NeuNeu
   """
   def callback_button_clicked_start_neuneu(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Start neuneu" , log = 'user_log') 
+    self.log("Notification button clicked : Start neuneu") 
     self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
   
   """
