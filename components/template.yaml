@@ -152,3 +152,10 @@
             {{ this.attributes.gps_accuracy | default(0) }}
           {% endif -%}
         direction_url: "https://www.google.com/maps/dir/?api=1&destination={{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}%2C{{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}"
+
+    - name: is_electric_scooter_charging
+      unique_id: is_electric_scooter_charging
+      state: "{{ states('sensor.prise_trottinette_power') | float(default = 0) > 5 }}"
+      device_class: running
+      delay_on: "0:01:00"
+      delay_off: "0:01:00"

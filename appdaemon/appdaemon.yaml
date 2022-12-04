@@ -13,6 +13,10 @@ logs:
   diag_log:
     filename: /config/appdaemon/logs/diag.log
     log_generations: 3
+  charge_electric_scooter:
+    name: charge_electric_scooter
+    filename: /config/appdaemon/logs/charge_electric_scooter.log
+    log_generations: 3
   clean_house:
     name: clean_house
     filename: /config/appdaemon/logs/clean_house.log

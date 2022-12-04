@@ -111,6 +111,12 @@ smart_cube:
   class: smart_cube
   log: smart_cube
 
+charge_electric_scooter:
+  module: charge_electric_scooter
+  class: charge_electric_scooter
+  log: charge_electric_scooter
+  constrain_input_boolean: input_boolean.electric_scooter_automation
+
 sandbox:
   module: sandbox
   class: sandbox
