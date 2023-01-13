@@ -13,6 +13,7 @@ camera: !include components/camera.yaml
 media_player: !include components/media_player.yaml
 switch: !include components/switch.yaml
 xiaomi_miot: !include components/xiaomi_miot.yaml
+mqtt: !include components/mqtt.yaml
 wake_on_lan:
 
 # MISC

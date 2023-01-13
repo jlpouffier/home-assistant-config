@@ -38,6 +38,31 @@
         unknonw
         {% endif -%}
 
+    - name: tesla
+      unique_id: tesla
+      state: >
+        {% if is_state("sensor.tesla_state","asleep") -%}
+        En Veille
+        {%- elif is_state("sensor.tesla_state","suspended") -%}
+        Mise en veille en cours ...
+        {%- elif is_state("sensor.tesla_state","offline") -%}
+        Hors ligne
+        {%- elif is_state("sensor.tesla_state","driving") -%}
+        Conduite en cours ...
+        {%- elif is_state("sensor.tesla_state","online") -%}
+        En ligne
+        {%- elif is_state("sensor.tesla_state","charging") -%}
+        En charge
+        {%- elif is_state("sensor.tesla_state","updating") -%}
+        Mise a jour en cours
+        {%- else -%}
+        État inconnu
+        {%- endif %}
+      picture: "/local/tesla.jpg"
+      attributes:
+        latitude: "{{states('sensor.tesla_latitude')}}"
+        longitude: "{{states('sensor.tesla_longitude')}}"
+
 - binary_sensor:
     - name: home_occupied
       unique_id: home_occupied
