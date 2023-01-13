@@ -51,6 +51,6 @@ class heat_home(hass.Hass):
     . set thermostat mode to Present
     """
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-        self.log("Home empty: Setting the thermostat mode to Present")
+        self.log("Home occupied: Setting the thermostat mode to Present")
         self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
 
