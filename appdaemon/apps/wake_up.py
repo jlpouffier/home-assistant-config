@@ -56,7 +56,7 @@ class wake_up(hass.Hass):
           self.log(wake_up_datetime)
 
       # Only register callbacks if the Coffee maker turn on time is in the future (Strict future ! so I have added 1 minute)
-      if coffee_maker_turn_on_time > self.datetime() + datetime.timedelta(minutes = 1) :
+      if coffee_maker_turn_on_time > self.datetime() + datetime.timedelta(minutes = 1) and self.args["turn_on_coffee_maker"] :
           self.log("Coffee maker will be turned on at :")
           self.log(coffee_maker_turn_on_time)
           # ... and register the wake-up callback
