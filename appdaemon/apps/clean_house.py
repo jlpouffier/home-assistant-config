@@ -68,7 +68,8 @@ class clean_house(hass.Hass):
 
     if is_second_floor_dirty  and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
-      self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      #self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
     
     if is_first_floor_dirty and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
@@ -149,7 +150,8 @@ class clean_house(hass.Hass):
 
     if is_home_empty and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
-      self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      #self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+      self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
 
   """
   Callback triggered when the second floor is very dirty
@@ -323,7 +325,8 @@ class clean_house(hass.Hass):
   """
   def callback_button_clicked_start_teuteu(self, event_name, data, kwargs):
     self.log("Notification button clicked : Start TeuTeu") 
-    self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+    #self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
+    self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
 
   """
   Callback triggered when button "rth_neuneu" is clicked from a notification
