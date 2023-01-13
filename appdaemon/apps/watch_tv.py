@@ -29,7 +29,7 @@ class watch_tv(hass.Hass):
     self.old_app = "Android TV Launcher"
 
     # log
-    self.log("Watch TV Automations initialized")
+    self.log("Initialized")
 
   """
   Callback triggered when the TV is on
@@ -63,7 +63,7 @@ class watch_tv(hass.Hass):
     self.state_handles.append(callback_tv_state_change_handle)
     self.state_handles.append(callback_ps5_state_change_handle)
 
-    self.log("Initialized")
+    self.log("Watch TV Automations starting ...")
 
   """
   Callback triggered when the sun is above horizon
