@@ -13,7 +13,8 @@ persons: A list of person, including
     name: their name
     id: the id of the person entity in home assistant
     notification_service: the name of the notification service used to ping the phone of this person.
-    proximity_id: the id of the proximity entity linked to this person 
+    proximity_id: the id of the proximity entity linked to this person
+    device_type: the type of device that will receive the notifications [ios|android]
 
 
 Here is an exmaple on how to instantiate the app:
