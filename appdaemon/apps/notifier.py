@@ -28,10 +28,12 @@ notifier:
       id: person.jenova70
       notification_service: notify/mobile_app_pixel_6
       proximity_id: proximity.distance_jl_home
+      device_type: ios
     - name: valentine
       id: person.valentine
       notification_service: notify/mobile_app_pixel_4a
       proximity_id: proximity.distance_valentine_home
+      device_type: android
 
 The complete app can be called from anywhere by sending a custom event NOTIFIER with the following schema:
 
@@ -49,6 +51,7 @@ click_url: <url>
 icon: <string>
 color: <string>
 tag: <string>
+critical: <boolean>
 persistent: <boolean>
 until:
  - entity_id: <string>
@@ -98,6 +101,8 @@ tag: The concept of tag is complex to understand. So I'll explain the behavior y
     - Acting on the notification (a button) on a device will discard it on every other devices
     Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
   - The next field "until" requires the field tag to work too (See below)
+ 
+critical: If set to "true," create a critical notification with a loud alarm sound and ignore the silent mode on your smartphone.
 
 persistent: Notify the front-end of Home Assistant (with the service "notify/persistent_notification")
 
@@ -129,7 +134,13 @@ class notifier(hass.Hass):
 
         # Temporary watchers
         self.watchers_handles = []
-
+        
+        # Data for criticals notifications
+        self.critical_data = {
+            "ios" : {"push" : {"sound" : {"name" : "default", "critical" : 1, "volume" : 1.0}}},
+            "android" : {"ttl" : 0, "priority" : "high"}
+            }
+        
         # log
         self.log("Initialized") 
 
@@ -198,8 +209,10 @@ class notifier(hass.Hass):
             if watcher["tag"] == tag:
                 self.watchers_handles.remove(watcher)
         
-    def build_notification_data(self, data):
+    def build_notification_data(self, data, person):
         notification_data = {}
+        if "critical" in data and data["critical"] == True:
+            notification_data = self.critical_data[person["device_type"]]
         if "callback" in data:
             notification_data["actions"] = []
             for callback in data["callback"]:
@@ -224,7 +237,7 @@ class notifier(hass.Hass):
 
     def send_to_person(self, data, person):
         self.log("Sending notification to " + person["name"])
-        notification_data = self.build_notification_data(data)
+        notification_data = self.build_notification_data(data, person)
         self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
 
     def send_to_all(self, data):
