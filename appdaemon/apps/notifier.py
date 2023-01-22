@@ -213,7 +213,10 @@ class notifier(hass.Hass):
     def build_notification_data(self, data, person):
         notification_data = {}
         if "critical" in data and data["critical"] == True:
-            notification_data = self.critical_data[person["device_type"]]
+            if "device_type" in person and (person["device_type"] == "ios" or person["device_type"] == "android"):
+                notification_data = self.critical_data[person["device_type"]]
+            else:
+                self.log("Critical notification ... Correctly define 'device_type' in 'persons'.")
         if "callback" in data:
             notification_data["actions"] = []
             for callback in data["callback"]:
