@@ -103,7 +103,7 @@ tag: The concept of tag is complex to understand. So I'll explain the behavior y
     Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
   - The next field "until" requires the field tag to work too (See below)
  
-critical: If set to "true," create a critical notification with a loud alarm sound and ignore the silent mode on your smartphone.
+critical: If set to "true", create a critical notification with a loud alarm sound and ignore the silent mode on your smartphone.
 
 persistent: Notify the front-end of Home Assistant (with the service "notify/persistent_notification")
 
