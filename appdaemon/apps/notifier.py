@@ -14,7 +14,6 @@ persons: A list of person, including
     id: the id of the person entity in home assistant
     notification_service: the name of the notification service used to ping the phone of this person.
     proximity_id: the id of the proximity entity linked to this person
-    device_type: the type of device that will receive the notifications [ios|android]
 
 
 Here is an exmaple on how to instantiate the app:
@@ -29,12 +28,10 @@ notifier:
       id: person.jenova70
       notification_service: notify/mobile_app_pixel_6
       proximity_id: proximity.distance_jl_home
-      device_type: ios
     - name: valentine
       id: person.valentine
       notification_service: notify/mobile_app_pixel_4a
       proximity_id: proximity.distance_valentine_home
-      device_type: android
 
 The complete app can be called from anywhere by sending a custom event NOTIFIER with the following schema:
 
@@ -82,16 +79,16 @@ callback: Actionable buttons of the notification
      If event: turn_off_lights, then an event "mobile_app_notification_action" with action = "turn_off_lights" will be triggered once the button is pressed.
      Up to the app / automation creating the notification to listen to this event and perform some action.
  
-timeout: Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically.
+timeout: Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically. (android only)
  
 image_url: url of an image that will be embedded on the notification. Useful for cameras, vacuum maps, etc.
  
 click_url: url of the target location if the notification is pressed.
 If you have a lovelace view called "/lovelace/vacuums" for your vacuum, then putting click_url: "/lovelace/vacuums" will lead to this view if the notification is clicked
  
-icon: Icon of the notification. format mdi:<string>. Visit https://materialdesignicons.com/ for supported icons
+icon: Icon of the notification. format mdi:<string>. Visit https://materialdesignicons.com/ for supported icons. (android only)
  
-color: color of the notification.
+color: color of the notification. (android only)
 Format can be "red" or "#ff6e07"
  
 tag: The concept of tag is complex to understand. So I'll explain the behavior you will experience while using tags.
@@ -135,12 +132,6 @@ class notifier(hass.Hass):
 
         # Temporary watchers
         self.watchers_handles = []
-        
-        # Data for criticals notifications
-        self.critical_data = {
-            "ios" : {"push" : {"sound" : {"name" : "default", "critical" : 1, "volume" : 1.0}}},
-            "android" : {"ttl" : 0, "priority" : "high"}
-            }
         
         # log
         self.log("Initialized") 
@@ -210,13 +201,12 @@ class notifier(hass.Hass):
             if watcher["tag"] == tag:
                 self.watchers_handles.remove(watcher)
         
-    def build_notification_data(self, data, person):
+    def build_notification_data(self, data):
         notification_data = {}
         if "critical" in data and data["critical"] == True:
-            if "device_type" in person and (person["device_type"] == "ios" or person["device_type"] == "android"):
-                notification_data = self.critical_data[person["device_type"]]
-            else:
-                self.log("Critical notification ... Correctly define 'device_type' in 'persons'.")
+            notification_data["push"] = {"interruption-level" : "critical"} #ios
+            notification_data["ttl"] = 0 #android
+            notification_data["priority"] = "high" #android
         if "callback" in data:
             notification_data["actions"] = []
             for callback in data["callback"]:
@@ -228,7 +218,8 @@ class notifier(hass.Hass):
         if "timeout" in data:
             notification_data["timeout"] = data["timeout"]
         if "click_url" in data:
-            notification_data["clickAction"] = data["click_url"]
+            notification_data["url"] = data["click_url"] #ios
+            notification_data["clickAction"] = data["click_url"] #android
         if "image_url" in data:
             notification_data["image"] = data["image_url"]
         if "icon" in data:
@@ -241,7 +232,7 @@ class notifier(hass.Hass):
 
     def send_to_person(self, data, person):
         self.log("Sending notification to " + person["name"])
-        notification_data = self.build_notification_data(data, person)
+        notification_data = self.build_notification_data(data)
         self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
 
     def send_to_all(self, data):
