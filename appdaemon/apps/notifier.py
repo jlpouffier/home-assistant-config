@@ -46,6 +46,7 @@ callback:
 timeout: <number>
 image_url: <url>
 click_url: <url>
+camera: <string>
 icon: <string>
 color: <string>
 tag: <string>
@@ -79,17 +80,18 @@ callback: Actionable buttons of the notification
      If event: turn_off_lights, then an event "mobile_app_notification_action" with action = "turn_off_lights" will be triggered once the button is pressed.
      Up to the app / automation creating the notification to listen to this event and perform some action.
  
-timeout: Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically. (android only)
+timeout: (android only) Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically.
  
 image_url: url of an image that will be embedded on the notification. Useful for cameras, vacuum maps, etc.
  
 click_url: url of the target location if the notification is pressed.
 If you have a lovelace view called "/lovelace/vacuums" for your vacuum, then putting click_url: "/lovelace/vacuums" will lead to this view if the notification is clicked
  
-icon: Icon of the notification. format mdi:<string>. Visit https://materialdesignicons.com/ for supported icons. (android only)
+camera: (ios only) entity of camera to stream directly on notification "camera.garden"
  
-color: color of the notification. (android only)
-Format can be "red" or "#ff6e07"
+icon: (android only) Icon of the notification. format mdi:<string>. Visit https://materialdesignicons.com/ for supported icons.
+ 
+color: (android only) color of the notification. Format can be "red" or "#ff6e07"
  
 tag: The concept of tag is complex to understand. So I'll explain the behavior you will experience while using tags.
   - A subsequent notification with a tag will replace an old notification with the same tag.
@@ -204,9 +206,16 @@ class notifier(hass.Hass):
     def build_notification_data(self, data):
         notification_data = {}
         if "critical" in data and data["critical"] == True:
-            notification_data["push"] = {"interruption-level" : "critical"} #ios
+            if not "push" in notification_data:
+                notification_data["push"] = {}
+            notification_data["push"]["interruption-level"] = "critical" #ios
             notification_data["ttl"] = 0 #android
             notification_data["priority"] = "high" #android
+        if "camera" in data: #ios
+            if not "push" in notification_data:
+                notification_data["push"] = {}
+            notification_data["push"]["category"] = "camera"
+            notification_data["entity_id"] = data["camera"]
         if "callback" in data:
             notification_data["actions"] = []
             for callback in data["callback"]:
@@ -215,16 +224,16 @@ class notifier(hass.Hass):
                     "title":callback["title"]
                 }
                 notification_data["actions"].append(action)
-        if "timeout" in data:
+        if "timeout" in data: #android
             notification_data["timeout"] = data["timeout"]
         if "click_url" in data:
             notification_data["url"] = data["click_url"] #ios
             notification_data["clickAction"] = data["click_url"] #android
         if "image_url" in data:
             notification_data["image"] = data["image_url"]
-        if "icon" in data:
+        if "icon" in data: #android
             notification_data["notification_icon"] = data["icon"]
-        if "color" in data:
+        if "color" in data: #android
             notification_data["color"] = data["color"]
         if "tag" in data:
             notification_data["tag"] = data["tag"]
