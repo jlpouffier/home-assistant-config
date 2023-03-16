@@ -121,7 +121,9 @@ class presence_simulator(hass.Hass):
   """
   def callback_wake_up(self, kwargs):
     self.log("Simulating : Waking up")
-    self.call_service("light/turn_on" , entity_id = "light.chambre", brightness_pct = 100)
+    self.call_service("hue/activate_scene" , entity_id = "scene.chambre_chambre_100")
+    self.call_service("hue/activate_scene" , entity_id = "scene.bureau_bureau_100")
+    self.call_service("hue/activate_scene" , entity_id = "scene.chambre_bebe_chambre_bebe_100")
     
   """
   Callback triggered near breakfast time. 
@@ -134,6 +136,8 @@ class presence_simulator(hass.Hass):
   def callback_eat_breakfast(self, kwargs):
     self.log("Simulating : Eating Breakfast")
     self.call_service("light/turn_off" , entity_id = "light.chambre")
+    self.call_service("light/turn_off" , entity_id = "light.chambre_bebe")
+    self.call_service("light/turn_off" , entity_id = "light.bureau")
     self.call_service("hue/activate_scene" , entity_id = "scene.salon_salon_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.cuisine_cuisine_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.entree_entree_100")
@@ -178,6 +182,8 @@ class presence_simulator(hass.Hass):
     self.call_service("light/turn_off" , entity_id = "light.exterieur")
     self.call_service("hue/activate_scene" , entity_id = "scene.chambre_chambre_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.bureau_bureau_100")
+    self.call_service("hue/activate_scene" , entity_id = "scene.chambre_bebe_chambre_bebe_100")
+    
 
   """
   Callback triggered near sleep time.
