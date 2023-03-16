@@ -1,1 +1,56 @@
-[]
+- id: '1678438864576'
+  alias: Combine Tesla Latitude and Longitude into a single MQTT Topic
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.tesla_latitude
+    id: latitude
+  - platform: state
+    entity_id:
+    - sensor.tesla_longitude
+    id: longitude
+  condition: []
+  action:
+  - parallel:
+    - if:
+      - condition: trigger
+        id: latitude
+      then:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - sensor.tesla_longitude
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: mqtt.publish
+        data:
+          qos: '0'
+          retain: true
+          topic: tesla/location
+          payload_template: "{\n  \"latitude\":{{states(\"sensor.tesla_latitude\")}},\n
+            \ \"longitude\":{{states(\"sensor.tesla_longitude\")}}\n} "
+    - if:
+      - condition: trigger
+        id: longitude
+      then:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - sensor.tesla_latitude
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: mqtt.publish
+        data:
+          qos: '0'
+          retain: true
+          topic: tesla/location
+          payload_template: "{\n  \"latitude\":{{states(\"sensor.tesla_latitude\")}},\n
+            \ \"longitude\":{{states(\"sensor.tesla_longitude\")}}\n} "
+  mode: single
