@@ -68,3 +68,10 @@ binary_sensor:
     state_topic: "teslamate/cars/1/charge_port_door_open"
     payload_on: "true"
     payload_off: "false"
+
+device_tracker:
+  - name: tesla_device_tracker
+    unique_id: tesla_device_tracker
+    state_topic: "teslamate/cars/1/model"
+    payload_reset: 3
+    json_attributes_topic: "tesla/location"
