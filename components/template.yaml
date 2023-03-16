@@ -38,30 +38,38 @@
         unknonw
         {% endif -%}
 
-    - name: tesla
-      unique_id: tesla
-      state: >
-        {% if is_state("sensor.tesla_state","asleep") -%}
-        En Veille
-        {%- elif is_state("sensor.tesla_state","suspended") -%}
-        Mise en veille en cours ...
-        {%- elif is_state("sensor.tesla_state","offline") -%}
-        Hors ligne
-        {%- elif is_state("sensor.tesla_state","driving") -%}
-        Conduite en cours ...
-        {%- elif is_state("sensor.tesla_state","online") -%}
-        En ligne
-        {%- elif is_state("sensor.tesla_state","charging") -%}
-        En charge
-        {%- elif is_state("sensor.tesla_state","updating") -%}
-        Mise a jour en cours
-        {%- else -%}
-        État inconnu
-        {%- endif %}
-      picture: "/local/tesla.jpg"
-      attributes:
-        latitude: "{{states('sensor.tesla_latitude')}}"
-        longitude: "{{states('sensor.tesla_longitude')}}"
+    - name: tesla_timestamp_to_full_charge
+      unique_id: tesla_timestamp_to_full_charge
+      device_class: timestamp
+      state: "{{now() + timedelta(hours = states('sensor.tesla_time_to_full_charge') | float(default = 0))}}"
+
+    - name: weather-alert-flooding
+      unique_id: weather-alert-flooding
+      state: "{{state_attr('sensor.33_weather_alert', 'Inondation')}}"
+
+    - name: weather-alert-storm
+      unique_id: weather-alert-storm
+      state: "{{state_attr('sensor.33_weather_alert', 'Orages')}}"
+
+    - name: weather-alert-wind
+      unique_id: weather-alert-wind
+      state: "{{state_attr('sensor.33_weather_alert', 'Vent violent')}}"
+
+    - name: weather-alert-rain
+      unique_id: weather-alert-rain
+      state: "{{state_attr('sensor.33_weather_alert', 'Pluie-inondation')}}"
+
+    - name: weather-alert-snow
+      unique_id: weather-alert-snow
+      state: "{{state_attr('sensor.33_weather_alert', 'Neige-verglas')}}"
+
+    - name: weather-alert-cold
+      unique_id: weather-alert-cold
+      state: "{{state_attr('sensor.33_weather_alert', 'Grand-froid')}}"
+
+    - name: weather-alert-waves
+      unique_id: weather-alert-waves
+      state: "{{state_attr('sensor.33_weather_alert', 'Vagues-submersion')}}"
 
 - binary_sensor:
     - name: home_occupied
