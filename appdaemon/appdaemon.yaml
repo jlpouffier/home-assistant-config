@@ -65,6 +65,10 @@ logs:
     name: welcome_home
     filename: /config/appdaemon/logs/welcome_home.log
     log_generations: 3
+  baby_automations:
+    name: baby_automations
+    filename: /config/appdaemon/logs/baby_automations.log
+    log_generations: 3
 
 appdaemon:
   latitude: !secret latitude

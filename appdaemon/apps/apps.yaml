@@ -84,6 +84,7 @@ monitor_system:
   battery_sensors_to_check:
     - sensor.bureau_switch_battery
     - sensor.chambre_switch_battery
+    - sensor.chambre_bebe_switch_battery
     - sensor.couloir_switch_etage_battery
     - sensor.cuisine_switch_battery
     - sensor.entree_switch_battery
@@ -94,10 +95,10 @@ monitor_system:
     - sensor.capteur_thp_salon_battery
     - sensor.capteur_thp_chambre_battery
     - sensor.capteur_thp_bureau_battery
-    - sensor.capteur_thp_chambre_d_amis_battery
+    - sensor.capteur_thp_chambre_bebe_battery
     - sensor.capteur_ouverture_fenetre_chambre_battery
     - sensor.capteur_ouverture_fenetre_bureau_battery
-    - sensor.capteur_ouverture_fenetre_chambre_d_amis_battery
+    - sensor.capteur_ouverture_fenetre_chambre_bebe_battery
     - sensor.capteur_ouverture_fenetre_salle_de_bain_battery
     - sensor.capteur_ouverture_porte_fenetre_salon_battery
     - sensor.capteur_ouverture_fenetre_cellier_battery
@@ -117,6 +118,12 @@ charge_electric_scooter:
   class: charge_electric_scooter
   log: charge_electric_scooter
   constrain_input_boolean: input_boolean.electric_scooter_automation
+
+baby_automations:
+  module: baby_automations
+  class: baby_automations
+  log: baby_automations
+  constrain_input_boolean: input_boolean.baby_automations
 
 sandbox:
   module: sandbox
