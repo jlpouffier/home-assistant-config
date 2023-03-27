@@ -1,7 +1,7 @@
 import hassapi as hass
 
 """
-baby_automations is an app responsible of tracking pee, poo and feed time of our future little cutre devil. 
+baby_automations is an app responsible of tracking pee, poo and feed time of our future little cutre devil.  
 """
 class baby_automations(hass.Hass):
     def initialize(self):
