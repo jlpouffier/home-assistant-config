@@ -52,11 +52,16 @@ class monitor_system(hass.Hass):
         self.log("Detecting an available update... Notifying it...")
     
         app_title = self.get_state(entity, attribute = "title")
+
+        if app_title is not None:
+            message = "Une mise a jour est disponible pour " + app_title
+        else:
+            message = "Une mise a jour est disponible (Entité inconnue)"
     
         self.fire_event("NOTIFIER",
             action = "send_to_jl",
             title = "🎉 Mise a jour disponible",
-            message = "Une mise a jour est disponible pour " + app_title,
+            message = message,
             click_url = "/config/dashboard",
             icon = "mdi:cellphone-arrow-down",
             tag = entity,
