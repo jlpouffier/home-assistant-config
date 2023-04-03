@@ -1,0 +1,31 @@
+script:
+  turn_off_media_center:
+    alias: Turn Off Media center
+    mode: single
+
+    sequence:
+      - alias: turn off tv and lsx in parallel
+        parallel:
+          - alias: if tv on then turn off tv
+            if:
+              - condition: state
+                entity_id: binary_sensor.is_tv_on
+                state: "on"
+            then:
+              - service: media_player.turn_off
+                target:
+                  entity_id: media_player.philips_android_tv
+                data: {}
+
+          - alias: if lsk on then turn off lsx
+            if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: media_player.kef
+                    state: "off"
+            then:
+              - service: media_player.turn_off
+                target:
+                  entity_id: media_player.kef
+                data: {}

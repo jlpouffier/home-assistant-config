@@ -1,0 +1,93 @@
+script:
+  turn_on_media_center:
+    alias: Turn On Media center
+    mode: single
+
+    sequence:
+      - alias: turn on tv and lsx in parallel
+        parallel:
+          - alias: if tv off then turn on tv
+            if:
+              - condition: state
+                entity_id: binary_sensor.is_tv_on
+                state: "off"
+            then:
+              - if:
+                  - condition: state
+                    entity_id: media_player.philips_android_tv
+                    state: unavailable
+                then:
+                  - service: wake_on_lan.send_magic_packet
+                    data:
+                      mac: 68:07:0A:4A:F5:AB
+                  - wait_for_trigger:
+                      - platform: state
+                        entity_id:
+                          - media_player.philips_android_tv
+                        to: "off"
+                    timeout:
+                      hours: 0
+                      minutes: 1
+                      seconds: 0
+                      milliseconds: 0
+                    continue_on_timeout: true
+              - service: media_player.turn_on
+                data: {}
+                target:
+                  entity_id: media_player.philips_android_tv
+
+          - alias: if lsx are off then turn on lsx
+            if:
+              - condition: state
+                entity_id: media_player.kef
+                state: "off"
+            then:
+              - service: media_player.turn_on
+                target:
+                  entity_id: media_player.kef
+                data: {}
+              - wait_for_trigger:
+                  - platform: state
+                    entity_id:
+                      - media_player.kef
+                    not_to: "off"
+                timeout:
+                  hours: 0
+                  minutes: 0
+                  seconds: 10
+                  milliseconds: 0
+                continue_on_timeout: true
+              - alias: change lsk source
+                if:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: media_player.kef
+                        attribute: source
+                        state: Opt
+                then:
+                  - service: media_player.select_source
+                    target:
+                      entity_id: media_player.kef
+                    data:
+                      source: Opt
+
+          - alias: if lsx are on then change lsx source
+            if:
+              - condition: state
+                entity_id: media_player.kef
+                state: "on"
+
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: media_player.kef
+                    attribute: source
+                    state: Opt
+                    alias: LSK SOURCE OPT
+            then:
+              - service: media_player.select_source
+                target:
+                  entity_id: media_player.kef
+                data:
+                  source: Opt

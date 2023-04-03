@@ -1,0 +1,15 @@
+script:
+  reset_lights_day_area:
+    alias: Réinitialisation Lumières Coin Jour
+    mode: restart
+
+    sequence:
+      - alias: activate hue scenes on salon, entrée and cuisine
+        service: hue.activate_scene
+        data:
+          transition: 2
+        target:
+          entity_id:
+            - scene.salon_salon_100
+            - scene.entree_entree_100
+            - scene.cuisine_cuisine_100

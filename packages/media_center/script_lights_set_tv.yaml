@@ -1,0 +1,21 @@
+script:
+  lights_set_tv:
+    alias: Réglage lumières lors que la TV joue un média
+    mode: restart
+
+    sequence:
+      - alias: turn off cuisine entree
+        service: light.turn_off
+        target:
+          entity_id:
+            - light.cuisine
+            - light.entree
+        data:
+          transition: 2
+
+      - alias: activate hue scene on salon
+        service: hue.activate_scene
+        target:
+          entity_id: scene.salon_salon_tv_playing
+        data:
+          transition: 2
