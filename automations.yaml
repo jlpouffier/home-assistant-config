@@ -1,1 +1,59 @@
-[]
+- id: tesla_combine_location_mqtt_topics
+  alias: Combine Tesla Latitude and Longitude into a single MQTT Topic
+  description: "This automation listen to two state change (coming initialy from teslamate):\n
+    \ - sensor.tesla_longitude\n  - sensor.tesla_latitude\n\nIt then combine both
+    and push the change into a new MQTT topic \"tesla/location\".\nAs the changes
+    are not happening in a synchronous fashion, it waits for the \"other one\" before
+    combining them.\nIt's a way to solve this: https://github.com/adriankumpf/teslamate/discussions/3058\n"
+  trigger:
+  - id: latitude
+    platform: state
+    entity_id:
+    - sensor.tesla_latitude
+  - id: longitude
+    platform: state
+    entity_id:
+    - sensor.tesla_longitude
+  action:
+  - parallel:
+    - if:
+      - condition: trigger
+        id: latitude
+      then:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - sensor.tesla_longitude
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: mqtt.publish
+        data:
+          qos: '0'
+          retain: true
+          topic: tesla/location
+          payload_template: "{   \n  \"latitude\":{{states(\"sensor.tesla_latitude\")}},\n
+            \ \"longitude\":{{states(\"sensor.tesla_longitude\")}}\n}\n"
+    - if:
+      - condition: trigger
+        id: longitude
+      then:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - sensor.tesla_latitude
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: mqtt.publish
+        data:
+          qos: '0'
+          retain: true
+          topic: tesla/location
+          payload_template: "{   \n  \"latitude\":{{states(\"sensor.tesla_latitude\")}},\n
+            \ \"longitude\":{{states(\"sensor.tesla_longitude\")}}\n}\n"
+  mode: single

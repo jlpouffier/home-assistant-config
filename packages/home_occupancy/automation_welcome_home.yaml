@@ -1,0 +1,29 @@
+# automation:
+#   - id: "welcome_home"
+#     alias: "Bienvenue lumineux"
+#     description: >
+#       Turn on the light everytime we get home, only if its dark, only once everytime we come back home.
+
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.home_occupied
+#         from: 'off'
+#         to: 'on'
+
+#     condition:
+#       condition: state
+#       entity_id: sun.sun
+#       state: below_horizon
+
+#     action:
+#       - wait_for_trigger:
+#           - platform: state
+#             entity_id: binary_sensor.capteur_ouverture_porte_entree
+#             to: 'on'
+#             for:
+#               minutes: 15
+
+#       - if:
+#           - '{{wait.trigger != None}}'
+#         then:
+#           -
