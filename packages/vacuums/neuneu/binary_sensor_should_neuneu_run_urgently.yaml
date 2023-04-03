@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: should_neuneu_run_urgently
+        unique_id: should_neuneu_run_urgently
+        state: "{{ as_timestamp(utcnow() , 0) -  as_timestamp(states('input_datetime.dernier_nettoyage_de_neuneu') , 0 ) > 3 * 24 * 60 * 60 }}"
+        device_class: problem

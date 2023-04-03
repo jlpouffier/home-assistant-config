@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - sensor:
+      - name: teuteu_last_cleaning_area
+        unique_id: teuteu_last_cleaning_area
+        state: "{{state_attr('vacuum.teuteu' , 'clean_area') | round(1,'half',0) }}"
+        unit_of_measurement: "m2"
+        icon: mdi:checkbox-blank-outline

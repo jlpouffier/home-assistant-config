@@ -1,0 +1,10 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_washing_machine_running
+        unique_id: is_washing_machine_running
+        state: "{{ states('sensor.machine_a_laver_power') | float(default = 0) > 5 }}"
+        device_class: running
+        delay_on: "0:01:00"
+        delay_off: "0:01:00"

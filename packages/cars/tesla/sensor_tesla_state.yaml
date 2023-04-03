@@ -1,0 +1,7 @@
+# https://www.home-assistant.io/integrations/sensor.mqtt/
+
+mqtt:
+  sensor:
+    - name: tesla_state
+      unique_id: tesla_state
+      state_topic: "teslamate/cars/1/state"

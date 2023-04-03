@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/binary_sensor.mqtt/
+
+mqtt:
+  binary_sensor:
+    - name: tesla_sentry_mode
+      unique_id: tesla_sentry_mode
+      state_topic: "teslamate/cars/1/sentry_mode"
+      payload_on: "true"
+      payload_off: "false"

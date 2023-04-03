@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/binary_sensor.mqtt/
+
+mqtt:
+  binary_sensor:
+    - name: tesla_plugged_in
+      unique_id: tesla_plugged_in
+      state_topic: "teslamate/cars/1/plugged_in"
+      payload_on: "true"
+      payload_off: "false"

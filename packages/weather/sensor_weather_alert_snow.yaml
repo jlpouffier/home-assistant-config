@@ -1,0 +1,7 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - sensor:
+      - name: weather_alert_snow
+        unique_id: weather_alert_snow
+        state: "{{state_attr('sensor.33_weather_alert', 'Neige-verglas')}}"

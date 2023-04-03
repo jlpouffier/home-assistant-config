@@ -1,0 +1,6 @@
+# https://www.home-assistant.io/integrations/workday/
+
+binary_sensor:
+  - platform: workday
+    name: workday_today
+    country: FR

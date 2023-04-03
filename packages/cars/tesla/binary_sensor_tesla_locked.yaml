@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/binary_sensor.mqtt/
+
+mqtt:
+  binary_sensor:
+    - name: tesla_locked
+      unique_id: tesla_locked
+      state_topic: "teslamate/cars/1/locked"
+      payload_on: "false"
+      payload_off: "true"

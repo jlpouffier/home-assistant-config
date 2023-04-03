@@ -1,0 +1,16 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - sensor:
+      - name: teuteu_simplified_state
+        unique_id: teuteu_simplified_state
+        state: >
+          {% if is_state('vacuum.teuteu', 'cleaning') or is_state('vacuum.teuteu', 'paused') or is_state('vacuum.teuteu', 'returning') -%}
+          cleaning
+          {% elif is_state('vacuum.teuteu', 'docked') or is_state('vacuum.teuteu', 'idle') -%}
+          docked
+          {% elif is_state('vacuum.teuteu', 'error') %}
+          error
+          {% else -%}
+          unknonw
+          {% endif -%}

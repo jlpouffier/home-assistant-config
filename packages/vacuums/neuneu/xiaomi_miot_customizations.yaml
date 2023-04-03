@@ -1,0 +1,9 @@
+xiaomi_miot:
+  device_customizes:
+    dreame.vacuum.p2028:
+      exclude_miot_services: map, voice, audio, do_not_disturb, time, clean_logs, collect_dust
+  exclude_state_attributes:
+    - miot_type
+    - lan_ip
+    - mac_address
+    - model

@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_litter_full
+        unique_id: is_litter_full
+        state: "{{states('input_number.litter_tracking') | float(default = 0) >= 5 }}"
+        device_class: problem

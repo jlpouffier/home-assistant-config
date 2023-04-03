@@ -1,0 +1,10 @@
+# https://www.home-assistant.io/integrations/mqtt_room/
+
+sensor:
+  - platform: mqtt_room
+    device_id: "iBeacon:d9bed4ff-963f-4479-84c0-d665085beacf-100-1"
+    state_topic: "espresense/devices/iBeacon:d9bed4ff-963f-4479-84c0-d665085beacf-100-1"
+    name: "JLo Pixel 6 Pro Room Tracker"
+    timeout: 5
+    unique_id: jlo_pixel_6_pro_room_tracker
+    away_timeout: 120

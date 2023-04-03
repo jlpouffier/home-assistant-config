@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/proximity/
+
+proximity:
+  distance_jl_home:
+    zone: home
+    devices:
+      - person.jenova70
+    tolerance: 50
+    unit_of_measurement: m

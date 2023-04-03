@@ -1,0 +1,7 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - sensor:
+      - name: weather_alert_rain
+        unique_id: weather_alert_rain
+        state: "{{state_attr('sensor.33_weather_alert', 'Pluie-inondation')}}"

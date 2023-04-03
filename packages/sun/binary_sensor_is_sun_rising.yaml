@@ -1,0 +1,7 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_sun_rising
+        unique_id: is_sun_rising
+        state: "{{is_state_attr('sun.sun', 'rising', true)}}"

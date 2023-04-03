@@ -1,0 +1,7 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: far_away
+        unique_id: far_away
+        state: "{{states('proximity.distance_jl_home') | int(default = 0) > 80000 and states('proximity.distance_valentine_home') | int(default = 0) > 80000 }}"

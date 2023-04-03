@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/sensor.mqtt/
+
+mqtt:
+  sensor:
+    - name: tesla_latitude
+      unique_id: tesla_latitude
+      state_topic: "teslamate/cars/1/latitude"
+      unit_of_measurement: °

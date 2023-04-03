@@ -1,0 +1,9 @@
+# https://www.home-assistant.io/integrations/proximity/
+
+proximity:
+  distance_valentine_home:
+    zone: home
+    devices:
+      - person.valentine
+    tolerance: 50
+    unit_of_measurement: m

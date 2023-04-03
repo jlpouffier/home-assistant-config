@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/sensor.mqtt/
+
+mqtt:
+  sensor:
+    - name: tesla_longitude
+      unique_id: tesla_longitude
+      state_topic: "teslamate/cars/1/longitude"
+      unit_of_measurement: °
