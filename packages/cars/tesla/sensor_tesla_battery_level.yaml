@@ -1,8 +1,0 @@
-# https://www.home-assistant.io/integrations/sensor.mqtt/
-
-mqtt:
-  sensor:
-    - name: tesla_battery_level
-      unique_id: tesla_battery_level
-      state_topic: "teslamate/cars/1/battery_level"
-      unit_of_measurement: "%"

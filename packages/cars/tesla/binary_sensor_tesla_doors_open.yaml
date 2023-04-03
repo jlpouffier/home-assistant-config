@@ -1,9 +1,0 @@
-# https://www.home-assistant.io/integrations/binary_sensor.mqtt/
-
-mqtt:
-  binary_sensor:
-    - name: tesla_doors_open
-      unique_id: tesla_doors_open
-      state_topic: "teslamate/cars/1/doors_open"
-      payload_on: "true"
-      payload_off: "false"

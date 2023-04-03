@@ -1,8 +1,0 @@
-# https://www.home-assistant.io/integrations/sensor.mqtt/
-
-mqtt:
-  sensor:
-    - name: tesla_time_to_full_charge
-      unique_id: tesla_time_to_full_charge
-      state_topic: "teslamate/cars/1/time_to_full_charge"
-      unit_of_measurement: h
