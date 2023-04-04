@@ -129,3 +129,9 @@ sandbox:
   module: sandbox
   class: sandbox
   log: sandbox
+
+tesla_automations:
+  module: tesla_automations
+  class: tesla_automations
+  log: tesla_automations
+  max_delay_between_coordinate_update_to_send_location_update: 1

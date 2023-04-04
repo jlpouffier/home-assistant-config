@@ -69,6 +69,10 @@ logs:
     name: baby_automations
     filename: /config/appdaemon/logs/baby_automations.log
     log_generations: 3
+  tesla_automations:
+    name: tesla_automations
+    filename: /config/appdaemon/logs/tesla_automations.log
+    log_generations: 3
 
 appdaemon:
   latitude: !secret latitude
