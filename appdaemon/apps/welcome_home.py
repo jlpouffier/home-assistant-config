@@ -11,7 +11,6 @@ class welcome_home(hass.Hass):
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
         self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" , old = "on" , new = "off")
         self.listen_state(self.callback_home_occupied_for_more_than_x , "binary_sensor.home_occupied" , old = "off" , new = "on" , duration = 900)
-        self.log("Initialized")
     
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
         if len(self.state_handles) < 1:

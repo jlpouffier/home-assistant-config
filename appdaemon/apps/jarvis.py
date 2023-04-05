@@ -7,7 +7,6 @@ class jarvis(hass.Hass):
         self.listen_event(self.callback_act_on_cover_entity, "rhasspy_act_on_cover_entity")
         self.listen_event(self.callback_act_on_cover_position_entity, "rhasspy_act_on_cover_position_entity")
 
-        self.log("Initialized")
     
     def callback_act_on_switch_entity(self, event_name, data, kwargs):
         self.log("callback_act_on_switch_entity")

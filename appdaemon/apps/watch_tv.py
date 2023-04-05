@@ -28,8 +28,6 @@ class watch_tv(hass.Hass):
     # Variable to store the old app to detect app changes. Initialized to the Android Home page
     self.old_app = "Android TV Launcher"
 
-    # log
-    self.log("Initialized")
 
   """
   Callback triggered when the TV is on

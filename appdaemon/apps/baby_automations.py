@@ -12,8 +12,6 @@ class baby_automations(hass.Hass):
         self.listen_state(self.callback_change_poo_selected, "input_select.bebe_change_types", new = "caca", duration = 5)
         self.listen_state(self.callback_change_mode_cycle, "input_select.bebe_change_types")
         self.call_service("scene/create", scene_id =  "scene_current_hue_play_bars_state" , snapshot_entities = "light.hue_play_bars")
-    
-        self.log("Initialized")
 
     def callback_change_button_clicked(self, entity, attribute, old, new, kwargs):
         self.log("Baby Change: Button Pressed")

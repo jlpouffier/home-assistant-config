@@ -41,9 +41,7 @@ class clean_house(hass.Hass):
     self.listen_event(self.callback_button_clicked_start_teuteu, "mobile_app_notification_action", action = "start_teuteu")
     self.listen_event(self.callback_button_clicked_rth_neuneu, "mobile_app_notification_action", action = "rth_neuneu")
     self.listen_event(self.callback_button_clicked_start_neuneu, "mobile_app_notification_action", action = "start_neuneu")
-
-    self.log("Initialized")
-
+  
   """
   Callback triggered when the home is empty
   Goals :

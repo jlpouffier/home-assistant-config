@@ -26,9 +26,6 @@ class presence_simulator(hass.Hass):
 
     # listen to button press form notification
     self.listen_event(self.callback_button_clicked_start_presence_simulation, "mobile_app_notification_action", action = "start_presence_simulation")
-
-    #Log
-    self.log("Initialized")
   
   """
   Callback triggered when the presence_simulator_switch is activated

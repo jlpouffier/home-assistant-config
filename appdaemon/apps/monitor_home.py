@@ -44,8 +44,7 @@ class monitor_home(hass.Hass):
     self.listen_event(self.callback_button_clicked_turn_off_lsx, "mobile_app_notification_action", action = "turn_off_lsx")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
     self.listen_event(self.callback_button_clicked_reset_litter_tracking, "mobile_app_notification_action", action = "reset_litter_tracking")
-    
-    self.log("Initialized")
+
     
   """
   Callback triggered when the home becomes not occupied

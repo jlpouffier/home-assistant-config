@@ -130,9 +130,6 @@ class notifier(hass.Hass):
         # Temporary watchers
         self.watchers_handles = []
 
-        # log
-        self.log("Initialized") 
-
     def callback_notifier_event_received(self, event_name, data, kwargs):
         self.log("NOTIFIER event received")  
         if "action" in data:

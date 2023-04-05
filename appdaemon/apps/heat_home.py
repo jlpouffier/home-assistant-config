@@ -14,8 +14,6 @@ class heat_home(hass.Hass):
         self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off")
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , new = "on")
 
-        self.log("Initialized")
-
     """
     Callback triggered when window / door opened for too long.
     Goals :

@@ -10,7 +10,6 @@ class charge_electric_scooter(hass.Hass):
         self.listen_state(self.callback_valentine_at_work, "person.valentine", new = "BackMarket (Bordeaux)", immediate = True)
         self.listen_state(self.callback_electric_scooter_charging, "binary_sensor.is_electric_scooter_charging", new = "on" , immediate = True)
         self.run_daily(self.callback_electric_scooter_daily_check, "20:00:00")
-        self.log("Initialized")
 
     def callback_valentine_at_work(self, entity, attribute, old, new, kwargs):
         self.log("Valentine arrived at work: Considerig that her electric scooter needs charging.")

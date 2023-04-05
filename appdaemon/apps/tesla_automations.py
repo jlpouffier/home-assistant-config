@@ -24,7 +24,6 @@ class tesla_automations(hass.Hass):
         self.update_time_difference = 0
 
         self.listen_state(self.callback_location_updated_first_time, ['sensor.tesla_latitude','sensor.tesla_longitude'])
-        self.log("Initialized") 
     
     def callback_location_updated_first_time(self, entity, attribute, old, new, kwargs):
         if entity == 'sensor.tesla_longitude':

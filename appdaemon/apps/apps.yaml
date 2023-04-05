@@ -107,6 +107,8 @@ monitor_system:
     - sensor.capteur_mouvement_litiere_battery
     - sensor.capteur_mouvement_boite_aux_lettres_battery
     - sensor.the_cube_battery
+    - sensor.bouton_bibi_bebe_battery
+    - sensor.bouton_change_bebe_battery
 
 smart_cube:
   module: smart_cube
@@ -125,10 +127,10 @@ baby_automations:
   log: baby_automations
   constrain_input_boolean: input_boolean.baby_automations
 
-sandbox:
-  module: sandbox
-  class: sandbox
-  log: sandbox
+#sandbox:
+#  module: sandbox
+#  class: sandbox
+#  log: sandbox
 
 tesla_automations:
   module: tesla_automations

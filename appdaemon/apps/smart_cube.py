@@ -11,8 +11,6 @@ class smart_cube(hass.Hass):
         self.listen_state(self.callback_wakeup_trigger, "sensor.the_cube_action", new = "shake")
         self.listen_state(self.callback_turn_on_cube, "input_boolean.the_cube", new = "on")
         self.listen_state(self.callback_turn_off_cube, "input_boolean.the_cube", new = "off")
-
-        self.log("Initialized")
     
     def callback_wakeup_trigger(self, entity, attribute, old, new, kwargs):
         #self.log("callback_wakeup_trigger")

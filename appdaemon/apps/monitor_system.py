@@ -40,8 +40,7 @@ class monitor_system(hass.Hass):
         
         self.log("Monitor System Initializing, Restauring Samba Backup sensor ...")
         self.call_service("hassio/addon_stdin", addon = "15d21743_samba_backup" , input = "restore-sensor")
-        
-        self.log("Initialized")
+
 
     """
     Callback triggered when new upate is available on the HASS domain.

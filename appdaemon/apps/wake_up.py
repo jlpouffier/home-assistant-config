@@ -23,8 +23,7 @@ class wake_up(hass.Hass):
     # Fallback if the app starts after 3am and before the wakeup time...
     if self.now_is_between("03:00:00" , self.get_state("input_datetime.wake_up_time")):
       self.run_in(self.callback_schedule_wake_up, 0)
-      
-    self.log("Initialized")
+
 
 
   """
