@@ -67,8 +67,8 @@ presence_simulator:
   eat_breakfast_time: "sunrise - 01:00:00"
   leave_time: "sunrise + 00:30:00"
   return_time: "sunset"
-  go_to_bed_time: "sunset + 04:00:00"
-  sleep_time: "sunset + 06:00:00"
+  go_to_bed_time: "sunset + 03:00:00"
+  sleep_time: "sunset + 04:00:00"
 
 jarvis:
   module: jarvis
@@ -107,8 +107,6 @@ monitor_system:
     - sensor.capteur_mouvement_litiere_battery
     - sensor.capteur_mouvement_boite_aux_lettres_battery
     - sensor.the_cube_battery
-    - sensor.bouton_bibi_bebe_battery
-    - sensor.bouton_change_bebe_battery
 
 smart_cube:
   module: smart_cube
@@ -121,12 +119,6 @@ charge_electric_scooter:
   log: charge_electric_scooter
   constrain_input_boolean: input_boolean.electric_scooter_automation
 
-baby_automations:
-  module: baby_automations
-  class: baby_automations
-  log: baby_automations
-  constrain_input_boolean: input_boolean.baby_automations
-
 #sandbox:
 #  module: sandbox
 #  class: sandbox
@@ -137,3 +129,13 @@ tesla_automations:
   class: tesla_automations
   log: tesla_automations
   max_delay_between_coordinate_update_to_send_location_update: 1
+
+baby_automations:
+  module: baby_automations
+  class: baby_automations
+  log: baby_automations
+  constrain_input_boolean: input_boolean.baby_automations
+  kid_name: !secret kid_name
+  minimum_delay_between_bibi_in_hours: 2
+  optimal_delay_between_bibi_in_hours: 4
+  maximum_delay_between_bibi_in_hours: 6
