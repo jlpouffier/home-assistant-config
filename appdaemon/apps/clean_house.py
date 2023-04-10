@@ -58,18 +58,25 @@ class clean_house(hass.Hass):
     # Is second floor dirty
     is_second_floor_dirty = True if self.get_state("binary_sensor.should_teuteu_run") == "on" else False
 
+    # Is first floor in scope ?
+    is_first_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_first_floor") == "on" else False
+
+    # Is second floor in scope ?
+    is_second_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_second_floor") == "on" else False
+
     # Is teuteu cleaning now ?
     is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
     
     # Is neuneu cleaning now ?
     is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
 
-    if is_second_floor_dirty  and not is_teuteu_cleaning_right_now:
+
+    if is_second_floor_dirty and is_second_floor_in_scope and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
       #self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
       self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
     
-    if is_first_floor_dirty and not is_neuneu_cleaning_right_now:
+    if is_first_floor_dirty and is_first_floor_in_scope and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
     
@@ -104,8 +111,10 @@ class clean_house(hass.Hass):
     is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
     # Is home occupied ?
     is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
+    # Is first floor in scope ?
+    is_first_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_first_floor") == "on" else False
 
-    if is_home_empty and not is_neuneu_cleaning_right_now:
+    if is_home_empty and is_first_floor_in_scope and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
       self.call_service("vacuum/start" , entity_id = "vacuum.neuneu")
 
@@ -115,21 +124,22 @@ class clean_house(hass.Hass):
   . Notify
   """ 
   def callback_first_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("First floor super dirtly now ... Notifying it.  ")
-    self.fire_event("NOTIFIER",
-      action = "send_to_nearest",
-      title = "🧹 Rez-de-chaussé sale", 
-      message = "NeuNeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!",
-      callback = [{
-        "title" : "Lancer NeuNeu",
-        "event" : "start_neuneu"}],
-      click_url="/lovelace/vacuums",
-      icon = "mdi:liquid-spot",
-      color = "#ff6e07",
-      tag = "first_floor_very_dirty",
-      until =  [{
-        "entity_id" : "vacuum.neuneu",
-        "new_state" : "cleaning"}])
+    if self.get_state("input_boolean.house_cleaning_first_floor") == "on":
+      self.log("First floor super dirtly now ... Notifying it.  ")
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "🧹 Rez-de-chaussé sale", 
+        message = "NeuNeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!",
+        callback = [{
+          "title" : "Lancer NeuNeu",
+          "event" : "start_neuneu"}],
+        click_url="/lovelace/vacuums",
+        icon = "mdi:liquid-spot",
+        color = "#ff6e07",
+        tag = "first_floor_very_dirty",
+        until =  [{
+          "entity_id" : "vacuum.neuneu",
+          "new_state" : "cleaning"}])
 
   """
   Callback triggered when the second floor is dirty
@@ -145,8 +155,10 @@ class clean_house(hass.Hass):
     is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
     # Is home occupied ?
     is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
+    # Is second floor in scope ?
+    is_second_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_second_floor") == "on" else False
 
-    if is_home_empty and not is_teuteu_cleaning_right_now:
+    if is_home_empty and is_second_floor_in_scope and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
       #self.call_service("vacuum/start" , entity_id = "vacuum.teuteu")
       self.call_service("neato/custom_cleaning" , entity_id = "vacuum.teuteu" , mode = 1 , navigation = 2 , category = 2)
@@ -157,21 +169,22 @@ class clean_house(hass.Hass):
   . Notify
   """ 
   def callback_second_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    self.log("Second floor super dirtly now ... Notifying it.  ")
-    self.fire_event("NOTIFIER",
-      action = "send_to_nearest",
-      title = "🧹 Premier étage sale", 
-      message = "TeuTeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!",
-      callback = [{
-        "title" : "Lancer TeuTeu",
-        "event" : "start_teuteu"}],
-      click_url="/lovelace/vacuums",
-      icon = "mdi:liquid-spot",
-      color = "#ff6e07",
-      tag = "second_floor_very_dirty",
-      until =  [{
-        "entity_id" : "vacuum.teuteu",
-        "new_state" : "cleaning"}])
+    if self.get_state("input_boolean.house_cleaning_second_floor") == "on":
+      self.log("Second floor super dirtly now ... Notifying it.  ")
+      self.fire_event("NOTIFIER",
+        action = "send_to_nearest",
+        title = "🧹 Premier étage sale", 
+        message = "TeuTeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!",
+        callback = [{
+          "title" : "Lancer TeuTeu",
+          "event" : "start_teuteu"}],
+        click_url="/lovelace/vacuums",
+        icon = "mdi:liquid-spot",
+        color = "#ff6e07",
+        tag = "second_floor_very_dirty",
+        until =  [{
+          "entity_id" : "vacuum.teuteu",
+          "new_state" : "cleaning"}])
 
   """
   Callback triggered when a vacuum is starting
