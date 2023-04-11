@@ -1,7 +1,7 @@
 import hassapi as hass
 
 """
-baby_automations is an app responsible of helping us to know when to give the next baby bottle fto our daugther
+baby_automations is an app responsible of helping us to know when to give the next baby bottle to our daugther
 """
 class baby_automations(hass.Hass):
     def initialize(self):
