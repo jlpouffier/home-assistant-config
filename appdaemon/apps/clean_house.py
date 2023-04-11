@@ -4,13 +4,14 @@ import hassapi as hass
 clean_house is an app responsible of the scheduling of TeuTeu and NeuNeu
 
 Functionalities :
-. Starts TeuTeu when needed
+  Starts TeuTeu when needed
+  Starts NeuNeu when needed
 
 Notifications :
-. Cleaning Started > RTH possible
-. Cleaning Finished
-. TeuTeu error
-. TeuTeu not on the dock
+  Cleaning Started > RTH possible
+  Cleaning Finished
+  Vacuum error
+  Vacuum not on the dock
 """
 class clean_house(hass.Hass):
   def initialize(self):
@@ -45,10 +46,10 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the home is empty
   Goals :
-  . Check if home dirtly
-  . Check if we are not cleaning right now
-  . If all 2 conditions are met:
-    . Start cleaning
+    Check if home dirtly
+    Check if we are not cleaning right now
+    If all 2 conditions are met:
+      Start cleaning
   """ 
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
     self.log("Home empty, Checking if vacuums can run now ... ")
@@ -83,7 +84,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the home is occupied
   Goals :
-  . RTH vacuums
+    RTH vacuums
   """ 
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     self.log("Home occupied, Checking if vacuums should stop now ... ")
@@ -100,10 +101,10 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the first floor is dirty
   Goals :
-  . Check if home empty
-  . Check if we are not cleaning right now
-  . If all 2 conditions are met:
-    . Start cleaning
+    Check if home empty
+    Check if we are not cleaning right now
+    If all 2 conditions are met:
+      Start cleaning
   """ 
   def callback_first_floor_dirty(self, entity, attribute, old, new, kwargs):
     self.log("First floor dirtly now ... Checking if NeuNeu can run now ...  ")
@@ -121,7 +122,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the fisrt floor is very dirty
   Goals :
-  . Notify
+    Notify
   """ 
   def callback_first_floor_very_dirty(self, entity, attribute, old, new, kwargs):
     if self.get_state("input_boolean.house_cleaning_first_floor") == "on":
@@ -144,10 +145,10 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the second floor is dirty
   Goals :
-  . Check if home empty
-  . Check if we are not cleaning right now
-  . If all 2 conditions are met:
-    . Start cleaning
+    Check if home empty
+    Check if we are not cleaning right now
+    If all 2 conditions are met:
+      Start cleaning
   """ 
   def callback_second_floor_dirty(self, entity, attribute, old, new, kwargs):
     self.log("Second floor dirtly now ... Checking if TeuTeu can run now ...  ")
@@ -166,7 +167,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when the second floor is very dirty
   Goals :
-  . Notify
+    Notify
   """ 
   def callback_second_floor_very_dirty(self, entity, attribute, old, new, kwargs):
     if self.get_state("input_boolean.house_cleaning_second_floor") == "on":
@@ -189,7 +190,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when a vacuum is starting
   Goals : 
-  . Notify
+    Notify
   """   
   def callback_vacuum_started(self, entity, attribute, old, new, kwargs):
     if entity == "vacuum.teuteu":
@@ -219,7 +220,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when a vacuum is cleaning for more than 15 minutes
   Goals : 
-  . Update input_datetime.dernier_nettoyage_de_teuteu or input_datetime.dernier_nettoyage_de_neuneu
+    Update input_datetime.dernier_nettoyage_de_teuteu or input_datetime.dernier_nettoyage_de_neuneu
   """   
   def callback_vacuum_cleaning_for_more_than_x_minutes(self, entity, attribute, old, new, kwargs):
     self.log("A vacuum is cleaning since more than 15 minutes, updating the last clean-up datetime...")
@@ -234,7 +235,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when a vacuum is finished
   Goals : 
-  . Notify
+    Notify
   """ 
   def callback_vacuum_finished(self, entity, attribute, old, new, kwargs):
     if old in ["paused", "cleaning", "returning"]:
@@ -270,7 +271,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when teuteu is in error
   Goals : 
-  . Notify
+    Notify
   """ 
   def callback_vacuum_error(self, entity, attribute, old, new, kwargs):
     self.log("Detecting that a vacuum is in trouble. Notifying it...")
@@ -302,7 +303,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when is not on the dock since more than 30 mintues
   Goals : 
-  . Notify
+    Notify
   """ 
   def callback_teuteu_idle(self, entity, attribute, old, new, kwargs):
     if old != new:
@@ -322,7 +323,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when button "rth_teuteu" is clicked from a notification
   Goals :
-  . RTH TeuTeu
+    RTH TeuTeu
   """
   def callback_button_clicked_rth_teuteu(self, event_name, data, kwargs):
     self.log("Notification button clicked : RTH TeuTeu") 
@@ -332,7 +333,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when button "start_teuteu" is clicked from a notification
   Goals :
-  . Start TeuTeu
+    Start TeuTeu
   """
   def callback_button_clicked_start_teuteu(self, event_name, data, kwargs):
     self.log("Notification button clicked : Start TeuTeu") 
@@ -342,7 +343,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when button "rth_neuneu" is clicked from a notification
   Goals :
-  . RTH NeuNeu
+    RTH NeuNeu
   """
   def callback_button_clicked_rth_neuneu(self, event_name, data, kwargs):
     self.log("Notification button clicked : RTH neuneu") 
@@ -353,7 +354,7 @@ class clean_house(hass.Hass):
   """
   Callback triggered when button "start_neuneu" is clicked from a notification
   Goals :
-  . Start NeuNeu
+    Start NeuNeu
   """
   def callback_button_clicked_start_neuneu(self, event_name, data, kwargs):
     self.log("Notification button clicked : Start neuneu") 
@@ -362,9 +363,9 @@ class clean_house(hass.Hass):
   """
   Helper method:
   Does : 
-  . Translate known English status in French
-  Returns : the translated status
-
+    Translate known English status in French
+  Returns : 
+    The translated status
   """
   def translate_teuteu_error_status(self, status):
     translations = {

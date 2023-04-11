@@ -4,8 +4,8 @@ import hassapi as hass
 heat_home is an app responsible of driving the home thermostat to reduce energy loss
 
 Functionalities :
-. Turn off thermostat if windows / doors opened for too long
-. Turn on again thermostat if stopped by windows / doors opened for too long
+    Turn off thermostat if windows / doors opened for too long
+    Turn on again thermostat if stopped by windows / doors opened for too long
 """
 class heat_home(hass.Hass): 
     def initialize(self):
@@ -17,7 +17,7 @@ class heat_home(hass.Hass):
     """
     Callback triggered when window / door opened for too long.
     Goals :
-    . Turn off thermostat
+        Turn off thermostat
     """
     def callback_openings_open(self, entity, attribute, old, new, kwargs):
         self.log("Window or door opened ... stopping thermostat temporarly.")
@@ -26,7 +26,7 @@ class heat_home(hass.Hass):
     """
     Callback triggered when window / door closed
     Goals :
-    . Turn on thermostat 
+        Turn on thermostat 
     """
     def callback_openings_closed(self, entity, attribute, old, new, kwargs):
         self.log("Window or door closed ... restating thermostat.")
@@ -38,7 +38,7 @@ class heat_home(hass.Hass):
     """
     Callback triggered when home become empty
     Goals :
-    . set thermostat mode to Away
+        Set thermostat mode to Away
     """
     def callback_home_empty(self, entity, attribute, old, new, kwargs):
         self.log("Home empty: Setting the thermostat mode to Away")
@@ -47,7 +47,7 @@ class heat_home(hass.Hass):
     """
     Callback triggered when home become empty
     Goals :
-    . set thermostat mode to Present
+        Set thermostat mode to Present
     """
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
         self.log("Home occupied: Setting the thermostat mode to Present")

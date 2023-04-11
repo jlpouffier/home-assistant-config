@@ -3,6 +3,14 @@ import datetime
 
 """
 baby_automations is an app responsible of helping us to know when to give the next baby bottle to our daugther
+
+Functionalities :
+    Store the last feeding time into input_datetime.dernier_bibi
+
+Notifications :
+    Minimum feeding time reached
+    Optimal feeding time reached
+    Maximum feeding time reached
 """
 class baby_automations(hass.Hass):
     def initialize(self):
@@ -13,8 +21,8 @@ class baby_automations(hass.Hass):
 
     '''
     Callback trigerred when the feeding button is pressed
-    Goals
-    . update the feeding time stored on input_datetime.dernier_bibi
+    Goals :
+        Update the feeding time stored on input_datetime.dernier_bibi
     '''
     def callback_bouton_bibi_pressed(self, entity, attribute, old, new, kwargs):
         self.log("Bibi Button Pressed ... Changing Last feeding timestamp")
@@ -22,9 +30,9 @@ class baby_automations(hass.Hass):
 
     '''
     Callback trigerred when the feeding time (input_datetime.dernier_bibi) is updated
-    Goals
-    . Deregister old callbacks
-    . Register new callbacks
+    Goals :
+        Deregister old callbacks
+        Register new callbacks
     '''
     def callback_last_bibi_timestamp_updated(self, entity, attribute, old, new, kwargs):
         self.log("Last feeding timestamp updated ... registering callbacks for future notifications ...")
@@ -50,8 +58,8 @@ class baby_automations(hass.Hass):
 
     '''
     Callback trigerred when the Minimum feeding time is reached
-    Goals
-    . Notify
+    Goals : 
+        Notify
     '''
     def callback_next_bibi_possible(self, kwargs):
         self.log("Minimum feeding time reached... Sending Notification ...")
@@ -66,8 +74,8 @@ class baby_automations(hass.Hass):
 
     '''
     Callback trigerred when the Optimal feeding time is reached
-    Goals
-    . Notify
+    Goals :
+        Notify
     '''
     def callback_next_bibi_optimal(self, kwargs):
         self.log("Optimal feeding time reached... Sending Notification ...")
@@ -82,8 +90,8 @@ class baby_automations(hass.Hass):
 
     '''
     Callback trigerred when the Maximum feeding time is reached
-    Goals
-    . Notify
+    Goals : 
+        Notify
     '''
     def callback_next_bibi_needed(self, kwargs):
         self.log("Maximum feeding time reached... Sending Notification ...")
