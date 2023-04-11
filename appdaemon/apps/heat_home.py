@@ -20,9 +20,8 @@ class heat_home(hass.Hass):
     . Turn off thermostat
     """
     def callback_openings_open(self, entity, attribute, old, new, kwargs):
-        if self.get_state("climate.netatmo") != 'off':
-            self.log("Window or door opened, and thermostat not stopped ... stopping thermostat temporarly.")
-            self.call_service("climate/turn_off", entity_id = "climate.netatmo")
+        self.log("Window or door opened ... stopping thermostat temporarly.")
+        self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Protection Gel 5")
 
     """
     Callback triggered when window / door closed
@@ -30,9 +29,11 @@ class heat_home(hass.Hass):
     . Turn on thermostat 
     """
     def callback_openings_closed(self, entity, attribute, old, new, kwargs):
-        if self.get_state("climate.netatmo") == 'off':
-            self.log("Window or door closed, and thermostat stopped ... restating thermostat.")
-            self.call_service("climate/turn_on", entity_id = "climate.netatmo")
+        self.log("Window or door closed ... restating thermostat.")
+        if self.get_state("binary_sensor.home_occupied") == "on":
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
+        else:
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")
 
     """
     Callback triggered when home become empty
