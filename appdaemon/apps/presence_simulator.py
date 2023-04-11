@@ -34,12 +34,13 @@ class presence_simulator(hass.Hass):
   """
   def callback_start_presence_simulation(self, entity, attribute, old, new, kwargs):
     self.log("Starting Presence Simulation")
-    self.timer_handles.append(self.run_daily(self.callback_wake_up, self.args["wake_up_time"]))
-    self.timer_handles.append(self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"]))
-    self.timer_handles.append(self.run_daily(self.callback_leave, self.args["leave_time"]))
-    self.timer_handles.append(self.run_daily(self.callback_return, self.args["return_time"]))
-    self.timer_handles.append(self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"]))
-    self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"]))
+    random_offset_seconds = 60 * self.args["random_offset"]
+    self.timer_handles.append(self.run_daily(self.callback_wake_up, self.args["wake_up_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_eat_breakfast, self.args["eat_breakfast_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_leave, self.args["leave_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_return, self.args["return_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_go_to_bed, self.args["go_to_bed_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
+    self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
 
   """
   Callback triggered when the presence_simulator_switch is deactivated
@@ -114,7 +115,7 @@ class presence_simulator(hass.Hass):
   """
   Callback triggered near wake up time.
   Goals :
-  . Turn on bedroom lights
+  . Turn on bedrooms lights
   """
   def callback_wake_up(self, kwargs):
     self.log("Simulating : Waking up")
@@ -125,7 +126,7 @@ class presence_simulator(hass.Hass):
   """
   Callback triggered near breakfast time. 
   Goals :
-  . Turn off bedroom lights
+  . Turn off bedrooms lights
   . Turn on living room lights
   . Turn on kitchen lights
 
@@ -138,6 +139,9 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.salon_salon_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.cuisine_cuisine_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.entree_entree_100")
+
+    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+      self.call_service("cover/open_cover", entity_id = "cover.living_room_cover")
     
   """
   Callback triggered near "leaving" time.
@@ -147,6 +151,9 @@ class presence_simulator(hass.Hass):
   def callback_leave(self, kwargs):
     self.log("Simulating : Leaving home")
     self.call_service("light/turn_off" , entity_id = "light.all_lights")
+
+    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+      self.call_service("cover/close_cover", entity_id = "cover.living_room_cover")
 
     
   """
@@ -162,6 +169,9 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.cuisine_cuisine_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.entree_entree_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.exterieur_exterieur_100")
+
+    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+      self.call_service("cover/open_cover", entity_id = "cover.living_room_cover")
     
   """
   Callback triggered near bed time.
@@ -169,7 +179,7 @@ class presence_simulator(hass.Hass):
   . Turn off exterior lights
   . Turn off living room lights
   . Turn off kitchen lights
-  . Turn on bedroom lights
+  . Turn on bedrooms lights
   """
   def callback_go_to_bed(self, kwargs):
     self.log("Simulating : Going to bed")
@@ -180,6 +190,9 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.chambre_chambre_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.bureau_bureau_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.chambre_bebe_chambre_bebe_100")
+
+    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+      self.call_service("cover/close_cover", entity_id = "cover.living_room_cover")
     
 
   """
