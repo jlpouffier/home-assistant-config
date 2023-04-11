@@ -1,14 +1,12 @@
-# DEFAULT
-
+# Default Config
 default_config:
 
-api:
-
-# AUTOMATIONS
+# Automations
 automation: !include automations.yaml
 
-# SCRIPTS
+# Scrits
 script: !include scripts.yaml
 
+# Packages
 homeassistant:
   packages: !include_dir_named packages
