@@ -94,9 +94,8 @@ tag: The concept of tag is complex to understand. So I'll explain the behavior y
   - A subsequent notification with a tag will replace an old notification with the same tag.
     For example if you want to notify that a vacuum is starting, and then finishing: use the same tag for both (like "vacuum") and the "Cleaning complete" notification will replace the "Cleaning started" notification, as it is not relevant anymore.
   - If you notify more than one person with the same tag:
-    - Discarding the notification on a device will discard it on every other devices
     - Acting on the notification (a button) on a device will discard it on every other devices
-    Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
+      Example: If you notify all occupants that the lights are still on while the home is empty with an actionable button to turn off the lights, if person A clicks on "Turn off lights" then person B will see the notification disappear... Because it's not relevant anymore (it's done)
   - The next field "until" requires the field tag to work too (See below)
 
 persistent: Notify the front-end of Home Assistant (with the service "notify/persistent_notification")
@@ -121,7 +120,6 @@ class notifier(hass.Hass):
         self.listen_event(self.callback_notifier_event_received , "NOTIFIER")
         self.listen_event(self.callback_notifier_discard_event_received , "NOTIFIER_DISCARD")
         self.listen_event(self.callback_button_clicked, "mobile_app_notification_action")
-        self.listen_event(self.callback_notification_cleared, "mobile_app_notification_cleared")
         
         # Staged notification 
         self.staged_notifications = []
@@ -174,10 +172,6 @@ class notifier(hass.Hass):
         self.clear_notifications(kwargs["tag"])
 
     def callback_button_clicked(self, event_name, data, kwargs):
-        if "tag" in data:
-            self.clear_notifications(data["tag"])
-
-    def callback_notification_cleared(self, event_name, data, kwargs):
         if "tag" in data:
             self.clear_notifications(data["tag"])
     
