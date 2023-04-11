@@ -1,0 +1,6 @@
+# https://www.home-assistant.io/integrations/recorder/
+
+recorder:
+  db_url: !secret maria_db_url
+  purge_keep_days: 7
+  commit_interval: 30

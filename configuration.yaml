@@ -4,11 +4,6 @@ default_config:
 
 api:
 
-# MISC
-http: !include misc/http.yaml
-recorder: !include misc/recorder.yaml
-influxdb: !include misc/influxdb.yaml
-
 # AUTOMATIONS
 automation: !include automations.yaml
 

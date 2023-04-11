@@ -1,0 +1,16 @@
+# https://www.home-assistant.io/integrations/influxdb/
+
+influxdb:
+  api_version: 2
+  ssl: false
+  host: !secret influxdb_host
+  port: !secret influxdb_port
+  token: !secret influxdb_token
+  organization: !secret influxdb_organization
+  bucket: !secret influxdb_bucket
+  max_retries: 3
+  tags:
+    source: HA
+  tags_attributes:
+    - friendly_name
+  default_measurement: units
