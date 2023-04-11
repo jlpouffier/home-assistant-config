@@ -10,7 +10,6 @@ Functionality :
 . Turn on the coffee maker 30 minutes before waking up
 Notifications :
 . Alarm time hanged on JL phone  > Change wake-up time possible 
-
 """
 class wake_up(hass.Hass):
   def initialize(self):

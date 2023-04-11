@@ -6,7 +6,7 @@ This app is responsible of all the automation related to my tesla.
 Functionality : 
 . Pack location update (Latitude + Longitude) to brodcast the update to MQTT so that it is integrated via mqtt.device_tracker.
 
-NOtification :
+Notification :
 . None
 
 """
@@ -23,9 +23,16 @@ class tesla_automations(hass.Hass):
         }
         self.update_time_difference = 0
 
-        self.listen_state(self.callback_location_updated_first_time, ['sensor.tesla_latitude','sensor.tesla_longitude'])
-    
-    def callback_location_updated_first_time(self, entity, attribute, old, new, kwargs):
+        self.listen_state(self.callback_location_updated, ['sensor.tesla_latitude','sensor.tesla_longitude'])
+
+    """
+    Callback triggered when either the latitude or the longitude of my tesla is updated
+    Goals :
+        Store update timestamp.
+        Compare the update timestamp of the other dimension (Latitude or Longiture)
+            If both update are on a short time frame: Send location update into MQTT topic tesla/location
+    """
+    def callback_location_updated(self, entity, attribute, old, new, kwargs):
         if entity == 'sensor.tesla_longitude':
             self.location['longitude'] = float(new)
             self.update_ts['longitude'] = self.get_now_ts()
