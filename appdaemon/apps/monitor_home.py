@@ -14,6 +14,7 @@ Notifications :
 . Home empty and LSX still on > Turn off possible
 . Home empty and coffee maker on > Turn off possible
 . Home empty and doors / window still opened
+. Home occupied and doors / window still open (As a reminder)
 . Coffe maker on for more than 90 minutes > Turn off possible
 . Washing Machine over
 . Mailbox full
@@ -215,10 +216,78 @@ class monitor_home(hass.Hass):
   Callback triggered when the home becomes occupied
   Goals :
   . Turn on Alexa
+  . Remind occupant if doors / windos are still open.
   """
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-    self.log("Detecting home occupied... Turning on Alexa.")
+    self.log("Detecting home occupied...")
+
+    # turn on alexa
+    self.log("... Turning on Alexa.")
     self.call_service("switch/turn_on", entity_id = "switch.alexa")
+
+    # test if doors are still open and send reminder if it's the case
+    if self.get_state("binary_sensor.all_doors") == "on":
+      self.log("... some doors are still opened. notifying it")
+      doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
+      open_doors = []
+      for door in doors:
+        if self.get_state(door) == "on":
+          friendly_name_door = self.get_state(door, attribute = "friendly_name")
+          open_doors.append(friendly_name_door)
+      if len(open_doors) == 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_present",
+          title = "️🚪 Porte ouverte !", 
+          message = "Rappel: La " + open_doors[0] + " est toujours ouverte",
+          icon =  "mdi:door-open",
+          color = "#ff6e07",
+          tag = "home_occupied_door_open",
+          until =  [{
+            "entity_id" : "binary_sensor.all_doors",
+            "new_state" : "off"}])
+      elif len(open_doors) > 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_present",
+          title = "️🚪 Porte ouverte !", 
+          message = "Rappel: Les portes suivantes sont toujours ouvertes: " + ", ".join(open_doors),
+          icon =  "mdi:door-open",
+          color = "#ff6e07",
+          tag = "home_occupied_door_open",
+          until =  [{
+            "entity_id" : "binary_sensor.all_doors",
+            "new_state" : "off"}])
+
+    # test if windows are still open
+    if self.get_state("binary_sensor.all_windows") == "on":
+      self.log("... some windows are still opened. notifying it")
+      windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
+      open_windows = []
+      for window in windows:
+        if self.get_state(window) == "on":
+          friendly_name_window = self.get_state(window, attribute = "friendly_name")
+          open_windows.append(friendly_name_window)
+      if len(open_windows) == 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_present",
+          title = "️🚪 Fenêtre ouverte !", 
+          message = "Rappel: La " + open_windows[0] + " est toujours ouverte",
+          icon =  "mdi:window-open",
+          color = "#ff6e07",
+          tag = "home_occupied_window_open",
+          until =  [{
+            "entity_id" : "binary_sensor.all_windows",
+            "new_state" : "off"}])
+      elif len(open_windows) > 1:
+        self.fire_event("NOTIFIER",
+          action = "send_to_present",
+          title = "️🚪 Fenêtre ouverte !", 
+          message = "Rappel: Les fenêtres suivantes sont toujours ouvertes: " + ", ".join(open_windows),
+          icon =  "mdi:window-open",
+          color = "#ff6e07",
+          tag = "home_occupied_window_open",
+          until =  [{
+            "entity_id" : "binary_sensor.all_windows",
+            "new_state" : "off"}])
 
   """
   Callback triggered when coffee maker on for more than 90 minutes
