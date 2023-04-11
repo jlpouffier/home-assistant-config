@@ -38,7 +38,6 @@ wake_up:
   class: wake_up
   log: wake_up
   constrain_input_boolean: input_boolean.wake_up_automation_switch
-  turn_on_coffee_maker: False
 
 welcome_home:
   module: welcome_home
@@ -63,12 +62,13 @@ presence_simulator:
   module: presence_simulator
   class: presence_simulator
   log: presence_simulator
-  wake_up_time: "sunrise - 02:00:00"
-  eat_breakfast_time: "sunrise - 01:00:00"
-  leave_time: "sunrise + 00:30:00"
-  return_time: "sunset"
-  go_to_bed_time: "sunset + 03:00:00"
-  sleep_time: "sunset + 04:00:00"
+  random_offset: 20
+  wake_up_time: "06:00:00"
+  eat_breakfast_time: "07:00:00"
+  leave_time: "08:30:00"
+  return_time: "18:00:00"
+  go_to_bed_time: "22:30:00"
+  sleep_time: "23:30:00"
 
 jarvis:
   module: jarvis
