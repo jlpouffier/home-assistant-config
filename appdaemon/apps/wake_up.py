@@ -4,7 +4,6 @@ import datetime
 """
 wake_up is an app responsible of the "wake-up experience" of the home
 Functionality : 
-. Register the wake up time every day at 3 am based on user input time 
 . Only turn on if it's a work day (Week-end and French holidays supported)
 . Progressively turn on lights before and after alarm
 . Turn on the coffee maker 30 minutes before waking up
@@ -17,25 +16,40 @@ class wake_up(hass.Hass):
     self.coffee_maker_handle = None
 
     self.listen_state(self.callback_wake_up_time_changed, "input_datetime.wake_up_time", immediate = True)
-    self.listen_state(self.callback_wake_up_time_lights_changed, "input_datetime.wake_up_time_lights")
-    self.listen_state(self.callback_wake_up_time_coffee_maker_changed, "input_datetime.wake_up_time_coffee_maker")
+    self.listen_state(self.callback_wake_up_time_lights_changed, "input_datetime.wake_up_time_lights", immediate = True)
+    self.listen_state(self.callback_wake_up_time_coffee_maker_changed, "input_datetime.wake_up_time_coffee_maker", immediate = True)
 
     self.listen_state(self.callback_jl_phone_alarm_changed, "sensor.pixel_6_next_alarm")
     self.listen_event(self.callback_button_clicked_set_new_wake_up_time, "mobile_app_notification_action", action = "set_new_wake_up_time")
 
+  '''
+  Callback trigerred when wake-up time changed
+  Goals
+  . change light and coffee maker schedule
+  '''
   def callback_wake_up_time_changed(self, entity, attribute, old, new, kwargs):
     self.log("Wake-up time changed... Computing light and coffee maker schedules...")
     wake_up_time_lights = datetime.datetime.combine(self.date() ,  self.parse_time(self.get_state("input_datetime.wake_up_time"))) - datetime.timedelta(minutes = 5)
     wake_up_time_coffee_maker = datetime.datetime.combine(self.date() ,  self.parse_time(self.get_state("input_datetime.wake_up_time"))) - datetime.timedelta(minutes = 30)
     self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.wake_up_time_lights", time = wake_up_time_lights.strftime("%H:%M:%S"))
     self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.wake_up_time_coffee_maker", time = wake_up_time_coffee_maker.strftime("%H:%M:%S"))
-    
+
+  '''
+  Callback trigerred when light schedule changed
+  Goals
+  . Deregister old timer, register new timer
+  '''
   def callback_wake_up_time_lights_changed(self, entity, attribute, old, new, kwargs):
     self.log("Light schedule changed... Changing scheduler ...")
     if self.light_timer_handle != None:
       self.cancel_timer(self.light_timer_handle)
     self.light_timer_handle = self.run_daily(self.callback_turn_on_lights, new)
   
+  '''
+  Callback trigerred when coffee maker schedule changed
+  Goals
+  . Deregister old timer, register new timer
+  '''
   def callback_wake_up_time_coffee_maker_changed(self, entity, attribute, old, new, kwargs):
     self.log("Coffee Maker schedule changed... Changing scheduler ...")
     if self.coffee_maker_handle != None:
@@ -43,7 +57,7 @@ class wake_up(hass.Hass):
     self.coffee_maker_handle = self.run_daily(self.callback_turn_on_coffee_maker, new)
 
   '''
-  Callback trigerred 5 minutes before wake-up time
+  Callback trigerred at light time (5 minutes before wake-up time)
   Goals
   . Light sequence (if home occupied and workday)
   '''
@@ -53,7 +67,7 @@ class wake_up(hass.Hass):
       self.call_service("script/wake_up")
 
   '''
-  Callback trigerred 30 minutes before wake-up time
+  Callback trigerred at coffee maker time (30 minutes before wake-up time)
   Goals
   . Turn-on coffee maker (if home occupied and workday)
   '''
