@@ -41,6 +41,8 @@ class baby_automations(hass.Hass):
             handle = self.scheduler_handles.pop()
             self.cancel_timer(handle)
         
+        self.fire_event("NOTIFIER_DISCARD", tag = "baby_bottle")
+        
         last_bibi_date_time = self.parse_datetime(new)
         next_bibi_minimum_date_time = last_bibi_date_time + datetime.timedelta(hours = self.args["minimum_delay_between_bibi_in_hours"]) 
         next_bibi_optimal_date_time = last_bibi_date_time + datetime.timedelta(hours = self.args["optimal_delay_between_bibi_in_hours"]) 
