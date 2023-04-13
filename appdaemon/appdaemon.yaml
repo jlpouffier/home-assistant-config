@@ -73,6 +73,10 @@ logs:
     name: tesla_automations
     filename: /config/appdaemon/logs/tesla_automations.log
     log_generations: 3
+  matrix_2d:
+    name: matrix_2d
+    filename: /config/appdaemon/logs/matrix_2d.log
+    log_generations: 3
 
 appdaemon:
   latitude: !secret latitude

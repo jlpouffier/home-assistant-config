@@ -139,3 +139,41 @@ baby_automations:
   minimum_delay_between_bibi_in_hours: 2
   optimal_delay_between_bibi_in_hours: 4
   maximum_delay_between_bibi_in_hours: 6
+
+matrix_2d:
+  module: matrix_2d
+  class: matrix_2d
+  log: matrix_2d
+  excluded_domains:
+    - sensor
+    - zone
+    - device_tracker
+  included_entities:
+    - sensor.capteur_thp_salon_temperature
+    - sensor.capteur_thp_chambre_bebe_temperature
+    - sensor.capteur_thp_chambre_temperature
+    - sensor.capteur_thp_bureau_temperature
+    - sensor.floirac_temperature
+    - sensor.tesla_state
+    - sensor.tesla_rated_battery_range_km
+    - sensor.pixel_4a_battery_level
+    - sensor.pixel_6_pro_battery_level
+    - sensor.pixel_4a_geocoded_location
+    - sensor.pixel_6_geocoded_location
+    - sensor.lixee_east
+    - sensor.lixee_urms1
+    - sensor.bouton_bibi_action
+  excluded_entities:
+    - light.all_lights
+    - light.lumieres_rez_de_chaussee
+    - light.bureau
+    - light.chambre
+    - light.chambre_bebe
+    - light.salon
+    - light.cuisine
+    - light.entree
+    - light.exterieur
+    - light.couloir
+    - binary_sensor.all_doors
+    - binary_sensor.all_openings
+    - binary_sensor.all_windows
