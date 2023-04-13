@@ -72,7 +72,7 @@ class wake_up(hass.Hass):
   . Turn-on coffee maker (if home occupied and workday)
   '''
   def callback_turn_on_coffee_maker(self, kwargs):
-    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("binary_sensor.home_occupied") == "on":
+    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("binary_sensor.home_occupied") == "on" and self.get_state("input_boolean.wake_up_automation_control_coffee_maker") == "on":
       self.log("Turning on coffee maker")
       self.call_service("switch/turn_on" , entity_id = "switch.coffeemaker")
 
