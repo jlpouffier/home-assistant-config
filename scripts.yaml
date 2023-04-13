@@ -176,7 +176,8 @@ pulse_2d_led_matrix:
   - service: light.turn_on
     data: {}
     target:
-      entity_id: light.wled
+      entity_id:
+      - light.2d_matrix
   - delay:
       hours: 0
       minutes: 0
@@ -185,9 +186,9 @@ pulse_2d_led_matrix:
   - service: light.turn_off
     data: {}
     target:
-      entity_id: light.wled
+      entity_id: light.2d_matrix
   mode: queued
-  icon: mdi:led-on
+  icon: mdi:crop-square
   max: 1000
 lights_set_tv:
   alias: Réglage lumières lors que la TV joue un média
