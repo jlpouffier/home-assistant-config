@@ -1,0 +1,5 @@
+template:
+  - binary_sensor:
+      - name: is_raining_now
+        unique_id: is_raining_now
+        state: "{{ iif('Pluie' in  state_attr('sensor.floirac_next_rain', '1_hour_forecast')['0 min'], true, false) }}"

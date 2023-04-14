@@ -15,6 +15,7 @@ Notifications :
 . Home empty and coffee maker on > Turn off possible
 . Home empty and doors / window still opened
 . Home occupied and doors / window still open (As a reminder)
+. Raining and doors / windows open
 . Coffe maker on for more than 90 minutes > Turn off possible
 . Washing Machine over
 . Mailbox full
@@ -35,6 +36,7 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_green_trash_schedule_begining, "schedule.planning_poubelle_verte", new = "on")
     self.listen_state(self.callback_black_trash_schedule_end, "schedule.planning_poubelle_noire", new = "off")
     self.listen_state(self.callback_green_trash_schedule_end, "schedule.planning_poubelle_verte", new = "off")
+    self.listen_state(self.callback_raining_now, "binary_sensor.is_raining_now", new = "on")
     self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
     self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
     self.listen_event(self.callback_cover_open_service_called, "call_service", domain = "cover", service = "open_cover" , service_data = {"entity_id" : "cover.living_room_cover"})
@@ -425,7 +427,7 @@ class monitor_home(hass.Hass):
   """
   def callback_green_trash_schedule_end(self, entity, attribute, old, new, kwargs):
     if self.entities.input_boolean.poubelle_verte_a_sortir.state == "on":
-      self.log("Green trash has not been taken out. Notifying it ...'")
+      self.log("Green trash has not been taken out. notifying it ...'")
       self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_verte_a_sortir")
       self.fire_event("NOTIFIER",
         action = "send_to_present",
@@ -434,6 +436,87 @@ class monitor_home(hass.Hass):
         icon =  "mdi:recycle",
         color = "#ff6e07",
         tag = "green_trash")
+
+  """
+  Callback triggered when it starts to rain
+  Goals :
+  . Notify present occupants if doors are open.
+  """
+  def callback_raining_now(self, entity, attribute, old, new, kwargs):
+    if self.entities.binary_sensor.home_occupied.state == "on" and self.entities.binary_sensor.all_openings.state == "on":
+      self.log("It is raining now, the hoome is occupied and some openings are open: Notifying it...")
+
+      # test if doors are still open
+      if self.entities.binary_sensor.all_doors.state == "on":
+        doors = self.entities.binary_sensor.all_doors.attributes.entity_id
+        open_doors = []
+        for door in doors:
+          if self.get_state(door) == "on":
+            friendly_name_door = self.get_state(door, attribute = "friendly_name")
+            open_doors.append(friendly_name_door)
+        if len(open_doors) == 1:
+          self.fire_event("NOTIFIER",
+            action = "send_to_present",
+            title = "️🌂 Il pleut!", 
+            message = "La " + open_doors[0] + " est ouverte et il commence a pleuvoir !",
+            icon =  "mdi:door-open",
+            color = "#ff6e07",
+            tag = "raining_door_open",
+            until =  [{
+              "entity_id" : "binary_sensor.is_raining_now",
+              "new_state" : "off"},{
+              "entity_id" : "binary_sensor.all_doors",
+              "new_state" : "off"}])
+        elif len(open_doors) > 1:
+          self.fire_event("NOTIFIER",
+            action = "send_to_present",
+            title = "️🌂 Il pleut!", 
+            message = "Les portes suivantes sont ouvertes et il commence a pleuvoir: " + ", ".join(open_doors),
+            icon =  "mdi:door-open",
+            color = "#ff6e07",
+            tag = "raining_door_open",
+            until =  [{
+              "entity_id" : "binary_sensor.is_raining_now",
+              "new_state" : "off"},{
+              "entity_id" : "binary_sensor.all_doors",
+              "new_state" : "off"}])
+
+      # test if windows are still open
+      if self.entities.binary_sensor.all_windows.state == "on":
+        self.log("... some windows are still opened. notifying it")
+        windows = self.entities.binary_sensor.all_windows.attributes.entity_id
+        open_windows = []
+        for window in windows:
+          if self.get_state(window) == "on":
+            friendly_name_window = self.get_state(window, attribute = "friendly_name")
+            open_windows.append(friendly_name_window)
+        if len(open_windows) == 1:
+          self.fire_event("NOTIFIER",
+            action = "send_to_present",
+            title = "️🌂 Il pleut!", 
+            message = "La " + open_windows[0] + " est ouverte  et il commence a pleuvoir !",
+            icon =  "mdi:window-open",
+            color = "#ff6e07",
+            tag = "raining_window_open",
+            until =  [{
+              "entity_id" : "binary_sensor.is_raining_now",
+              "new_state" : "off"},{
+              "entity_id" : "binary_sensor.all_windows",
+              "new_state" : "off"}])
+        elif len(open_windows) > 1:
+          self.fire_event("NOTIFIER",
+            action = "send_to_present",
+            title = "️🌂 Il pleut!", 
+            message = "Les fenêtres suivantes sont ouvertes et il commence a pleuvoir: " + ", ".join(open_windows),
+            icon =  "mdi:window-open",
+            color = "#ff6e07",
+            tag = "raining_window_open",
+            until =  [{
+              "entity_id" : "binary_sensor.is_raining_now",
+              "new_state" : "off"},{
+              "entity_id" : "binary_sensor.all_windows",
+              "new_state" : "off"}])
+
 
   """
   Callback triggered when Long press on entry switch (button ON)
