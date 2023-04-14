@@ -39,7 +39,7 @@ class baby_automations(hass.Hass):
 
         while len(self.scheduler_handles) >=1:
             handle = self.scheduler_handles.pop()
-            self.cancel_timer(handle)
+            self.cancel_timer(handle, silent = True)
         
         self.fire_event("NOTIFIER_DISCARD", tag = "baby_bottle")
         
