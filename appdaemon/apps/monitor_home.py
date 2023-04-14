@@ -61,7 +61,7 @@ class monitor_home(hass.Hass):
     self.call_service("switch/turn_off", entity_id = "switch.alexa")
 
     # test if lights are still on
-    if self.get_state("light.all_lights") == "on":
+    if self.entities.light.all_lights.state == "on":
       self.log("... Lights on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -81,7 +81,7 @@ class monitor_home(hass.Hass):
           "new_state" : "off"}])
 
     # test if TV is still on
-    if self.get_state("binary_sensor.is_tv_on") == "on":
+    if self.entities.binary_sensor.is_tv_on.state == "on":
       self.log("... TV on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -101,7 +101,7 @@ class monitor_home(hass.Hass):
           "new_state" : "off"}])
 
     # test if LSX is still on
-    if self.get_state("media_player.kef") == "on":
+    if self.entities.media_player.kef.state == "on":
       self.log("... LSX on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -121,7 +121,7 @@ class monitor_home(hass.Hass):
           "new_state" : "off"}])
 
     # test is coffe maker still on
-    if self.get_state("switch.coffeemaker") == "on":
+    if self.entities.switch.coffeemaker.state == "on":
       self.log("... Coffee maker on. Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -141,9 +141,9 @@ class monitor_home(hass.Hass):
           "new_state" : "off"}])
 
     # test if doors are still open
-    if self.get_state("binary_sensor.all_doors") == "on":
+    if self.entities.binary_sensor.all_doors.state == "on":
       self.log("... some doors are still opened. notifying it")
-      doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
+      doors = self.entities.binary_sensor.all_doors.attributes.entity_id
       open_doors = []
       for door in doors:
         if self.get_state(door) == "on":
@@ -177,9 +177,9 @@ class monitor_home(hass.Hass):
             "new_state" : "off"}])
 
     # test if windows are still open
-    if self.get_state("binary_sensor.all_windows") == "on":
+    if self.entities.binary_sensor.all_windows.state == "on":
       self.log("... some windows are still opened. notifying it")
-      windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
+      windows = self.entities.binary_sensor.all_windows.attributes.entity_id
       open_windows = []
       for window in windows:
         if self.get_state(window) == "on":
@@ -226,9 +226,9 @@ class monitor_home(hass.Hass):
     self.call_service("switch/turn_on", entity_id = "switch.alexa")
 
     # test if doors are still open and send reminder if it's the case
-    if self.get_state("binary_sensor.all_doors") == "on":
+    if self.entities.binary_sensor.all_doors.state == "on":
       self.log("... some doors are still opened. notifying it")
-      doors = self.get_state("binary_sensor.all_doors", attribute = "entity_id")
+      doors = self.entities.binary_sensor.all_doors.attributes.entity_id
       open_doors = []
       for door in doors:
         if self.get_state(door) == "on":
@@ -258,9 +258,9 @@ class monitor_home(hass.Hass):
             "new_state" : "off"}])
 
     # test if windows are still open
-    if self.get_state("binary_sensor.all_windows") == "on":
+    if self.entities.binary_sensor.all_windows.state == "on":
       self.log("... some windows are still opened. notifying it")
-      windows = self.get_state("binary_sensor.all_windows", attribute = "entity_id")
+      windows = self.entities.binary_sensor.all_windows.attributes.entity_id
       open_windows = []
       for window in windows:
         if self.get_state(window) == "on":
@@ -336,7 +336,7 @@ class monitor_home(hass.Hass):
   """
   def callback_mailbox_occupancy_detected(self, entity, attribute, old, new, kwargs):
     # if the main door was opened recently .. send notification
-    if self.get_state("binary_sensor.is_front_door_recently_open") == "off":
+    if self.entities.binary_sensor.is_front_door_recently_open.state == "off":
       self.log("Occupancy detected in the mailbox + Door not opened recently: Notifying it...")
       self.fire_event("NOTIFIER",
         action = "send_when_present",
@@ -407,7 +407,7 @@ class monitor_home(hass.Hass):
   . Notify present occupants
   """
   def callback_black_trash_schedule_end(self, entity, attribute, old, new, kwargs):
-    if self.get_state("input_boolean.poubelle_noire_a_sortir") == "on":
+    if self.entities.input_boolean.poubelle_noire_a_sortir.state == "on":
       self.log("Black trash has not been taken out. Notifying it ...'")
       self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_noire_a_sortir")
       self.fire_event("NOTIFIER",
@@ -424,7 +424,7 @@ class monitor_home(hass.Hass):
   . Notify present occupants
   """
   def callback_green_trash_schedule_end(self, entity, attribute, old, new, kwargs):
-    if self.get_state("input_boolean.poubelle_verte_a_sortir") == "on":
+    if self.entities.input_boolean.poubelle_verte_a_sortir.state == "on":
       self.log("Green trash has not been taken out. Notifying it ...'")
       self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_verte_a_sortir")
       self.fire_event("NOTIFIER",
@@ -459,7 +459,7 @@ class monitor_home(hass.Hass):
   . If the over are already fully opened, press again the open button to tackle edge case of desynchronization between the different remotes.
   """
   def callback_cover_open_service_called(self, event_name, data, kwargs):
-    if self.get_state("cover.living_room_cover") == "open" and self.get_state("cover.living_room_cover", attribute = "current_position") == 100:
+    if self.entities.cover.living_room_cover.state == "open" and self.entities.cover.living_room_cover.attributes.current_position == 100:
       self.log("Action open cover fired, but cover already opened at 100%: Making sure they are opened")
       self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_up_fallback")
 
@@ -469,7 +469,7 @@ class monitor_home(hass.Hass):
   . If the over are already fully closed, press again the close button to tackle edge case of desynchronization between the different remotes.
   """
   def callback_cover_close_service_called(self, event_name, data, kwargs):
-    if self.get_state("cover.living_room_cover") == "closed" and self.get_state("cover.living_room_cover", attribute = "current_position") == 0:
+    if self.entities.cover.living_room_cover.state == "closed" and self.entities.cover.living_room_cover.attributes.current_position == 0:
       self.log("Action close cover fired, but cover already closed at 0%: Making sure they are closed")
       self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_down_fallback")
 

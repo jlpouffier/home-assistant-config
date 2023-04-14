@@ -35,7 +35,7 @@ class watch_tv(hass.Hass):
   . Start KEF LSX (and change source) if not turned on yet
   """ 
   def callback_tv_on(self, entity, attribute, old, new, kwargs):
-    if self.get_state("media_player.kef") == "off" and self.get_state("script.turn_on_media_center") == "off":
+    if self.entities.media_player.kef.state == "off" and self.entities.script.turn_on_media_center.state == "off":
       self.call_service("script/turn_on_media_center")
 
   """
@@ -44,7 +44,7 @@ class watch_tv(hass.Hass):
   . Stop KEF LSX if still on
   """ 
   def callback_tv_off(self, entity, attribute, old, new, kwargs):
-    if self.get_state("media_player.kef") == "on"  and self.get_state("script.turn_off_media_center") == "off":
+    if self.entities.media_player.kef.state == "on"  and self.entities.script.turn_off_media_center.state == "off":
       self.call_service("script/turn_off_media_center")
   
   """

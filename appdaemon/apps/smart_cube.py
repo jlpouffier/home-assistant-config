@@ -40,7 +40,7 @@ class smart_cube(hass.Hass):
         #self.log("callback_mode_change")
         self.cancel_current_mode_handles()
         if new == "light":
-            current_side = self.get_state("sensor.the_cube_action" , attribute = "side")
+            current_side = self.entities.sensor.the_cube_side.state
             self.change_the_cube_light_rooms(current_side)
             self.mode_handles.append(self.listen_state(self.callback_change_light, "input_select.the_cube_light_rooms", immediate = True))
             self.mode_handles.append(self.listen_state(self.callback_light_knock, "sensor.the_cube_action", new = "tap"))
@@ -57,7 +57,7 @@ class smart_cube(hass.Hass):
             self.mode_handles.append(self.listen_state(self.callback_cover_rotate_left, "sensor.the_cube_action", new = "rotate_left"))
         
         if new == "vacuum":
-            current_side = self.get_state("sensor.the_cube_action" , attribute = "side")
+            current_side = self.entities.sensor.the_cube_side.state
             self.change_the_cube_vacuums(current_side)
             self.mode_handles.append(self.listen_state(self.callback_change_vacuum, "input_select.the_cube_vacuums", immediate = True))
             self.mode_handles.append(self.listen_state(self.callback_vacuum_knock, "sensor.the_cube_action", new = "tap"))
@@ -66,7 +66,7 @@ class smart_cube(hass.Hass):
             self.mode_handles.append(self.listen_state(self.callback_vacuum_filp, "sensor.the_cube_action", new = "flip180"))
         
         if new == "tv":
-            current_side = self.get_state("sensor.the_cube_action" , attribute = "side")
+            current_side = self.entities.sensor.the_cube_side.state
             self.change_the_cube_tv_sources(current_side)
             self.mode_handles.append(self.listen_state(self.callback_change_tv_sources, "input_select.the_cube_tv_sources", immediate = True))
             self.mode_handles.append(self.listen_state(self.callback_tv_knock, "sensor.the_cube_action", new = "tap"))
@@ -119,7 +119,7 @@ class smart_cube(hass.Hass):
     def callback_light_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_light_filp")
         #current_side = self.get_state(entity , attribute = "side")
-        current_side = int(self.get_state("sensor.the_cube_side"))
+        current_side = int(self.entities.sensor.the_cube_side.state)
         self.change_the_cube_light_rooms(current_side)
 
     def callback_change_light(self, entity, attribute, old, new, kwargs):
@@ -192,7 +192,7 @@ class smart_cube(hass.Hass):
     def callback_vacuum_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_vacuum_filp")
         #current_side = self.get_state(entity , attribute = "side")
-        current_side = int(self.get_state("sensor.the_cube_side"))
+        current_side = int(self.entities.sensor.the_cube_side.state)
         self.change_the_cube_vacuums(current_side)
 
     def callback_vacuum_knock(self, entity, attribute, old, new, kwargs):
@@ -239,7 +239,7 @@ class smart_cube(hass.Hass):
     def callback_tv_filp(self, entity, attribute, old, new, kwargs):
         #self.log("callback_tv_filp")
         #current_side = self.get_state(entity , attribute = "side")
-        current_side = int(self.get_state("sensor.the_cube_side"))
+        current_side = int(self.entities.sensor.the_cube_side.state)
         self.change_the_cube_tv_sources(current_side)
     
     def callback_tv_knock(self, entity, attribute, old, new, kwargs):

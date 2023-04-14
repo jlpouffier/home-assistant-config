@@ -75,7 +75,7 @@ class presence_simulator(hass.Hass):
       self.log("Home occupied, stopping to listen for far_away event")
       self.cancel_listen_state(self.callback_occupants_far_away_handle)
     
-    if self.get_state("input_boolean.presence_simulator_switch") == "on":
+    if self.entities.input_boolean.presence_simulator_switch.state == "on":
       self.log("Stopping Presence Simulator")
       self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
     
@@ -86,7 +86,7 @@ class presence_simulator(hass.Hass):
   """
   def callback_occupants_far_away(self, entity, attribute, old, new, kwargs):
     self.callback_occupants_far_away_enabled = False
-    if self.get_state("input_boolean.presence_simulator_switch") == "off":
+    if self.entities.input_boolean.presence_simulator_switch.state == "off":
       self.log("Occupant far away and presence simulation not activated... Notifying it ... (once)")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -140,7 +140,7 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.cuisine_cuisine_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.entree_entree_100")
 
-    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+    if self.entities.input_boolean.presence_simulator_control_cover.state == "on":
       self.call_service("cover/open_cover", entity_id = "cover.living_room_cover")
     
   """
@@ -152,7 +152,7 @@ class presence_simulator(hass.Hass):
     self.log("Simulating : Leaving home")
     self.call_service("light/turn_off" , entity_id = "light.all_lights")
 
-    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+    if self.entities.input_boolean.presence_simulator_control_cover.state == "on":
       self.call_service("cover/close_cover", entity_id = "cover.living_room_cover")
 
     
@@ -170,7 +170,7 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.entree_entree_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.exterieur_exterieur_100")
 
-    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+    if self.entities.input_boolean.presence_simulator_control_cover.state == "on":
       self.call_service("cover/open_cover", entity_id = "cover.living_room_cover")
     
   """
@@ -191,7 +191,7 @@ class presence_simulator(hass.Hass):
     self.call_service("hue/activate_scene" , entity_id = "scene.bureau_bureau_100")
     self.call_service("hue/activate_scene" , entity_id = "scene.chambre_bebe_chambre_bebe_100")
 
-    if self.get_state("input_boolean.presence_simulator_control_cover") == "on":
+    if self.entities.input_boolean.presence_simulator_control_cover.state == "on":
       self.call_service("cover/close_cover", entity_id = "cover.living_room_cover")
     
 

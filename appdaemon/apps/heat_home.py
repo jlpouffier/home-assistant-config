@@ -30,7 +30,7 @@ class heat_home(hass.Hass):
     """
     def callback_openings_closed(self, entity, attribute, old, new, kwargs):
         self.log("Window or door closed ... restating thermostat.")
-        if self.get_state("binary_sensor.home_occupied") == "on":
+        if self.entities.binary_sensor.home_occupied.state == "on":
             self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
         else:
             self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")

@@ -29,8 +29,8 @@ class wake_up(hass.Hass):
   '''
   def callback_wake_up_time_changed(self, entity, attribute, old, new, kwargs):
     self.log("Wake-up time changed... Computing light and coffee maker schedules...")
-    wake_up_time_lights = datetime.datetime.combine(self.date() ,  self.parse_time(self.get_state("input_datetime.wake_up_time"))) - datetime.timedelta(minutes = 5)
-    wake_up_time_coffee_maker = datetime.datetime.combine(self.date() ,  self.parse_time(self.get_state("input_datetime.wake_up_time"))) - datetime.timedelta(minutes = 30)
+    wake_up_time_lights = datetime.datetime.combine(self.date() ,  self.parse_time(self.entities.input_datetime.wake_up_time.state)) - datetime.timedelta(minutes = 5)
+    wake_up_time_coffee_maker = datetime.datetime.combine(self.date() ,  self.parse_time(self.entities.input_datetime.wake_up_time.state)) - datetime.timedelta(minutes = 30)
     self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.wake_up_time_lights", time = wake_up_time_lights.strftime("%H:%M:%S"))
     self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.wake_up_time_coffee_maker", time = wake_up_time_coffee_maker.strftime("%H:%M:%S"))
 
@@ -62,7 +62,7 @@ class wake_up(hass.Hass):
   . Light sequence (if home occupied and workday)
   '''
   def callback_turn_on_lights(self, kwargs):
-    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("binary_sensor.home_occupied") == "on":
+    if self.entities.binary_sensor.workday_today.state == "on" and self.entities.binary_sensor.home_occupied.state == "on":
       self.log("Turning on lights")
       self.call_service("script/wake_up")
 
@@ -72,7 +72,7 @@ class wake_up(hass.Hass):
   . Turn-on coffee maker (if home occupied and workday)
   '''
   def callback_turn_on_coffee_maker(self, kwargs):
-    if self.get_state("binary_sensor.workday_today") == "on" and self.get_state("binary_sensor.home_occupied") == "on" and self.get_state("input_boolean.wake_up_automation_control_coffee_maker") == "on":
+    if self.entities.binary_sensor.workday_today.state == "on" and self.entities.binary_sensor.home_occupied.state == "on" and self.entities.input_boolean.wake_up_automation_control_coffee_maker.state == "on":
       self.log("Turning on coffee maker")
       self.call_service("switch/turn_on" , entity_id = "switch.coffeemaker")
 
@@ -84,7 +84,7 @@ class wake_up(hass.Hass):
   def callback_jl_phone_alarm_changed(self, entity, attribute, old, new, kwargs):
     if new != "unavailable":
       jl_home_alarm_time = (self.convert_utc(new) + datetime.timedelta(minutes = self.get_tz_offset())).time()
-      current_wake_up_time = self.parse_time(self.get_state("input_datetime.wake_up_time"))
+      current_wake_up_time = self.parse_time(self.entities.input_datetime.wake_up_time.state)
       if jl_home_alarm_time != current_wake_up_time:
         # Current Wake-up time and Phone Alarm time are different : Notifying it
         self.log("Phone alarmed different than Wake-up time. Notifying it ...")

@@ -42,7 +42,7 @@ class charge_electric_scooter(hass.Hass):
         Else: Wait until valentine reaches home
     """ 
     def callback_electric_scooter_daily_check(self, kwargs):
-        if self.get_state("person.valentine") == "home":
+        if self.entities.person.valentine.state == "home":
             self.check_electric_scooter_and_send_notification()
         else:
             if not self.listening_to_valentine_coming_back_home:
@@ -65,7 +65,7 @@ class charge_electric_scooter(hass.Hass):
     Returns : Noting
     """
     def check_electric_scooter_and_send_notification(self):
-        if self.get_state("input_boolean.electric_scooter_needs_charging") == "on" and self.get_state("binary_sensor.workday_tomorrow") == "on":
+        if self.entities.input_boolean.electric_scooter_needs_charging.state == "on" and self.entities.binary_sensor.workday_tomorrow.state == "on":
             self.log("It's time to charge the electric scooter. notifying it")
             self.fire_event("NOTIFIER",
                 action = "send_to_valentine",

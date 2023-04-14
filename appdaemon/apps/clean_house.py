@@ -54,22 +54,22 @@ class clean_house(hass.Hass):
   def callback_home_empty(self, entity, attribute, old, new, kwargs):
     self.log("Home empty, Checking if vacuums can run now ... ")
     # Is first floor dirty
-    is_first_floor_dirty = True if self.get_state("binary_sensor.should_neuneu_run") == "on" else False
+    is_first_floor_dirty = True if self.entities.binary_sensor.should_neuneu_run.state == "on" else False
 
     # Is second floor dirty
-    is_second_floor_dirty = True if self.get_state("binary_sensor.should_teuteu_run") == "on" else False
+    is_second_floor_dirty = True if self.entities.binary_sensor.should_teuteu_run.state == "on" else False
 
     # Is first floor in scope ?
-    is_first_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_first_floor") == "on" else False
+    is_first_floor_in_scope = True if self.entities.input_boolean.house_cleaning_first_floor.state == "on" else False
 
     # Is second floor in scope ?
-    is_second_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_second_floor") == "on" else False
+    is_second_floor_in_scope = True if self.entities.input_boolean.house_cleaning_second_floor.state == "on" else False
 
     # Is teuteu cleaning now ?
-    is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
+    is_teuteu_cleaning_right_now = True if self.entities.vacuum.teuteu.state == "cleaning" else False
     
     # Is neuneu cleaning now ?
-    is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
+    is_neuneu_cleaning_right_now = True if self.entities.vacuum.neuneu.state == "cleaning" else False
 
 
     if is_second_floor_dirty and is_second_floor_in_scope and not is_teuteu_cleaning_right_now:
@@ -88,12 +88,12 @@ class clean_house(hass.Hass):
   """ 
   def callback_home_occupied(self, entity, attribute, old, new, kwargs):
     self.log("Home occupied, Checking if vacuums should stop now ... ")
-    if self.get_state("vacuum.teuteu") == 'cleaning':
+    if self.entities.vacuum.teuteu.state == 'cleaning':
       # Stopping TeuTeu
       self.log("RTH TeuTeu") 
       self.call_service("vacuum/return_to_base" , entity_id = "vacuum.teuteu")
     
-    if self.get_state("vacuum.neuneu") == 'cleaning':
+    if self.entities.vacuum.neuneu.state == 'cleaning':
       # Stopping NeuNeu
       self.log("RTH NeuNeu") 
       self.call_service("vacuum/return_to_base" , entity_id = "vacuum.neuneu")
@@ -109,11 +109,11 @@ class clean_house(hass.Hass):
   def callback_first_floor_dirty(self, entity, attribute, old, new, kwargs):
     self.log("First floor dirtly now ... Checking if NeuNeu can run now ...  ")
     # Are we cleaning right now ?
-    is_neuneu_cleaning_right_now = True if self.get_state("vacuum.neuneu") == "cleaning" else False
+    is_neuneu_cleaning_right_now = True if self.entities.vacuum.neuneu.state == "cleaning" else False
     # Is home occupied ?
-    is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
+    is_home_empty = True if self.entities.binary_sensor.home_occupied.state == "off" else False
     # Is first floor in scope ?
-    is_first_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_first_floor") == "on" else False
+    is_first_floor_in_scope = True if self.entities.input_boolean.house_cleaning_first_floor.state == "on" else False
 
     if is_home_empty and is_first_floor_in_scope and not is_neuneu_cleaning_right_now:
       self.log("NeuNeu will start cleaning now ...")
@@ -125,7 +125,7 @@ class clean_house(hass.Hass):
     Notify
   """ 
   def callback_first_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    if self.get_state("input_boolean.house_cleaning_first_floor") == "on":
+    if self.entities.input_boolean.house_cleaning_first_floor.state == "on":
       self.log("First floor super dirtly now ... Notifying it.  ")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -153,11 +153,11 @@ class clean_house(hass.Hass):
   def callback_second_floor_dirty(self, entity, attribute, old, new, kwargs):
     self.log("Second floor dirtly now ... Checking if TeuTeu can run now ...  ")
     # Are we cleaning right now ?
-    is_teuteu_cleaning_right_now = True if self.get_state("vacuum.teuteu") == "cleaning" else False
+    is_teuteu_cleaning_right_now = True if self.entities.vacuum.teuteu.state == "cleaning" else False
     # Is home occupied ?
-    is_home_empty = True if self.get_state("binary_sensor.home_occupied") == "off" else False
+    is_home_empty = True if self.entities.binary_sensor.home_occupied.state == "off" else False
     # Is second floor in scope ?
-    is_second_floor_in_scope = True if self.get_state("input_boolean.house_cleaning_second_floor") == "on" else False
+    is_second_floor_in_scope = True if self.entities.input_boolean.house_cleaning_second_floor.state == "on" else False
 
     if is_home_empty and is_second_floor_in_scope and not is_teuteu_cleaning_right_now:
       self.log("TeuTeu will start cleaning now ...")
@@ -170,7 +170,7 @@ class clean_house(hass.Hass):
     Notify
   """ 
   def callback_second_floor_very_dirty(self, entity, attribute, old, new, kwargs):
-    if self.get_state("input_boolean.house_cleaning_second_floor") == "on":
+    if self.entities.input_boolean.house_cleaning_second_floor.state == "on":
       self.log("Second floor super dirtly now ... Notifying it.  ")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -244,14 +244,14 @@ class clean_house(hass.Hass):
       self.log("Detecting that a vacuum has finished. Notifying it...")
 
       if entity == "vacuum.teuteu":
-        area_cleaned = self.get_state("sensor.teuteu_last_cleaning_area")
-        cleaned_map = self.args["hass_base_url"] + self.get_state("camera.teuteu_cleaning_map" , attribute = "entity_picture")
+        area_cleaned = self.entities.sensor.teuteu_last_cleaning_area.state
+        cleaned_map = self.args["hass_base_url"] + self.entities.camera.teuteu_cleaning_map.attributes.entity_picture
         vacuum_name = "TeuTeu"
         icon = "mdi:robot-vacuum-variant"
       
       if entity == "vacuum.neuneu":
-        area_cleaned = self.get_state("sensor.neuneu_last_cleaning_area")
-        cleaned_map = self.args["hass_base_url"] + self.get_state("camera.neuneu_cleaning_map" , attribute = "entity_picture")
+        area_cleaned = self.entities.sensor.neuneu_last_cleaning_area.state
+        cleaned_map = self.args["hass_base_url"] + self.entities.camera.neuneu_cleaning_map.attributes.entity_picture
         vacuum_name = "NeuNeu"
         icon = "mdi:robot-vacuum"
       
@@ -277,8 +277,8 @@ class clean_house(hass.Hass):
     self.log("Detecting that a vacuum is in trouble. Notifying it...")
 
     if entity == "vacuum.teuteu":
-      current_location = self.args["hass_base_url"] + self.get_state("camera.teuteu_cleaning_map" , attribute = "entity_picture")
-      status = self.translate_teuteu_error_status(self.get_state("vacuum.teuteu" , attribute = "status"))
+      current_location = self.args["hass_base_url"] + self.entities.camera.teuteu_cleaning_map.attributes.entity_picture
+      status = self.translate_teuteu_error_status(self.entities.vacuum.teuteu.attributes.status)
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         title = "⚠️ TeuTeu est en erreur", 

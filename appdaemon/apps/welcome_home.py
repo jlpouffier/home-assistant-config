@@ -23,7 +23,7 @@ class welcome_home(hass.Hass):
         self.cancel_callback()
     
     def callback_entry_door_open(self, entity, attribute, old, new, kwargs):
-        if self.get_state("sun.sun") == "below_horizon":
+        if self.entities.sun.sun.state == "below_horizon":
             # Home occupied for less than 15 minutes + Entry door open + Sun below horizon = Welcome home
             self.log("Home occupied for less than 15 minutes + Entry door open + Sun below horizon : Welcome Home!")
             sequence = [
