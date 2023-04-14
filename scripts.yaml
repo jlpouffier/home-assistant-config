@@ -262,3 +262,13 @@ wake_up:
       entity_id: light.chambre_guirlande
   mode: single
   icon: mdi:weather-sunset-up
+log_bibi:
+  alias: Log Bibi
+  sequence:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{now()}}'
+    target:
+      entity_id: input_datetime.dernier_bibi
+  mode: single
+  icon: mdi:math-log
