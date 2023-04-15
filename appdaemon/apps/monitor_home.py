@@ -6,7 +6,6 @@ monitor_home is an app responsible of the monitoring the home
 Functionalities :
 . Turn off Alexa if the home is not occupied
 . Turn on and off lights, TV, KEF, coffee maker based on entry hue switch (long press)
-. Deal with desynchronization edge case with my living room cover
 
 Notifications :
 . Home empty and Lights on > Turn off possible
@@ -17,10 +16,6 @@ Notifications :
 . Home occupied and doors / window still open (As a reminder)
 . Raining and doors / windows open
 . Coffe maker on for more than 90 minutes > Turn off possible
-. Washing Machine over
-. Mailbox full
-. Cat Litter full > Cleaning possible
-. Take out trash
 
 """
 class monitor_home(hass.Hass): 
@@ -28,26 +23,14 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" , old = "on" , new = "off")
     self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
     self.listen_state(self.callback_coffee_maker_on_since_too_long , "switch.coffeemaker" , new = "on", duration = 5400)
-    self.listen_state(self.callback_washing_mashine_over, "binary_sensor.is_washing_machine_running" , old = "on", new = "off")
-    self.listen_state(self.callback_mailbox_occupancy_detected, "binary_sensor.capteur_mouvement_boite_aux_lettres" , new = "on")
-    self.listen_state(self.callback_litter_occupancy_detected, "binary_sensor.capteur_mouvement_litiere" , new = "on")
-    self.listen_state(self.callback_litter_full, "binary_sensor.is_litter_full", new = "on")
-    self.listen_state(self.callback_black_trash_schedule_begining, "schedule.planning_poubelle_noire", new = "on")
-    self.listen_state(self.callback_green_trash_schedule_begining, "schedule.planning_poubelle_verte", new = "on")
-    self.listen_state(self.callback_black_trash_schedule_end, "schedule.planning_poubelle_noire", new = "off")
-    self.listen_state(self.callback_green_trash_schedule_end, "schedule.planning_poubelle_verte", new = "off")
     self.listen_state(self.callback_raining_now, "binary_sensor.is_raining_now", new = "on")
     self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
     self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
-    self.listen_event(self.callback_cover_open_service_called, "call_service", domain = "cover", service = "open_cover" , service_data = {"entity_id" : "cover.living_room_cover"})
-    self.listen_event(self.callback_cover_close_service_called, "call_service", domain = "cover", service = "close_cover" , service_data = {"entity_id" : "cover.living_room_cover"})
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
     self.listen_event(self.callback_button_clicked_turn_off_lsx, "mobile_app_notification_action", action = "turn_off_lsx")
     self.listen_event(self.callback_button_clicked_turn_off_coffee_maker, "mobile_app_notification_action", action = "turn_off_coffee_maker")
-    self.listen_event(self.callback_button_clicked_reset_litter_tracking, "mobile_app_notification_action", action = "reset_litter_tracking")
-
     
   """
   Callback triggered when the home becomes not occupied
@@ -314,130 +297,6 @@ class monitor_home(hass.Hass):
           "new_state" : "off"}])
 
   """
-  Callback triggered when washing machine is over
-  Goals :
-  . Send notification
-  """
-  def callback_washing_mashine_over(self, entity, attribute, old, new, kwargs):
-    self.log("Washing machine over. Notifying it...")
-    self.fire_event("NOTIFIER",
-      action = "send_when_present",
-      title = "🫧 Machine à laver",
-      message = "Cycle de lavage terminé !",
-      icon =  "mdi:washing-machine",
-      color = "#07ffc1",
-      tag = "washing_mashine_over")
-
-
-  """
-  Callback triggered when mailbox occupancy is detected
-  Goals :
-  . Send notification, not when the main door is opened (rencently)
-  . Discard notification when the main door is opened (rencently)
-    (that's how I pick my mail)
-  """
-  def callback_mailbox_occupancy_detected(self, entity, attribute, old, new, kwargs):
-    # if the main door was opened recently .. send notification
-    if self.entities.binary_sensor.is_front_door_recently_open.state == "off":
-      self.log("Occupancy detected in the mailbox + Door not opened recently: Notifying it...")
-      self.fire_event("NOTIFIER",
-        action = "send_when_present",
-        title = "📬  Boite aux lettres",
-        message = "Vous avez du courrier !",
-        icon =  "mdi:mailbox-up",
-        color = "#07ffc1",
-        tag = "you_got_mail")
-    # else discard
-    else:
-      self.log("Occupancy detected in the mailbox + Door opened recently: Discarding notification...")
-      self.fire_event("NOTIFIER_DISCARD", tag = "you_got_mail")
-  
-
-  """
-  Callback triggered when litter occupancy is detected
-  Goals :
-  . Increase litter tracking
-  """
-  def callback_litter_occupancy_detected(self, entity, attribute, old, new, kwargs):
-    self.log("Occupancy detected in the litter. Incrementing litter tracking...")
-    self.call_service("input_number/increment", entity_id = "input_number.litter_tracking")
-
-  """
-  Callback triggered when litter is full
-  Goals :
-  . notify is litter is full
-  """
-  def callback_litter_full(self, entity, attribute, old, new, kwargs):
-    self.log("Litter full. notifying it ...")
-    self.fire_event("NOTIFIER",
-        action = "send_when_present",
-        title = "🐈  Litière",
-        message = "Penser a nettoyer la litière !",
-        callback = [{
-          "title" : "Litière Nettoyée",
-          "event" : "reset_litter_tracking"}],
-        icon =  "mdi:cat",
-        color = "#ff6e07",
-        persistent = True,
-        tag = "litter_full",
-        until =  [{
-          "entity_id" : "binary_sensor.is_litter_full",
-          "new_state" : "off"}])
-
-
-  """
-  Callback triggered when black trash can be taken out
-  Goals :
-  . Turn on input boolean to notify user on Home Assistant dashboard
-  """
-  def callback_black_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
-    self.log("It's time to take out black trash, turning on input boolean so it can be displayed on the dashboards ...")
-    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_noire_a_sortir")
-  
-  """
-  Callback triggered when green trash can be taken out
-  Goals :
-  . Turn on input boolean to notify user on Home Assistant dashboard
-  """
-  def callback_green_trash_schedule_begining(self, entity, attribute, old, new, kwargs):
-    self.log("It's time to take out green trash, turning on input boolean so it can be displayed on the dashboards ...")
-    self.call_service("input_boolean/turn_on", entity_id = "input_boolean.poubelle_verte_a_sortir")
-
-  """
-  Callback triggered when it's almost too late to take out black trash (and it's not yet done)
-  Goals :
-  . Notify present occupants
-  """
-  def callback_black_trash_schedule_end(self, entity, attribute, old, new, kwargs):
-    if self.entities.input_boolean.poubelle_noire_a_sortir.state == "on":
-      self.log("Black trash has not been taken out. Notifying it ...'")
-      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_noire_a_sortir")
-      self.fire_event("NOTIFIER",
-        action = "send_to_present",
-        title = "🗑 Poubelle Noire", 
-        message = "N'oublie pas de sortir la poubelle noire",
-        icon =  "mdi:delete",
-        color = "#ff6e07",
-        tag = "black_trash")
-
-  """
-  Callback triggered when it's almost too late to take out green trash (and it's not yet done)
-  Goals :
-  . Notify present occupants
-  """
-  def callback_green_trash_schedule_end(self, entity, attribute, old, new, kwargs):
-    if self.entities.input_boolean.poubelle_verte_a_sortir.state == "on":
-      self.log("Green trash has not been taken out. notifying it ...'")
-      self.call_service("input_boolean/turn_off", entity_id = "input_boolean.poubelle_verte_a_sortir")
-      self.fire_event("NOTIFIER",
-        action = "send_to_present",
-        title = "♻️ Poubelle Verte", 
-        message = "N'oublie pas de sortir la poubelle verte",
-        icon =  "mdi:recycle",
-        color = "#ff6e07",
-        tag = "green_trash")
-
-  """
   Callback triggered when it starts to rain
   Goals :
   . Notify present occupants if doors are open.
@@ -517,7 +376,6 @@ class monitor_home(hass.Hass):
               "entity_id" : "binary_sensor.all_windows",
               "new_state" : "off"}])
 
-
   """
   Callback triggered when Long press on entry switch (button ON)
   Goals :
@@ -535,26 +393,6 @@ class monitor_home(hass.Hass):
   def callback_long_press_on_entry_switch_button_off(self, event_name, data, kwargs):
     self.log("Long press on entry switch (button OFF), turning off lights, TV, KEF, coffee maker ...")
     self.call_service("script/leave_home")
-
-  """
-  Callback triggered when the service open_cover is called on cover.living_room_cover
-  Goals :
-  . If the over are already fully opened, press again the open button to tackle edge case of desynchronization between the different remotes.
-  """
-  def callback_cover_open_service_called(self, event_name, data, kwargs):
-    if self.entities.cover.living_room_cover.state == "open" and self.entities.cover.living_room_cover.attributes.current_position == 100:
-      self.log("Action open cover fired, but cover already opened at 100%: Making sure they are opened")
-      self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_up_fallback")
-
-  """
-  Callback triggered when the service close_cover is called on cover.living_room_cover
-  Goals :
-  . If the over are already fully closed, press again the close button to tackle edge case of desynchronization between the different remotes.
-  """
-  def callback_cover_close_service_called(self, event_name, data, kwargs):
-    if self.entities.cover.living_room_cover.state == "closed" and self.entities.cover.living_room_cover.attributes.current_position == 0:
-      self.log("Action close cover fired, but cover already closed at 0%: Making sure they are closed")
-      self.call_service("switch/turn_on" , entity_id = "switch.volet_salon_bouton_down_fallback")
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification
@@ -592,12 +430,3 @@ class monitor_home(hass.Hass):
   def callback_button_clicked_turn_off_coffee_maker(self, event_name, data, kwargs):
     self.log("Notification button clicked : Turning off coffee maker")
     self.call_service("switch/turn_off" , entity_id = "switch.coffeemaker")
-
-  """
-  Callback triggered when button "reset_litter_tracking" is clicked from a notification
-  Goals :
-  . Reset Littter Tracking
-  """
-  def callback_button_clicked_reset_litter_tracking(self, event_name, data, kwargs):
-    self.log("Notification button clicked : Resseting Litter Tracking")
-    self.call_service("input_number/set_value" , entity_id = "input_number.litter_tracking", value = 0)

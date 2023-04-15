@@ -177,3 +177,32 @@ matrix_2d:
     - binary_sensor.all_doors
     - binary_sensor.all_openings
     - binary_sensor.all_windows
+
+monitor_mailbox:
+  module: monitor_mailbox
+  class: monitor_mailbox
+  log: monitor_mailbox
+  constrain_input_boolean: automation_monitor_mailbox
+
+monitor_washing_machine:
+  module: monitor_washing_machine
+  class: monitor_washing_machine
+  log: monitor_washing_machine
+  constrain_input_boolean: automation_monitor_washing_machine
+
+clean_cat_litter_box:
+  module: clean_cat_litter_box
+  class: clean_cat_litter_box
+  log: clean_cat_litter_box
+  constrain_input_boolean: automation_clean_cat_litter_box
+
+take_out_trash:
+  module: take_out_trash
+  class: take_out_trash
+  log: take_out_trash
+  constrain_input_boolean: automation_take_out_trash
+
+handle_cover_edge_cases:
+  module: handle_cover_edge_cases
+  class: handle_cover_edge_cases
+  log: handle_cover_edge_cases

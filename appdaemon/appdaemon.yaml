@@ -1,83 +1,5 @@
 secrets: /config/secrets.yaml
 
-logs:
-  main_log:
-    filename: /config/appdaemon/logs/appdaemon.log
-    log_generations: 3
-  access_log:
-    filename: /config/appdaemon/logs/access.log
-    log_generations: 3
-  error_log:
-    filename: /config/appdaemon/logs/error.log
-    log_generations: 3
-  diag_log:
-    filename: /config/appdaemon/logs/diag.log
-    log_generations: 3
-  charge_electric_scooter:
-    name: charge_electric_scooter
-    filename: /config/appdaemon/logs/charge_electric_scooter.log
-    log_generations: 3
-  clean_house:
-    name: clean_house
-    filename: /config/appdaemon/logs/clean_house.log
-    log_generations: 3
-  heat_home:
-    name: heat_home
-    filename: /config/appdaemon/logs/heat_home.log
-    log_generations: 3
-  jarvis:
-    name: jarvis
-    filename: /config/appdaemon/logs/jarvis.log
-    log_generations: 3
-  monitor_home:
-    name: monitor_home
-    filename: /config/appdaemon/logs/monitor_home.log
-    log_generations: 3
-  monitor_system:
-    name: monitor_system
-    filename: /config/appdaemon/logs/monitor_system.log
-    log_generations: 3
-  notifier:
-    name: notifier
-    filename: /config/appdaemon/logs/notifier.log
-    log_generations: 3
-  presence_simulator:
-    name: presence_simulator
-    filename: /config/appdaemon/logs/presence_simulator.log
-    log_generations: 3
-  sandbox:
-    name: sandbox
-    filename: /config/appdaemon/logs/sandbox.log
-    log_generations: 3
-  smart_cube:
-    name: smart_cube
-    filename: /config/appdaemon/logs/smart_cube.log
-    log_generations: 3
-  wake_up:
-    name: wake_up
-    filename: /config/appdaemon/logs/wake_up.log
-    log_generations: 3
-  watch_tv:
-    name: watch_tv
-    filename: /config/appdaemon/logs/watch_tv.log
-    log_generations: 3
-  welcome_home:
-    name: welcome_home
-    filename: /config/appdaemon/logs/welcome_home.log
-    log_generations: 3
-  baby_automations:
-    name: baby_automations
-    filename: /config/appdaemon/logs/baby_automations.log
-    log_generations: 3
-  tesla_automations:
-    name: tesla_automations
-    filename: /config/appdaemon/logs/tesla_automations.log
-    log_generations: 3
-  matrix_2d:
-    name: matrix_2d
-    filename: /config/appdaemon/logs/matrix_2d.log
-    log_generations: 3
-
 appdaemon:
   latitude: !secret latitude
   longitude: !secret longitude
@@ -87,3 +9,76 @@ appdaemon:
   plugins:
     HASS:
       type: hass
+
+logs:
+  main_log:
+    filename: /config/appdaemon/logs/appdaemon.log
+  access_log:
+    filename: /config/appdaemon/logs/access.log
+  error_log:
+    filename: /config/appdaemon/logs/error.log
+  diag_log:
+    filename: /config/appdaemon/logs/diag.log
+  charge_electric_scooter:
+    name: charge_electric_scooter
+    filename: /config/appdaemon/logs/charge_electric_scooter.log
+  clean_house:
+    name: clean_house
+    filename: /config/appdaemon/logs/clean_house.log
+  heat_home:
+    name: heat_home
+    filename: /config/appdaemon/logs/heat_home.log
+  jarvis:
+    name: jarvis
+    filename: /config/appdaemon/logs/jarvis.log
+  monitor_home:
+    name: monitor_home
+    filename: /config/appdaemon/logs/monitor_home.log
+  monitor_system:
+    name: monitor_system
+    filename: /config/appdaemon/logs/monitor_system.log
+  notifier:
+    name: notifier
+    filename: /config/appdaemon/logs/notifier.log
+  presence_simulator:
+    name: presence_simulator
+    filename: /config/appdaemon/logs/presence_simulator.log
+  sandbox:
+    name: sandbox
+    filename: /config/appdaemon/logs/sandbox.log
+  smart_cube:
+    name: smart_cube
+    filename: /config/appdaemon/logs/smart_cube.log
+  wake_up:
+    name: wake_up
+    filename: /config/appdaemon/logs/wake_up.log
+  watch_tv:
+    name: watch_tv
+    filename: /config/appdaemon/logs/watch_tv.log
+  welcome_home:
+    name: welcome_home
+    filename: /config/appdaemon/logs/welcome_home.log
+  baby_automations:
+    name: baby_automations
+    filename: /config/appdaemon/logs/baby_automations.log
+  tesla_automations:
+    name: tesla_automations
+    filename: /config/appdaemon/logs/tesla_automations.log
+  matrix_2d:
+    name: matrix_2d
+    filename: /config/appdaemon/logs/matrix_2d.log
+  monitor_mailbox:
+    name: monitor_mailbox
+    filename: /config/appdaemon/logs/monitor_mailbox.log
+  monitor_washing_machine:
+    name: monitor_washing_machine
+    filename: /config/appdaemon/logs/monitor_washing_machine.log
+  clean_cat_litter_box:
+    name: clean_cat_litter_box
+    filename: /config/appdaemon/logs/clean_cat_litter_box.log
+  take_out_trash:
+    name: take_out_trash
+    filename: /config/appdaemon/logs/take_out_trash.log
+  handle_cover_edge_cases:
+    name: handle_cover_edge_cases
+    filename: /config/appdaemon/logs/handle_cover_edge_cases.log
