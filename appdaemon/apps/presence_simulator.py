@@ -16,9 +16,9 @@ class presence_simulator(hass.Hass):
     # variable to handle the far_away notification
     self.callback_occupants_far_away_enabled = False
 
-    # Listen to presence_simulator_switch state change
-    self.listen_state(self.callback_start_presence_simulation , "input_boolean.presence_simulator_switch" , new = "on", immediate = True)
-    self.listen_state(self.callback_stop_presence_simulation , "input_boolean.presence_simulator_switch" , new = "off", immediate = True)
+    # Listen to automation_presence_simulator state change
+    self.listen_state(self.callback_start_presence_simulation , "input_boolean.automation_presence_simulator" , new = "on", immediate = True)
+    self.listen_state(self.callback_stop_presence_simulation , "input_boolean.automation_presence_simulator" , new = "off", immediate = True)
 
     # listen to home state change
     self.listen_state(self.callback_home_empty , "binary_sensor.home_occupied" ,  new = "off", immediate = True)
@@ -28,7 +28,7 @@ class presence_simulator(hass.Hass):
     self.listen_event(self.callback_button_clicked_start_presence_simulation, "mobile_app_notification_action", action = "start_presence_simulation")
   
   """
-  Callback triggered when the presence_simulator_switch is activated
+  Callback triggered when the automation_presence_simulator is activated
   Goals :
   . Start the presence simulation routine
   """
@@ -43,7 +43,7 @@ class presence_simulator(hass.Hass):
     self.timer_handles.append(self.run_daily(self.callback_sleep, self.args["sleep_time"], random_start = -random_offset_seconds, random_end = random_offset_seconds))
 
   """
-  Callback triggered when the presence_simulator_switch is deactivated
+  Callback triggered when the automation_presence_simulator is deactivated
   Goals :
   . Stop the presence simulation routine
   """
@@ -75,9 +75,9 @@ class presence_simulator(hass.Hass):
       self.log("Home occupied, stopping to listen for far_away event")
       self.cancel_listen_state(self.callback_occupants_far_away_handle)
     
-    if self.entities.input_boolean.presence_simulator_switch.state == "on":
+    if self.entities.input_boolean.automation_presence_simulator.state == "on":
       self.log("Stopping Presence Simulator")
-      self.call_service("input_boolean/toggle", entity_id = "input_boolean.presence_simulator_switch")
+      self.call_service("input_boolean/toggle", entity_id = "input_boolean.automation_presence_simulator")
     
   """
   Callback triggered when the occupants are all far away
@@ -86,7 +86,7 @@ class presence_simulator(hass.Hass):
   """
   def callback_occupants_far_away(self, entity, attribute, old, new, kwargs):
     self.callback_occupants_far_away_enabled = False
-    if self.entities.input_boolean.presence_simulator_switch.state == "off":
+    if self.entities.input_boolean.automation_presence_simulator.state == "off":
       self.log("Occupant far away and presence simulation not activated... Notifying it ... (once)")
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
@@ -109,7 +109,7 @@ class presence_simulator(hass.Hass):
   """
   def callback_button_clicked_start_presence_simulation(self, event_name, data, kwargs):
     self.log("Notification button clicked : Starting Presence Simulation") 
-    self.call_service("input_boolean/turn_on" , entity_id = "input_boolean.presence_simulator_switch")
+    self.call_service("input_boolean/turn_on" , entity_id = "input_boolean.automation_presence_simulator")
 
 
   """

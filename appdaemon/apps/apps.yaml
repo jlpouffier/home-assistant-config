@@ -2,7 +2,7 @@ notifier:
   module: notifier
   class: notifier
   log: notifier
-  constrain_input_boolean: input_boolean.notify_switch
+  constrain_input_boolean: input_boolean.automation_notification_center
   home_occupancy_sensor_id: binary_sensor.home_occupied
   proximity_threshold: 1000
   persons:
@@ -19,7 +19,7 @@ watch_tv:
   module: watch_tv
   class: watch_tv
   log: watch_tv
-  constrain_input_boolean: input_boolean.watch_tv_automation_switch
+  constrain_input_boolean: input_boolean.automation_watch_tv
   media_player_id: media_player.philips_android_tv
   supported_apps:
     - Netflix
@@ -31,31 +31,31 @@ clean_house:
   class: clean_house
   log: clean_house
   hass_base_url: !secret hass_base_url
-  constrain_input_boolean: input_boolean.house_cleaning_switch
+  constrain_input_boolean: input_boolean.automation_clean_house
 
 wake_up:
   module: wake_up
   class: wake_up
   log: wake_up
-  constrain_input_boolean: input_boolean.wake_up_automation_switch
+  constrain_input_boolean: input_boolean.automation_wake_up
 
 welcome_home:
   module: welcome_home
   class: welcome_home
   log: welcome_home
-  constrain_input_boolean: input_boolean.welcome_home_automation_switch
+  constrain_input_boolean: input_boolean.automation_welcome_home
 
 monitor_home:
   module: monitor_home
   class: monitor_home
   log: monitor_home
-  constrain_input_boolean: input_boolean.monitor_home_switch
+  constrain_input_boolean: input_boolean.automation_monitor_home
 
 heat_home:
   module: heat_home
   class: heat_home
   log: heat_home
-  constrain_input_boolean: input_boolean.heat_home_switch
+  constrain_input_boolean: input_boolean.automation_heat_home
   open_time_allowed_before_stopping_thermostat: 60
 
 presence_simulator:
@@ -79,7 +79,7 @@ monitor_system:
   module: monitor_system
   class: monitor_system
   log: monitor_system
-  constrain_input_boolean: input_boolean.monitor_system_switch
+  constrain_input_boolean: input_boolean.automation_monitor_system
   battery_threshold: 20
   battery_sensors_to_check:
     - sensor.bureau_switch_battery
@@ -117,7 +117,7 @@ charge_electric_scooter:
   module: charge_electric_scooter
   class: charge_electric_scooter
   log: charge_electric_scooter
-  constrain_input_boolean: input_boolean.electric_scooter_automation
+  constrain_input_boolean: input_boolean.automation_charge_electric_scooter
 
 #sandbox:
 #  module: sandbox
@@ -134,7 +134,7 @@ baby_automations:
   module: baby_automations
   class: baby_automations
   log: baby_automations
-  constrain_input_boolean: input_boolean.baby_automations
+  constrain_input_boolean: input_boolean.automation_baby_automations
   kid_name: !secret kid_name
   minimum_delay_between_bibi_in_hours: 2
   optimal_delay_between_bibi_in_hours: 4
