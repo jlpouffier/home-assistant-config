@@ -5,7 +5,6 @@ monitor_home is an app responsible of the monitoring the home
 
 Functionalities :
 . Turn off Alexa if the home is not occupied
-. Turn on and off lights, TV, KEF, coffee maker based on entry hue switch (long press)
 
 Notifications :
 . Home empty and Lights on > Turn off possible
@@ -24,8 +23,6 @@ class monitor_home(hass.Hass):
     self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , old = "off" , new = "on")
     self.listen_state(self.callback_coffee_maker_on_since_too_long , "switch.coffeemaker" , new = "on", duration = 5400)
     self.listen_state(self.callback_raining_now, "binary_sensor.is_raining_now", new = "on")
-    self.listen_event(self.callback_long_press_on_entry_switch_button_on, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "c1c9f277-e27a-4340-9962-2206cc0d7e3a", type = "repeat", subtype = 1)
-    self.listen_event(self.callback_long_press_on_entry_switch_button_off, "hue_event", device_id = "64185ca2086c2ebd7b976a43ef0c89fd", unique_id = "7564eab9-3cc9-4321-890c-1b9f1465f108", type = "repeat", subtype = 4)
 
     self.listen_event(self.callback_button_clicked_turn_off_lights, "mobile_app_notification_action", action = "turn_off_lights")
     self.listen_event(self.callback_button_clicked_turn_off_tv, "mobile_app_notification_action", action = "turn_off_tv")
@@ -375,24 +372,6 @@ class monitor_home(hass.Hass):
               "new_state" : "off"},{
               "entity_id" : "binary_sensor.all_windows",
               "new_state" : "off"}])
-
-  """
-  Callback triggered when Long press on entry switch (button ON)
-  Goals :
-  . Turn on lights
-  """
-  def callback_long_press_on_entry_switch_button_on(self, event_name, data, kwargs):
-    self.log("Long press on entry switch (button ON), turning on lights ...")
-    self.call_service("script/reset_lights_day_area")
-
-  """
-  Callback triggered when Long press on entry switch (button OFF)
-  Goals :
-  . Turn off lights, TV, KEF, coffee maker ...
-  """
-  def callback_long_press_on_entry_switch_button_off(self, event_name, data, kwargs):
-    self.log("Long press on entry switch (button OFF), turning off lights, TV, KEF, coffee maker ...")
-    self.call_service("script/leave_home")
 
   """
   Callback triggered when button "turn_off_lights" is clicked from a notification

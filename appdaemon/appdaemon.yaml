@@ -82,3 +82,6 @@ logs:
   handle_cover_edge_cases:
     name: handle_cover_edge_cases
     filename: /config/appdaemon/logs/handle_cover_edge_cases.log
+  smart_hue_buttons:
+    name: smart_hue_buttons
+    filename: /config/appdaemon/logs/smart_hue_buttons.log

@@ -206,3 +206,8 @@ handle_cover_edge_cases:
   module: handle_cover_edge_cases
   class: handle_cover_edge_cases
   log: handle_cover_edge_cases
+
+smart_hue_buttons:
+  module: smart_hue_buttons
+  class: smart_hue_buttons
+  log: smart_hue_buttons
