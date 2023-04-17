@@ -69,9 +69,9 @@ class baby_automations(hass.Hass):
             action = "send_to_all",
             title = "🧸 " + self.args["kid_name"], 
             message = self.args["kid_name"] + " a pris son bibi il y a 2 heures, prochain Bibi possible",
-            click_url="/lovelace/apercu",
-            icon =  "mdi:baby-bottle",
-            color = "#07ffc1",
+            click_url="dashboard-baby/baby",
+            icon =  "mdi:baby-bottle-outline",
+            color = "#2196F3",
             tag = "baby_bottle")
 
     '''
@@ -85,9 +85,9 @@ class baby_automations(hass.Hass):
             action = "send_to_all",
             title = "🧸 " + self.args["kid_name"],  
             message = self.args["kid_name"] + " a pris son bibi il y a 4 heures, prochain Bibi recommandé",
-            click_url="/lovelace/apercu",
+            click_url="dashboard-baby/baby",
             icon =  "mdi:baby-bottle",
-            color = "#07ffc1",
+            color = "#FFC107",
             tag = "baby_bottle")
 
     '''
@@ -101,7 +101,7 @@ class baby_automations(hass.Hass):
             action = "send_to_all",
             title = "🧸 " + self.args["kid_name"],  
             message = self.args["kid_name"] + " a pris son bibi il y a 6 heures, prochain Bibi nécessaire",
-            click_url="/lovelace/apercu",
+            click_url="dashboard-baby/baby",
             icon =  "mdi:baby-bottle",
-            color = "#07ffc1",
+            color = "#F44336",
             tag = "baby_bottle")

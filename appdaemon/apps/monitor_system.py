@@ -120,7 +120,7 @@ class monitor_system(hass.Hass):
                 action = "send_to_jl",
                 title = "💾 Sauvegarde journalière",
                 message = "La sauvegarde journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
-                click_url = "/lovelace-system/overview",
+                click_url = "/hassio/addon/15d21743_samba_backup/logs",
                 icon =  "mdi:cloud-upload",
                 color = "#ff6e07",
                 persistent = True)

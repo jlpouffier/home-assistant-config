@@ -95,7 +95,7 @@ class wake_up(hass.Hass):
           callback = [{
             "title" : "Oui",
             "event" : "set_new_wake_up_time"}],
-          click_url="/lovelace/night",
+          click_url="/dashboard-automatisations/automatisations",
           icon = "mdi:alarm",
           tag = "jl_phone_alarm_changed")
 

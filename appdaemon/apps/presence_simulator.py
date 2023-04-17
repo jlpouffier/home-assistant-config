@@ -95,7 +95,7 @@ class presence_simulator(hass.Hass):
         callback = [{
           "title" : "simuler une présence",
           "event" : "start_presence_simulation"}],
-        click_url="/lovelace/apercu",
+        click_url="/dashboard-automatisations/automatisations",
         icon =  "mdi:compass",
         tag = "far_away",
         until =  [{
