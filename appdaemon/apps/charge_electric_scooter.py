@@ -71,7 +71,7 @@ class charge_electric_scooter(hass.Hass):
                 action = "send_to_valentine",
                 title = "🛴 Trottinette",
                 message = "Pense à faire charger ta trottinette pour demain !",
-                click_url = "/lovelace-system/overview",
+                click_url = "/lovelace/terrasse",
                 icon =  "mdi:scooter-electric",
                 color = "#ff6e07",
                 tag = "electric_scooter",
