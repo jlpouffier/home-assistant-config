@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_home_open_since_more_than_one_minute
+        unique_id: is_home_open_since_more_than_one_minute
+        state: "{{states('binary_sensor.all_openings')}}"
+        delay_on: "0:01:00"

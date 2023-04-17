@@ -9,8 +9,8 @@ Functionalities :
 """
 class heat_home(hass.Hass): 
     def initialize(self):
-        self.listen_state(self.callback_openings_open, "binary_sensor.all_openings", new = "on", duration = self.args["open_time_allowed_before_stopping_thermostat"])
-        self.listen_state(self.callback_openings_closed, "binary_sensor.all_openings", new = "off")
+        self.listen_state(self.callback_openings_open, "binary_sensor.is_home_open_since_more_than_one_minute", new = "on")
+        self.listen_state(self.callback_openings_closed, "binary_sensor.is_home_open_since_more_than_one_minute", new = "off")
         self.listen_state(self.callback_home_empty, "binary_sensor.home_occupied", new= "off")
         self.listen_state(self.callback_home_occupied , "binary_sensor.home_occupied" , new = "on")
 
@@ -20,7 +20,7 @@ class heat_home(hass.Hass):
         Turn off thermostat
     """
     def callback_openings_open(self, entity, attribute, old, new, kwargs):
-        self.log("Window or door opened ... stopping thermostat temporarly.")
+        self.log("Window or door opened ... Setting the thermostat mode to Frost Guard.")
         self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Protection Gel 5")
 
     """
@@ -29,10 +29,11 @@ class heat_home(hass.Hass):
         Turn on thermostat 
     """
     def callback_openings_closed(self, entity, attribute, old, new, kwargs):
-        self.log("Window or door closed ... restating thermostat.")
         if self.entities.binary_sensor.home_occupied.state == "on":
+            self.log("Home occupied and closed: Setting the thermostat mode to Present")
             self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
         else:
+            self.log("Home empty and closed: Setting the thermostat mode to Away")
             self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")
 
     """
@@ -41,8 +42,12 @@ class heat_home(hass.Hass):
         Set thermostat mode to Away
     """
     def callback_home_empty(self, entity, attribute, old, new, kwargs):
-        self.log("Home empty: Setting the thermostat mode to Away")
-        self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")
+        if self.entities.binary_sensor.is_home_open_since_more_than_one_minute.state == "on":
+            self.log("Home empty and open: Setting the thermostat mode to Frost Guard")
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Protection Gel 5")
+        else:
+            self.log("Home empty and closed: Setting the thermostat mode to Away")
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Absent 16")
 
     """
     Callback triggered when home become empty
@@ -50,6 +55,10 @@ class heat_home(hass.Hass):
         Set thermostat mode to Present
     """
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
-        self.log("Home occupied: Setting the thermostat mode to Present")
-        self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
+        if self.entities.binary_sensor.is_home_open_since_more_than_one_minute.state == "on":
+            self.log("Home occupied and open: Setting the thermostat mode to Frost Guard")
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Protection Gel 5")
+        else:
+            self.log("Home occupied and closed: Setting the thermostat mode to Present")
+            self.call_service("select/select_option", entity_id = "select.planning_netatmo", option = "Present")
 
