@@ -39,7 +39,7 @@ class clean_cat_litter_box(hass.Hass):
             "title" : "Litière Nettoyée",
             "event" : "reset_litter_tracking"}],
             icon =  "mdi:cat",
-            color = "#ff6e07",
+            color = "deep-orange",
             persistent = True,
             tag = "litter_full",
             until =  [{

@@ -49,7 +49,7 @@ class take_out_trash(hass.Hass):
                 title = "🗑 Poubelle Noire", 
                 message = "N'oublie pas de sortir la poubelle noire",
                 icon =  "mdi:delete",
-                color = "#ff6e07",
+                color = "deep-orange",
                 tag = "black_trash")
 
     """
@@ -66,5 +66,5 @@ class take_out_trash(hass.Hass):
                 title = "♻️ Poubelle Verte", 
                 message = "N'oublie pas de sortir la poubelle verte",
                 icon =  "mdi:recycle",
-                color = "#ff6e07",
+                color = "deep-orange",
                 tag = "green_trash")

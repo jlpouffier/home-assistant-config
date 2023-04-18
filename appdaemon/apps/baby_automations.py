@@ -71,7 +71,7 @@ class baby_automations(hass.Hass):
             message = self.args["kid_name"] + " a pris son bibi il y a 2 heures, prochain Bibi possible",
             click_url="dashboard-baby/baby",
             icon =  "mdi:baby-bottle-outline",
-            color = "#2196F3",
+            color = "light-blue",
             tag = "baby_bottle")
 
     '''
@@ -87,7 +87,7 @@ class baby_automations(hass.Hass):
             message = self.args["kid_name"] + " a pris son bibi il y a 4 heures, prochain Bibi recommandé",
             click_url="dashboard-baby/baby",
             icon =  "mdi:baby-bottle",
-            color = "#FFC107",
+            color = "green",
             tag = "baby_bottle")
 
     '''
@@ -103,5 +103,5 @@ class baby_automations(hass.Hass):
             message = self.args["kid_name"] + " a pris son bibi il y a 6 heures, prochain Bibi nécessaire",
             click_url="dashboard-baby/baby",
             icon =  "mdi:baby-bottle",
-            color = "#F44336",
+            color = "deep-orange",
             tag = "baby_bottle")

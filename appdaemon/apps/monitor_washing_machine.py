@@ -26,5 +26,5 @@ class monitor_washing_machine(hass.Hass):
             title = "🫧 Machine à laver",
             message = "Cycle de lavage terminé !",
             icon =  "mdi:washing-machine",
-            color = "#07ffc1",
+            color = "green",
             tag = "washing_mashine_over")

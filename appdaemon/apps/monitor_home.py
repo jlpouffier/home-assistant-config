@@ -54,7 +54,7 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_lights"}],
         click_url="/lovelace/lights",
         icon =  "mdi:lightbulb-alert",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "home_empty_lights_still_on",
         until =  [{
           "entity_id" : "binary_sensor.home_occupied",
@@ -74,7 +74,7 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_tv"}],
         click_url="/lovelace/connected-devices",
         icon =  "mdi:television",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "home_empty_tv_still_on",
         until =  [{
           "entity_id" : "binary_sensor.home_occupied",
@@ -94,7 +94,7 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_lsx"}],
         click_url="/lovelace/connected-devices",
         icon =  "mdi:speaker-wireless",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "home_empty_lsx_still_on",
         until =  [{
           "entity_id" : "binary_sensor.home_occupied",
@@ -114,7 +114,7 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_coffee_maker"}],
         click_url="/lovelace/connected-devices",
         icon =  "mdi:coffee",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "home_empty_cofee_maker_still_on",
         until =  [{
           "entity_id" : "binary_sensor.home_occupied",
@@ -138,7 +138,7 @@ class monitor_home(hass.Hass):
           message = "La " + open_doors[0] + " est toujours ouverte alors que personne n'est présent !",
           click_url="/lovelace/openings",
           icon =  "mdi:door-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_empty_door_open",
           until =  [{
             "entity_id" : "binary_sensor.home_occupied",
@@ -152,7 +152,7 @@ class monitor_home(hass.Hass):
           message = "Les portes suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_doors),
           click_url="/lovelace/openings",
           icon =  "mdi:door-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_empty_door_open",
           until =  [{
             "entity_id" : "binary_sensor.home_occupied",
@@ -176,7 +176,7 @@ class monitor_home(hass.Hass):
           message = "La " + open_windows[0] + " est toujours ouverte alors que personne n'est présent !",
           click_url="/lovelace/openings",
           icon =  "mdi:window-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_empty_window_open",
           until =  [{
             "entity_id" : "binary_sensor.home_occupied",
@@ -190,7 +190,7 @@ class monitor_home(hass.Hass):
           message = "Les fenêtres suivantes sont toujours ouvertes alors que personne n'est présent: " + ", ".join(open_windows),
           click_url="/lovelace/openings",
           icon =  "mdi:window-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_empty_window_open",
           until =  [{
             "entity_id" : "binary_sensor.home_occupied",
@@ -227,7 +227,7 @@ class monitor_home(hass.Hass):
           message = "Rappel: La " + open_doors[0] + " est toujours ouverte",
           click_url="/lovelace/openings",
           icon =  "mdi:door-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_occupied_door_open",
           until =  [{
             "entity_id" : "binary_sensor.all_doors",
@@ -239,7 +239,7 @@ class monitor_home(hass.Hass):
           message = "Rappel: Les portes suivantes sont toujours ouvertes: " + ", ".join(open_doors),
           click_url="/lovelace/openings",
           icon =  "mdi:door-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_occupied_door_open",
           until =  [{
             "entity_id" : "binary_sensor.all_doors",
@@ -261,7 +261,7 @@ class monitor_home(hass.Hass):
           message = "Rappel: La " + open_windows[0] + " est toujours ouverte",
           click_url="/lovelace/openings",
           icon =  "mdi:window-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_occupied_window_open",
           until =  [{
             "entity_id" : "binary_sensor.all_windows",
@@ -273,7 +273,7 @@ class monitor_home(hass.Hass):
           message = "Rappel: Les fenêtres suivantes sont toujours ouvertes: " + ", ".join(open_windows),
           click_url="/lovelace/openings",
           icon =  "mdi:window-open",
-          color = "#ff6e07",
+          color = "deep-orange",
           tag = "home_occupied_window_open",
           until =  [{
             "entity_id" : "binary_sensor.all_windows",
@@ -295,7 +295,7 @@ class monitor_home(hass.Hass):
           "event" : "turn_off_coffee_maker"}],
         click_url="/lovelace/connected-devices",
         icon = "mdi:coffee",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "coffee_maker_on_since_too_long",
         until =  [{
           "entity_id" : "switch.coffeemaker",
@@ -325,7 +325,7 @@ class monitor_home(hass.Hass):
             message = "La " + open_doors[0] + " est ouverte et il commence a pleuvoir !",
             click_url="/lovelace/openings",
             icon =  "mdi:door-open",
-            color = "#ff6e07",
+            color = "deep-orange",
             tag = "raining_door_open",
             until =  [{
               "entity_id" : "binary_sensor.is_raining_now",
@@ -339,7 +339,7 @@ class monitor_home(hass.Hass):
             message = "Les portes suivantes sont ouvertes et il commence a pleuvoir: " + ", ".join(open_doors),
             click_url="/lovelace/openings",
             icon =  "mdi:door-open",
-            color = "#ff6e07",
+            color = "deep-orange",
             tag = "raining_door_open",
             until =  [{
               "entity_id" : "binary_sensor.is_raining_now",
@@ -363,7 +363,7 @@ class monitor_home(hass.Hass):
             message = "La " + open_windows[0] + " est ouverte  et il commence a pleuvoir !",
             click_url="/lovelace/openings",
             icon =  "mdi:window-open",
-            color = "#ff6e07",
+            color = "deep-orange",
             tag = "raining_window_open",
             until =  [{
               "entity_id" : "binary_sensor.is_raining_now",
@@ -377,7 +377,7 @@ class monitor_home(hass.Hass):
             message = "Les fenêtres suivantes sont ouvertes et il commence a pleuvoir: " + ", ".join(open_windows),
             click_url="/lovelace/openings",
             icon =  "mdi:window-open",
-            color = "#ff6e07",
+            color = "deep-orange",
             tag = "raining_window_open",
             until =  [{
               "entity_id" : "binary_sensor.is_raining_now",

@@ -136,7 +136,7 @@ class clean_house(hass.Hass):
           "event" : "start_neuneu"}],
         click_url="/lovelace/vacuums",
         icon = "mdi:liquid-spot",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "first_floor_very_dirty",
         until =  [{
           "entity_id" : "vacuum.neuneu",
@@ -181,7 +181,7 @@ class clean_house(hass.Hass):
           "event" : "start_teuteu"}],
         click_url="/lovelace/vacuums",
         icon = "mdi:liquid-spot",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "second_floor_very_dirty",
         until =  [{
           "entity_id" : "vacuum.teuteu",
@@ -262,7 +262,7 @@ class clean_house(hass.Hass):
         image_url = cleaned_map,
         click_url="/lovelace/vacuums",
         icon =  icon,
-        color = "#07ffc1",
+        color = "green",
         tag = vacuum_name.lower())
 
 
@@ -286,7 +286,7 @@ class clean_house(hass.Hass):
         image_url = current_location,
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum-variant",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "teuteu")
     
     if entity == "vacuum.neuneu":
@@ -297,7 +297,7 @@ class clean_house(hass.Hass):
         title = "⚠️ NeuNeu est en erreur", 
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "neuneu")
 
   """
@@ -314,7 +314,7 @@ class clean_house(hass.Hass):
         message = "Je detecte que TeuTeu n'est plus sur sa base depuis plus de 30 minutes",
         click_url="/lovelace/vacuums",
         icon =  "mdi:robot-vacuum-variant",
-        color = "#ff6e07",
+        color = "deep-orange",
         tag = "teuteu",
         until =  [{
           "entity_id" : "vacuum.teuteu",

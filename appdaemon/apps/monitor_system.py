@@ -102,7 +102,7 @@ class monitor_system(hass.Hass):
             title = "🔌 Alimentation Home Assistant",
             message = "Problème détecté sur l'alimentation de Home Assistant",
             icon = "mdi:power-plug",
-            color = "#ff6e07",
+            color = "deep-orange",
             persistent = True)
     """
     Callback triggered when the last available back-up is older than 24 hours.
@@ -122,7 +122,7 @@ class monitor_system(hass.Hass):
                 message = "La sauvegarde journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
                 click_url = "/hassio/addon/15d21743_samba_backup/logs",
                 icon =  "mdi:cloud-upload",
-                color = "#ff6e07",
+                color = "deep-orange",
                 persistent = True)
 
     """
@@ -148,7 +148,7 @@ class monitor_system(hass.Hass):
                 title = "Batterie 🪫",
                 message= "Pensez a changer les piles de l'appareil suivant: " + entities_to_notify[0],
                 icon =  "mdi:battery-20",
-                color = "#ff6e07",
+                color = "deep-orange",
                 persistent = True)
         
         elif len(entities_to_notify) > 1:
@@ -158,5 +158,5 @@ class monitor_system(hass.Hass):
                 title = "Batterie 🪫",
                 message= "Pensez a changer les piles des appareils suivants: " + ", ".join(entities_to_notify),
                 icon =  "mdi:battery-20",
-                color = "#ff6e07",
+                color = "deep-orange",
                 persistent = True)

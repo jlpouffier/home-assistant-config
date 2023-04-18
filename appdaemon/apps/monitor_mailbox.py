@@ -30,7 +30,7 @@ class monitor_mailbox(hass.Hass):
                 title = "📬  Boite aux lettres",
                 message = "Vous avez du courrier !",
                 icon =  "mdi:mailbox-up",
-                color = "#07ffc1",
+                color = "green",
                 tag = "you_got_mail")
         # else discard
         else:

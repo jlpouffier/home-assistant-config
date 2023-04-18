@@ -208,7 +208,7 @@ class notifier(hass.Hass):
         if "icon" in data:
             notification_data["notification_icon"] = data["icon"]
         if "color" in data:
-            notification_data["color"] = data["color"]
+            notification_data["color"] = self.compute_color(data["color"])
         if "tag" in data:
             notification_data["tag"] = data["tag"]
         return notification_data
@@ -257,3 +257,33 @@ class notifier(hass.Hass):
         while len(self.staged_notifications) >= 1:
             current_data = self.staged_notifications.pop(0)
             self.send_to_present(current_data)
+    
+    def compute_color(self, color_name):
+        colors = {
+            "red":"#f44336",
+            "pink":"#e91e63",
+            "purple":"#9c27b0",
+            "deep-purple":"#673ab7",
+            "indigo":"#3f51b5",
+            "blue":"#2196f3",
+            "light-blue":"#03a9f4",
+            "cyan":"#00bcd4",
+            "teal":"#009688",
+            "green":"#4caf50",
+            "light-green":"#8bc34a",
+            "lime":"#cddc39",
+            "yellow":"#ffeb3b",
+            "amber":"#ffc107",
+            "orange":"#ff9800",
+            "deep-orange":"#ff5722",
+            "brown":"#795548",
+            "grey":"#9e9e9e",
+            "blue-grey":"#607d8b",
+            "black":"#000000",
+            "white":"#ffffff",
+            "disabled":"#bdbdbd"
+        }
+        if color_name in colors:
+            return colors[color_name]
+        else:
+            return color_name

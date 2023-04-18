@@ -73,7 +73,7 @@ class charge_electric_scooter(hass.Hass):
                 message = "Pense à faire charger ta trottinette pour demain !",
                 click_url = "/lovelace/terrasse",
                 icon =  "mdi:scooter-electric",
-                color = "#ff6e07",
+                color = "deep-orange",
                 tag = "electric_scooter",
                 until =  [{
                     "entity_id" : "input_boolean.electric_scooter_needs_charging",
