@@ -137,7 +137,13 @@ class monitor_system(hass.Hass):
         entities_to_notify = []
 
         for battery_sensor in self.args["battery_sensors_to_check"]:
-            if int(self.get_state(battery_sensor)) < battery_threshold:
+            try:
+                battery_level = float(self.get_state(battery_sensor))
+            except:
+                self.log("Battery level of entity " + battery_sensor + " is not a float! Ignoring!")
+                battery_level = 100
+        
+            if battery_level < battery_threshold:
                 friendly_name = self.get_state(battery_sensor, attribute = "friendly_name")
                 entities_to_notify.append(friendly_name)
             
