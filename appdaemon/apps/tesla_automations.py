@@ -33,10 +33,10 @@ class tesla_automations(hass.Hass):
             If both update are on a short time frame: Send location update into MQTT topic tesla/location
     """
     def callback_location_updated(self, entity, attribute, old, new, kwargs):
-        if entity == 'sensor.tesla_longitude':
+        if entity == 'sensor.tesla_longitude' and new not in ['unavailable', 'unknown']:
             self.location['longitude'] = float(new)
             self.update_ts['longitude'] = self.get_now_ts()
-        elif entity == 'sensor.tesla_latitude':
+        elif entity == 'sensor.tesla_latitude' and new not in ['unavailable', 'unknown']:
             self.location['latitude'] = float(new)
             self.update_ts['latitude'] = self.get_now_ts()
 
