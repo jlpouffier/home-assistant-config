@@ -1,8 +1,0 @@
-# Workday (Tomorrow)
-# https://www.home-assistant.io/integrations/workday/
-
-binary_sensor:
-  - platform: workday
-    name: workday_tomorrow
-    country: FR
-    days_offset: 1
