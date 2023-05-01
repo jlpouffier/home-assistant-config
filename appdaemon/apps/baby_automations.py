@@ -2,10 +2,11 @@ import hassapi as hass
 import datetime
 
 """
-baby_automations is an app responsible of helping us to know when to give the next baby bottle to our daugther
+baby_automations is an app responsible of helping us to know when to give the next baby bottle to our daugther. It also sync the only non-hue light we have in her bedroom.
 
 Functionalities :
     Store the last feeding time into input_datetime.dernier_bibi
+    Sync the miffy light to other light in the bedroom
 
 Notifications :
     Minimum feeding time reached
@@ -16,6 +17,8 @@ class baby_automations(hass.Hass):
     def initialize(self):
         self.listen_state(self.callback_bouton_bibi_pressed, "sensor.bouton_bibi_action", new = "press")
         self.listen_state(self.callback_last_bibi_timestamp_updated, "input_datetime.dernier_bibi", immediate = True)
+        self.listen_state(self.callback_suspension_updated, "light.chambre_bebe_suspension", attribute = "all")
+        self.listen_state(self.callback_leds_updated, "light.chambre_bebe_leds", attribute = "all")
         self.scheduler_handles = []
         self.log("Initialized")
 
@@ -105,3 +108,19 @@ class baby_automations(hass.Hass):
             icon =  "mdi:baby-bottle",
             color = "deep-orange",
             tag = "baby_bottle")
+    
+    def callback_suspension_updated(self, entity, attribute, old, new, kwargs):
+        if new["state"] == "on":
+            target_color = new["attributes"]["rgb_color"]
+            taget_brightness = new["attributes"]["brightness"]
+            self.call_service("light/turn_on", entity_id = "light.miffy_segment_0", brightness = taget_brightness, rgb_color = target_color)
+        else:
+            self.call_service("light/turn_off", entity_id = "light.miffy_segment_0")
+    
+    def callback_leds_updated(self, entity, attribute, old, new, kwargs):
+        if new["state"] == "on":
+            target_color = new["attributes"]["rgb_color"]
+            taget_brightness = new["attributes"]["brightness"]
+            self.call_service("light/turn_on", entity_id = "light.miffy_segment_1", brightness = taget_brightness, rgb_color = target_color)
+        else:
+            self.call_service("light/turn_off", entity_id = "light.miffy_segment_1")
