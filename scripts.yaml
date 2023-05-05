@@ -272,3 +272,73 @@ log_bibi:
       entity_id: input_datetime.dernier_bibi
   mode: single
   icon: mdi:math-log
+room_cleaning_first_floor:
+  alias: Room Cleaning (First Floor)
+  sequence:
+  - if:
+    - condition: template
+      value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
+        1}}'
+    then:
+    - service: dreame_vacuum.vacuum_clean_segment
+      data:
+        segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
+          }}'
+      target:
+        entity_id: vacuum.neuneu
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.vacuum_zone_celar
+        - input_boolean.vacuum_zone_kitchen
+        - input_boolean.vacuum_zone_entry
+        - input_boolean.vacuum_zone_bathroom
+        - input_boolean.vacuum_zone_living_room
+  mode: single
+  icon: mdi:vacuum
+changer_lassistant_du_telephone:
+  alias: Changer l'Assistant du téléphone
+  sequence:
+  - condition: state
+    entity_id: binary_sensor.phone_call_in_progress
+    state: 'on'
+  - service: select.select_option
+    data:
+      option: '{{assistant}}'
+    target:
+      entity_id: select.phone_selected_pipeline
+  - service: script.turn_on
+    data: {}
+    target:
+      entity_id: script.reset_phone_assistant
+  mode: single
+  fields:
+    assistant:
+      description: Name of the Assistant
+      example: Régis
+  icon: mdi:phone
+reset_phone_assistant:
+  alias: 'Réinitialisation de l''assistant du téléphone '
+  sequence:
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.phone_call_in_progress
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    timeout:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - service: select.select_option
+    data:
+      option: Assist
+    target:
+      entity_id: select.phone_selected_pipeline
+  mode: single
+  icon: mdi:phone-alert
