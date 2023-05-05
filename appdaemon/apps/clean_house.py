@@ -250,8 +250,8 @@ class clean_house(hass.Hass):
         icon = "mdi:robot-vacuum-variant"
       
       if entity == "vacuum.neuneu":
-        area_cleaned = self.entities.sensor.neuneu_last_cleaning_area.state
-        cleaned_map = self.args["hass_base_url"] + self.entities.camera.neuneu_cleaning_map.attributes.entity_picture
+        area_cleaned = self.entities.sensor.neuneu_cleaned_area.state
+        cleaned_map = self.args["hass_base_url"] + self.entities.camera.neuneu_map.attributes.entity_picture
         vacuum_name = "NeuNeu"
         icon = "mdi:robot-vacuum"
       
@@ -291,10 +291,12 @@ class clean_house(hass.Hass):
     
     if entity == "vacuum.neuneu":
       # TO EXPLORE ONCE NEUNEU STARTS RAISING ERRORS
+      current_location = self.args["hass_base_url"] + self.entities.camera.neuneu_map.attributes.entity_picture
       self.fire_event("NOTIFIER",
         action = "send_to_nearest",
         message = "NeuNeu est en erreur",
         title = "⚠️ NeuNeu est en erreur", 
+        image_url = current_location,
         click_url = "/lovelace/vacuums",
         icon =  "mdi:robot-vacuum",
         color = "deep-orange",
