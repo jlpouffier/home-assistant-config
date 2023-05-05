@@ -170,6 +170,8 @@ matrix_2d:
     - light.exterieur
     - light.couloir
     - light.hue_play_bars
+    - light.miffy_segment_0
+    - light.miffy_segment_1
     - binary_sensor.all_doors
     - binary_sensor.all_openings
     - binary_sensor.all_windows
