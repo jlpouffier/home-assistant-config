@@ -1,0 +1,16 @@
+language: "fr"
+intents:
+  SetCoverPosition:
+    data:
+      - sentences:
+          - "<regle> <name> [à|a|sur] {position}[ pourcent|%| %]"
+          - "<ouvre> <name> [à|a|sur] {position}[ pourcent|%| %]"
+          - "<ferme> <name> [à|a|sur] {position}[ pourcent|%| %]"
+        requires_context:
+          domain: cover
+lists:
+  position:
+    range:
+      type: "percentage"
+      from: 0
+      to: 100
