@@ -1,0 +1,34 @@
+language: "fr"
+intents:
+  CleanFirstFloor:
+    data:
+      - sentences:
+          - "nettoie [le] rez-de-chaussée"
+          - "nettoie [le] bas"
+          - "lance (NeuNeu|[l']aspirateur)"
+          - "<allume> (NeuNeu|[l']aspirateur)"
+  SelectedRoomCleaning:
+    data:
+      - sentences:
+          - "nettoie [le |la |les |l']{room}"
+          - "lance (NeuNeu|[l']aspirateur) dans [le |la |les |l']{room}"
+          - "<allume> (NeuNeu|[l']aspirateur) dans [le |la |les |l']{room}"
+  StopCleaning:
+    data:
+      - sentences:
+          - "<eteins> le nettoyage"
+          - "<eteins> (NeuNeu|[l']aspirateur)"
+
+lists:
+  room:
+    values:
+      - in: "Cuisine"
+        out: "input_boolean.vacuum_zone_kitchen"
+      - in: "(Salon|Séjour|Sejour)"
+        out: "input_boolean.vacuum_zone_living_room"
+      - in: "(Cellier|Débarras)"
+        out: "input_boolean.vacuum_zone_celar"
+      - in: "(Salle de bain|Salle d'eau)"
+        out: "input_boolean.vacuum_zone_bathroom"
+      - in: "Entrée"
+        out: "input_boolean.vacuum_zone_entry"

@@ -1,0 +1,23 @@
+intent_script:
+  CleanFirstFloor:
+    action:
+      service: vacuum.start
+      target:
+        entity_id: vacuum.neuneu
+    speech:
+      text: "D'accord"
+
+  SelectedRoomCleaning:
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: "{{room}}"
+      - service: script.room_cleaning_first_floor
+    speech:
+      text: "D'accord"
+
+  StopCleaning:
+    action:
+      service: vacuum.return_to_base
+      target:
+        entity_id: vacuum.neuneu
