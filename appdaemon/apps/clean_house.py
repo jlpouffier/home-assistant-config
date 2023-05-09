@@ -238,9 +238,7 @@ class clean_house(hass.Hass):
     Notify
   """ 
   def callback_vacuum_finished(self, entity, attribute, old, new, kwargs):
-    if old in ["paused", "cleaning", "returning"]:
-      now = self.get_now_ts()
-
+    if old in ["paused", "cleaning", "returning"]: 
       self.log("Detecting that a vacuum has finished. Notifying it...")
 
       if entity == "vacuum.teuteu":
@@ -264,9 +262,20 @@ class clean_house(hass.Hass):
         icon =  icon,
         color = "green",
         tag = vacuum_name.lower())
-
-
-        
+      
+      if entity == "vacuum.neuneu" and self.entities.sensor.neuneu_water_tank.state == "installed":
+        self.log("Water tank still installed to NeuNeu. Notifying it...")
+        self.fire_event("NOTIFIER",
+          action = "send_when_present",
+          title = "🧼 Serpillière attachée",
+          message = "La serpillière est toujours attachée à NeuNeu. Pensez a l'enlever!",
+          click_url="/lovelace/vacuums",
+          icon =  "mdi:faucet",
+          color = "deep-orange",
+          tag = "neuneu_mop_installed",
+          until =  [{
+            "entity_id" : "sensor.neuneu_water_tank",
+            "new_state" : "not_installed"}])
 
   """
   Callback triggered when teuteu is in error
