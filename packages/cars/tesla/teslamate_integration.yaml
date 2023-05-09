@@ -97,8 +97,13 @@ mqtt:
     - name: tesla_shift_state
       unique_id: tesla_shift_state
       state_topic: "teslamate/cars/1/shift_state"
-      
+
     - name: tesla_inside_temp
       unique_id: tesla_inside_temp
       state_topic: "teslamate/cars/1/inside_temp"
       unit_of_measurement: "°C"
+
+homeassistant:
+  customize:
+    device_tracker.tesla_device_tracker:
+      entity_picture: "/local/tesla.jpg"
