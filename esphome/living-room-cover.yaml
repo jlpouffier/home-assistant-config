@@ -11,6 +11,8 @@ logger:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret living-room-cover-api-encryption-key
 
 ota:
 
