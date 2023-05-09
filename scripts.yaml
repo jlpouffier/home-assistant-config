@@ -297,7 +297,7 @@ room_cleaning_first_floor:
         - input_boolean.vacuum_zone_living_room
   mode: single
   icon: mdi:vacuum
-changer_lassistant_du_telephone:
+change_phone_assistant:
   alias: Changer l'Assistant du téléphone
   sequence:
   - condition: state
@@ -328,7 +328,7 @@ reset_phone_assistant:
       to: 'off'
       for:
         hours: 0
-        minutes: 3
+        minutes: 0
         seconds: 0
     timeout:
       hours: 0
