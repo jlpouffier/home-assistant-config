@@ -28,9 +28,6 @@ logs:
   heat_home:
     name: heat_home
     filename: /config/appdaemon/logs/heat_home.log
-  jarvis:
-    name: jarvis
-    filename: /config/appdaemon/logs/jarvis.log
   monitor_home:
     name: monitor_home
     filename: /config/appdaemon/logs/monitor_home.log
