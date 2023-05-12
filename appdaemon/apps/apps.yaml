@@ -211,3 +211,9 @@ smart_hue_buttons:
   module: smart_hue_buttons
   class: smart_hue_buttons
   log: smart_hue_buttons
+
+smart_irrigation:
+  module: smart_irrigation
+  class: smart_irrigation
+  log: smart_irrigation
+  constrain_input_boolean: input_boolean.irrigation_automation
