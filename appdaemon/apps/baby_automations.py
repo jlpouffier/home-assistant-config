@@ -118,7 +118,7 @@ class baby_automations(hass.Hass):
     def callback_light_off(self, entity, attribute, old, new, kwargs):
         while len(self.miffy_scheduler_handles) >=1:
             handle = self.miffy_scheduler_handles.pop()
-            self.cancel_timer(handle, silent = True)
+            self.cancel_timer(handle)
     
     def callback_check_if_miffy_needs_update(self, kwargs):
         led_state = self.entities.light.chambre_bebe_leds.state
