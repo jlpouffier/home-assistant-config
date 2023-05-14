@@ -15,11 +15,14 @@ Notifications :
 """
 class baby_automations(hass.Hass):
     def initialize(self):
+        self.bibi_scheduler_handles = []
+        self.miffy_scheduler_handles = []
         self.listen_state(self.callback_bouton_bibi_pressed, "sensor.bouton_bibi_action", new = "press")
         self.listen_state(self.callback_last_bibi_timestamp_updated, "input_datetime.dernier_bibi", immediate = True)
-        self.listen_state(self.callback_suspension_updated, "light.chambre_bebe_suspension", attribute = "all")
-        self.listen_state(self.callback_leds_updated, "light.chambre_bebe_leds", attribute = "all")
-        self.scheduler_handles = []
+
+        self.listen_state(self.callback_light_on, "light.chambre_bebe", new = "on")
+        self.listen_state(self.callback_light_off, "light.chambre_bebe", new = "off")
+
         self.log("Initialized")
 
     '''
@@ -40,8 +43,8 @@ class baby_automations(hass.Hass):
     def callback_last_bibi_timestamp_updated(self, entity, attribute, old, new, kwargs):
         self.log("Last feeding timestamp updated ... registering callbacks for future notifications ...")
 
-        while len(self.scheduler_handles) >=1:
-            handle = self.scheduler_handles.pop()
+        while len(self.bibi_scheduler_handles) >=1:
+            handle = self.bibi_scheduler_handles.pop()
             self.cancel_timer(handle, silent = True)
         
         self.fire_event("NOTIFIER_DISCARD", tag = "baby_bottle")
@@ -53,13 +56,13 @@ class baby_automations(hass.Hass):
         
         if self.datetime() < next_bibi_minimum_date_time:
             self.log("Minimum feeding time registered for " + str(next_bibi_minimum_date_time))
-            self.scheduler_handles.append(self.run_at(self.callback_next_bibi_possible, next_bibi_minimum_date_time))
+            self.bibi_scheduler_handles.append(self.run_at(self.callback_next_bibi_possible, next_bibi_minimum_date_time))
         if self.datetime() < next_bibi_optimal_date_time:
             self.log("Optimal feeding time registered for " + str(next_bibi_optimal_date_time))
-            self.scheduler_handles.append(self.run_at(self.callback_next_bibi_optimal, next_bibi_optimal_date_time))
+            self.bibi_scheduler_handles.append(self.run_at(self.callback_next_bibi_optimal, next_bibi_optimal_date_time))
         if self.datetime() < next_bibi_maximum_date_time:
             self.log("Maximum feeding time registered for " + str(next_bibi_maximum_date_time))
-            self.scheduler_handles.append(self.run_at(self.callback_next_bibi_needed, next_bibi_maximum_date_time))   
+            self.bibi_scheduler_handles.append(self.run_at(self.callback_next_bibi_needed, next_bibi_maximum_date_time))   
 
     '''
     Callback trigerred when the Minimum feeding time is reached
@@ -109,18 +112,30 @@ class baby_automations(hass.Hass):
             color = "deep-orange",
             tag = "baby_bottle")
     
-    def callback_suspension_updated(self, entity, attribute, old, new, kwargs):
-        if new["state"] == "on":
-            target_color = new["attributes"]["rgb_color"]
-            taget_brightness = new["attributes"]["brightness"]
-            self.call_service("light/turn_on", entity_id = "light.miffy_segment_0", brightness = taget_brightness, rgb_color = target_color)
-        else:
-            self.call_service("light/turn_off", entity_id = "light.miffy_segment_0")
+    def callback_light_on(self, entity, attribute, old, new, kwargs):
+        self.miffy_scheduler_handles.append(self.run_every(self.callback_check_if_miffy_needs_update, start = self.get_now(), interval = 1))
     
-    def callback_leds_updated(self, entity, attribute, old, new, kwargs):
-        if new["state"] == "on":
-            target_color = new["attributes"]["rgb_color"]
-            taget_brightness = new["attributes"]["brightness"]
-            self.call_service("light/turn_on", entity_id = "light.miffy_segment_1", brightness = taget_brightness, rgb_color = target_color)
-        else:
-            self.call_service("light/turn_off", entity_id = "light.miffy_segment_1")
+    def callback_light_off(self, entity, attribute, old, new, kwargs):
+        while len(self.miffy_scheduler_handles) >=1:
+            handle = self.miffy_scheduler_handles.pop()
+            self.cancel_timer(handle, silent = True)
+    
+    def callback_check_if_miffy_needs_update(self, kwargs):
+        led_state = self.entities.light.chambre_bebe_leds.state
+        miffy_state = self.entities.light.miffy.state
+        if led_state == "on":
+            led_brightness = self.entities.light.chambre_bebe_leds.attributes.brightness
+            led_color = self.entities.light.chambre_bebe_leds.attributes.rgb_color
+        if miffy_state == "on":
+            miffy_brightness = self.entities.light.miffy.attributes.brightness
+            miffy_color = self.entities.light.miffy.attributes.rgb_color
+
+        if led_state == "on" and miffy_state == "off":
+            self.call_service("light/turn_on", entity_id = "light.miffy", rgb_color = led_color, brightness = led_brightness)
+        
+        elif led_state == "on" and miffy_state == "on" and ( led_color != miffy_color or led_brightness != miffy_brightness ):
+            self.call_service("light/turn_on", entity_id = "light.miffy", rgb_color = led_color, brightness = led_brightness)
+        
+        elif led_state == "off" and miffy_state == "on":
+            self.call_service("light/turn_off", entity_id = "light.miffy")
+        
