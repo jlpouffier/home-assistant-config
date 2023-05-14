@@ -21,3 +21,5 @@ intent_script:
       service: vacuum.return_to_base
       target:
         entity_id: vacuum.neuneu
+    speech:
+      text: "D'accord"
