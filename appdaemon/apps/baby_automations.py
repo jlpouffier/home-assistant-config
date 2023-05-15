@@ -123,7 +123,8 @@ class baby_automations(hass.Hass):
     
     
     def callback_brightness_updated(self, entity, attribute, old, new, kwargs):
-        self.call_service("light/turn_on", entity_id = "light.miffy", brightness = new)
+        if new is not None:
+            self.call_service("light/turn_on", entity_id = "light.miffy", brightness = new)
     
     
     
