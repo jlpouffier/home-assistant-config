@@ -16,13 +16,12 @@ Notifications :
 class baby_automations(hass.Hass):
     def initialize(self):
         self.bibi_scheduler_handles = []
-        self.miffy_scheduler_handles = []
         self.listen_state(self.callback_bouton_bibi_pressed, "sensor.bouton_bibi_action", new = "press")
         self.listen_state(self.callback_last_bibi_timestamp_updated, "input_datetime.dernier_bibi", immediate = True)
-
-        self.listen_state(self.callback_light_on, "light.chambre_bebe", new = "on")
-        self.listen_state(self.callback_light_off, "light.chambre_bebe", new = "off")
-
+        self.listen_state(self.callback_light_on, "light.chambre_bebe_suspension", new = "on")
+        self.listen_state(self.callback_light_off, "light.chambre_bebe_suspension", new = "off")
+        self.listen_state(self.callback_brightness_updated, "light.chambre_bebe_suspension", attribute = "brightness")
+                
         self.log("Initialized")
 
     '''
@@ -113,29 +112,18 @@ class baby_automations(hass.Hass):
             tag = "baby_bottle")
     
     def callback_light_on(self, entity, attribute, old, new, kwargs):
-        self.miffy_scheduler_handles.append(self.run_every(self.callback_check_if_miffy_needs_update, start = self.get_now(), interval = 1))
+        try:
+            target_brightness = self.entities.light.chambre_bebe_suspension.attribute.brightness
+        except:
+            target_brightness = 100
+        self.call_service("light/turn_on", entity_id = "light.miffy", brightness = target_brightness)
     
     def callback_light_off(self, entity, attribute, old, new, kwargs):
-        while len(self.miffy_scheduler_handles) >=1:
-            handle = self.miffy_scheduler_handles.pop()
-            self.cancel_timer(handle)
+        self.call_service("light/turn_off", entity_id = "light.miffy")
     
-    def callback_check_if_miffy_needs_update(self, kwargs):
-        led_state = self.entities.light.chambre_bebe_leds.state
-        miffy_state = self.entities.light.miffy.state
-        if led_state == "on":
-            led_brightness = self.entities.light.chambre_bebe_leds.attributes.brightness
-            led_color = self.entities.light.chambre_bebe_leds.attributes.rgb_color
-        if miffy_state == "on":
-            miffy_brightness = self.entities.light.miffy.attributes.brightness
-            miffy_color = self.entities.light.miffy.attributes.rgb_color
-
-        if led_state == "on" and miffy_state == "off":
-            self.call_service("light/turn_on", entity_id = "light.miffy", rgb_color = led_color, brightness = led_brightness)
-        
-        elif led_state == "on" and miffy_state == "on" and ( led_color != miffy_color or led_brightness != miffy_brightness ):
-            self.call_service("light/turn_on", entity_id = "light.miffy", rgb_color = led_color, brightness = led_brightness)
-        
-        elif led_state == "off" and miffy_state == "on":
-            self.call_service("light/turn_off", entity_id = "light.miffy")
-        
+    
+    def callback_brightness_updated(self, entity, attribute, old, new, kwargs):
+        self.call_service("light/turn_on", entity_id = "light.miffy", brightness = new)
+    
+    
+    
