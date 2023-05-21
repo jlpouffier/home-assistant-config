@@ -1,8 +1,0 @@
-intent_script:
-  ChangePhoneAssistant:
-    action:
-      service: script.change_phone_assistant
-      data:
-        assistant: "{{assistant}}"
-    speech:
-      text: "Vous êtes désormais en communication avec {{assistant}}"
