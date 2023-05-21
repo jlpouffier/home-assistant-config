@@ -226,10 +226,10 @@ class clean_house(hass.Hass):
     self.log("A vacuum is cleaning since more than 15 minutes, updating the last clean-up datetime...")
 
     if entity == "vacuum.teuteu":
-      self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_teuteu", datetime = self.datetime(aware = True))
+      self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_teuteu", timestamp = self.get_now_ts())
     
     if entity == "vacuum.neuneu":
-      self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_neuneu", datetime = self.datetime(aware = True))
+      self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.dernier_nettoyage_de_neuneu", timestamp = self.get_now_ts())
 
 
   """
