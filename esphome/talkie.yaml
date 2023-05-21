@@ -73,13 +73,25 @@ microphone:
     pdm: false
 
 sensor:
-- platform: adc
-  pin: A13
-  name: "ESP32 Battery Voltage"
-  update_interval: 60s
-  attenuation: auto
-  filters:
-    - multiply: 2.0  # The voltage divider requires us to multiply by 2
+  - platform: adc
+    pin: A13
+    id: battery_voltage
+    name: "Battery Voltage"
+    update_interval: 60s
+    disabled_by_default: true
+    entity_category: diagnostic
+    attenuation: auto
+    filters:
+      - multiply: 2.0
+
+  - platform: template
+    name: Battery
+    update_interval: 60s
+    device_class: "battery"
+    state_class: "measurement"
+    accuracy_decimals: 2
+    lambda: return 123-123/pow(1+pow(id(battery_voltage).state/3.7,80),0.165);
+  
 
 binary_sensor:
   - platform: gpio
@@ -108,6 +120,7 @@ binary_sensor:
               brightness: 25%
               effect: pulse
           - voice_assistant.stop:
+
   - platform: gpio
     name: Change Assistant Button
     pin:
@@ -175,7 +188,6 @@ voice_assistant:
         effect: none
     - delay: 1s
     - light.turn_off: led
-
 
 light:
   - platform: esp32_rmt_led_strip
