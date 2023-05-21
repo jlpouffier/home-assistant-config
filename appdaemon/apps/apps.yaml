@@ -100,7 +100,8 @@ monitor_system:
     - sensor.capteur_mouvement_litiere_battery
     - sensor.capteur_mouvement_boite_aux_lettres_battery
     - sensor.the_cube_battery
-    - sensor.bouton_bibi_battery
+    - sensor.irrigation_battery
+    #- sensor.bouton_bibi_battery
 
 smart_cube:
   module: smart_cube
@@ -217,3 +218,13 @@ smart_irrigation:
   class: smart_irrigation
   log: smart_irrigation
   constrain_input_boolean: input_boolean.irrigation_automation
+
+walkie_talkie:
+  module: walkie_talkie
+  class: walkie_talkie
+  log: walkie_talkie
+  assistants_available:
+    - Assist
+    - Papa Noël
+    - Jarvis
+    - Régis

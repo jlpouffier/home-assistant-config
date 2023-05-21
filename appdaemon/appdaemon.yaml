@@ -85,3 +85,6 @@ logs:
   smart_irrigation:
     name: smart_irrigation
     filename: /config/appdaemon/logs/smart_irrigation.log
+  walkie_talkie:
+    name: walkie_talkie
+    filename: /config/appdaemon/logs/walkie_talkie.log
