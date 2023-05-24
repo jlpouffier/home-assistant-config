@@ -58,10 +58,10 @@ class tesla_automations(hass.Hass):
             Notify if all the above is true
     """
     def callback_tesla_charging_session_started(self, entity, attribute, old, new, kwargs):
-        if self.entities.device_tracker.tesla_device_tracker.state == "home" and self.entities.schedule.heures_creuses.state == "on":
+        if self.entities.device_tracker.tesla_device_tracker.state == "home" and self.entities.schedule.heures_pleines.state == "off":
             
             planned_charge_end_time = self.get_now() + datetime.timedelta(hours = float(self.entities.sensor.tesla_time_to_full_charge.state))
-            off_peak_end_time = self.convert_utc(self.entities.schedule.heures_creuses.attributes.next_event)
+            off_peak_end_time = self.convert_utc(self.entities.schedule.heures_pleines.attributes.next_event)
             
             # TODO: Calculate new target to include it in the notification
 
