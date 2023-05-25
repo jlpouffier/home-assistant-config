@@ -25,7 +25,7 @@ class tesla_automations(hass.Hass):
         self.update_time_difference = 0
 
         self.listen_state(self.callback_location_updated, ['sensor.tesla_latitude','sensor.tesla_longitude'])
-        self.listen_state(self.callback_tesla_charging_session_started, "sensor.tesla_state", new = "charging", duration = 60)
+        self.listen_state(self.callback_tesla_charging_session_started, "sensor.tesla_state", new = "charging", immediate = True)
 
     """
     Callback triggered when either the latitude or the longitude of my tesla is updated
@@ -62,15 +62,20 @@ class tesla_automations(hass.Hass):
             
             planned_charge_end_time = self.get_now() + datetime.timedelta(hours = float(self.entities.sensor.tesla_time_to_full_charge.state))
             off_peak_end_time = self.convert_utc(self.entities.schedule.heures_pleines.attributes.next_event)
-            
-            # TODO: Calculate new target to include it in the notification
 
             if planned_charge_end_time > off_peak_end_time:
                 self.log("The end of the charge will be after off peak hour... Notifying")
+
+                actual_taget_charge_level = float(self.entities.sensor.tesla_charge_limit.state)
+                actual_time_to_charge = datetime.timedelta(hours = float(self.entities.sensor.tesla_time_to_full_charge.state))
+                current_charge_level = float(self.entities.sensor.tesla_battery_level.state)
+                allowed_time_to_charge = off_peak_end_time - self.get_now()  
+                allowed_charge_level = (actual_taget_charge_level - current_charge_level) * allowed_time_to_charge / actual_time_to_charge + current_charge_level
+
                 self.fire_event("NOTIFIER",
                     action = "send_to_jl",
                     title = "️🚗 Tesla", 
-                    message = "La recharge est prevue de finir après la fin des heures creuse (" + str(planned_charge_end_time.strftime("%H:%M")) + "). Pense à reduire la cibe de recharge",
+                    message = "La recharge est prevue de finir après la fin des heures creuse (" + str(planned_charge_end_time.strftime("%H:%M")) + "). Pense à reduire la cibe de recharge vers " + str(round(allowed_charge_level,0)) + "%",
                     click_url="/lovelace/tesla",
                     icon =  "mdi:car",
                     color = "deep-orange",

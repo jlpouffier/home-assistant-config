@@ -103,6 +103,11 @@ mqtt:
       state_topic: "teslamate/cars/1/inside_temp"
       unit_of_measurement: "°C"
 
+    - name: tesla_charge_limit
+      unique_id: tesla_charge_limit
+      state_topic: "teslamate/cars/1/charge_limit_soc"
+      unit_of_measurement: "%"
+
 homeassistant:
   customize:
     device_tracker.tesla_device_tracker:
