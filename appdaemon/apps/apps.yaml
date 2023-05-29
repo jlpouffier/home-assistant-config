@@ -125,15 +125,10 @@ tesla_automations:
   log: tesla_automations
   max_delay_between_coordinate_update_to_send_location_update: 1
 
-baby_automations:
-  module: baby_automations
-  class: baby_automations
-  log: baby_automations
-  constrain_input_boolean: input_boolean.automation_baby_automations
-  kid_name: !secret kid_name
-  minimum_delay_between_bibi_in_hours: 2
-  optimal_delay_between_bibi_in_hours: 4
-  maximum_delay_between_bibi_in_hours: 6
+miffy_sync:
+  module: miffy_sync
+  class: miffy_sync
+  log: miffy_sync
 
 matrix_2d:
   module: matrix_2d

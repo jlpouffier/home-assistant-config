@@ -55,9 +55,9 @@ logs:
   welcome_home:
     name: welcome_home
     filename: /config/appdaemon/logs/welcome_home.log
-  baby_automations:
-    name: baby_automations
-    filename: /config/appdaemon/logs/baby_automations.log
+  miffy_sync:
+    name: miffy_sync
+    filename: /config/appdaemon/logs/miffy_sync.log
   tesla_automations:
     name: tesla_automations
     filename: /config/appdaemon/logs/tesla_automations.log
