@@ -10,12 +10,12 @@ class smart_irrigation(hass.Hass):
         self.listen_state(self.callback_irrigation_started, "switch.irrigation_switch", new = "on")
         self.listen_state(self.callback_irrigation_end_time_updated, "input_datetime.end_of_irrigation", immediate = True)
         self.listen_state(self.callback_irrigation_stopped, "switch.irrigation_switch", new = "off")
-        self.log("Initialized")
     
     def callback_irrigation_started(self, entity, attribute, old, new, kwargs):
         self.log("Irrigation started... Computing end of irrigation time")
-        now = self.get_now()
-        irrigation_endtime = now + datetime.timedelta(minutes = float(self.entities.input_number.irrigation_time.state)) 
+        now = self.get_now_ts()
+        irrigation_endtime = now + datetime.timedelta(minutes = float(self.entities.input_number.irrigation_time.state)).total_seconds()
+
         self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.end_of_irrigation", datetime = irrigation_endtime)
 
     def callback_irrigation_end_time_updated(self, entity, attribute, old, new, kwargs):
