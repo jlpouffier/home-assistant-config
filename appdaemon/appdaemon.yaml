@@ -88,3 +88,6 @@ logs:
   walkie_talkie:
     name: walkie_talkie
     filename: /config/appdaemon/logs/walkie_talkie.log
+  office_automations:
+    name: office_automations
+    filename: /config/appdaemon/logs/office_automations.log

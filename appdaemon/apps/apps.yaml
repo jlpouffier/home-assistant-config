@@ -222,3 +222,8 @@ walkie_talkie:
     - Papa Noël
     - Jarvis
     - Régis
+
+office_automations:
+  module: office_automations
+  class: office_automations
+  log: office_automations
