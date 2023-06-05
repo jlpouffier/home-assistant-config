@@ -76,6 +76,16 @@ turn_off_media_center:
           entity_id: media_player.kef
           state: 'off'
       then:
+      - if:
+        - condition: state
+          entity_id: media_player.kef
+          attribute: source
+          state: Wifi
+        then:
+        - service: media_player.media_pause
+          data: {}
+          target:
+            entity_id: media_player.kef
       - service: media_player.turn_off
         target:
           entity_id: media_player.kef
