@@ -89,6 +89,7 @@ sensor:
     update_interval: 60s
     device_class: "battery"
     state_class: "measurement"
+    unit_of_measurement: "%"
     accuracy_decimals: 2
     lambda: return 123-123/pow(1+pow(id(battery_voltage).state/3.7,80),0.165);
   
