@@ -6,56 +6,45 @@ import datetime
 monitor_system is an app responsible of 
 
 Functionalities :
-.
+. Full backup everyday at 1am
 
 Notifications :
-  . Notify HASS update
-  . Notify HACS update
+  . Notify update
   . Notify if RPI power is not OK
-  . Notify last back-up older than 24 hours.
   . Notify low batteries on all battery poweered devices 
-
-
 
 """
 class monitor_system(hass.Hass): 
     def initialize(self):
         
         # Listen to all updater state change
-        self.listen_state(self.callback_hass_update_available, "update" , new = "on" , immediate = True)
-
-        # Listen to HACS pending update
-        self.listen_state(self.callback_hacs_update_available, "sensor.hacs" , immediate = True)
+        self.listen_state(self.callback_update_available, "update" , new = "on" , immediate = True)
 
         # Listen to RPI power status
         self.listen_state(self.callback_rpi_power_problem_detected, "binary_sensor.rpi_power_status" , new = "on" , immediate = True)
 
-        # Samba back-up daily check
-        samba_backup_daily_check_runtime = datetime.time(10,0,0)
-        self.run_daily(self.callback_samba_backup_daily_check, samba_backup_daily_check_runtime)
+        # Daily back-up
+        backup_runtime = datetime.time(1,0,0)
+        self.run_daily(self.callback_trigger_backup, backup_runtime)
         
         # Battery daily check
         battery_daily_check_runtime = datetime.time(19,0,0)
         self.run_daily(self.callback_battery_daily_check, battery_daily_check_runtime)
-        
-        self.log("Monitor System Initializing, Restauring Samba Backup sensor ...")
-        self.call_service("hassio/addon_stdin", addon = "15d21743_samba_backup" , input = "restore-sensor")
-
 
     """
     Callback triggered when new upate is available on the HASS domain.
     Goals :
     . Notify
     """
-    def callback_hass_update_available(self, entity, attribute, old, new, kwargs):
+    def callback_update_available(self, entity, attribute, old, new, kwargs):
         self.log("Detecting an available update... Notifying it...")
     
-        app_title = self.get_state(entity, attribute = "title")
+        app_title = self.get_state(entity, attribute = "friendly_name")
 
         if app_title is not None:
-            message = "Une mise a jour est disponible pour " + app_title
+            message = app_title
         else:
-            message = "Une mise a jour est disponible (Entité inconnue)"
+            message = "(Entité inconnue)"
     
         self.fire_event("NOTIFIER",
             action = "send_to_jl",
@@ -67,28 +56,6 @@ class monitor_system(hass.Hass):
             until =  [{
                 "entity_id" : entity,
                 "new_state" : "off"}])
-
-    """
-    Callback triggered when a new upate is available on the HACS domain.
-    Goals :
-    . Notify
-    """
-    def callback_hacs_update_available(self, entity, attribute, old, new, kwargs):
-        if new != "unknown":
-            number_of_available_update = int(new)
-            if number_of_available_update > 0:
-                self.log("Detecting an available update... Notifying it...")
-                self.fire_event("NOTIFIER",
-                    action = "send_to_jl",
-                    title = "🎉 Mise a jour HACS disponible",
-                    message = "Une mise a jour HACS est disponible",
-                    click_url = "/hacs/entry",
-                    icon = "mdi:cellphone-arrow-down",
-                    persistent = True,
-                    tag = "hacs_update",
-                    until =  [{
-                        "entity_id" : entity,
-                        "new_state" : 0}])
 
     """
     Callback triggered when a power issue is detected on the RPI
@@ -104,31 +71,23 @@ class monitor_system(hass.Hass):
             icon = "mdi:power-plug",
             color = "deep-orange",
             persistent = True)
-    """
-    Callback triggered when the last available back-up is older than 24 hours.
-    Goals :
-    . Notify
-    """
-    def callback_samba_backup_daily_check(self, kwargs):
-        self.log("Checking last Samba backup ...")
-        last_backup_string = self.get_state("sensor.samba_backup", attribute = 'last_backup') + ":00"
-        last_backup_date = self.parse_datetime(last_backup_string, aware = True)
-        now = self.get_now()
-        if (now - last_backup_date) > datetime.timedelta(hours = 24):
-            self.log("Samba backup issue found... Notifying it")
-            self.fire_event("NOTIFIER",
-                action = "send_to_jl",
-                title = "💾 Sauvegarde journalière",
-                message = "La sauvegarde journalière sur le NAS n'a pas eu lieu depuis plus de 24 heures",
-                click_url = "/hassio/addon/15d21743_samba_backup/logs",
-                icon =  "mdi:cloud-upload",
-                color = "deep-orange",
-                persistent = True)
+
 
     """
-    Callback triggered when the last available back-up is older than 24 hours.
+    Callback triggered everyday at 1am
     Goals :
-    . Notify
+    . Full back-up
+    """
+    def callback_trigger_backup(self, kwargs):
+        self.log("Backing-up the system ...")
+        backup_time = self.get_now()
+        backup_name = "Home Assistant Backup " + str(backup_time)
+        self.call_service("hassio/backup_full", name = backup_name)
+
+    """
+    Callback triggered everyday at 7pm
+    Goals :
+    . Notify if some batteries are low
     """
     def callback_battery_daily_check(self, kwargs):
         self.log("Checking battery levels  ...")
