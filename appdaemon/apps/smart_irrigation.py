@@ -15,8 +15,7 @@ class smart_irrigation(hass.Hass):
         self.log("Irrigation started... Computing end of irrigation time")
         now = self.get_now_ts()
         irrigation_endtime = now + datetime.timedelta(minutes = float(self.entities.input_number.irrigation_time.state)).total_seconds()
-
-        self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.end_of_irrigation", datetime = irrigation_endtime)
+        self.call_service("input_datetime/set_datetime", entity_id = "input_datetime.end_of_irrigation", timestamp = irrigation_endtime)
 
     def callback_irrigation_end_time_updated(self, entity, attribute, old, new, kwargs):
         self.reset_timer()
@@ -24,6 +23,10 @@ class smart_irrigation(hass.Hass):
         if self.datetime() < planned_end_of_irrigation_time:
             self.log("The irrigation will end at " + str(planned_end_of_irrigation_time))
             self.scheduler_handles.append(self.run_at(self.callback_irrigation_end_time_reached, planned_end_of_irrigation_time))
+        else:
+            if self.entities.switch.irrigation_switch.state == "on":
+                self.log("Inconsistent state... Ending Irrigation now")
+                self.call_service("switch/turn_off", entity_id = "switch.irrigation_switch")
 
     def callback_irrigation_stopped(self, entity, attribute, old, new, kwargs):
         self.reset_timer()
