@@ -160,8 +160,6 @@ matrix_2d:
     - light.exterieur
     - light.couloir
     - light.hue_play_bars
-    - light.miffy_segment_0
-    - light.miffy_segment_1
     - binary_sensor.all_doors
     - binary_sensor.all_openings
     - binary_sensor.all_windows
@@ -172,6 +170,12 @@ matrix_2d:
     - camera.neuneu_map
     - media_player.tv_cast
     - remote.jl_s_tv
+    - binary_sensor.baby_room_presence_sensor_mmwave
+    - binary_sensor.baby_room_presence_sensor_pir
+    - binary_sensor.baby_room_presence_sensor_occupancy
+    - binary_sensor.office_presence_sensor_mmwave
+    - binary_sensor.office_presence_sensor_pir
+    - binary_sensor.office_presence_sensor_occupancy
 
 monitor_mailbox:
   module: monitor_mailbox
