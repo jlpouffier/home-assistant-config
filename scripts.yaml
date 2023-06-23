@@ -2,193 +2,193 @@ leave_home:
   alias: Quitter la maison
   mode: single
   sequence:
-    - parallel:
-        - service: light.turn_off
-          target:
-            entity_id:
-              - light.all_lights
-          data: {}
-        - service: media_player.turn_off
-          target:
-            entity_id:
-              - media_player.kef
-              - media_player.philips_android_tv
-          data: {}
-        - service: switch.turn_off
-          target:
-            entity_id: switch.coffeemaker
-          data: {}
+  - parallel:
+    - service: light.turn_off
+      target:
+        entity_id:
+        - light.all_lights
+      data: {}
+    - service: media_player.turn_off
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.philips_android_tv
+      data: {}
+    - service: switch.turn_off
+      target:
+        entity_id: switch.coffeemaker
+      data: {}
   icon: mdi:home-export-outline
 welcome_home:
   alias: Bienvenue a la maison
   mode: single
   sequence:
-    - service: hue.activate_scene
-      target:
-        entity_id: scene.entree_entree_100
-      data: {}
-    - delay: 3
-    - service: hue.activate_scene
-      target:
-        entity_id: scene.salon_salon_100
-      data: {}
-    - delay: 3
-    - service: hue.activate_scene
-      target:
-        entity_id: scene.cuisine_cuisine_100
-      data: {}
+  - service: hue.activate_scene
+    target:
+      entity_id: scene.entree_entree_100
+    data: {}
+  - delay: 3
+  - service: hue.activate_scene
+    target:
+      entity_id: scene.salon_salon_100
+    data: {}
+  - delay: 3
+  - service: hue.activate_scene
+    target:
+      entity_id: scene.cuisine_cuisine_100
+    data: {}
   icon: mdi:home-import-outline
 reset_lights_day_area:
   alias: Réinitialisation Lumières Coin Jour
   mode: restart
   sequence:
-    - alias: activate hue scenes on salon, entrée and cuisine
-      service: hue.activate_scene
-      data:
-        transition: 2
-      target:
-        entity_id:
-          - scene.salon_salon_100
-          - scene.entree_entree_100
-          - scene.cuisine_cuisine_100
+  - alias: activate hue scenes on salon, entrée and cuisine
+    service: hue.activate_scene
+    data:
+      transition: 2
+    target:
+      entity_id:
+      - scene.salon_salon_100
+      - scene.entree_entree_100
+      - scene.cuisine_cuisine_100
   icon: mdi:sofa
 turn_off_media_center:
   alias: Turn Off Media center
   mode: single
   sequence:
-    - alias: turn off tv and lsx in parallel
-      parallel:
-        - alias: if tv on then turn off tv
-          if:
-            - condition: state
-              entity_id: binary_sensor.is_tv_on
-              state: "on"
-          then:
-            - service: media_player.turn_off
-              target:
-                entity_id: media_player.philips_android_tv
-              data: {}
-        - alias: if lsk on then turn off lsx
-          if:
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id: media_player.kef
-                  state: "off"
-          then:
-            - service: media_player.turn_off
-              target:
-                entity_id:
-                  - media_player.kef
-              data: {}
+  - alias: turn off tv and lsx in parallel
+    parallel:
+    - alias: if tv on then turn off tv
+      if:
+      - condition: state
+        entity_id: binary_sensor.is_tv_on
+        state: 'on'
+      then:
+      - service: media_player.turn_off
+        target:
+          entity_id: media_player.philips_android_tv
+        data: {}
+    - alias: if lsk on then turn off lsx
+      if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.kef
+          state: 'off'
+      then:
+      - service: media_player.turn_off
+        target:
+          entity_id:
+          - media_player.kef
+        data: {}
   icon: mdi:remote-tv-off
 turn_on_media_center:
   alias: Turn On Media center
   mode: single
   sequence:
-    - alias: turn on tv and lsx in parallel
-      parallel:
-        - alias: if tv off then turn on tv
-          if:
-            - condition: state
-              entity_id: binary_sensor.is_tv_on
-              state: "off"
-          then:
-            - if:
-                - condition: state
-                  entity_id: media_player.philips_android_tv
-                  state: unavailable
-              then:
-                - service: wake_on_lan.send_magic_packet
-                  data:
-                    mac: 68:07:0A:4A:F5:AB
-                - wait_for_trigger:
-                    - platform: state
-                      entity_id:
-                        - media_player.philips_android_tv
-                      to: "off"
-                  timeout:
-                    hours: 0
-                    minutes: 1
-                    seconds: 0
-                    milliseconds: 0
-                  continue_on_timeout: true
-            - service: media_player.turn_on
-              data: {}
-              target:
-                entity_id: media_player.philips_android_tv
-        - alias: if lsx are off then turn on lsx
-          if:
-            - condition: state
-              entity_id: media_player.kef
-              state: "off"
-          then:
-            - service: media_player.turn_on
-              target:
-                entity_id:
-                  - media_player.kef
-              data: {}
-            - wait_for_trigger:
-                - platform: state
-                  entity_id:
-                    - media_player.kef
-                  not_to: "off"
-              timeout:
-                hours: 0
-                minutes: 0
-                seconds: 10
-                milliseconds: 0
-              continue_on_timeout: true
-            - alias: change lsk source
-              if:
-                - condition: not
-                  conditions:
-                    - condition: state
-                      entity_id: media_player.kef
-                      attribute: source
-                      state: Opt
-              then:
-                - service: media_player.select_source
-                  target:
-                    entity_id: media_player.kef
-                  data:
-                    source: Opt
-        - alias: if lsx are on then change lsx source
-          if:
-            - condition: state
-              entity_id: media_player.kef
-              state: "on"
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id: media_player.kef
-                  attribute: source
-                  state: Opt
-                  alias: LSK SOURCE OPT
-          then:
-            - service: media_player.select_source
-              target:
-                entity_id: media_player.kef
-              data:
-                source: Opt
+  - alias: turn on tv and lsx in parallel
+    parallel:
+    - alias: if tv off then turn on tv
+      if:
+      - condition: state
+        entity_id: binary_sensor.is_tv_on
+        state: 'off'
+      then:
+      - if:
+        - condition: state
+          entity_id: media_player.philips_android_tv
+          state: unavailable
+        then:
+        - service: wake_on_lan.send_magic_packet
+          data:
+            mac: 68:07:0A:4A:F5:AB
+        - wait_for_trigger:
+          - platform: state
+            entity_id:
+            - media_player.philips_android_tv
+            to: 'off'
+          timeout:
+            hours: 0
+            minutes: 1
+            seconds: 0
+            milliseconds: 0
+          continue_on_timeout: true
+      - service: media_player.turn_on
+        data: {}
+        target:
+          entity_id: media_player.philips_android_tv
+    - alias: if lsx are off then turn on lsx
+      if:
+      - condition: state
+        entity_id: media_player.kef
+        state: 'off'
+      then:
+      - service: media_player.turn_on
+        target:
+          entity_id:
+          - media_player.kef
+        data: {}
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - media_player.kef
+          not_to: 'off'
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+        continue_on_timeout: true
+      - alias: change lsk source
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: media_player.kef
+            attribute: source
+            state: Opt
+        then:
+        - service: media_player.select_source
+          target:
+            entity_id: media_player.kef
+          data:
+            source: Opt
+    - alias: if lsx are on then change lsx source
+      if:
+      - condition: state
+        entity_id: media_player.kef
+        state: 'on'
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.kef
+          attribute: source
+          state: Opt
+          alias: LSK SOURCE OPT
+      then:
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.kef
+        data:
+          source: Opt
   icon: mdi:remote-tv
 pulse_2d_led_matrix:
   alias: Pulse 2D LED Matrix
   sequence:
-    - service: light.turn_on
-      data: {}
-      target:
-        entity_id:
-          - light.2d_matrix
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 1
-        milliseconds: 0
-    - service: light.turn_off
-      data: {}
-      target:
-        entity_id: light.2d_matrix
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id:
+      - light.2d_matrix
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.2d_matrix
   mode: queued
   icon: mdi:crop-square
   max: 1000
@@ -196,186 +196,184 @@ lights_set_tv:
   alias: Réglage lumières lors que la TV joue un média
   mode: restart
   sequence:
-    - alias: turn off cuisine entree
-      service: light.turn_off
-      target:
-        entity_id:
-          - light.cuisine
-          - light.entree
-      data:
-        transition: 2
-    - alias: activate hue scene on salon
-      service: hue.activate_scene
-      target:
-        entity_id: scene.salon_salon_tv_playing
-      data:
-        transition: 2
+  - alias: turn off cuisine entree
+    service: light.turn_off
+    target:
+      entity_id:
+      - light.cuisine
+      - light.entree
+    data:
+      transition: 2
+  - alias: activate hue scene on salon
+    service: hue.activate_scene
+    target:
+      entity_id: scene.salon_salon_tv_playing
+    data:
+      transition: 2
   icon: mdi:play
 lights_set_tv_paused:
   alias: Réglage lumières lors que la TV est en pause
   mode: restart
   sequence:
-    - alias: activate hue scene on salon entee and cuisine
-      service: hue.activate_scene
-      target:
-        entity_id:
-          - scene.cuisine_cuisine_tv_paused
-          - scene.entree_entree_tv_paused
-          - scene.salon_salon_tv_paused
-      data:
-        transition: 2
+  - alias: activate hue scene on salon entee and cuisine
+    service: hue.activate_scene
+    target:
+      entity_id:
+      - scene.cuisine_cuisine_tv_paused
+      - scene.entree_entree_tv_paused
+      - scene.salon_salon_tv_paused
+    data:
+      transition: 2
   icon: mdi:pause
 wake_up:
   alias: Réveil Lumineux - Lumières
   sequence:
-    - service: light.turn_off
-      data: {}
-      target:
-        entity_id: light.chambre
-    - service: light.turn_on
-      data:
-        transition: 300
-        brightness_pct: 100
-        color_temp: 490
-      target:
-        entity_id: light.chambre_bloom
-    - delay:
-        hours: 0
-        minutes: 5
-        seconds: 0
-        milliseconds: 0
-    - service: light.turn_on
-      data:
-        transition: 300
-        brightness_pct: 100
-      target:
-        entity_id:
-          - light.chambre_suspension
-          - light.chambre_chevet_jl
-          - light.chambre_chevet_valentine
-    - delay:
-        hours: 0
-        minutes: 10
-        seconds: 0
-        milliseconds: 0
-    - service: light.turn_on
-      data: {}
-      target:
-        entity_id: light.chambre_guirlande
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.chambre
+  - service: light.turn_on
+    data:
+      transition: 300
+      brightness_pct: 100
+      color_temp: 490
+    target:
+      entity_id: light.chambre_bloom
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_on
+    data:
+      transition: 300
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.chambre_suspension
+      - light.chambre_chevet_jl
+      - light.chambre_chevet_valentine
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id: light.chambre_guirlande
   mode: single
   icon: mdi:weather-sunset-up
 room_cleaning_first_floor:
   alias: Room Cleaning (First Floor)
   sequence:
-    - if:
-        - condition: template
-          value_template:
-            '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
-            1}}'
-      then:
-        - service: dreame_vacuum.vacuum_clean_segment
-          data:
-            segments:
-              "{{ state_attr('sensor.vacuum_selected_room_firsr_floor', 'room_list')
-              }}"
-          target:
-            entity_id: vacuum.neuneu
-        - service: input_boolean.turn_off
-          data: {}
-          target:
-            entity_id:
-              - input_boolean.vacuum_zone_celar
-              - input_boolean.vacuum_zone_kitchen
-              - input_boolean.vacuum_zone_entry
-              - input_boolean.vacuum_zone_bathroom
-              - input_boolean.vacuum_zone_living_room
+  - if:
+    - condition: template
+      value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
+        1}}'
+    then:
+    - service: dreame_vacuum.vacuum_clean_segment
+      data:
+        segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
+          }}'
+      target:
+        entity_id: vacuum.neuneu
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.vacuum_zone_celar
+        - input_boolean.vacuum_zone_kitchen
+        - input_boolean.vacuum_zone_entry
+        - input_boolean.vacuum_zone_bathroom
+        - input_boolean.vacuum_zone_living_room
   mode: single
   icon: mdi:vacuum
 turn_on_speakers:
   alias: Turn On Speakers
   sequence:
-    - alias: if lsx are off then turn on lsx
+  - alias: if lsx are off then turn on lsx
+    if:
+    - condition: state
+      entity_id: media_player.kef
+      state: 'off'
+    then:
+    - service: media_player.turn_on
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.lsx_airplay
+      data: {}
+    - wait_for_trigger:
+      - platform: state
+        entity_id:
+        - media_player.kef
+        not_to: 'off'
+      timeout:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
+      continue_on_timeout: true
+    - alias: change lsk source
       if:
+      - condition: not
+        conditions:
         - condition: state
           entity_id: media_player.kef
-          state: "off"
+          attribute: source
+          state: Wifi
       then:
-        - service: media_player.turn_on
-          target:
-            entity_id:
-              - media_player.kef
-              - media_player.lsx_airplay
-          data: {}
-        - wait_for_trigger:
-            - platform: state
-              entity_id:
-                - media_player.kef
-              not_to: "off"
-          timeout:
-            hours: 0
-            minutes: 0
-            seconds: 10
-            milliseconds: 0
-          continue_on_timeout: true
-        - alias: change lsk source
-          if:
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id: media_player.kef
-                  attribute: source
-                  state: Wifi
-          then:
-            - service: media_player.select_source
-              target:
-                entity_id: media_player.kef
-              data:
-                source: Wifi
-    - alias: if lsx are on then change lsx source
-      if:
-        - condition: state
+      - service: media_player.select_source
+        target:
           entity_id: media_player.kef
-          state: "on"
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: media_player.kef
-              attribute: source
-              state: Wifi
-              alias: LSK SOURCE OPT
-      then:
-        - service: media_player.select_source
-          target:
-            entity_id: media_player.kef
-          data:
-            source: Wifi
+        data:
+          source: Wifi
+  - alias: if lsx are on then change lsx source
+    if:
+    - condition: state
+      entity_id: media_player.kef
+      state: 'on'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: media_player.kef
+        attribute: source
+        state: Wifi
+        alias: LSK SOURCE OPT
+    then:
+    - service: media_player.select_source
+      target:
+        entity_id: media_player.kef
+      data:
+        source: Wifi
   mode: single
   icon: mdi:speaker
 turn_off_speakers:
   alias: Turn Off Speakers
   sequence:
-    - alias: if lsk on then turn off lsx
-      if:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: media_player.kef
-              state: "off"
+  - alias: if lsk on then turn off lsx
+    if:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: media_player.kef
+        state: 'off'
+    then:
+    - if:
+      - condition: state
+        entity_id: media_player.lsx_airplay
+        state: playing
       then:
-        - if:
-            - condition: state
-              entity_id: media_player.lsx_airplay
-              state: playing
-          then:
-            - service: media_player.media_pause
-              data: {}
-              target:
-                entity_id: media_player.lsx_airplay
-        - service: media_player.turn_off
-          target:
-            entity_id:
-              - media_player.kef
-              - media_player.lsx_airplay
-          data: {}
+      - service: media_player.media_pause
+        data: {}
+        target:
+          entity_id: media_player.lsx_airplay
+    - service: media_player.turn_off
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.lsx_airplay
+      data: {}
   mode: single
   icon: mdi:speaker-off
