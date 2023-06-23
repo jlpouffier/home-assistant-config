@@ -20,6 +20,9 @@ class monitor_system(hass.Hass):
         # Listen to all updater state change
         self.listen_state(self.callback_update_available, "update" , new = "on" , immediate = True)
 
+        # listen to tesla update (Still a binary_sensor)
+        self.listen_state(self.callback_tesla_update_available, "binary_sensor.tesla_update_available", new = "on")
+
         # Listen to RPI power status
         self.listen_state(self.callback_rpi_power_problem_detected, "binary_sensor.rpi_power_status" , new = "on" , immediate = True)
 
@@ -55,6 +58,25 @@ class monitor_system(hass.Hass):
             tag = entity,
             until =  [{
                 "entity_id" : entity,
+                "new_state" : "off"}])
+
+    """
+    Callback triggered when new upate is available for my Tesla
+    Goals :
+    . Notify
+    """
+    def callback_tesla_update_available(self, entity, attribute, old, new, kwargs):
+        self.log("Detecting a Tesla update... Notifying it...")
+
+        self.fire_event("NOTIFIER",
+            action = "send_to_jl",
+            title = "🎉 Mise a jour disponible",
+            message = "Tesla",
+            click_url = "/config/dashboard",
+            icon = "mdi:cellphone-arrow-down",
+            tag = "tesla_update",
+            until = [{
+                "entity_id" : "binary_sensor.tesla_update_available",
                 "new_state" : "off"}])
 
     """

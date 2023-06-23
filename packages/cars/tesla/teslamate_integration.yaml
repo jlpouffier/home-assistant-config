@@ -52,6 +52,12 @@ mqtt:
       payload_on: "true"
       payload_off: "false"
 
+    - name: tesla_update_available
+      unique_id: tesla_update_available
+      state_topic: "teslamate/cars/1/update_available"
+      payload_on: "true"
+      payload_off: "false"
+
   device_tracker:
     - name: tesla_device_tracker
       unique_id: tesla_device_tracker
