@@ -54,7 +54,8 @@ class monitor_system(hass.Hass):
             title = "🎉 Mise a jour disponible",
             message = message,
             click_url = "/config/dashboard",
-            icon = "mdi:cellphone-arrow-down",
+            icon = "mdi:party-popper",
+            color = "deep-purple",
             tag = entity,
             until =  [{
                 "entity_id" : entity,
@@ -73,7 +74,8 @@ class monitor_system(hass.Hass):
             title = "🎉 Mise a jour disponible",
             message = "Tesla",
             click_url = "/config/dashboard",
-            icon = "mdi:cellphone-arrow-down",
+            icon = "mdi:party-popper",
+            color = "deep-purple",
             tag = "tesla_update",
             until = [{
                 "entity_id" : "binary_sensor.tesla_update_available",
