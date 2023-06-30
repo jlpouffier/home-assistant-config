@@ -19,9 +19,6 @@ logs:
     filename: /config/appdaemon/logs/error.log
   diag_log:
     filename: /config/appdaemon/logs/diag.log
-  charge_electric_scooter:
-    name: charge_electric_scooter
-    filename: /config/appdaemon/logs/charge_electric_scooter.log
   clean_house:
     name: clean_house
     filename: /config/appdaemon/logs/clean_house.log
