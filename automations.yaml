@@ -267,3 +267,26 @@
       - light.lumieres_rez_de_chaussee
       - light.exterieur
   mode: single
+- id: '1688118075093'
+  alias: Machine a Laver Intelligente - Notifier cycle de lavage terminé
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_washing_machine_running
+    to: 'off'
+    from: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_washing_machine
+    state: ''
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_when_present
+      title: "\U0001FAE7 Machine à laver"
+      message: Cycle de lavage terminé !
+      icon: mdi:washing-machine
+      color: green
+      tag: washing_mashine_over
+  mode: single

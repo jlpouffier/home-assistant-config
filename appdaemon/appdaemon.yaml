@@ -64,9 +64,6 @@ logs:
   matrix_2d:
     name: matrix_2d
     filename: /config/appdaemon/logs/matrix_2d.log
-  monitor_washing_machine:
-    name: monitor_washing_machine
-    filename: /config/appdaemon/logs/monitor_washing_machine.log
   handle_cover_edge_cases:
     name: handle_cover_edge_cases
     filename: /config/appdaemon/logs/handle_cover_edge_cases.log

@@ -177,12 +177,6 @@ matrix_2d:
     - binary_sensor.office_presence_sensor_pir
     - binary_sensor.office_presence_sensor_occupancy
 
-monitor_washing_machine:
-  module: monitor_washing_machine
-  class: monitor_washing_machine
-  log: monitor_washing_machine
-  constrain_input_boolean: automation_monitor_washing_machine
-
 handle_cover_edge_cases:
   module: handle_cover_edge_cases
   class: handle_cover_edge_cases
