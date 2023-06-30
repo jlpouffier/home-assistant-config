@@ -12,7 +12,6 @@ Notifications :
 class charge_electric_scooter(hass.Hass):
     def initialize(self):
         self.listening_to_valentine_coming_back_home = False
-        # Minimum Cleaning Duration. 
         self.listen_state(self.callback_valentine_at_work, "person.valentine", new = "BackMarket (Bordeaux)", immediate = True)
         self.listen_state(self.callback_electric_scooter_charging, "binary_sensor.is_electric_scooter_charging", new = "on" , immediate = True)
         self.run_daily(self.callback_electric_scooter_daily_check, "20:00:00")
