@@ -290,3 +290,54 @@
       color: green
       tag: washing_mashine_over
   mode: single
+- id: '1688124199640'
+  alias: Bienvenue lumineux - Allumer lumières quand porte ouverte
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_welcome_home
+    state: 'on'
+  action:
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.capteur_ouverture_porte_entree
+      to: 'on'
+    timeout:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+    continue_on_timeout: false
+  - service: hue.activate_scene
+    data:
+      transition: 3
+    target:
+      entity_id: scene.entree_entree_100
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: hue.activate_scene
+    data:
+      transition: 3
+    target:
+      entity_id:
+      - scene.salon_salon_100
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: hue.activate_scene
+    data:
+      transition: 3
+    target:
+      entity_id: scene.cuisine_cuisine_100
+  mode: single

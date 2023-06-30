@@ -39,12 +39,6 @@ wake_up:
   log: wake_up
   constrain_input_boolean: input_boolean.automation_wake_up
 
-welcome_home:
-  module: welcome_home
-  class: welcome_home
-  log: welcome_home
-  constrain_input_boolean: input_boolean.automation_welcome_home
-
 monitor_home:
   module: monitor_home
   class: monitor_home

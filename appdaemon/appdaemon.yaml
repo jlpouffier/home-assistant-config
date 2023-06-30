@@ -52,9 +52,6 @@ logs:
   watch_tv:
     name: watch_tv
     filename: /config/appdaemon/logs/watch_tv.log
-  welcome_home:
-    name: welcome_home
-    filename: /config/appdaemon/logs/welcome_home.log
   miffy_sync:
     name: miffy_sync
     filename: /config/appdaemon/logs/miffy_sync.log
