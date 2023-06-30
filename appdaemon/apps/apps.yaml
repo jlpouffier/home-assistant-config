@@ -188,11 +188,6 @@ handle_cover_edge_cases:
   class: handle_cover_edge_cases
   log: handle_cover_edge_cases
 
-smart_hue_buttons:
-  module: smart_hue_buttons
-  class: smart_hue_buttons
-  log: smart_hue_buttons
-
 smart_irrigation:
   module: smart_irrigation
   class: smart_irrigation
