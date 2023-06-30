@@ -46,7 +46,7 @@ class charge_electric_scooter(hass.Hass):
         else:
             if not self.listening_to_valentine_coming_back_home:
                 self.listening_to_valentine_coming_back_home = True
-                self.listen_state(self.callback_valentine_at_home, "person.valentine", new = "home", duratin = "900" , oneshot = True)
+                self.listen_state(self.callback_valentine_at_home, "person.valentine", new = "home", duration = "900" , oneshot = True)
     
     """
     Callback triggered when valentine reaches work Valentine reaches home
