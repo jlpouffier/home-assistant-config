@@ -402,3 +402,40 @@
     target:
       entity_id: switch.irrigation_switch
   mode: single
+- id: '1688134691132'
+  alias: Tesla - Notifier charge hors heures creuses
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.tesla_state
+    to: charging
+  condition:
+  - condition: state
+    entity_id: device_tracker.tesla_device_tracker
+    state: home
+  - condition: state
+    entity_id: schedule.heures_pleines
+    state: 'off'
+  - condition: template
+    value_template: '{{ now() + timedelta(hours = states("sensor.tesla_time_to_full_charge")
+      | float) > state_attr(''schedule.heures_pleines'', ''next_event'') }}'
+  action:
+  - variables:
+      new_target_percentage: '{{ (( states(''sensor.tesla_charge_limit'')|float -  states(''sensor.tesla_battery_level'')|float)
+        * (state_attr(''schedule.heures_pleines'', ''next_event'') - now()) / timedelta(
+        hours = states(''sensor.tesla_time_to_full_charge'') | float) + states(''sensor.tesla_battery_level'')|float)
+        | round(0)}}'
+      actual_end_date: '{{ (now() + timedelta(hours = states("sensor.tesla_time_to_full_charge")
+        |float)).strftime("%H:%M") }}'
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "️\U0001F697 Tesla"
+      message: La recharge est prevue de finir après la fin des heures creuse ({{actual_end_date}}).
+        Pense à reduire la cibe de recharge vers {{new_target_percentage}}%
+      click_ur: /lovelace/tesla
+      icon: mdi:car
+      color: deep-orange
+      tag: tesla_end_charge_after_off_peak_hours
+  mode: single
