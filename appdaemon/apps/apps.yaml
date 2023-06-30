@@ -176,12 +176,6 @@ handle_cover_edge_cases:
   class: handle_cover_edge_cases
   log: handle_cover_edge_cases
 
-smart_irrigation:
-  module: smart_irrigation
-  class: smart_irrigation
-  log: smart_irrigation
-  constrain_input_boolean: input_boolean.irrigation_automation
-
 walkie_talkie:
   module: walkie_talkie
   class: walkie_talkie

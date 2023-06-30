@@ -341,3 +341,64 @@
     target:
       entity_id: scene.cuisine_cuisine_100
   mode: single
+- id: '1688129246113'
+  alias: Irrigation intelligente - Calculer fin arrosage
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.irrigation_switch
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.irrigation_automation
+    state: 'on'
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{ now() + timedelta (minutes = states(''input_number.irrigation_time'')
+        | int) }}'
+    target:
+      entity_id: input_datetime.end_of_irrigation
+  mode: single
+- id: '1688129871554'
+  alias: Irrigation intelligente - Arrêter arrosage
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.end_of_irrigation
+  condition:
+  - condition: state
+    entity_id: input_boolean.irrigation_automation
+    state: 'on'
+  - condition: state
+    entity_id: switch.irrigation_switch
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.irrigation_switch
+  mode: single
+- id: '1688131649930'
+  alias: Irrigation intelligente - Arrêter arrosage au démarrage si expiré
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition:
+  - condition: state
+    entity_id: input_boolean.irrigation_automation
+    state: 'on'
+  - condition: state
+    entity_id: switch.irrigation_switch
+    state: 'on'
+  - condition: template
+    value_template: '{{ as_timestamp(now()) > state_attr(''input_datetime.end_of_irrigation'',
+      ''timestamp'') }}'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.irrigation_switch
+  mode: single
