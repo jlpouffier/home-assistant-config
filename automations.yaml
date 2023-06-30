@@ -55,7 +55,7 @@
       action: reset_litter_tracking
   condition:
   - condition: state
-    entity_id: automation.litter_automation_reset
+    entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
   action:
   - service: input_number.set_value
