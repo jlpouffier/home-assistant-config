@@ -177,12 +177,6 @@ matrix_2d:
     - binary_sensor.office_presence_sensor_pir
     - binary_sensor.office_presence_sensor_occupancy
 
-monitor_mailbox:
-  module: monitor_mailbox
-  class: monitor_mailbox
-  log: monitor_mailbox
-  constrain_input_boolean: automation_monitor_mailbox
-
 monitor_washing_machine:
   module: monitor_washing_machine
   class: monitor_washing_machine

@@ -1,5 +1,5 @@
 - id: '1688111538910'
-  alias: Litière Intelligente - Incrementation des passages dans la litière
+  alias: Litière Intelligente - Incrementer passages litière
   description: ''
   trigger:
   - platform: state
@@ -17,7 +17,7 @@
       entity_id: input_number.litter_tracking
   mode: single
 - id: '1688112377959'
-  alias: Litière Intelligente - Notification litière pleine
+  alias: Litière Intelligente - Notifier litière pleine
   description: ''
   trigger:
   - platform: state
@@ -46,7 +46,7 @@
         new_state: 'off'
   mode: single
 - id: '1688112671844'
-  alias: Litière Intelligente - Remise à zero de nombre de passage
+  alias: Litière Intelligente - Remettre à zero passages litière
   description: ''
   trigger:
   - platform: event
@@ -65,7 +65,7 @@
       entity_id: input_number.litter_tracking
   mode: single
 - id: '1688114260897'
-  alias: Poubelles Intelligentes - Poubelle noire à sortir
+  alias: Poubelles Intelligentes - Informer poubelle noire à sortir
   description: ''
   trigger:
   - platform: state
@@ -83,7 +83,7 @@
       entity_id: input_boolean.poubelle_noire_a_sortir
   mode: single
 - id: '1688114327500'
-  alias: Poubelles Intelligentes - Poubelle verte à sortir
+  alias: Poubelles Intelligentes - Informer poubelle verte à sortir
   description: ''
   trigger:
   - platform: state
@@ -101,7 +101,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688114732811'
-  alias: Poubelles Intelligentes - Notification poubelle noir non sortie
+  alias: Poubelles Intelligentes - Notifier poubelle noir non sortie
   description: ''
   trigger:
   - platform: state
@@ -130,7 +130,7 @@
       entity_id: input_boolean.poubelle_noire_a_sortir
   mode: single
 - id: '1688114808231'
-  alias: Poubelles Intelligentes - Notification poubelle verte non sortie
+  alias: Poubelles Intelligentes - Notifier poubelle verte non sortie
   description: ''
   trigger:
   - platform: state
@@ -157,4 +157,49 @@
     data: {}
     target:
       entity_id: input_boolean.poubelle_verte_a_sortir
+  mode: single
+- id: '1688116237944'
+  alias: 'Boîte aux Lettres Intelligente - Notifier courrier '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_mouvement_boite_aux_lettres
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_mailbox
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.is_front_door_recently_open
+    state: 'off'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_when_present
+      title: "\U0001F4EC  Boite aux lettres"
+      message: Vous avez du courrier !
+      icon: mdi:mailbox-up
+      color: green
+      tag: you_got_mail
+  mode: single
+- id: '1688116301973'
+  alias: Boîte aux Lettres Intelligente - Supprimer notification courrier
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_mouvement_boite_aux_lettres
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_mailbox
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.is_front_door_recently_open
+    state: 'on'
+  action:
+  - event: NOTIFIER_DISCARD
+    event_data:
+      tag: you_got_mail
   mode: single
