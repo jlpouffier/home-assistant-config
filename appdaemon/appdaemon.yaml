@@ -70,9 +70,6 @@ logs:
   monitor_washing_machine:
     name: monitor_washing_machine
     filename: /config/appdaemon/logs/monitor_washing_machine.log
-  clean_cat_litter_box:
-    name: clean_cat_litter_box
-    filename: /config/appdaemon/logs/clean_cat_litter_box.log
   take_out_trash:
     name: take_out_trash
     filename: /config/appdaemon/logs/take_out_trash.log

@@ -189,12 +189,6 @@ monitor_washing_machine:
   log: monitor_washing_machine
   constrain_input_boolean: automation_monitor_washing_machine
 
-clean_cat_litter_box:
-  module: clean_cat_litter_box
-  class: clean_cat_litter_box
-  log: clean_cat_litter_box
-  constrain_input_boolean: automation_clean_cat_litter_box
-
 take_out_trash:
   module: take_out_trash
   class: take_out_trash
