@@ -1,9 +1,6 @@
 - id: '1688111538910'
   alias: Litière Intelligente - Incrementation des passages dans la litière
-  description: '- But: Incrémente la valeur de `input_number.litter_tracking` a chaque
-    fois que du mouvement est détecté sur `binary_sensor.capteur_mouvement_litiere`
-
-    - Condition: `input_boolean.automation_clean_cat_litter_box` activé'
+  description: ''
   trigger:
   - platform: state
     entity_id:
@@ -21,10 +18,7 @@
   mode: single
 - id: '1688112377959'
   alias: Litière Intelligente - Notification litière pleine
-  description: '- But: Envoi une notification lorsque `binary_sensor.is_litter_full`
-    est activé
-
-    - Condition: `input_boolean.automation_clean_cat_litter_box` activé'
+  description: ''
   trigger:
   - platform: state
     entity_id:
@@ -53,10 +47,7 @@
   mode: single
 - id: '1688112671844'
   alias: Litière Intelligente - Remise à zero de nombre de passage
-  description: '- But: Mettre a zero `input_number.litter_tracking` lorsque le bouton
-    `reset_litter_tracking` est appuyé
-
-    - Condition: `input_boolean.automation_clean_cat_litter_box` activé'
+  description: ''
   trigger:
   - platform: event
     event_type: mobile_app_notification_action
@@ -72,4 +63,98 @@
       value: 0
     target:
       entity_id: input_number.litter_tracking
+  mode: single
+- id: '1688114260897'
+  alias: Poubelles Intelligentes - Poubelle noire à sortir
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.planning_poubelle_noire
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_take_out_trash
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.poubelle_noire_a_sortir
+  mode: single
+- id: '1688114327500'
+  alias: Poubelles Intelligentes - Poubelle verte à sortir
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.planning_poubelle_verte
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_take_out_trash
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.poubelle_verte_a_sortir
+  mode: single
+- id: '1688114732811'
+  alias: Poubelles Intelligentes - Notification poubelle noir non sortie
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.planning_poubelle_noire
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_take_out_trash
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.poubelle_noire_a_sortir
+    state: 'on'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: "\U0001F5D1 Poubelle Noire"
+      message: N'oublie pas de sortir la poubelle noire
+      icon: mdi:delete
+      color: deep-orange
+      tag: black_trash
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.poubelle_noire_a_sortir
+  mode: single
+- id: '1688114808231'
+  alias: Poubelles Intelligentes - Notification poubelle verte non sortie
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.planning_poubelle_verte
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_take_out_trash
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.poubelle_verte_a_sortir
+    state: 'on'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: ♻️ Poubelle Verte
+      message: N'oublie pas de sortir la poubelle verte
+      icon: mdi:recycle
+      color: deep-orange
+      tag: green_trash
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single

@@ -189,12 +189,6 @@ monitor_washing_machine:
   log: monitor_washing_machine
   constrain_input_boolean: automation_monitor_washing_machine
 
-take_out_trash:
-  module: take_out_trash
-  class: take_out_trash
-  log: take_out_trash
-  constrain_input_boolean: automation_take_out_trash
-
 handle_cover_edge_cases:
   module: handle_cover_edge_cases
   class: handle_cover_edge_cases
