@@ -4,4 +4,4 @@ template:
   - binary_sensor:
       - name: is_tv_on
         unique_id: is_tv_on
-        state: "{{not (is_state('media_player.philips_android_tv', 'off') or is_state('media_player.philips_android_tv', 'unavailable') or is_state('media_player.philips_android_tv', 'standby') or is_state('media_player.philips_android_tv', 'unknown'))}}"
+        state: "{{ is_state('remote.jl_s_tv', 'on') }}"

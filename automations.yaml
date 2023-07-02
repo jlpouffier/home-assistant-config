@@ -6,6 +6,7 @@
     entity_id:
     - binary_sensor.capteur_mouvement_litiere
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_clean_cat_litter_box
@@ -24,6 +25,7 @@
     entity_id:
     - binary_sensor.is_litter_full
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_clean_cat_litter_box
@@ -72,6 +74,7 @@
     entity_id:
     - schedule.planning_poubelle_noire
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
@@ -90,6 +93,7 @@
     entity_id:
     - schedule.planning_poubelle_verte
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
@@ -108,6 +112,7 @@
     entity_id:
     - schedule.planning_poubelle_noire
     to: 'off'
+    from: 'on'
   condition:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
@@ -137,6 +142,7 @@
     entity_id:
     - schedule.planning_poubelle_verte
     to: 'off'
+    from: 'on'
   condition:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
@@ -166,6 +172,7 @@
     entity_id:
     - binary_sensor.capteur_mouvement_boite_aux_lettres
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_mailbox
@@ -191,6 +198,7 @@
     entity_id:
     - binary_sensor.capteur_mouvement_boite_aux_lettres
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_mailbox
@@ -279,7 +287,7 @@
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_washing_machine
-    state: ''
+    state: 'on'
   action:
   - event: NOTIFIER
     event_data:
@@ -298,10 +306,14 @@
     entity_id:
     - binary_sensor.home_occupied
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_welcome_home
     state: 'on'
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
   action:
   - wait_for_trigger:
     - platform: state
@@ -349,6 +361,7 @@
     entity_id:
     - switch.irrigation_switch
     to: 'on'
+    from: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.irrigation_automation
@@ -410,6 +423,10 @@
     entity_id:
     - sensor.tesla_state
     to: charging
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
   condition:
   - condition: state
     entity_id: device_tracker.tesla_device_tracker
@@ -438,4 +455,249 @@
       icon: mdi:car
       color: deep-orange
       tag: tesla_end_charge_after_off_peak_hours
+  mode: single
+- id: '1688139412657'
+  alias: Réveil intelligent - Régler heures de déclenchement
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_datetime.wake_up_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{today_at(states(''input_datetime.wake_up_time'')) - timedelta(minutes
+        = 5)}}'
+    target:
+      entity_id: input_datetime.wake_up_time_lights
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{today_at(states(''input_datetime.wake_up_time'')) - timedelta(minutes
+        = 30)}}'
+    target:
+      entity_id: input_datetime.wake_up_time_coffee_maker
+  mode: single
+- id: '1688139621896'
+  alias: Réveil intelligent - Allumer lumières
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wake_up_time_lights
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.workday_today
+    state: 'on'
+  action:
+  - service: script.wake_up
+    data: {}
+  mode: single
+- id: '1688139704214'
+  alias: Réveil intelligent - Allumer machine à café
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wake_up_time_coffee_maker
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.workday_today
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.wake_up_automation_control_coffee_maker
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.coffeemaker
+  mode: single
+- id: '1688140625614'
+  alias: Réveil intelligent - Régler heure réveil via téléphone JL
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.pixel_6_next_alarm
+    not_from: unavailable
+    not_to: unavailable
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  - condition: template
+    value_template: '{{ states(''input_datetime.wake_up_time'') != (((state_attr(''sensor.pixel_6_next_alarm'',
+      ''Time in Milliseconds'') | int / 1000)) | timestamp_custom(''%H:%M:%S'')) }}'
+  action:
+  - variables:
+      human_readable_phone_alarm: '{{(((state_attr(''sensor.pixel_6_next_alarm'',
+        ''Time in Milliseconds'') | int / 1000)) | timestamp_custom(''%H:%M''))}}'
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: ⏰ Alarme réglée pour {{human_readable_phone_alarm}}
+      message: Utiliser pour le réveil inteligent ?
+      callback:
+      - title: Oui
+        event: set_new_wake_up_time
+      click_ur: /dashboard-automatisations/automatisations
+      icon: mdi:alarm
+      tag: jl_phone_alarm_changed
+  mode: single
+- id: '1688143290196'
+  alias: Réveil intelligent - Régler heure réveil via téléphone JL (Confirmation)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: set_new_wake_up_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      timestamp: '{{as_timestamp(states(''sensor.pixel_6_next_alarm''))}}'
+    target:
+      entity_id: input_datetime.wake_up_time
+  mode: single
+- id: '1688301259694'
+  alias: TV intelligente - Allumer KEF quand TV allumée
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_tv_on
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: script.turn_on_media_center
+    state: 'off'
+  - condition: state
+    entity_id: media_player.kef
+    state: 'off'
+  action:
+  - service: script.turn_on_media_center
+    data: {}
+  mode: single
+- id: '1688301320320'
+  alias: 'TV intelligente - Éteindre KEF quand TV éteinte '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_tv_on
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: script.turn_off_media_center
+    state: 'off'
+  - condition: state
+    entity_id: media_player.kef
+    state: 'on'
+  action:
+  - service: script.turn_off_media_center
+    data: {}
+  mode: single
+- id: '1688303443168'
+  alias: 'TV intelligente - Controller Lumières '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.tv_cast
+    from:
+    to:
+    variables:
+      from_state: '{{trigger.from_state.state}}'
+      to_state: '{{trigger.to_state.state}}'
+      from_app: "{% if 'app_name' in trigger.from_state.attributes -%}\n  {{trigger.from_state.attributes.app_name}}\n{%-
+        else -%}\n  no_app\n{%- endif %}"
+      to_app: "{% if 'app_name' in trigger.to_state.attributes -%}\n  {{trigger.to_state.attributes.app_name}}\n{%-
+        else -%}\n  no_app\n{%- endif %}"
+      supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{from_state in ["off", "paused", "idle", "buffering"] and
+          to_state == "playing" and to_app in supported_apps}}'
+      sequence:
+      - service: script.lights_set_tv
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{from_state == "playing" and to_state in ["paused", "buffering"]
+          and to_app in supported_apps}}'
+      sequence:
+      - service: script.lights_set_tv_paused
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{from_state in ["playing" , "paused", "buffering"] and to_state
+          in ["off" , "idle"] and from_app in supported_apps}}'
+      sequence:
+      - service: script.reset_lights_day_area
+        data: {}
+  mode: queued
+  max: 10
+- id: '1688305917710'
+  alias: TV intelligente - Controller Lumières (PS5)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    from:
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+    enabled: true
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.to_state.state == "on" }}'
+      sequence:
+      - service: script.lights_set_tv
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.to_state.state == "off" }}'
+      sequence:
+      - service: script.reset_lights_day_area
+        data: {}
   mode: single

@@ -21,7 +21,6 @@ class tesla_automations(hass.Hass):
         self.update_time_difference = 0
 
         self.listen_state(self.callback_location_updated, ['sensor.tesla_latitude','sensor.tesla_longitude'])
-        self.listen_state(self.callback_tesla_charging_session_started, "sensor.tesla_state", new = "charging", immediate = True)
 
     """
     Callback triggered when either the latitude or the longitude of my tesla is updated

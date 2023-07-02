@@ -56,20 +56,17 @@ turn_off_media_center:
   alias: Turn Off Media center
   mode: single
   sequence:
-  - alias: turn off tv and lsx in parallel
-    parallel:
-    - alias: if tv on then turn off tv
-      if:
+  - parallel:
+    - if:
       - condition: state
         entity_id: binary_sensor.is_tv_on
         state: 'on'
       then:
-      - service: media_player.turn_off
-        target:
-          entity_id: media_player.philips_android_tv
+      - service: remote.turn_off
         data: {}
-    - alias: if lsk on then turn off lsx
-      if:
+        target:
+          entity_id: remote.jl_s_tv
+    - if:
       - condition: not
         conditions:
         - condition: state
@@ -86,17 +83,15 @@ turn_on_media_center:
   alias: Turn On Media center
   mode: single
   sequence:
-  - alias: turn on tv and lsx in parallel
-    parallel:
-    - alias: if tv off then turn on tv
-      if:
+  - parallel:
+    - if:
       - condition: state
         entity_id: binary_sensor.is_tv_on
         state: 'off'
       then:
       - if:
         - condition: state
-          entity_id: media_player.philips_android_tv
+          entity_id: media_player.tv_cast
           state: unavailable
         then:
         - service: wake_on_lan.send_magic_packet
@@ -105,7 +100,7 @@ turn_on_media_center:
         - wait_for_trigger:
           - platform: state
             entity_id:
-            - media_player.philips_android_tv
+            - remote.jl_s_tv
             to: 'off'
           timeout:
             hours: 0
@@ -113,12 +108,11 @@ turn_on_media_center:
             seconds: 0
             milliseconds: 0
           continue_on_timeout: true
-      - service: media_player.turn_on
+      - service: remote.turn_on
         data: {}
         target:
-          entity_id: media_player.philips_android_tv
-    - alias: if lsx are off then turn on lsx
-      if:
+          entity_id: remote.jl_s_tv
+    - if:
       - condition: state
         entity_id: media_player.kef
         state: 'off'
@@ -139,8 +133,7 @@ turn_on_media_center:
           seconds: 10
           milliseconds: 0
         continue_on_timeout: true
-      - alias: change lsk source
-        if:
+      - if:
         - condition: not
           conditions:
           - condition: state
@@ -153,8 +146,7 @@ turn_on_media_center:
             entity_id: media_player.kef
           data:
             source: Opt
-    - alias: if lsx are on then change lsx source
-      if:
+    - if:
       - condition: state
         entity_id: media_player.kef
         state: 'on'

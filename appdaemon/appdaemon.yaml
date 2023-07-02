@@ -43,12 +43,6 @@ logs:
   smart_cube:
     name: smart_cube
     filename: /config/appdaemon/logs/smart_cube.log
-  wake_up:
-    name: wake_up
-    filename: /config/appdaemon/logs/wake_up.log
-  watch_tv:
-    name: watch_tv
-    filename: /config/appdaemon/logs/watch_tv.log
   miffy_sync:
     name: miffy_sync
     filename: /config/appdaemon/logs/miffy_sync.log
