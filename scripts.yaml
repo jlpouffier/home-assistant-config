@@ -57,27 +57,15 @@ turn_off_media_center:
   mode: single
   sequence:
   - parallel:
-    - if:
-      - condition: state
-        entity_id: binary_sensor.is_tv_on
-        state: 'on'
-      then:
-      - service: remote.turn_off
-        data: {}
-        target:
-          entity_id: remote.jl_s_tv
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.kef
-          state: 'off'
-      then:
-      - service: media_player.turn_off
-        target:
-          entity_id:
-          - media_player.kef
-        data: {}
+    - service: media_player.turn_off
+      target:
+        entity_id:
+        - media_player.kef
+      data: {}
+    - service: remote.turn_off
+      data: {}
+      target:
+        entity_id: remote.jl_s_tv
   icon: mdi:remote-tv-off
 turn_on_media_center:
   alias: Turn On Media center
@@ -156,7 +144,6 @@ turn_on_media_center:
           entity_id: media_player.kef
           attribute: source
           state: Opt
-          alias: LSK SOURCE OPT
       then:
       - service: media_player.select_source
         target:
@@ -281,91 +268,3 @@ room_cleaning_first_floor:
         - input_boolean.vacuum_zone_living_room
   mode: single
   icon: mdi:vacuum
-turn_on_speakers:
-  alias: Turn On Speakers
-  sequence:
-  - alias: if lsx are off then turn on lsx
-    if:
-    - condition: state
-      entity_id: media_player.kef
-      state: 'off'
-    then:
-    - service: media_player.turn_on
-      target:
-        entity_id:
-        - media_player.kef
-        - media_player.lsx_airplay
-      data: {}
-    - wait_for_trigger:
-      - platform: state
-        entity_id:
-        - media_player.kef
-        not_to: 'off'
-      timeout:
-        hours: 0
-        minutes: 0
-        seconds: 10
-        milliseconds: 0
-      continue_on_timeout: true
-    - alias: change lsk source
-      if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.kef
-          attribute: source
-          state: Wifi
-      then:
-      - service: media_player.select_source
-        target:
-          entity_id: media_player.kef
-        data:
-          source: Wifi
-  - alias: if lsx are on then change lsx source
-    if:
-    - condition: state
-      entity_id: media_player.kef
-      state: 'on'
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: media_player.kef
-        attribute: source
-        state: Wifi
-        alias: LSK SOURCE OPT
-    then:
-    - service: media_player.select_source
-      target:
-        entity_id: media_player.kef
-      data:
-        source: Wifi
-  mode: single
-  icon: mdi:speaker
-turn_off_speakers:
-  alias: Turn Off Speakers
-  sequence:
-  - alias: if lsk on then turn off lsx
-    if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: media_player.kef
-        state: 'off'
-    then:
-    - if:
-      - condition: state
-        entity_id: media_player.lsx_airplay
-        state: playing
-      then:
-      - service: media_player.media_pause
-        data: {}
-        target:
-          entity_id: media_player.lsx_airplay
-    - service: media_player.turn_off
-      target:
-        entity_id:
-        - media_player.kef
-        - media_player.lsx_airplay
-      data: {}
-  mode: single
-  icon: mdi:speaker-off

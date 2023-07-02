@@ -1,7 +1,0 @@
-# https://www.home-assistant.io/integrations/template/
-
-template:
-  - binary_sensor:
-      - name: is_speakers_on
-        unique_id: is_speakers_on
-        state: "{{not (is_state('media_player.kef', 'off') or is_state('media_player.kef', 'unavailable') or is_state('media_player.kef', 'standby') or is_state('media_player.kef', 'unknown'))}}"
