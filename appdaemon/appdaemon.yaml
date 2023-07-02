@@ -22,9 +22,6 @@ logs:
   clean_house:
     name: clean_house
     filename: /config/appdaemon/logs/clean_house.log
-  heat_home:
-    name: heat_home
-    filename: /config/appdaemon/logs/heat_home.log
   monitor_home:
     name: monitor_home
     filename: /config/appdaemon/logs/monitor_home.log

@@ -28,12 +28,6 @@ monitor_home:
   log: monitor_home
   constrain_input_boolean: input_boolean.automation_monitor_home
 
-heat_home:
-  module: heat_home
-  class: heat_home
-  log: heat_home
-  constrain_input_boolean: input_boolean.automation_heat_home
-
 presence_simulator:
   module: presence_simulator
   class: presence_simulator

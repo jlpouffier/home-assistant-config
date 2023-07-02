@@ -767,3 +767,162 @@
         target:
           entity_id: switch.volet_salon_bouton_down_fallback
   mode: single
+- id: '1688333037837'
+  alias: Chauffage intelligent - Choisir Planning
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.all_openings
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    to: 'on'
+    id: open
+  - platform: state
+    entity_id:
+    - binary_sensor.all_openings
+    to: 'off'
+    id: closed
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'on'
+    id: present
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'off'
+    id: absent
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: open
+      sequence:
+      - service: input_select.select_option
+        data:
+          option: Frost Guard
+        target:
+          entity_id: input_select.heating_schedule_selector
+    - conditions:
+      - condition: trigger
+        id: present
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.all_openings
+            state: 'on'
+            for:
+              hours: 0
+              minutes: 1
+              seconds: 0
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: Frost Guard
+            target:
+              entity_id: input_select.heating_schedule_selector
+        default:
+        - service: input_select.select_option
+          data:
+            option: Présent
+          target:
+            entity_id: input_select.heating_schedule_selector
+    - conditions:
+      - condition: trigger
+        id: absent
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.all_openings
+            state: 'on'
+            for:
+              hours: 0
+              minutes: 1
+              seconds: 0
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: Frost Guard
+            target:
+              entity_id: input_select.heating_schedule_selector
+        default:
+        - service: input_select.select_option
+          data:
+            option: Absent
+          target:
+            entity_id: input_select.heating_schedule_selector
+    - conditions:
+      - condition: trigger
+        id: closed
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.home_occupied
+            state: 'on'
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: Présent
+            target:
+              entity_id: input_select.heating_schedule_selector
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.home_occupied
+            state: 'off'
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: Absent
+            target:
+              entity_id: input_select.heating_schedule_selector
+  mode: single
+- id: '1688333375509'
+  alias: Chauffage intelligent - Changer Température
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.heating_target_temperature
+    to:
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - service: climate.set_temperature
+    target:
+      entity_id: climate.netatmo
+    data:
+      temperature: '{{trigger.to_state.state}}'
+  mode: single
+- id: '1688333506527'
+  alias: Chauffage intelligent - Vérifier cohérence
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - climate.netatmo
+    attribute: temperature
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  - condition: template
+    value_template: '{{states("sensor.heating_target_temperature") | float != state_attr("climate.netatmo","temperature")}}'
+  action:
+  - service: climate.set_temperature
+    target:
+      entity_id: climate.netatmo
+    data:
+      temperature: '{{states(''sensor.heating_target_temperature'')}}'
+  mode: single
