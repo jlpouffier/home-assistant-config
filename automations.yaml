@@ -677,7 +677,15 @@
   - platform: state
     entity_id:
     - binary_sensor.is_ps5_used
-    from:
+    from: 'off'
+    to: 'on'
+    id: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    from: 'on'
+    to: 'off'
+    id: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
@@ -689,14 +697,14 @@
   action:
   - choose:
     - conditions:
-      - condition: template
-        value_template: '{{ trigger.to_state.state == "on" }}'
+      - condition: trigger
+        id: 'on'
       sequence:
       - service: script.lights_set_tv
         data: {}
     - conditions:
-      - condition: template
-        value_template: '{{ trigger.to_state.state == "off" }}'
+      - condition: trigger
+        id: 'off'
       sequence:
       - service: script.reset_lights_day_area
         data: {}
