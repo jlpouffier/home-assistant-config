@@ -15,29 +15,12 @@ notifier:
       notification_service: notify/mobile_app_pixel_4a
       proximity_id: proximity.distance_valentine_home
 
-#watch_tv:
-#  module: watch_tv
-#  class: watch_tv
-#  log: watch_tv
-#  constrain_input_boolean: input_boolean.automation_watch_tv
-#  media_player_id: media_player.philips_android_tv
-#  supported_apps:
-#    - Netflix
-#    - Plex
-#    - Prime Video
-
 clean_house:
   module: clean_house
   class: clean_house
   log: clean_house
   hass_base_url: !secret hass_base_url
   constrain_input_boolean: input_boolean.automation_clean_house
-
-#wake_up:
-#  module: wake_up
-#  class: wake_up
-#  log: wake_up
-#  constrain_input_boolean: input_boolean.automation_wake_up
 
 monitor_home:
   module: monitor_home
@@ -164,11 +147,6 @@ matrix_2d:
     - binary_sensor.office_presence_sensor_mmwave
     - binary_sensor.office_presence_sensor_pir
     - binary_sensor.office_presence_sensor_occupancy
-
-handle_cover_edge_cases:
-  module: handle_cover_edge_cases
-  class: handle_cover_edge_cases
-  log: handle_cover_edge_cases
 
 walkie_talkie:
   module: walkie_talkie

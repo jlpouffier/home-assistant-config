@@ -709,3 +709,61 @@
       - service: script.reset_lights_day_area
         data: {}
   mode: single
+- id: '1688329966467'
+  alias: Volet - Edge Cases
+  description: ''
+  trigger:
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: cover
+      service: open_cover
+      service_data:
+        entity_id: cover.living_room_cover
+    id: open
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: cover
+      service: close_cover
+      service_data:
+        entity_id: cover.living_room_cover
+    id: closed
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: open
+      - condition: state
+        entity_id: cover.living_room_cover
+        attribute: current_position
+        state: 100
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: closed
+      - condition: state
+        entity_id: cover.living_room_cover
+        attribute: current_position
+        state: 0
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: open
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.volet_salon_bouton_up_fallback
+    - conditions:
+      - condition: trigger
+        id: closed
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.volet_salon_bouton_down_fallback
+  mode: single

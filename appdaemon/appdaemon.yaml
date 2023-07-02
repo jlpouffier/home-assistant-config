@@ -52,9 +52,6 @@ logs:
   matrix_2d:
     name: matrix_2d
     filename: /config/appdaemon/logs/matrix_2d.log
-  handle_cover_edge_cases:
-    name: handle_cover_edge_cases
-    filename: /config/appdaemon/logs/handle_cover_edge_cases.log
   walkie_talkie:
     name: walkie_talkie
     filename: /config/appdaemon/logs/walkie_talkie.log
