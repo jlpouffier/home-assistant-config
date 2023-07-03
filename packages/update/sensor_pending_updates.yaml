@@ -1,0 +1,20 @@
+template:
+  - sensor:
+      - name: pending_updates
+        unique_id: pending_updates
+        state: |
+          {{ 
+            expand(states.update)
+              | selectattr('state', 'eq', 'on')
+              | list
+              | count
+          }}
+        attributes:
+          entities: |
+            {{ 
+              expand(states.update)
+                | selectattr('state', 'eq', 'on')
+                | map(attribute='attributes.friendly_name') 
+                | list
+                | sort
+            }}

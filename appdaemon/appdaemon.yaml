@@ -22,9 +22,6 @@ logs:
   clean_house:
     name: clean_house
     filename: /config/appdaemon/logs/clean_house.log
-  monitor_system:
-    name: monitor_system
-    filename: /config/appdaemon/logs/monitor_system.log
   notifier:
     name: notifier
     filename: /config/appdaemon/logs/notifier.log

@@ -1,0 +1,14 @@
+homeassistant:
+  customize:
+    sensor.jean_loics_laptop_internal_battery_level:
+      ignore_battery: true
+    sensor.quest_battery_level:
+      ignore_battery: true
+    sensor.pixel_4a_battery_level:
+      ignore_battery: true
+    sensor.pixel_6_pro_battery_level:
+      ignore_battery: true
+    sensor.neuneu_battery_level:
+      ignore_battery: true
+    sensor.teuteu_battery:
+      ignore_battery: true

@@ -893,7 +893,9 @@
   - platform: state
     entity_id:
     - sensor.heating_target_temperature
-    to:
+    not_to:
+    - unavailable
+    - unknown
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -1474,4 +1476,101 @@
     data: {}
     target:
       entity_id: switch.coffeemaker
+  mode: single
+- id: '1688386134462'
+  alias: "Surveillance du système - \U0001F514 Notifier mise a jour dispo"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.pending_updates
+    attribute: entities
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_system
+    state: 'on'
+  - condition: template
+    value_template: '{{trigger.to_state.state | int(0) > 0}}'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "\U0001F389 Mise a jour disponible"
+      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
+      click_url: /config/dashboard
+      icon: mdi:party-popper
+      color: deep-purple
+      tag: update-available
+      until:
+      - entity_id: sensor.pending_updates
+        new_state: '0'
+  mode: queued
+  max: 10
+- id: '1688386909438'
+  alias: "Surveillance du système - \U0001F514 Notifier mise a jour tesla dispo"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.tesla_update_available
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_system
+    state: 'on'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "\U0001F389 Mise a jour disponible"
+      message: Tesla
+      click_url: /config/dashboard
+      icon: mdi:party-popper
+      color: deep-purple
+      tag: tesla_update
+      until:
+      - entity_id: binary_sensor.tesla_update_available
+        new_state: 'off'
+  mode: single
+- id: '1688387237599'
+  alias: Surveillance du système - Backup
+  description: ''
+  trigger:
+  - platform: time
+    at: 01:00:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_system
+    state: 'on'
+  action:
+  - service: hassio.backup_full
+    data:
+      compressed: true
+      name: Home Assistant Backup {{now()}}
+  mode: single
+- id: '1688390987276'
+  alias: "Surveillance du système - \U0001F514 Notifier batteries faibles"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.low_batteries
+    to:
+  condition:
+  - condition: template
+    value_template: '{{trigger.to_state.state | float(0) > 0}}'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "\U0001FAAB Batteries faibles !"
+      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
+      click_url: /config/dashboard
+      icon: mdi:battery-alert
+      color: deep-orange
+      tag: low-battery
+      until:
+      - entity_id: sensor.low_batteries
+        new_state: '0'
   mode: single

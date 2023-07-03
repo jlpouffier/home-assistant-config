@@ -34,39 +34,6 @@ presence_simulator:
   go_to_bed_time: "22:30:00"
   sleep_time: "23:30:00"
 
-monitor_system:
-  module: monitor_system
-  class: monitor_system
-  log: monitor_system
-  constrain_input_boolean: input_boolean.automation_monitor_system
-  battery_threshold: 20
-  battery_sensors_to_check:
-    - sensor.bureau_switch_battery
-    - sensor.chambre_switch_battery
-    - sensor.chambre_bebe_switch_battery
-    - sensor.couloir_switch_etage_battery
-    - sensor.cuisine_switch_battery
-    - sensor.entree_switch_battery
-    - sensor.exterieur_switch_battery
-    - sensor.salon_couloir_switch_battery
-    - sensor.salon_switch_battery
-    - sensor.capteur_thp_salon_battery
-    - sensor.capteur_thp_chambre_battery
-    - sensor.capteur_thp_bureau_battery
-    - sensor.capteur_thp_chambre_bebe_battery
-    - sensor.capteur_ouverture_fenetre_chambre_battery
-    - sensor.capteur_ouverture_fenetre_bureau_battery
-    - sensor.capteur_ouverture_fenetre_chambre_bebe_battery
-    - sensor.capteur_ouverture_fenetre_salle_de_bain_battery
-    - sensor.capteur_ouverture_porte_fenetre_salon_battery
-    - sensor.capteur_ouverture_fenetre_cellier_battery
-    - sensor.capteur_ouverture_fenetre_cuisine_battery
-    - sensor.capteur_ouverture_porte_entree_battery
-    - sensor.capteur_mouvement_litiere_battery
-    - sensor.capteur_mouvement_boite_aux_lettres_battery
-    - sensor.the_cube_battery
-    - sensor.irrigation_battery
-
 smart_cube:
   module: smart_cube
   class: smart_cube
