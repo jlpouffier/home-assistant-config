@@ -925,4 +925,124 @@
       entity_id: climate.netatmo
     data:
       temperature: '{{states(''sensor.heating_target_temperature'')}}'
+  mode: queued
+  max: 10
+- id: '1688364991944'
+  alias: Bureau - Contrôler lumière par VR
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.quest_in_use
+    to: 'on'
+    id: quest
+    from: 'off'
+  - platform: state
+    entity_id:
+    - binary_sensor.quest_in_use
+    to: 'off'
+    id: no_quest
+    from: 'on'
+  condition:
+  - condition: state
+    entity_id: person.jenova70
+    state: home
+  - condition: state
+    entity_id: binary_sensor.office_presence_sensor_occupancy
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: quest
+      sequence:
+      - service: scene.create
+        data:
+          scene_id: office_previous_light_state
+          snapshot_entities:
+          - light.bureau
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+          kelvin: 3521
+        target:
+          entity_id:
+          - light.bureau
+          - light.hue_play_bars
+    - conditions:
+      - condition: trigger
+        id: no_quest
+      sequence:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.hue_play_bars
+      - service: scene.turn_on
+        data: {}
+        target:
+          entity_id: scene.office_previous_light_state
+  mode: single
+- id: '1688368387161'
+  alias: Bureau - Contrôler lumière par Webcam
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.jean_loics_laptop_camera_in_use
+    to: 'on'
+    id: webcam
+    from: 'off'
+  - platform: state
+    entity_id:
+    - binary_sensor.jean_loics_laptop_camera_in_use
+    to: 'off'
+    id: no_webcam
+    from: 'on'
+  condition:
+  - condition: state
+    entity_id: person.jenova70
+    state: home
+  - condition: state
+    entity_id: binary_sensor.office_presence_sensor_occupancy
+    state: 'on'
+  - condition: state
+    entity_id: device_tracker.jean_loics_laptop
+    state: home
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: webcam
+      sequence:
+      - service: scene.create
+        data:
+          scene_id: office_previous_light_state
+          snapshot_entities:
+          - light.bureau
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+          kelvin: 3521
+        target:
+          entity_id:
+          - light.bureau
+      - service: light.turn_on
+        data:
+          brightness_pct: 60
+          kelvin: 3521
+        target:
+          entity_id:
+          - light.hue_play_bars
+    - conditions:
+      - condition: trigger
+        id: no_webcam
+      sequence:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.hue_play_bars
+      - service: scene.turn_on
+        data: {}
+        target:
+          entity_id: scene.office_previous_light_state
   mode: single
