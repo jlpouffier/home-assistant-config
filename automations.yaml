@@ -1558,6 +1558,9 @@
     - sensor.low_batteries
     to:
   condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_system
+    state: 'on'
   - condition: template
     value_template: '{{trigger.to_state.state | float(0) > 0}}'
   action:
