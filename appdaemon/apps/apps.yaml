@@ -22,12 +22,6 @@ clean_house:
   hass_base_url: !secret hass_base_url
   constrain_input_boolean: input_boolean.automation_clean_house
 
-monitor_home:
-  module: monitor_home
-  class: monitor_home
-  log: monitor_home
-  constrain_input_boolean: input_boolean.automation_monitor_home
-
 presence_simulator:
   module: presence_simulator
   class: presence_simulator

@@ -18,7 +18,7 @@
       entity_id: input_number.litter_tracking
   mode: single
 - id: '1688112377959'
-  alias: Litière Intelligente - Notifier litière pleine
+  alias: "Litière Intelligente - \U0001F514 Notifier litière pleine"
   description: ''
   trigger:
   - platform: state
@@ -48,7 +48,7 @@
         new_state: 'off'
   mode: single
 - id: '1688112671844'
-  alias: Litière Intelligente - Remettre à zero passages litière
+  alias: "Litière Intelligente - \U0001F4F2 Remettre à zero passages litière"
   description: ''
   trigger:
   - platform: event
@@ -105,7 +105,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688114732811'
-  alias: Poubelles Intelligentes - Notifier poubelle noir non sortie
+  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle noir non sortie"
   description: ''
   trigger:
   - platform: state
@@ -135,7 +135,7 @@
       entity_id: input_boolean.poubelle_noire_a_sortir
   mode: single
 - id: '1688114808231'
-  alias: Poubelles Intelligentes - Notifier poubelle verte non sortie
+  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle verte non sortie"
   description: ''
   trigger:
   - platform: state
@@ -165,7 +165,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688116237944'
-  alias: 'Boîte aux Lettres Intelligente - Notifier courrier '
+  alias: "Boîte aux Lettres Intelligente - \U0001F514 Notifier courrier "
   description: ''
   trigger:
   - platform: state
@@ -276,7 +276,7 @@
       - light.exterieur
   mode: single
 - id: '1688118075093'
-  alias: Machine a Laver Intelligente - Notifier cycle de lavage terminé
+  alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
   description: ''
   trigger:
   - platform: state
@@ -416,7 +416,7 @@
       entity_id: switch.irrigation_switch
   mode: single
 - id: '1688134691132'
-  alias: Tesla - Notifier charge hors heures creuses
+  alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
   description: ''
   trigger:
   - platform: state
@@ -527,7 +527,7 @@
       entity_id: switch.coffeemaker
   mode: single
 - id: '1688140625614'
-  alias: Réveil intelligent - Régler heure réveil via téléphone JL
+  alias: "Réveil intelligent - \U0001F514 Régler heure réveil via téléphone JL"
   description: ''
   trigger:
   - platform: state
@@ -559,7 +559,7 @@
       tag: jl_phone_alarm_changed
   mode: single
 - id: '1688143290196'
-  alias: Réveil intelligent - Régler heure réveil via téléphone JL (Confirmation)
+  alias: "Réveil intelligent - \U0001F4F2 Régler heure réveil via téléphone JL (Confirmation)"
   description: ''
   trigger:
   - platform: event
@@ -1045,4 +1045,433 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
+  mode: single
+- id: '1688371319271'
+  alias: Surveillance de la maison - Éteindre Alexa quand maison vide
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: switch.alexa
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.alexa
+  mode: single
+- id: '1688371620889'
+  alias: "Surveillance de la maison - \U0001F514 Notifier appareils allumées et maison
+    vide"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: light.all_lights
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "\U0001F4A1 Lumières allumées"
+        message: Des lumières sont allumées alors que personne n'est présent
+        callback:
+        - title: Éteindre les lumières
+          event: turn_off_lights
+        click_ur: /lovelace/lights
+        icon: mdi:lightbulb-alert
+        color: deep-orange
+        tag: home_empty_lights_still_on
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: light.all_lights
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.is_tv_on
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "\U0001F4FA TV allumée"
+        message: La TV est allumée alors que personne n'est présent
+        callback:
+        - title: Éteindre la TV
+          event: turn_off_tv
+        click_url: /lovelace/connected-devices
+        icon: mdi:television
+        color: deep-orange
+        tag: home_empty_tv_still_on
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: binary_sensor.is_tv_on
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: media_player.kef
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "\U0001F50A LSX allumées"
+        message: Les enceintes LSX sont allumées alors que personne n'est présent
+        callback:
+        - title: Éteindre les LSX
+          event: turn_off_lsx
+        click_url: /lovelace/connected-devices
+        icon: mdi:speaker-wireless
+        color: deep-orange
+        tag: home_empty_lsx_still_on
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: media_player.kef
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: switch.coffeemaker
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: ️☕️ Machine a café allumé
+        message: La machine a café est allumée alors que personne n'est présent
+        callback:
+        - title: Éteindre la machine a café
+        - event: turn_off_coffee_maker
+        click_url: /lovelace/connected-devices
+        icon: mdi:coffee
+        color: deep-orange
+        tag: home_empty_cofee_maker_still_on
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: switch.coffeemaker
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_doors
+      state: 'on'
+    then:
+    - variables:
+        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "️\U0001F6AA Porte(s) ouverte(s) !"
+        message: 'Les portes suivantes sont toujours ouvertes alors que personne n''est
+          présent:  {{open_doors}}'
+        click_url: /lovelace/openings
+        icon: mdi:door-open
+        color: deep-orange
+        tag: home_empty_door_open
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: binary_sensor.all_doors
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_windows
+      state: 'on'
+    then:
+    - variables:
+        open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "️\U0001F6AA Fenêtre(s) ouverte(s) !"
+        message: 'Les fenêtres suivantes sont toujours ouvertes alors que personne
+          n''est présent: {{open_windows}}'
+        click_url: /lovelace/openings
+        icon: mdi:window-open
+        color: deep-orange
+        tag: home_empty_window_open
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: binary_sensor.all_windows
+          new_state: 'off'
+  mode: single
+- id: '1688373819985'
+  alias: Surveillance de la maison - Allumer Alexa quand maison occupée
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: switch.alexa
+    state: 'off'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.alexa
+  mode: single
+- id: '1688374158230'
+  alias: "Surveillance de la maison - \U0001F514 Rappeler portes/fenêtres ouvertes
+    quand maison occupée"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_doors
+      state: 'on'
+    then:
+    - variables:
+        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: "️\U0001F6AA Porte(s) ouverte(s) !"
+        message: 'Rappel: Les portes suivantes sont toujours ouvertes:  {{open_doors}}'
+        click_url: /lovelace/openings
+        icon: mdi:door-open
+        color: deep-orange
+        tag: home_occupied_door_open
+        until:
+        - entity_id: binary_sensor.all_doors
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_windows
+      state: 'on'
+    then:
+    - variables:
+        open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: "️\U0001F6AA Fenêtre(s) ouverte(s) !"
+        message: 'Rappel: Les fenêtres suivantes sont toujours ouvertes: {{open_windows}}'
+        click_url: /lovelace/openings
+        icon: mdi:window-open
+        color: deep-orange
+        tag: home_occupied_window_open
+        until:
+        - entity_id: binary_sensor.all_windows
+          new_state: 'off'
+  mode: single
+- id: '1688374658190'
+  alias: "Surveillance de la maison - \U0001F514 Notifier machine à café allumée depuis
+    longtemps "
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.coffeemaker
+    to: 'on'
+    for:
+      hours: 1
+      minutes: 30
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: ☕️ Machine a café allumé
+      message: La machine a café est allumée depuis longtemps
+      callback:
+      - title: Éteindre la machine a café
+        event: turn_off_coffee_maker
+      click_url: /lovelace/connected-devices
+      icon: mdi:coffee
+      color: deep-orange
+      tag: coffee_maker_on_since_too_long
+      until:
+      - entity_id: switch.coffeemaker
+        new_state: 'off'
+  mode: single
+- id: '1688375110167'
+  alias: "Surveillance de la maison - \U0001F514 Notifier pluie et portes/fenêtres
+    ouvertes "
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_raining_now
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.all_openings
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_doors
+      state: 'on'
+    then:
+    - variables:
+        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: "️\U0001F302 Il pleut!"
+        message: 'Les portes suivantes sont ouvertes et il commence a pleuvoir: {{open_doors}}'
+        click_url: /lovelace/openings
+        icon: mdi:door-open
+        color: deep-orange
+        tag: raining_door_open
+        until:
+        - entity_id: binary_sensor.is_raining_now
+          new_state: 'off'
+        - entity_id: binary_sensor.all_doors
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_windows
+      state: 'on'
+    then:
+    - variables:
+        open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: "️\U0001F302 Il pleut!"
+        message: 'Les fenêtres suivantes sont ouvertes et il commence a pleuvoir:
+          {{open_windows}}'
+        click_url: /lovelace/openings
+        icon: mdi:window-open
+        color: deep-orange
+        tag: raining_window_open
+        until:
+        - entity_id: binary_sensor.is_raining_now
+          new_state: 'off'
+        - entity_id: binary_sensor.all_windows
+          new_state: 'off'
+  mode: single
+- id: '1688375484810'
+  alias: "Surveillance de la maison - \U0001F4F2 Éteindre lumières depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: turn_off_lights
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.all_lights
+  mode: single
+- id: '1688375570728'
+  alias: "Surveillance de la maison - \U0001F4F2 Éteindre TV depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: turn_off_tv
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: remote.turn_off
+    data: {}
+    target:
+      entity_id: remote.jl_s_tv
+  mode: single
+- id: '1688375617351'
+  alias: "Surveillance de la maison - \U0001F4F2 Éteindre KEF depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: turn_off_lsx
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: media_player.turn_off
+    data: {}
+    target:
+      entity_id: media_player.kef
+  mode: single
+- id: '1688375659718'
+  alias: "Surveillance de la maison - \U0001F4F2 Éteindre machine à café depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: turn_off_coffee_maker
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.coffeemaker
   mode: single
