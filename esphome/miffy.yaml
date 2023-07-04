@@ -1,0 +1,119 @@
+esphome:
+  name: miffy
+  friendly_name: Miffy
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret miffy-api-encryption-key
+
+ota:
+  password: !secret miffy-ota-password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Miffy Fallback Hotspot"
+    password: "MiU3S4ULZ5I4"
+
+captive_portal:
+    
+light:
+  - platform: fastled_clockless
+    chipset: WS2812B
+    pin: GPIO16
+    num_leds: 12
+    rgb_order: GRB
+    name: "Light"
+    id: light_id
+    icon: mdi:rabbit-variant
+
+binary_sensor:
+  - platform: homeassistant
+    id: state
+    entity_id: light.chambre_bebe_suspension
+    on_press:
+      then:
+        - light.turn_on:
+            id: light_id
+    on_release:
+      then:
+        - light.turn_off:
+            id: light_id
+    
+sensor:
+  - platform: homeassistant
+    id: brightness
+    entity_id: light.chambre_bebe_suspension
+    attribute: brightness
+    on_value:
+      then:
+        - lambda: |-
+            float brightness_pct;
+            brightness_pct = x/255;
+            id(light_id).turn_on().set_brightness(brightness_pct).perform();
+  - platform: template
+    id: red
+    on_value:
+      then:
+        - lambda: |-
+            float brightness_pct;
+            brightness_pct = id(brightness).state/255;
+            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(x, id(green).state, id(blue).state).perform();
+  - platform: template
+    id: green
+    on_value:
+      then:
+        - lambda: |-
+            float brightness_pct;
+            brightness_pct = id(brightness).state/255;
+            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(id(red).state, x, id(blue).state).perform();
+  - platform: template
+    id: blue
+    on_value:
+      then:
+        - lambda: |-
+            float brightness_pct;
+            brightness_pct = id(brightness).state/255;
+            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(id(red).state, id(green).state, x).perform();
+  
+
+text_sensor:
+  - platform: homeassistant
+    id: rgb_color
+    entity_id: light.chambre_bebe_suspension
+    attribute: rgb_color
+    on_value:
+      then:
+        - lambda: |-
+            float red_value, green_value, blue_value;
+
+            // Remove the parenthesis, spaces, and commas from the string
+            x.erase(std::remove(x.begin(), x.end(), '('), x.end());
+            x.erase(std::remove(x.begin(), x.end(), ')'), x.end());
+            x.erase(std::remove(x.begin(), x.end(), ' '), x.end());
+
+            // Extract the integer values using std::stoi
+            size_t comma1 = x.find(',');
+            size_t comma2 = x.find(',', comma1 + 1);
+            red_value = std::stoi(x.substr(0, comma1));
+            green_value = std::stoi(x.substr(comma1 + 1, comma2 - comma1 - 1));
+            blue_value = std::stoi(x.substr(comma2 + 1));
+
+            // Output the extracted values
+            id(red).publish_state(red_value/255);
+            id(blue).publish_state(blue_value/255);
+            id(green).publish_state(green_value/255);
+            
+

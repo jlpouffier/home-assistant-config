@@ -50,11 +50,6 @@ tesla_automations:
   log: tesla_automations
   max_delay_between_coordinate_update_to_send_location_update: 1
 
-miffy_sync:
-  module: miffy_sync
-  class: miffy_sync
-  log: miffy_sync
-
 matrix_2d:
   module: matrix_2d
   class: matrix_2d

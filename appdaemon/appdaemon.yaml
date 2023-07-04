@@ -34,9 +34,6 @@ logs:
   smart_cube:
     name: smart_cube
     filename: /config/appdaemon/logs/smart_cube.log
-  miffy_sync:
-    name: miffy_sync
-    filename: /config/appdaemon/logs/miffy_sync.log
   tesla_automations:
     name: tesla_automations
     filename: /config/appdaemon/logs/tesla_automations.log
