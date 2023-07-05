@@ -1965,3 +1965,22 @@
     target:
       entity_id: select.talkie_pipeline_d_assistant
   mode: single
+- id: '1688571869274'
+  alias: Nettoyage Intelligent - Réinitialiser Étage NeuNeu
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.neuneu
+    to: docked
+  condition:
+  - condition: state
+    entity_id: select.neuneu_selected_map
+    state: 'Premier Étage '
+  action:
+  - service: select.select_option
+    data:
+      option: Rez-de-chaussée
+    target:
+      entity_id: select.neuneu_selected_map
+  mode: single
