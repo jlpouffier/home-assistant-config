@@ -48,17 +48,15 @@
         new_state: 'off'
   mode: single
 - id: '1688112671844'
-  alias: "Litière Intelligente - \U0001F4F2 Remettre à zero passages litière"
+  alias: "Litière Intelligente - \U0001F4F2 Remettre à zero passages litière depuis
+    notification"
   description: ''
   trigger:
   - platform: event
     event_type: mobile_app_notification_action
     event_data:
       action: reset_litter_tracking
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_clean_cat_litter_box
-    state: 'on'
+  condition: []
   action:
   - service: input_number.set_value
     data:
@@ -574,10 +572,7 @@
     event_type: mobile_app_notification_action
     event_data:
       action: set_new_wake_up_time
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
+  condition: []
   action:
   - service: input_datetime.set_datetime
     data:
@@ -1288,6 +1283,8 @@
         until:
         - entity_id: binary_sensor.all_doors
           new_state: 'off'
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'off'
   - if:
     - condition: state
       entity_id: binary_sensor.all_windows
@@ -1308,6 +1305,8 @@
         tag: home_occupied_window_open
         until:
         - entity_id: binary_sensor.all_windows
+          new_state: 'off'
+        - entity_id: binary_sensor.home_occupied
           new_state: 'off'
   mode: single
 - id: '1688374658190'
@@ -1421,10 +1420,7 @@
     event_type: mobile_app_notification_action
     event_data:
       action: turn_off_lights
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
+  condition: []
   action:
   - service: light.turn_off
     data: {}
@@ -1439,10 +1435,7 @@
     event_type: mobile_app_notification_action
     event_data:
       action: turn_off_tv
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
+  condition: []
   action:
   - service: remote.turn_off
     data: {}
@@ -1457,10 +1450,7 @@
     event_type: mobile_app_notification_action
     event_data:
       action: turn_off_lsx
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
+  condition: []
   action:
   - service: media_player.turn_off
     data: {}
@@ -1475,10 +1465,7 @@
     event_type: mobile_app_notification_action
     event_data:
       action: turn_off_coffee_maker
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
+  condition: []
   action:
   - service: switch.turn_off
     data: {}
@@ -1584,4 +1571,319 @@
       until:
       - entity_id: sensor.low_batteries
         new_state: '0'
+  mode: single
+- id: '1688537182551'
+  alias: "Servarr - \U0001F514 Notification "
+  description: ''
+  trigger:
+  - platform: webhook
+    allowed_methods:
+    - POST
+    local_only: true
+    webhook_id: sonarr-grab--KqTQ4vReuFd_as1xTR_hPqk2
+    id: sonarr-grab
+    variables:
+      title: "\U0001F4FA Épisode en télechargement ..."
+      message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
+        - {{trigger.json.episodes[0].title}}'
+      tag: '{{trigger.json.downloadId}}'
+      color: blue
+  - platform: webhook
+    allowed_methods:
+    - POST
+    local_only: true
+    webhook_id: sonarr-download--KqTQ4vReuFd_as1xTR_hPqk2
+    id: sonarr-download
+    variables:
+      title: "\U0001F4FA Épisode téléchargé !"
+      message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
+        - {{trigger.json.episodes[0].title}}'
+      tag: '{{trigger.json.downloadId}}'
+      color: green
+  - platform: webhook
+    allowed_methods:
+    - POST
+    local_only: true
+    webhook_id: radarr-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
+    id: radarr-grab
+    variables:
+      title: "\U0001F3A5 Film en télechargement ..."
+      message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
+      tag: '{{trigger.json.downloadId}}'
+      color: blue
+  - platform: webhook
+    allowed_methods:
+    - POST
+    local_only: true
+    webhook_id: radarr-download-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
+    id: radarr-download
+    variables:
+      title: "\U0001F3A5 Film téléchargé !"
+      message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
+      tag: '{{trigger.json.downloadId}}'
+      color: green
+  condition: []
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: '{{title}}'
+      message: '{{message}}'
+      icon: mdi:television-shimmer
+      color: '{{color}}'
+      tag: '{{tag}}'
+  mode: single
+- id: '1688555445627'
+  alias: Nettoyage Intelligent - Nettoyer quand maison vide
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_clean_house
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: input_boolean.house_cleaning_first_floor
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.should_neuneu_run
+      state: 'on'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: vacuum.neuneu
+        state: cleaning
+    then:
+    - service: vacuum.start
+      data: {}
+      target:
+        entity_id: vacuum.neuneu
+  mode: single
+- id: '1688555577151'
+  alias: Nettoyage Intelligent - RTH quand maison occupée
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_clean_house
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: vacuum.neuneu
+      state: cleaning
+    then:
+    - service: vacuum.return_to_base
+      data: {}
+      target:
+        entity_id: vacuum.neuneu
+  mode: single
+- id: '1688555745575'
+  alias: Nettoyage Intelligent - Démarrer NeuNeu quand rez-de-chaussée sale
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.should_neuneu_run
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_clean_house
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.house_cleaning_first_floor
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'off'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: vacuum.neuneu
+      state: cleaning
+  action:
+  - service: vacuum.start
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
+  mode: single
+- id: '1688556025376'
+  alias: "Nettoyage Intelligent - \U0001F514 Notifier rez-de-chaussée très sale"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.should_neuneu_run_urgently
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_clean_house
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.house_cleaning_first_floor
+    state: 'on'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_nearest
+      title: "\U0001F9F9 Rez-de-chaussé sale"
+      message: NeuNeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!
+      callback:
+      - title: Lancer NeuNeu
+        event: start_neuneu
+      click_url: /lovelace/vacuums
+      icon: mdi:liquid-spot
+      color: deep-orange
+      tag: first_floor_very_dirty
+      until:
+      - entity_id: vacuum.neuneu
+        new_state: cleaning
+  mode: single
+- id: '1688556280183'
+  alias: "Nettoyage Intelligent - \U0001F514 Notifier Nettoyage NeuNeu"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.neuneu
+    to: cleaning
+  condition: []
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_nearest
+      title: "\U0001F9F9 Nettoyage"
+      message: NeuNeu démarre son nettoyage
+      callback:
+      - title: Arrêter  NeuNeu
+        event: rth_neuneu
+      click_url: /lovelace/vacuums
+      icon: mdi:robot-vacuum
+      tag: neuneu
+  mode: single
+- id: '1688556647795'
+  alias: Nettoyage Intelligent - Considérer rez-de-chaussée propre
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.neuneu
+    to: cleaning
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  condition: []
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{now()}}'
+    target:
+      entity_id: input_datetime.dernier_nettoyage_de_neuneu
+  mode: single
+- id: '1688557191445'
+  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu terminé"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.neuneu
+    to: docked
+    from:
+    - paused
+    - cleaning
+    - returning
+  condition: []
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_nearest
+      title: ✅ NeuNeu a terminé
+      message: 'Surface nettoyée: {{states(''sensor.neuneu_cleaned_area'')}}m²'
+      image_url: '{{state_attr(''camera.neuneu_map'', ''entity_picture'')}}'
+      click_url: /lovelace/vacuums
+      icon: mdi:robot-vacuum
+      color: green
+      tag: neuneu
+  - if:
+    - condition: state
+      entity_id: sensor.neuneu_water_tank
+      state: installed
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_when_present
+        title: "\U0001F9FC Serpillière attachée"
+        message: La serpillière est toujours attachée à NeuNeu. Pensez a l'enlever!
+        click_url: /lovelace/vacuums
+        icon: mdi:faucet
+        color: deep-orange
+        tag: neuneu_mop_installed
+        until:
+          entity_id: sensor.neuneu_water_tank
+          new_state: not_installed
+  mode: single
+- id: '1688557488862'
+  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu erreur"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.neuneu
+    to: error
+  condition: []
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_nearest
+      message: NeuNeu est en erreur
+      title: ⚠️ NeuNeu est en erreur
+      image_url: '{{state_attr(''camera.neuneu_map'', ''entity_picture'')}}'
+      click_url: /lovelace/vacuums
+      icon: mdi:robot-vacuum
+      color: deep-orange
+      tag: neuneu
+  mode: single
+- id: '1688557628209'
+  alias: "Nettoyage Intelligent - \U0001F4F2 Démarrer NeuNeu depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: start_neuneu
+  condition: []
+  action:
+  - service: vacuum.start
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
+  mode: single
+- id: '1688557670153'
+  alias: "Nettoyage Intelligent - \U0001F4F2 RTH NeuNeu depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: rth_neuneu
+  condition: []
+  action:
+  - service: vacuum.return_to_base
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
   mode: single

@@ -15,13 +15,6 @@ notifier:
       notification_service: notify/mobile_app_pixel_4a
       proximity_id: proximity.distance_valentine_home
 
-clean_house:
-  module: clean_house
-  class: clean_house
-  log: clean_house
-  hass_base_url: !secret hass_base_url
-  constrain_input_boolean: input_boolean.automation_clean_house
-
 presence_simulator:
   module: presence_simulator
   class: presence_simulator

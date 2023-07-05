@@ -19,9 +19,6 @@ logs:
     filename: /config/appdaemon/logs/error.log
   diag_log:
     filename: /config/appdaemon/logs/diag.log
-  clean_house:
-    name: clean_house
-    filename: /config/appdaemon/logs/clean_house.log
   notifier:
     name: notifier
     filename: /config/appdaemon/logs/notifier.log
