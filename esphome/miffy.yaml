@@ -29,12 +29,21 @@ wifi:
 
 captive_portal:
     
+#light:
+#  - platform: fastled_clockless
+#    chipset: WS2812B
+#    pin: GPIO16
+#    num_leds: 12
+#    rgb_order: GRB
+#    name: "Light"
+#    id: light_id
+#    icon: mdi:rabbit-variant
+
 light:
-  - platform: fastled_clockless
-    chipset: WS2812B
+  - platform: neopixelbus
+    variant: WS2812X
     pin: GPIO16
     num_leds: 12
-    rgb_order: GRB
     name: "Light"
     id: light_id
     icon: mdi:rabbit-variant
@@ -62,32 +71,7 @@ sensor:
         - lambda: |-
             float brightness_pct;
             brightness_pct = x/255;
-            id(light_id).turn_on().set_brightness(brightness_pct).perform();
-  - platform: template
-    id: red
-    on_value:
-      then:
-        - lambda: |-
-            float brightness_pct;
-            brightness_pct = id(brightness).state/255;
-            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(x, id(green).state, id(blue).state).perform();
-  - platform: template
-    id: green
-    on_value:
-      then:
-        - lambda: |-
-            float brightness_pct;
-            brightness_pct = id(brightness).state/255;
-            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(id(red).state, x, id(blue).state).perform();
-  - platform: template
-    id: blue
-    on_value:
-      then:
-        - lambda: |-
-            float brightness_pct;
-            brightness_pct = id(brightness).state/255;
-            id(light_id).turn_on().set_brightness(brightness_pct).set_rgb(id(red).state, id(green).state, x).perform();
-  
+            id(light_id).turn_on().set_brightness(brightness_pct).perform();  
 
 text_sensor:
   - platform: homeassistant
@@ -99,7 +83,7 @@ text_sensor:
         - lambda: |-
             float red_value, green_value, blue_value;
 
-            // Remove the parenthesis, spaces, and commas from the string
+            // Remove the parenthesis and spaces from the string
             x.erase(std::remove(x.begin(), x.end(), '('), x.end());
             x.erase(std::remove(x.begin(), x.end(), ')'), x.end());
             x.erase(std::remove(x.begin(), x.end(), ' '), x.end());
@@ -111,9 +95,7 @@ text_sensor:
             green_value = std::stoi(x.substr(comma1 + 1, comma2 - comma1 - 1));
             blue_value = std::stoi(x.substr(comma2 + 1));
 
-            // Output the extracted values
-            id(red).publish_state(red_value/255);
-            id(blue).publish_state(blue_value/255);
-            id(green).publish_state(green_value/255);
+            // Drive light
+            id(light_id).turn_on().set_brightness(id(brightness).state/255).set_rgb(red_value/255, green_value/255, blue_value/255).perform();
             
 
