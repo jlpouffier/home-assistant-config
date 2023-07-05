@@ -37,6 +37,3 @@ logs:
   matrix_2d:
     name: matrix_2d
     filename: /config/appdaemon/logs/matrix_2d.log
-  walkie_talkie:
-    name: walkie_talkie
-    filename: /config/appdaemon/logs/walkie_talkie.log

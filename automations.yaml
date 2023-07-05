@@ -1887,3 +1887,81 @@
     target:
       entity_id: vacuum.neuneu
   mode: single
+- id: '1688561458713'
+  alias: Talkie - Changer Assistant
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.talkie_change_assistant_button
+    to: 'on'
+    variables:
+      available_assistants:
+      - Assist
+      - Papa Noël
+      - Jarvis
+      - Régis
+  condition: []
+  action:
+  - if:
+    - condition: template
+      value_template: '{{ states("select.talkie_pipeline_d_assistant") in available_assistants
+        }}'
+    then:
+    - variables:
+        array_length: '{{ available_assistants | length }}'
+        current_position: '{{ available_assistants.index(states(''select.talkie_pipeline_d_assistant''))
+          }}'
+        new_position: '{{ (current_position + 1) % array_length }}'
+        next_assistant: '{{ available_assistants[new_position] }}'
+    - service: select.select_option
+      data:
+        option: '{{next_assistant}}'
+      target:
+        entity_id: select.talkie_pipeline_d_assistant
+    else:
+    - variables:
+        new_position: 0
+        next_assistant: '{{ available_assistants[new_position] }}'
+    - service: select.select_option
+      data:
+        option: '{{next_assistant}}'
+      target:
+        entity_id: select.talkie_pipeline_d_assistant
+  - service: tts.cloud_say
+    data:
+      cache: false
+      entity_id: media_player.talkie_media_player
+      language: fr-FR
+      message: Vous êtes en communication avec {{states('select.talkie_pipeline_d_assistant')}}
+  mode: single
+- id: '1688562617686'
+  alias: Talkie - Réinitialiser Assistant
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.talkie_assistant_en_cours
+    from: 'on'
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    variables:
+      available_assistants:
+      - Assist
+      - Papa Noël
+      - Jarvis
+      - Régis
+  condition: []
+  action:
+  - variables:
+      new_position: 0
+      next_assistant: '{{ available_assistants[new_position] }}'
+  - service: select.select_option
+    data:
+      option: '{{next_assistant}}'
+    target:
+      entity_id: select.talkie_pipeline_d_assistant
+  mode: single
