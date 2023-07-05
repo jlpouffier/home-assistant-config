@@ -10,5 +10,3 @@ homeassistant:
       ignore_battery: true
     sensor.neuneu_battery_level:
       ignore_battery: true
-    sensor.teuteu_battery:
-      ignore_battery: true

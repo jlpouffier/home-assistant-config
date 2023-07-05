@@ -27,11 +27,6 @@ presence_simulator:
   go_to_bed_time: "22:30:00"
   sleep_time: "23:30:00"
 
-smart_cube:
-  module: smart_cube
-  class: smart_cube
-  log: smart_cube
-
 #sandbox:
 #  module: sandbox
 #  class: sandbox

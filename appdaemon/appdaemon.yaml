@@ -28,9 +28,6 @@ logs:
   sandbox:
     name: sandbox
     filename: /config/appdaemon/logs/sandbox.log
-  smart_cube:
-    name: smart_cube
-    filename: /config/appdaemon/logs/smart_cube.log
   tesla_automations:
     name: tesla_automations
     filename: /config/appdaemon/logs/tesla_automations.log
