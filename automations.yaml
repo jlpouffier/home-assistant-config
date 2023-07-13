@@ -305,7 +305,7 @@
       tag: washing_mashine_over
   mode: single
 - id: '1688124199640'
-  alias: Bienvenue lumineux - Allumer lumières quand porte ouverte
+  alias: Bienvenue - Allumer lumières et ouvrir volets quand porte ouverte
   description: ''
   trigger:
   - platform: state
@@ -317,9 +317,6 @@
   - condition: state
     entity_id: input_boolean.automation_welcome_home
     state: 'on'
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
   action:
   - wait_for_trigger:
     - platform: state
@@ -332,32 +329,49 @@
       seconds: 0
       milliseconds: 0
     continue_on_timeout: false
-  - service: hue.activate_scene
-    data:
-      transition: 3
-    target:
-      entity_id: scene.entree_entree_100
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 3
-      milliseconds: 0
-  - service: hue.activate_scene
-    data:
-      transition: 3
-    target:
-      entity_id:
-      - scene.salon_salon_100
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 3
-      milliseconds: 0
-  - service: hue.activate_scene
-    data:
-      transition: 3
-    target:
-      entity_id: scene.cuisine_cuisine_100
+  - if:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+    then:
+    - service: hue.activate_scene
+      data:
+        transition: 3
+      target:
+        entity_id: scene.entree_entree_100
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 3
+        milliseconds: 0
+    - service: hue.activate_scene
+      data:
+        transition: 3
+      target:
+        entity_id:
+        - scene.salon_salon_100
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 3
+        milliseconds: 0
+    - service: hue.activate_scene
+      data:
+        transition: 3
+      target:
+        entity_id: scene.cuisine_cuisine_100
+  - if:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: cover.living_room_cover
+        attribute: current_position
+        state: 100
+    then:
+    - service: cover.open_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
   mode: single
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
@@ -1833,7 +1847,7 @@
         color: deep-orange
         tag: neuneu_mop_installed
         until:
-          entity_id: sensor.neuneu_water_tank
+        - entity_id: sensor.neuneu_water_tank
           new_state: not_installed
   mode: single
 - id: '1688557488862'
@@ -1898,8 +1912,8 @@
     variables:
       available_assistants:
       - Assist
-      - Papa Noël
       - Jarvis
+      - Papa Noël
       - Régis
   condition: []
   action:
@@ -1983,4 +1997,108 @@
       option: Rez-de-chaussée
     target:
       entity_id: select.neuneu_selected_map
+  mode: single
+- id: '1688927204517'
+  alias: "Tesla - \U0001F514 Notifier réinitialisation de cible de charge "
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.tesla_plugged_in
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: device_tracker.tesla_device_tracker
+    state: home
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.tesla_charge_limit
+      state: '100'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "️\U0001F697 Tesla"
+      message: Pense à réinitialiser la cible de recharge (actuellement à {{states("sensor.tesla_charge_limit")}}%)
+      click_ur: /lovelace/tesla
+      icon: mdi:car
+      color: blue
+      tag: tesla_reset_charge_limit
+      until:
+      - entity_id: sensor.tesla_charge_limit
+        new_state: '100'
+  mode: single
+- id: '1688927639584'
+  alias: 'Vélo - Contrôler charge en fonction du tarif électrique '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.heures_pleines
+    from: 'on'
+    to: 'off'
+    id: off_peak
+  - platform: state
+    entity_id:
+    - schedule.heures_pleines
+    from: 'off'
+    to: 'on'
+    id: peak
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_smart_bike_charging
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - peak
+      sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.prise_velo
+    - conditions:
+      - condition: trigger
+        id:
+        - off_peak
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.prise_velo
+  mode: single
+- id: '1688927728999'
+  alias: Vélo - Réinitialisation prise démarrage Home Assistant
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_smart_bike_charging
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: schedule.heures_pleines
+        state: 'on'
+      sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.prise_velo
+    - conditions:
+      - condition: state
+        entity_id: schedule.heures_pleines
+        state: 'off'
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.prise_velo
   mode: single
