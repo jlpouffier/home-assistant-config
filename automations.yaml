@@ -2102,3 +2102,101 @@
         target:
           entity_id: switch.prise_velo
   mode: single
+- id: '1689253436663'
+  alias: Lumières Extérieures - Synchroniser Hue et SONOFF
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.is_exterior_sphere_bright
+    from: 'off'
+    to: 'on'
+    id: sphere_bright
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  - platform: state
+    entity_id:
+    - binary_sensor.is_exterior_sphere_bright
+    from: 'on'
+    to: 'off'
+    id: sphere_not_bright
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  - platform: state
+    entity_id:
+    - light.plafonnier_exterieur
+    from: 'off'
+    to: 'on'
+    id: ceiling_light_on
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  - platform: state
+    entity_id:
+    - light.plafonnier_exterieur
+    from: 'on'
+    to: 'off'
+    id: ceiling_light_off
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - sphere_bright
+      - condition: state
+        entity_id: light.plafonnier_exterieur
+        state: 'off'
+      sequence:
+      - service: light.turn_on
+        data: {}
+        target:
+          entity_id: light.plafonnier_exterieur
+    - conditions:
+      - condition: trigger
+        id:
+        - sphere_not_bright
+      - condition: state
+        entity_id: light.plafonnier_exterieur
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.plafonnier_exterieur
+    - conditions:
+      - condition: trigger
+        id:
+        - ceiling_light_on
+      - condition: state
+        entity_id: binary_sensor.is_exterior_sphere_bright
+        state: 'off'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+        target:
+          entity_id: light.exterieur
+    - conditions:
+      - condition: trigger
+        id:
+        - ceiling_light_off
+      - condition: state
+        entity_id: binary_sensor.is_exterior_sphere_bright
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.exterieur
+  mode: parallel
+  max: 10
