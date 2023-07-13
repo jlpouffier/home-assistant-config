@@ -73,15 +73,15 @@ matrix_2d:
     - binary_sensor.all_openings
     - binary_sensor.all_windows
     - binary_sensor.is_front_door_recently_open
+    - binary_sensor.is_exterior_sphere_bright
     - switch.volet_salon_bouton_stop_fallback
     - switch.volet_salon_bouton_down_fallback
     - switch.volet_salon_bouton_up_fallback
     - camera.neuneu_map
     - media_player.tv_cast
     - remote.jl_s_tv
-    - binary_sensor.baby_room_presence_sensor_mmwave
-    - binary_sensor.baby_room_presence_sensor_pir
-    - binary_sensor.baby_room_presence_sensor_occupancy
-    - binary_sensor.office_presence_sensor_mmwave
-    - binary_sensor.office_presence_sensor_pir
-    - binary_sensor.office_presence_sensor_occupancy
+    - binary_sensor.capteur_presence_bureau_mmwave
+    - binary_sensor.capteur_presence_bureau_pir
+    - binary_sensor.capteur_presence_marilou_mmwave
+    - binary_sensor.capteur_presence_marilou_pir
+    - switch.plafonnier_exterieur
