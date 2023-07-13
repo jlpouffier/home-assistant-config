@@ -1,0 +1,265 @@
+esphome:
+  name: standing-desk
+  friendly_name: Standing desk
+  includes:
+    - desk_height_sensor.h
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret standing-desk-api-encryption-key
+
+ota:
+  password: !secret standing-desk-ota-password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: !secret standing-desk-hotspot-ssid
+    password: !secret standing-desk-hotspot-password
+
+captive_portal:
+  
+uart:
+  - id: desk_uart
+    tx_pin: 12
+    rx_pin: 13
+    baud_rate: 9600
+
+binary_sensor:
+  # binary sensor representing if the desk is moving. Computed by comparing sensors height_heartbeat and previous_height_heartbeat
+  - platform: template
+    id: desk_moving    
+    name: Moving
+    device_class: moving
+    icon: mdi:arrow-up-down-bold
+    
+sensor:
+  # Height of the desk
+  # Updated as soon as a new value is available on the UART BUS. 
+  # For every new value, the value is published to anther sensor called height_heartbeat
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      
+      App.register_component(desk_height_sensor);
+
+      return {
+        desk_height_sensor->height_sensor
+      };
+    sensors:
+      - id: height
+        name: Height
+        unit_of_measurement: cm
+        accuracy_decimals: 0
+        icon: mdi:tape-measure
+        on_value:
+          then:
+            - sensor.template.publish:
+                id: height_heartbeat
+                state: !lambda 'return x;'
+
+  # Height of the desk HEARTBEAT.
+  # Publishes one value of height every 2 secondes (No matter what - Desk moving or not)
+  # This is used to check if the desk is moving. 
+  # If two subsequent value are identical, then the desk is not moving. Else it is moving.
+  - platform: template
+    id: height_heartbeat
+    internal: True
+    accuracy_decimals: 0
+    filters:
+      - heartbeat: 2s
+    update_interval: never
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(previous_height_heartbeat).state != id(height_heartbeat).state;'
+            then:
+              - binary_sensor.template.publish:
+                  id: desk_moving
+                  state: ON
+            else: 
+              - binary_sensor.template.publish:
+                  id: desk_moving
+                  state: OFF
+        - sensor.template.publish:
+            id: previous_height_heartbeat
+            state: !lambda 'return x;'
+
+  # Previous Height of the desk HEARTBEAT.
+  # Stores the preivous value of the heartbeat.
+  - platform: template
+    id: previous_height_heartbeat
+    internal: True
+    accuracy_decimals: 0
+    update_interval: never
+
+switch:
+  # All the UART commands "RAW"
+  - platform: uart
+    id: send_start_uart_command
+    name: Send START UART Command
+    data: [0xD8, 0xD8, 0x66, 0x00, 0x00]
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_up_uart_command
+    name: Send UP UART Command
+    data: [0xD8, 0xD8, 0x66, 0x02, 0x02]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_down_uart_command
+    name: Send DOWN UART Command
+    data: [0xD8, 0xD8, 0x66, 0x01, 0x01]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_button1_uart_command
+    name: Send BUTTON1 UART Command
+    data: [0xD8, 0xD8, 0x66, 0x04, 0x04]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_button2_uart_command
+    name: Send BUTON2 UART Command
+    data: [0xD8, 0xD8, 0x66, 0x08, 0x08]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_button3_uart_command
+    name: Send BUTTON3 UART Command
+    data: [0xD8, 0xD8, 0x66, 0x10, 0x10]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+  - platform: uart
+    id: send_button4_uart_command
+    name: Send BUTON4 UART Command
+    data: [0xD8, 0xD8, 0x66, 0x20, 0x20]
+    send_every: 50ms
+    disabled_by_default: True
+    entity_category: diagnostic
+
+  # UP Switch.
+  # Turn on > Send START + UP
+  # Turn off > Stop sending UP
+  - platform: template
+    id: move_up_desk
+    name: Move Desk Up
+    icon: mdi:arrow-up-bold-box
+    optimistic: True
+    turn_on_action:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_up_uart_command
+    turn_off_action:
+      - switch.turn_off: send_up_uart_command
+
+  # DOWN Switch.
+  # Turn on > Send START + DOWN
+  # Turn off > Stop sending DOWN
+  - platform: template
+    id: move_down_desk
+    name: Move Desk Down
+    icon: mdi:arrow-down-bold-box
+    optimistic: True
+    turn_on_action:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_down_uart_command
+    turn_off_action:
+      - switch.turn_off: send_down_uart_command
+
+button:
+  # Memory button
+  # When pressed :
+  #   . Send START
+  #   . Send the corresponding BUTTON UART command
+  #   . Wait until the desk is moving (timeout of 3s if the desk is already in position)
+  #   . Wait until the desk is not moving ayymore (timeout of 20s - Max mouvment measured on my desk is 17 seconds under load)
+  #   . Stop sending the corresponding BUTTON UART command
+  - platform: template
+    id: move_desk_position_1
+    name: Move Desk to Position 1
+    icon: mdi:numeric-1-box
+    on_press:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_button1_uart_command
+      - wait_until:
+          condition:
+            binary_sensor.is_on: desk_moving
+          timeout: 3s
+      - wait_until:
+          condition:
+            binary_sensor.is_off: desk_moving
+          timeout: 20s
+      - switch.turn_off: send_button1_uart_command
+  - platform: template
+    id: move_desk_position_2
+    name: Move Desk to Position 2
+    icon: mdi:numeric-2-box
+    on_press:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_button2_uart_command
+      - wait_until:
+          condition:
+            binary_sensor.is_on: desk_moving
+          timeout: 3s
+      - wait_until:
+          condition:
+            binary_sensor.is_off: desk_moving
+          timeout: 15s
+      - switch.turn_off: send_button2_uart_command
+  - platform: template
+    id: move_desk_position_3
+    name: Move Desk to Position 3
+    icon: mdi:numeric-3-box
+    on_press:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_button3_uart_command
+      - wait_until:
+          condition:
+            binary_sensor.is_on: desk_moving
+          timeout: 3s
+      - wait_until:
+          condition:
+            binary_sensor.is_off: desk_moving
+          timeout: 15s
+      - switch.turn_off: send_button3_uart_command
+  - platform: template
+    id: move_desk_position_4
+    name: Move Desk to Position 4
+    icon: mdi:numeric-4-box
+    on_press:
+      - switch.turn_on: send_start_uart_command
+      - delay: 50ms
+      - switch.turn_on: send_button4_uart_command
+      - wait_until:
+          condition:
+            binary_sensor.is_on: desk_moving
+          timeout: 3s
+      - wait_until:
+          condition:
+            binary_sensor.is_off: desk_moving
+          timeout: 15s
+      - switch.turn_off: send_button4_uart_command
