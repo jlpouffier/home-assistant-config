@@ -242,7 +242,8 @@
       sequence:
       - service: script.leave_home
         data: {}
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688117431729'
   alias: Boutons Hue - Bouton Salon Couloir
   description: ''
@@ -280,7 +281,8 @@
           entity_id:
           - light.lumieres_rez_de_chaussee
           - light.exterieur
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688118075093'
   alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
   description: ''
@@ -967,8 +969,8 @@
     entity_id: person.jenova70
     state: home
   - condition: state
-    entity_id: binary_sensor.office_presence_sensor_occupancy
     state: 'on'
+    entity_id: binary_sensor.capteur_presence_bureau_occupancy
   action:
   - choose:
     - conditions:
@@ -1022,8 +1024,8 @@
     entity_id: person.jenova70
     state: home
   - condition: state
-    entity_id: binary_sensor.office_presence_sensor_occupancy
     state: 'on'
+    entity_id: binary_sensor.capteur_presence_bureau_occupancy
   - condition: state
     entity_id: device_tracker.jean_loics_laptop
     state: home
@@ -1994,7 +1996,7 @@
   action:
   - service: select.select_option
     data:
-      option: Rez-de-chaussée
+      option: 'Rez-de-chaussée '
     target:
       entity_id: select.neuneu_selected_map
   mode: single
@@ -2200,3 +2202,22 @@
           entity_id: light.exterieur
   mode: parallel
   max: 10
+- id: '1689530050696'
+  alias: Pulse - Arrêter Pulse
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.pulse_end_time
+  condition: []
+  action:
+  - if:
+    - condition: state
+      entity_id: light.2d_matrix
+      state: 'on'
+    then:
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id:
+        - light.2d_matrix
+  mode: single

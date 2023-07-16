@@ -45,9 +45,6 @@ matrix_2d:
   constrain_input_boolean: input_boolean.automation_matrix_2d
   excluded_domains:
     - sensor
-    - zone
-    - device_tracker
-    - update
   included_entities:
     - sensor.capteur_thp_salon_temperature
     - sensor.capteur_thp_chambre_bebe_temperature
@@ -55,8 +52,10 @@ matrix_2d:
     - sensor.capteur_thp_bureau_temperature
     - sensor.floirac_temperature
     - sensor.tesla_state
-    - sensor.bouton_bibi_action
     - sensor.tesla_shift_state
+    - sensor.tesla_rated_battery_range_km
+    - sensor.air_pollution_level
+    - sensor.lixee_sinsts
   excluded_entities:
     - light.all_lights
     - light.lumieres_rez_de_chaussee
@@ -74,14 +73,13 @@ matrix_2d:
     - binary_sensor.all_windows
     - binary_sensor.is_front_door_recently_open
     - binary_sensor.is_exterior_sphere_bright
-    - switch.volet_salon_bouton_stop_fallback
-    - switch.volet_salon_bouton_down_fallback
-    - switch.volet_salon_bouton_up_fallback
-    - camera.neuneu_map
-    - media_player.tv_cast
-    - remote.jl_s_tv
     - binary_sensor.capteur_presence_bureau_mmwave
     - binary_sensor.capteur_presence_bureau_pir
     - binary_sensor.capteur_presence_marilou_mmwave
     - binary_sensor.capteur_presence_marilou_pir
+    - switch.volet_salon_bouton_stop_fallback
+    - switch.volet_salon_bouton_down_fallback
+    - switch.volet_salon_bouton_up_fallback
+    - camera.neuneu_map
     - switch.plafonnier_exterieur
+    - update.2d_matrix_firmware

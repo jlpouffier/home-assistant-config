@@ -9,7 +9,7 @@ class matrix_2d(hass.Hass):
     
     def callback_state_change(self, entity, attribute, old, new, kwargs):
         if self.is_in_scope(entity) and self.entities.binary_sensor.home_occupied.state == "on":
-            #self.log(entity)
+            self.log(entity)
             self.call_service("script/pulse_2d_led_matrix") 
     
     def callback_event(self, event_name, data, kwargs):
@@ -22,15 +22,14 @@ class matrix_2d(hass.Hass):
         entity_excluded = False
 
         domain = entity.split(".")[0]
-
+        
         if domain in self.args["excluded_domains"]:
             domain_excluded = True
         if entity in self.args["included_entities"]:
             entity_included = True
         if entity in self.args["excluded_entities"]:
             entity_excluded = True
-        
-        if entity == "light.2d_matrix" or entity == "script.pulse_2d_led_matrix":
+        if entity == "light.2d_matrix" or entity == "script.pulse_turn_on" or entity == "input_datetime.pulse_end_time":
             return False
         elif entity_included:
             return True

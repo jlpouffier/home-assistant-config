@@ -152,22 +152,30 @@ turn_on_media_center:
           source: Opt
   icon: mdi:remote-tv
 pulse_2d_led_matrix:
-  alias: Pulse 2D LED Matrix
+  alias: Pulse - Allumer
   sequence:
-  - service: light.turn_on
-    data: {}
-    target:
-      entity_id:
-      - light.2d_matrix
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
-  - service: light.turn_off
-    data: {}
-    target:
+  - if:
+    - condition: state
       entity_id: light.2d_matrix
+      state: 'off'
+    then:
+    - service: light.turn_on
+      data: {}
+      target:
+        entity_id:
+        - light.2d_matrix
+    - service: input_datetime.set_datetime
+      data:
+        datetime: '{{ now() + timedelta( seconds = 5 ) }}'
+      target:
+        entity_id: input_datetime.pulse_end_time
+    else:
+    - service: input_datetime.set_datetime
+      data:
+        datetime: '{{as_datetime(states(''input_datetime.arret_de_pulse'')) +   timedelta(
+          seconds = 5 )}}'
+      target:
+        entity_id: input_datetime.pulse_end_time
   mode: queued
   icon: mdi:crop-square
   max: 1000
