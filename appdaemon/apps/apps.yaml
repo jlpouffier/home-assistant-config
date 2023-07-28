@@ -12,7 +12,7 @@ notifier:
       proximity_id: proximity.distance_jl_home
     - name: valentine
       id: person.valentine
-      notification_service: notify/mobile_app_pixel_4a
+      notification_service: notify/mobile_app_iphone_de_valentine
       proximity_id: proximity.distance_valentine_home
 
 presence_simulator:
