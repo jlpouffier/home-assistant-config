@@ -2221,3 +2221,160 @@
         entity_id:
         - light.2d_matrix
   mode: single
+- id: '1690221385338'
+  alias: "Bureau - \U0001F4E3 Position Debout "
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - (Lève|Monte) le bureau
+    - '[(Mais|Mets|Passe)] le bureau [en] (mode|position) debout'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.standing_desk_moving
+    state: 'off'
+  action:
+  - service: button.press
+    data: {}
+    target:
+      entity_id: button.standing_desk_move_desk_to_position_1
+    enabled: true
+  mode: single
+- id: '1690221432357'
+  alias: "Bureau - \U0001F4E3 Position Assise"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - (Baisse|descend|descends) le bureau
+    - '[(Mais|Mets|Passe)] le bureau [en] (mode|position) (assis|assise)'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.standing_desk_moving
+    state: 'off'
+  action:
+  - service: button.press
+    data: {}
+    target:
+      entity_id: button.standing_desk_move_desk_to_position_2
+    enabled: true
+  mode: single
+- id: '1690362715725'
+  alias: Pluie - Incrémenter Pluie Journalière
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: '*'
+    hours: '*'
+    seconds: '1'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.is_raining_now
+    state: 'on'
+  action:
+  - service: input_number.increment
+    data: {}
+    target:
+      entity_id: input_number.daily_rain
+  mode: single
+- id: '1690362812143'
+  alias: Pluie - Réinitialiser Pluie Journalière
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: '0'
+    minutes: '0'
+    seconds: '0'
+  condition: []
+  action:
+  - service: input_number.set_value
+    data:
+      value: 0
+    target:
+      entity_id: input_number.daily_rain
+  mode: single
+- id: '1690532506099'
+  alias: "Rappel - \U0001F4E3 Créer un rappel"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - Rappelle-moi (de |d'){reminder} dans [{days} jour[s]] [et] [{hours} h[eure][s]]
+      [et] [{minutes} min[unte][s]] [et] [{seconds} seconde[s]]
+    - 'Rappelle-moi dans [{days} jour[s]] [et] [{hours} h[eure][s]] [et] [{minutes}
+      min[unte][s]] [et] [{seconds} seconde[s]] (de |d''){reminder} '
+  condition: []
+  action:
+  - variables:
+      days: '{{trigger.slots.days|default(0)|int(0)}}
+
+        '
+      hours: '{{trigger.slots.hours|default(0)|int(0)}}
+
+        '
+      minutes: '{{trigger.slots.minutes|default(0)|int(0)}}
+
+        '
+      seconds: '{{trigger.slots.seconds|default(0)|int(0)}}
+
+        '
+      time_from_now: '{{timedelta(days=days, hours=hours, minutes=minutes,
+
+        seconds=seconds)}}
+
+        '
+      short_timeframe: '{{as_timedelta(time_from_now) < timedelta(minutes = 20)}}
+
+        '
+      reminder_time: '{{now() + as_timedelta(time_from_now)}}
+
+        '
+      reminder_time_end: "{{now() + as_timedelta(time_from_now) + timedelta(seconds
+        = 1)}} \n"
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{short_timeframe == true}}'
+      sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.reminder_for_later
+        data:
+          variables:
+            reminder: '{{trigger.slots.reminder}}'
+            days: '{{days}}'
+            hours: '{{hours}}'
+            minutes: '{{minutes}}'
+            seconds: '{{seconds}}'
+            media_player: media_player.talkie_media_player
+    - conditions:
+      - condition: template
+        value_template: '{{short_timeframe == false}}'
+      sequence:
+      - service: calendar.create_event
+        data:
+          summary: '{{trigger.slots.reminder}}'
+          start_date_time: '{{reminder_time}}'
+          end_date_time: '{{reminder_time_end}}'
+        target:
+          entity_id: calendar.reminders
+  mode: single
+- id: '1690555063262'
+  alias: 'Rappel - Notifier rappels lointains '
+  description: ''
+  trigger:
+  - platform: calendar
+    event: start
+    offset: 0:0:0
+    entity_id: calendar.reminders
+  condition: []
+  action:
+  - service: script.reminder_for_later
+    data:
+      days: 0
+      hours: 0
+      minutes: 0
+      seconds: 0
+      media_player: media_player.talkie_media_player
+      reminder: '{{trigger.calendar_event.summary}}'
+  mode: single
