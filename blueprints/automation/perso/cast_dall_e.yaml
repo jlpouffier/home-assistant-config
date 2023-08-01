@@ -1,10 +1,9 @@
 blueprint:
   name: Cast Dall-E generated images
   description: |
-    Generate image using your voice with OpenAI (Dall-E) and cast them to a cast-compatible media player.
-    Requirement:
-      - An OpenAI API Key 
-      - An OpenAI config entry already created with the OpenAI Conversation integration on Home Assistant
+    Generate an image using your voice and show it on a screen.
+    Requirements:
+      - OpenAI Conversation configured
       - A Cast-compatible media player
   domain: automation
   author: JLo
@@ -14,9 +13,9 @@ blueprint:
     assist_command:
       name: Assist Command
       description: |
-        The Assist command you will use to genrate the picture. 
+        The Assist command you will use to generate the picture. 
         You can change the overall sentence to match your style and language. 
-        **WARNING** you **MUST** include {prompt} in order to pass that variable to OpenAI.
+        **WARNING** you **MUST** include `{prompt}` in order to pass that variable to OpenAI.
       default: "Show me a picture of {prompt}"
       selector:
         text:
@@ -31,14 +30,14 @@ blueprint:
             - "512"
             - "1024"
     open_ai_config_entry:
-      name: OpenAi Configuration Entry
-      description: The OpenAI configuration entry that will be used to generate the image
+      name: OpenAI Configuration
+      description: The OpenAI configuration entry to generate the image
       selector:
         config_entry:
           integration: "openai_conversation"
     media_player:
       name: Media player
-      description: Cast compatible media player that will cast the generated picture
+      description: Media player to show the picture
       selector:
         entity:
           filter:
@@ -47,7 +46,7 @@ blueprint:
     additional_conditions:
       name: Additional conditions
       description: |
-        Additional conditions you may want to add to this automation 
+        Extra conditions you may want to add to this automation 
         (Example: Home occupied, TV on, etc)
       default: []
       selector:
