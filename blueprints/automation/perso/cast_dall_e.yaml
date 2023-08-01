@@ -17,7 +17,7 @@ blueprint:
         The Assist command you will use to genrate the picture. 
         You can change the overall sentence to match your style and language. 
         **WARNING** you **MUST** include {prompt} in order to pass that variable to OpenAI.
-      default: "Show me picture of {prompt}"
+      default: "Show me a picture of {prompt}"
       selector:
         text:
     open_ai_generation_size:
