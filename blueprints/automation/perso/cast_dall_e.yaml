@@ -9,7 +9,7 @@ blueprint:
   domain: automation
   author: JLo
   homeassistant:
-    min_version: 2023.8.0
+    min_version: 2023.7.99
   input:
     assist_command:
       name: Assist Command
