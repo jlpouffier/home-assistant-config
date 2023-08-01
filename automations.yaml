@@ -2451,19 +2451,6 @@
           text: '{{trigger.slots.command2}}'
   mode: parallel
   max: 100
-- id: '1690881019090'
-  alias: Test blueprint 2
-  description: ''
-  use_blueprint:
-    path: perso/cast_dall_e.yaml
-    input:
-      open_ai_config_entry: c43c9f68251a39c4b8e1e9d083087bee
-      media_player: media_player.tv_cast
-      additiona_conditions:
-      - condition: state
-        entity_id: light.salon
-        state: 'on'
-      assist_command: Affiche une photo de {prompt}
 - id: '1690881654351'
   alias: "Assist - \U0001F4E3 Cast Dall-E Image"
   description: ''
