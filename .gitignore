@@ -15,3 +15,4 @@ appdaemon/apps/sandbox.py
 custom_components/
 www/
 image/
+.shopping_list.json
