@@ -1,0 +1,50 @@
+intent_script:
+  Reminder:
+    action:
+      - variables:
+          days: |
+            {{days|default(0)|int(0)}}
+          hours: |
+            {{hours|default(0)|int(0)}}
+          minutes: |
+            {{minutes|default(0)|int(0)}}
+          seconds: |
+            {{seconds|default(0)|int(0)}}
+          time_from_now: |
+            {{timedelta(days=days, hours=hours, minutes=minutes,
+            seconds=seconds)}}
+          short_timeframe: |
+            {{as_timedelta(time_from_now) < timedelta(minutes = 20)}}
+          reminder_time: |
+            {{now() + as_timedelta(time_from_now)}}
+          reminder_time_end: |
+            {{now() + as_timedelta(time_from_now) + timedelta(seconds = 1)}}
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{short_timeframe == true}}"
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.reminder_for_later
+                data:
+                  variables:
+                    reminder: "{{reminder}}"
+                    days: "{{days}}"
+                    hours: "{{hours}}"
+                    minutes: "{{minutes}}"
+                    seconds: "{{seconds}}"
+                    media_player: media_player.talkie_media_player
+          - conditions:
+              - condition: template
+                value_template: "{{short_timeframe == false}}"
+            sequence:
+              - service: calendar.create_event
+                data:
+                  summary: "{{reminder}}"
+                  start_date_time: "{{reminder_time}}"
+                  end_date_time: "{{reminder_time_end}}"
+                target:
+                  entity_id: calendar.reminders
+    speech:
+      text: "D'accord"
