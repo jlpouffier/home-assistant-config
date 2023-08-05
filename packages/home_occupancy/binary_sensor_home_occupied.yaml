@@ -4,5 +4,15 @@ template:
   - binary_sensor:
       - name: home_occupied
         unique_id: home_occupied
-        state: "{{is_state('person.jenova70', 'home') or is_state('person.valentine', 'home')}}"
+        state: "{{states('zone.home')|int > 0}}"
         device_class: occupancy
+        attributes:
+          is_home_full: "{{states('zone.home')|int == expand(states.person)|list|count}}"
+          present_persons: |
+            {{
+              expand(states.person)
+              | selectattr('state', 'eq', 'home')
+              | map(attribute='attributes.friendly_name')
+              | list
+              | sort
+            }}
