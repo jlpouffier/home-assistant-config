@@ -1065,7 +1065,8 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
-  mode: single
+  mode: parallel
+  max: 10
 - id: '1688371319271'
   alias: Surveillance de la maison - Éteindre Alexa quand maison vide
   description: ''
@@ -2230,74 +2231,8 @@
     target:
       entity_id: input_number.daily_rain
   mode: single
-- id: '1690532506099'
-  alias: "Z - Rappel - \U0001F4E3 Créer un rappel"
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - Rappelle-moi (de |d'){reminder} dans [{days} jour[s]] [et] [{hours} h[eure][s]]
-      [et] [{minutes} min[unte][s]] [et] [{seconds} seconde[s]]
-    - 'Rappelle-moi dans [{days} jour[s]] [et] [{hours} h[eure][s]] [et] [{minutes}
-      min[unte][s]] [et] [{seconds} seconde[s]] (de |d''){reminder} '
-  condition: []
-  action:
-  - variables:
-      days: '{{trigger.slots.days|default(0)|int(0)}}
-
-        '
-      hours: '{{trigger.slots.hours|default(0)|int(0)}}
-
-        '
-      minutes: '{{trigger.slots.minutes|default(0)|int(0)}}
-
-        '
-      seconds: '{{trigger.slots.seconds|default(0)|int(0)}}
-
-        '
-      time_from_now: '{{timedelta(days=days, hours=hours, minutes=minutes,
-
-        seconds=seconds)}}
-
-        '
-      short_timeframe: '{{as_timedelta(time_from_now) < timedelta(minutes = 20)}}
-
-        '
-      reminder_time: '{{now() + as_timedelta(time_from_now)}}
-
-        '
-      reminder_time_end: "{{now() + as_timedelta(time_from_now) + timedelta(seconds
-        = 1)}} \n"
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{short_timeframe == true}}'
-      sequence:
-      - service: script.turn_on
-        target:
-          entity_id: script.reminder_for_later
-        data:
-          variables:
-            reminder: '{{trigger.slots.reminder}}'
-            days: '{{days}}'
-            hours: '{{hours}}'
-            minutes: '{{minutes}}'
-            seconds: '{{seconds}}'
-            media_player: media_player.talkie_media_player
-    - conditions:
-      - condition: template
-        value_template: '{{short_timeframe == false}}'
-      sequence:
-      - service: calendar.create_event
-        data:
-          summary: '{{trigger.slots.reminder}}'
-          start_date_time: '{{reminder_time}}'
-          end_date_time: '{{reminder_time_end}}'
-        target:
-          entity_id: calendar.reminders
-  mode: single
 - id: '1690555063262'
-  alias: Z - Test Rappel - Notifier rappel lointain
+  alias: Assist - Notifier rappel lointain
   description: ''
   trigger:
   - platform: calendar
@@ -2314,95 +2249,6 @@
       seconds: 0
       media_player: media_player.talkie_media_player
       reminder: '{{trigger.calendar_event.summary}}'
-  mode: single
-- id: '1690627239766'
-  alias: "Z - Commandes Vocales - \U0001F4E3 Créer une commande vocale"
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - '{command} dans [{days} jour[s]] [et] [{hours} h[eure][s]] [et] [{minutes} min[unte][s]]
-      [et] [{seconds} seconde[s]]'
-    - 'Dans [{days} jour[s]] [et] [{hours} h[eure][s]] [et] [{minutes} min[unte][s]]
-      [et] [{seconds} seconde[s]] {command} '
-    - '{command} in [{days} day[s]] [and] [{hours} h[our][s]] [and] [{minutes} min[unte][s]]
-      [and] [{seconds} second[s]]'
-    - In [{days} day[s]] [and] [{hours} h[our][s]] [and] [{minutes} min[unte][s]]
-      [and] [{seconds} second[s]] {command}
-  condition: []
-  action:
-  - variables:
-      days: '{{trigger.slots.days|default(0)|int(0)}}
-
-        '
-      hours: '{{trigger.slots.hours|default(0)|int(0)}}
-
-        '
-      minutes: '{{trigger.slots.minutes|default(0)|int(0)}}
-
-        '
-      seconds: '{{trigger.slots.seconds|default(0)|int(0)}}
-
-        '
-      time_from_now: '{{timedelta(days=days, hours=hours, minutes=minutes,
-
-        seconds=seconds)}}
-
-        '
-      short_timeframe: '{{as_timedelta(time_from_now) < timedelta(minutes = 20)}}
-
-        '
-      command_time: '{{now() + as_timedelta(time_from_now)}}
-
-        '
-      command_time_end: "{{now() + as_timedelta(time_from_now) + timedelta(seconds
-        = 1)}} \n"
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{short_timeframe == true}}'
-      sequence:
-      - service: script.turn_on
-        target:
-          entity_id: script.assist_for_later
-        data:
-          variables:
-            command: '{{trigger.slots.command}}'
-            days: '{{days}}'
-            hours: '{{hours}}'
-            minutes: '{{minutes}}'
-            seconds: '{{seconds}}'
-            media_player: media_player.talkie_media_player
-    - conditions:
-      - condition: template
-        value_template: '{{short_timeframe == false}}'
-      sequence:
-      - service: calendar.create_event
-        data:
-          summary: '{{trigger.slots.command}}'
-          start_date_time: '{{command_time}}'
-          end_date_time: '{{command_time_end}}'
-        target:
-          entity_id: calendar.assist_commands
-  mode: single
-- id: '1690627573895'
-  alias: Z - Commandes Vocales - Effectuer commande vocale lointaine
-  description: ''
-  trigger:
-  - platform: calendar
-    event: start
-    offset: 0:0:0
-    entity_id: calendar.assist_commands
-  condition: []
-  action:
-  - service: script.assist_for_later
-    data:
-      days: 0
-      hours: 0
-      minutes: 0
-      seconds: 0
-      media_player: media_player.talkie_media_player
-      command: '{{trigger.calendar_event.summary}}'
   mode: single
 - id: '1690826979664'
   alias: "Assist - \U0001F4E3 Commandes Multiple "

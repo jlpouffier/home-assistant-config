@@ -277,7 +277,7 @@ room_cleaning_first_floor:
   mode: single
   icon: mdi:vacuum
 reminder_for_later:
-  alias: Z - Rappel pour plus tard
+  alias: Rappel pour plus tard
   sequence:
   - delay:
       days: '{{days}}'
@@ -298,115 +298,6 @@ reminder_for_later:
     reminder:
       name: Rappel
       description: Contenu du rappel
-      required: true
-      default: ''
-      selector:
-        text:
-    media_player:
-      name: Lecteur multimédia
-      description: Lecteur multimédia sur lequel le rappel sera joué
-      required: true
-      selector:
-        entity:
-          filter:
-            domain: media_player
-    days:
-      name: Jour(s)
-      description: Jour(s) à attendre
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 7
-    hours:
-      name: Heure(s)
-      description: Heure(s) à attendre
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 24
-    minutes:
-      name: Minute(s)
-      description: Minute(s) à attendre
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-    seconds:
-      name: Seconde(s)
-      description: Seconde(s) à attendre
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-assist_for_later:
-  alias: Z - Commande vocale pour plus tard
-  sequence:
-  - delay:
-      days: '{{days}}'
-      hours: '{{hours}}'
-      minutes: '{{minutes}}'
-      seconds: '{{seconds}}'
-  - service: tts.cloud_say
-    data:
-      language: fr-FR
-      cache: false
-      entity_id: '{{media_player}}'
-      message: 'Lancement de la commande vocale suivante: {{command}}'
-    enabled: true
-  - service: tts.cloud_say
-    data:
-      language: en-US
-      cache: false
-      entity_id: '{{media_player}}'
-      message: 'Processing the following command: {{command}}'
-    enabled: false
-  - wait_for_trigger:
-    - platform: state
-      entity_id:
-      - media_player.talkie_media_player
-      to: idle
-    timeout:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - service: conversation.process
-    data:
-      agent_id: homeassistant
-      text: '{{command}}'
-    response_variable: command_response
-  - service: conversation.process
-    data:
-      agent_id: homeassistant
-      text: '{{command}}'
-      language: en
-    response_variable: command_response
-    enabled: false
-  - service: tts.cloud_say
-    data:
-      language: fr-FR
-      cache: false
-      entity_id: '{{media_player}}'
-      message: '{{command_response.response.speech.plain.speech}}'
-    enabled: true
-  - service: tts.cloud_say
-    data:
-      language: en-US
-      cache: false
-      entity_id: '{{media_player}}'
-      message: '{{command_response.response.speech.plain.speech}}'
-    enabled: false
-  mode: parallel
-  icon: mdi:assistant
-  max: 100
-  fields:
-    command:
-      name: Commande
-      description: Commande a effectuer
       required: true
       default: ''
       selector:
