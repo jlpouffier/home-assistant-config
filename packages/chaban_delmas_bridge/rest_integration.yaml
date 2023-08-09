@@ -1,0 +1,71 @@
+rest:
+  resource: https://opendata.bordeaux-metropole.fr/api/records/1.0/search/?dataset=previsions_pont_chaban&q=&rows=100&facet=bateau
+  scan_interval: 60
+  binary_sensor:
+    - name: is_chaban_delmas_bridge_open
+      unique_id: is_chaban_delmas_bridge_open
+      value_template: |
+        {% set bridge_open = namespace(value = true) -%}
+        {% for record in value_json.records -%}
+          {%- set start_date = as_datetime(record.fields.date_passage+" "+record.fields.fermeture_a_la_circulation+"+02:00") -%}
+          {%- set end_date_dirty = as_datetime(record.fields.date_passage+" "+record.fields.re_ouverture_a_la_circulation+"+02:00") -%}
+          {%- set is_dirty  = start_date > end_date_dirty -%}
+          {% if is_dirty %}
+            {%- set end_date = end_date_dirty + timedelta(days = 1) -%}
+          {%- else -%}
+            {%- set end_date = end_date_dirty -%}
+          {%- endif -%}
+          {%- set start_date_from_now = start_date - now() -%}
+          {%- set is_now = start_date < now() and now() < end_date -%}
+          {% if is_now %}
+            {% set bridge_open.value = false %}
+          {% endif %}
+        {% endfor %}
+        {{bridge_open.value}}
+  sensor:
+    - name: chaban_delmas_next_closing_start_date
+      unique_id: chaban_delmas_next_closing_start_date
+      device_class: timestamp
+      value_template: |
+        {% set next_closing_start = namespace(value = now() + timedelta(days = 1000)) -%}
+        {% for record in value_json.records -%}
+          {%- set start_date = as_datetime(record.fields.date_passage+" "+record.fields.fermeture_a_la_circulation+"+02:00") -%}
+          {%- set end_date_dirty = as_datetime(record.fields.date_passage+" "+record.fields.re_ouverture_a_la_circulation+"+02:00") -%}
+          {%- set is_dirty  = start_date > end_date_dirty -%}
+          {% if is_dirty %}
+            {%- set end_date = end_date_dirty + timedelta(days = 1) -%}
+          {%- else -%}
+            {%- set end_date = end_date_dirty -%}
+          {%- endif -%}
+          {%- set is_past = end_date < now() -%}
+          {% if not is_past %}
+            {% if start_date < next_closing_start.value %}
+              {% set next_closing_start.value = start_date %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{next_closing_start.value}}
+    - name: chaban_delmas_next_closing_end_date
+      unique_id: chaban_delmas_next_closing_end_date
+      device_class: timestamp
+      value_template: |
+        {% set next_closing_start = namespace(value = now() + timedelta(days = 1000)) -%}
+        {% set next_closing_end = namespace(value = now() + timedelta(days = 1000)) -%}
+        {% for record in value_json.records -%}
+          {%- set start_date = as_datetime(record.fields.date_passage+" "+record.fields.fermeture_a_la_circulation+"+02:00") -%}
+          {%- set end_date_dirty = as_datetime(record.fields.date_passage+" "+record.fields.re_ouverture_a_la_circulation+"+02:00") -%}
+          {%- set is_dirty  = start_date > end_date_dirty -%}
+          {% if is_dirty %}
+            {%- set end_date = end_date_dirty + timedelta(days = 1) -%}
+          {%- else -%}
+            {%- set end_date = end_date_dirty -%}
+          {%- endif -%}
+          {%- set is_past = end_date < now() -%}
+          {% if not is_past %}
+            {% if start_date < next_closing_start.value %}
+              {% set next_closing_start.value = start_date %}
+              {% set next_closing_end.value = end_date %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{next_closing_end.value}}
