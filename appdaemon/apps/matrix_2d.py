@@ -9,7 +9,7 @@ class matrix_2d(hass.Hass):
     
     def callback_state_change(self, entity, attribute, old, new, kwargs):
         if self.is_in_scope(entity) and self.entities.binary_sensor.home_occupied.state == "on":
-            self.log(entity)
+            #self.log(entity)
             self.call_service("script/pulse_2d_led_matrix") 
     
     def callback_event(self, event_name, data, kwargs):
