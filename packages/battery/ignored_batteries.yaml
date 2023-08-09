@@ -4,7 +4,7 @@ homeassistant:
       ignore_battery: true
     sensor.quest_battery_level:
       ignore_battery: true
-    sensor.pixel_4a_battery_level:
+    sensor.iphone_de_valentine_battery_level:
       ignore_battery: true
     sensor.pixel_6_pro_battery_level:
       ignore_battery: true
