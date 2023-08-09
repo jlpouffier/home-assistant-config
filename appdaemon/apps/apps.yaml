@@ -15,18 +15,6 @@ notifier:
       notification_service: notify/mobile_app_iphone_de_valentine
       proximity_id: proximity.distance_valentine_home
 
-presence_simulator:
-  module: presence_simulator
-  class: presence_simulator
-  log: presence_simulator
-  random_offset: 20
-  wake_up_time: "06:00:00"
-  eat_breakfast_time: "07:00:00"
-  leave_time: "08:30:00"
-  return_time: "18:00:00"
-  go_to_bed_time: "22:30:00"
-  sleep_time: "23:30:00"
-
 #sandbox:
 #  module: sandbox
 #  class: sandbox

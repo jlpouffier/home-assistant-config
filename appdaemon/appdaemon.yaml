@@ -22,9 +22,6 @@ logs:
   notifier:
     name: notifier
     filename: /config/appdaemon/logs/notifier.log
-  presence_simulator:
-    name: presence_simulator
-    filename: /config/appdaemon/logs/presence_simulator.log
   sandbox:
     name: sandbox
     filename: /config/appdaemon/logs/sandbox.log

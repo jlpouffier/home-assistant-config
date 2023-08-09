@@ -328,6 +328,18 @@
       milliseconds: 0
     continue_on_timeout: false
   - if:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: cover.living_room_cover
+        attribute: current_position
+        state: '100'
+    then:
+    - service: cover.open_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  - if:
     - condition: state
       entity_id: sun.sun
       state: below_horizon
@@ -358,18 +370,6 @@
         transition: 3
       target:
         entity_id: scene.cuisine_cuisine_100
-  - if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: cover.living_room_cover
-        attribute: current_position
-        state: 100
-    then:
-    - service: cover.open_cover
-      data: {}
-      target:
-        entity_id: cover.living_room_cover
   mode: single
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
@@ -2306,3 +2306,342 @@
       assist_command: Affiche sur la télé une image (de |d'){prompt}
       open_ai_config_entry: fcd62e0ff1d58319b899d424dd59a3ec
       media_player: media_player.tv_cast
+- id: '1691413517615'
+  alias: Bureau - Notification Lumineuse Meetings
+  description: ''
+  trigger:
+  - platform: calendar
+    event: start
+    offset: -0:5:0
+    entity_id: calendar.nabucasa_calendar_personal
+    id: personal
+  - platform: calendar
+    event: start
+    offset: -0:5:0
+    entity_id: calendar.nabucasa_calendar_social_time
+    id: social_time
+  - platform: calendar
+    event: start
+    offset: -0:1:0
+    entity_id: calendar.nabucasa_calendar_personal
+    id: personal
+  - platform: calendar
+    event: start
+    offset: -0:1:0
+    entity_id: calendar.nabucasa_calendar_social_time
+    id: social_time
+  condition:
+  - condition: state
+    entity_id: binary_sensor.jean_loics_laptop_active
+    state: 'on'
+  - condition: state
+    entity_id: person.jenova70
+    state: home
+  - condition: state
+    entity_id: binary_sensor.capteur_presence_bureau_occupancy
+    state: 'on'
+  action:
+  - service: scene.create
+    data:
+      scene_id: office_webcam_previous_light_state
+      snapshot_entities:
+      - light.hue_play_bars
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - personal
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+          rgb_color:
+          - 0
+          - 76
+          - 255
+          transition: 1
+        target:
+          entity_id:
+          - light.hue_play_bars
+    - conditions:
+      - condition: trigger
+        id:
+        - social_time
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+          rgb_color:
+          - 68
+          - 255
+          - 0
+          transition: 1
+        target:
+          entity_id:
+          - light.hue_play_bars
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.office_webcam_previous_light_state
+  mode: single
+- id: '1691506629807'
+  alias: Pulse - Arrêt plannifié
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.pulse_end_schedule
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.automation_matrix_2d
+  mode: single
+- id: '1691507032458'
+  alias: Pulse - Démarrage plannifié
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.pulse_start_schedule
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.automation_matrix_2d
+  mode: single
+- id: '1691565244384'
+  alias: Simulation de présence - Simuler Réveil
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_wakeup_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: hue.activate_scene
+    data: {}
+    target:
+      entity_id:
+      - scene.bureau_bureau_100
+      - scene.chambre_bebe_chambre_bebe_100
+      - scene.chambre_chambre_100
+  mode: single
+- id: '1691565349298'
+  alias: Simulation de présence - Simuler Déjeuner
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_breakfast_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id:
+      - light.chambre
+      - light.bureau
+      - light.chambre_bebe
+  - service: hue.activate_scene
+    data: {}
+    target:
+      entity_id:
+      - scene.salon_salon_100
+      - scene.entree_entree_100
+      - scene.cuisine_cuisine_100
+  - if:
+    - condition: state
+      entity_id: input_boolean.presence_simulator_control_cover
+      state: 'on'
+    then:
+    - service: cover.open_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  mode: single
+- id: '1691565411821'
+  alias: Simulation de présence - Simuler Départ
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_leave_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: script.leave_home
+    data: {}
+  - if:
+    - condition: state
+      entity_id: input_boolean.presence_simulator_control_cover
+      state: 'on'
+    then:
+    - service: cover.close_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  mode: single
+- id: '1691565528048'
+  alias: Simulation de présence - Simuler Retour
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_return_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: hue.activate_scene
+    data: {}
+    target:
+      entity_id:
+      - scene.exterieur_exterieur_100
+      - scene.salon_salon_100
+      - scene.cuisine_cuisine_100
+      - scene.entree_entree_100
+  - if:
+    - condition: state
+      entity_id: input_boolean.presence_simulator_control_cover
+      state: 'on'
+    then:
+    - service: cover.open_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  mode: single
+- id: '1691565593850'
+  alias: Simulation de présence - Simuler Lit
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_bedtime_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id:
+      - light.exterieur
+      - light.lumieres_rez_de_chaussee
+  - service: hue.activate_scene
+    data: {}
+    target:
+      entity_id:
+      - scene.chambre_chambre_100
+      - scene.bureau_bureau_100
+      - scene.chambre_bebe_chambre_bebe_100
+  - if:
+    - condition: state
+      entity_id: input_boolean.presence_simulator_control_cover
+      state: 'on'
+    then:
+    - service: cover.close_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  mode: single
+- id: '1691565757204'
+  alias: Simulation de présence - Simuler Coucher
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.presence_simulator_sleep_hour
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - delay:
+      hours: 0
+      minutes: '{{ (range(1, 30)|random|int) }}'
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.all_lights
+  mode: single
+- id: '1691566363432'
+  alias: "Simulation de présence - \U0001F6CE️ Notifier Éloignement domicile sans
+    simulation de présence"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.far_away
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'off'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_nearest
+      title: "\U0001F30D Vous etes loin"
+      message: Vous vous trouvez loin du domicile activer la simulation de présence?
+      callback:
+      - title: Simuler une présence
+        event: start_presence_simulation
+      click_url: /dashboard-automatisations/automatisations
+      icon: mdi:compass
+      tag: far_away
+      until:
+      - entity_id: binary_sensor.far_away
+        new_state: 'on'
+  mode: single
+- id: '1691566452704'
+  alias: "Simulation de Présence - \U0001F4F2 Activer Simulation de Présence"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: start_presence_simulation
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.automation_presence_simulator
+  mode: single
