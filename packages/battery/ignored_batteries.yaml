@@ -6,7 +6,7 @@ homeassistant:
       ignore_battery: true
     sensor.iphone_de_valentine_battery_level:
       ignore_battery: true
-    sensor.pixel_6_pro_battery_level:
+    sensor.jean_loics_iphone_battery_level:
       ignore_battery: true
     sensor.neuneu_battery_level:
       ignore_battery: true

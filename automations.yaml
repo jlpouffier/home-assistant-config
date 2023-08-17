@@ -39,8 +39,7 @@
       callback:
       - title: Litière Nettoyée
         event: reset_litter_tracking
-      icon: mdi:cat
-      color: deep-orange
+        icon: sfsymbols:checkmark.circle.fill
       persistent: true
       tag: litter_full
       until:
@@ -124,8 +123,6 @@
       action: send_to_present
       title: "\U0001F5D1 Poubelle Noire"
       message: N'oublie pas de sortir la poubelle noire
-      icon: mdi:delete
-      color: deep-orange
       tag: black_trash
   - service: input_boolean.turn_off
     data: {}
@@ -154,8 +151,6 @@
       action: send_to_present
       title: ♻️ Poubelle Verte
       message: N'oublie pas de sortir la poubelle verte
-      icon: mdi:recycle
-      color: deep-orange
       tag: green_trash
   - service: input_boolean.turn_off
     data: {}
@@ -184,8 +179,6 @@
       action: send_when_present
       title: "\U0001F4EC  Boite aux lettres"
       message: Vous avez du courrier !
-      icon: mdi:mailbox-up
-      color: green
       tag: you_got_mail
   mode: single
 - id: '1688116301973'
@@ -298,8 +291,6 @@
       action: send_when_present
       title: "\U0001FAE7 Machine à laver"
       message: Cycle de lavage terminé !
-      icon: mdi:washing-machine
-      color: green
       tag: washing_mashine_over
   mode: single
 - id: '1688124199640'
@@ -469,9 +460,7 @@
       title: "️\U0001F697 Tesla"
       message: La recharge est prevue de finir après la fin des heures creuse ({{actual_end_date}}).
         Pense à reduire la cibe de recharge vers {{new_target_percentage}}%
-      click_ur: /lovelace/tesla
-      icon: mdi:car
-      color: deep-orange
+      click_url: /lovelace/tesla
       tag: tesla_end_charge_after_off_peak_hours
       until:
       - entity_id: sensor.tesla_charge_limit
@@ -546,54 +535,6 @@
     data: {}
     target:
       entity_id: switch.coffeemaker
-  mode: single
-- id: '1688140625614'
-  alias: "Réveil intelligent - \U0001F514 Régler heure réveil via téléphone JL"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.pixel_6_next_alarm
-    not_from: unavailable
-    not_to: unavailable
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
-  - condition: template
-    value_template: '{{ states(''input_datetime.wake_up_time'') != (((state_attr(''sensor.pixel_6_next_alarm'',
-      ''Time in Milliseconds'') | int / 1000)) | timestamp_custom(''%H:%M:%S'')) }}'
-  action:
-  - variables:
-      human_readable_phone_alarm: '{{(((state_attr(''sensor.pixel_6_next_alarm'',
-        ''Time in Milliseconds'') | int / 1000)) | timestamp_custom(''%H:%M''))}}'
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: ⏰ Alarme réglée pour {{human_readable_phone_alarm}}
-      message: Utiliser pour le réveil inteligent ?
-      callback:
-      - title: Oui
-        event: set_new_wake_up_time
-      click_ur: /dashboard-automatisations/automatisations
-      icon: mdi:alarm
-      tag: jl_phone_alarm_changed
-  mode: single
-- id: '1688143290196'
-  alias: "Réveil intelligent - \U0001F4F2 Régler heure réveil via téléphone JL (Confirmation)"
-  description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: set_new_wake_up_time
-  condition: []
-  action:
-  - service: input_datetime.set_datetime
-    data:
-      timestamp: '{{as_timestamp(states(''sensor.pixel_6_next_alarm''))}}'
-    target:
-      entity_id: input_datetime.wake_up_time
   mode: single
 - id: '1688301259694'
   alias: TV intelligente - Allumer KEF quand TV allumée
@@ -1117,9 +1058,8 @@
         callback:
         - title: Éteindre les lumières
           event: turn_off_lights
-        click_ur: /lovelace/lights
-        icon: mdi:lightbulb-alert
-        color: deep-orange
+          icon: lightbulb.fill
+        click_url: /lovelace/lights
         tag: home_empty_lights_still_on
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1139,9 +1079,8 @@
         callback:
         - title: Éteindre la TV
           event: turn_off_tv
+          icon: tv.fill
         click_url: /lovelace/connected-devices
-        icon: mdi:television
-        color: deep-orange
         tag: home_empty_tv_still_on
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1161,9 +1100,8 @@
         callback:
         - title: Éteindre les LSX
           event: turn_off_lsx
+          icon: hifispeaker.fill
         click_url: /lovelace/connected-devices
-        icon: mdi:speaker-wireless
-        color: deep-orange
         tag: home_empty_lsx_still_on
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1182,10 +1120,9 @@
         message: La machine a café est allumée alors que personne n'est présent
         callback:
         - title: Éteindre la machine a café
-        - event: turn_off_coffee_maker
+          event: turn_off_coffee_maker
+          icon: stop.circle.fill
         click_url: /lovelace/connected-devices
-        icon: mdi:coffee
-        color: deep-orange
         tag: home_empty_cofee_maker_still_on
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1208,8 +1145,6 @@
         message: 'Les portes suivantes sont toujours ouvertes alors que personne n''est
           présent:  {{open_doors}}'
         click_url: /lovelace/openings
-        icon: mdi:door-open
-        color: deep-orange
         tag: home_empty_door_open
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1232,8 +1167,6 @@
         message: 'Les fenêtres suivantes sont toujours ouvertes alors que personne
           n''est présent: {{open_windows}}'
         click_url: /lovelace/openings
-        icon: mdi:window-open
-        color: deep-orange
         tag: home_empty_window_open
         until:
         - entity_id: binary_sensor.home_occupied
@@ -1289,9 +1222,8 @@
       callback:
       - title: Éteindre la machine a café
         event: turn_off_coffee_maker
+        icon: stop.circle.fill
       click_url: /lovelace/connected-devices
-      icon: mdi:coffee
-      color: deep-orange
       tag: coffee_maker_on_since_too_long
       until:
       - entity_id: switch.coffeemaker
@@ -1333,8 +1265,6 @@
         title: "️\U0001F302 Il pleut!"
         message: 'Les portes suivantes sont ouvertes et il commence a pleuvoir: {{open_doors}}'
         click_url: /lovelace/openings
-        icon: mdi:door-open
-        color: deep-orange
         tag: raining_door_open
         until:
         - entity_id: binary_sensor.is_raining_now
@@ -1357,8 +1287,6 @@
         message: 'Les fenêtres suivantes sont ouvertes et il commence a pleuvoir:
           {{open_windows}}'
         click_url: /lovelace/openings
-        icon: mdi:window-open
-        color: deep-orange
         tag: raining_window_open
         until:
         - entity_id: binary_sensor.is_raining_now
@@ -1447,8 +1375,6 @@
       title: "\U0001F389 Mise a jour disponible"
       message: '{{trigger.to_state.attributes.entities | join('', '')}}'
       click_url: /config/dashboard
-      icon: mdi:party-popper
-      color: deep-purple
       tag: update-available
       until:
       - entity_id: sensor.pending_updates
@@ -1475,8 +1401,6 @@
       title: "\U0001F389 Mise a jour disponible"
       message: Tesla
       click_url: /config/dashboard
-      icon: mdi:party-popper
-      color: deep-purple
       tag: tesla_update
       until:
       - entity_id: binary_sensor.tesla_update_available
@@ -1519,8 +1443,6 @@
       title: "\U0001FAAB Batteries faibles !"
       message: '{{trigger.to_state.attributes.entities | join('', '')}}'
       click_url: /config/dashboard
-      icon: mdi:battery-alert
-      color: deep-orange
       tag: low-battery
       until:
       - entity_id: sensor.low_batteries
@@ -1541,7 +1463,6 @@
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
-      color: blue
   - platform: webhook
     allowed_methods:
     - POST
@@ -1553,7 +1474,6 @@
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
-      color: green
   - platform: webhook
     allowed_methods:
     - POST
@@ -1564,7 +1484,6 @@
       title: "\U0001F3A5 Film en télechargement ..."
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
-      color: blue
   - platform: webhook
     allowed_methods:
     - POST
@@ -1575,7 +1494,6 @@
       title: "\U0001F3A5 Film téléchargé !"
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
-      color: green
   condition: []
   action:
   - event: NOTIFIER
@@ -1584,7 +1502,6 @@
       title: '{{title}}'
       message: '{{message}}'
       icon: mdi:television-shimmer
-      color: '{{color}}'
       tag: '{{tag}}'
   mode: single
 - id: '1688555445627'
@@ -1698,9 +1615,8 @@
       callback:
       - title: Lancer NeuNeu
         event: start_neuneu
+        icon: play.circle.fill
       click_url: /lovelace/vacuums
-      icon: mdi:liquid-spot
-      color: deep-orange
       tag: first_floor_very_dirty
       until:
       - entity_id: vacuum.neuneu
@@ -1724,8 +1640,9 @@
       callback:
       - title: Arrêter  NeuNeu
         event: rth_neuneu
+        icon: stop.circle.fill
+        destructive: true
       click_url: /lovelace/vacuums
-      icon: mdi:robot-vacuum
       tag: neuneu
   mode: single
 - id: '1688556647795'
@@ -1767,10 +1684,7 @@
       action: send_to_nearest
       title: ✅ NeuNeu a terminé
       message: 'Surface nettoyée: {{states(''sensor.neuneu_cleaned_area'')}}m²'
-      image_url: '{{state_attr(''camera.neuneu_map'', ''entity_picture'')}}'
       click_url: /lovelace/vacuums
-      icon: mdi:robot-vacuum
-      color: green
       tag: neuneu
   - if:
     - condition: state
@@ -1783,8 +1697,6 @@
         title: "\U0001F9FC Serpillière attachée"
         message: La serpillière est toujours attachée à NeuNeu. Pensez a l'enlever!
         click_url: /lovelace/vacuums
-        icon: mdi:faucet
-        color: deep-orange
         tag: neuneu_mop_installed
         until:
         - entity_id: sensor.neuneu_water_tank
@@ -1807,8 +1719,6 @@
       title: ⚠️ NeuNeu est en erreur
       image_url: '{{state_attr(''camera.neuneu_map'', ''entity_picture'')}}'
       click_url: /lovelace/vacuums
-      icon: mdi:robot-vacuum
-      color: deep-orange
       tag: neuneu
   mode: single
 - id: '1688557628209'
@@ -1962,9 +1872,7 @@
       action: send_to_jl
       title: "️\U0001F697 Tesla"
       message: Pense à réinitialiser la cible de recharge (actuellement à {{states("sensor.tesla_charge_limit")}}%)
-      click_ur: /lovelace/tesla
-      icon: mdi:car
-      color: blue
+      click_url: /lovelace/tesla
       tag: tesla_reset_charge_limit
       until:
       - entity_id: sensor.tesla_charge_limit
@@ -2623,8 +2531,8 @@
       callback:
       - title: Simuler une présence
         event: start_presence_simulation
+        icon: gamecontroller.fill
       click_url: /dashboard-automatisations/automatisations
-      icon: mdi:compass
       tag: far_away
       until:
       - entity_id: binary_sensor.far_away
@@ -2641,6 +2549,66 @@
   condition: []
   action:
   - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.automation_presence_simulator
+  mode: single
+- id: '1691758172267'
+  alias: "Pont Chaban Delmas - \U0001F6CE️ Notifier fermeture demain"
+  description: ''
+  trigger:
+  - platform: time
+    at: '20:00:00'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.workday_tomorrow
+    state: 'on'
+  - condition: template
+    value_template: '{{as_datetime(states("sensor.chaban_delmas_next_closing_start_date"))
+      - now() < timedelta(days = 1, hours = 4)}}'
+  action:
+  - variables:
+      human_redeable_closing_time: '{{as_timestamp(states("sensor.chaban_delmas_next_closing_start_date"))
+        | timestamp_custom(''%H:%M'')}}
+
+        '
+  - if:
+    - condition: numeric_state
+      entity_id: proximity.distance_jl_home
+      below: 10000
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_jl
+        title: "\U0001F309 Pont Chaban Delmas"
+        message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
+        tag: chaban_delmas_closing_tomorrow
+  - if:
+    - condition: numeric_state
+      entity_id: proximity.distance_valentine_home
+      below: 10000
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_valentine
+        title: "\U0001F309 Pont Chaban Delmas"
+        message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
+        tag: chaban_delmas_closing_tomorrow
+  mode: single
+- id: '1692118004694'
+  alias: Simulation de présence - Arrêter lors du retour
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'on'
+  action:
+  - service: input_boolean.turn_off
     data: {}
     target:
       entity_id: input_boolean.automation_presence_simulator

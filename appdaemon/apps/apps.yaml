@@ -8,7 +8,7 @@ notifier:
   persons:
     - name: jl
       id: person.jenova70
-      notification_service: notify/mobile_app_pixel_6
+      notification_service: notify/mobile_app_jean_loics_iphone
       proximity_id: proximity.distance_jl_home
     - name: valentine
       id: person.valentine

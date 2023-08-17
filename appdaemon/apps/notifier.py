@@ -41,6 +41,8 @@ message: <string>
 callback:
  - title: <string>
    event: <string>
+   destructive: <boolean>
+   icon: <string>
  - title: <string>
    event: <string>
 timeout: <number>
@@ -50,6 +52,7 @@ icon: <string>
 color: <string>
 tag: <string>
 persistent: <boolean>
+interuption_level: <string>
 until:
  - entity_id: <string>
    new_state: <string>
@@ -77,6 +80,8 @@ callback: Actionable buttons of the notification
    - event: a string that will be used the catch back the event when the button is pressed.
      If event: turn_off_lights, then an event "mobile_app_notification_action" with action = "turn_off_lights" will be triggered once the button is pressed.
      Up to the app / automation creating the notification to listen to this event and perform some action.
+   - destructive: {iOS Only} Set it to true to color the action's title red, indicating a destructive action.
+   - icon: {iOS Only} The icon to use for the callback.	
  
 timeout: Timeout of the notification in seconds. timeout: 60 will display the notification for one minute, then discard it automatically.
  
@@ -99,6 +104,8 @@ tag: The concept of tag is complex to understand. So I'll explain the behavior y
   - The next field "until" requires the field tag to work too (See below)
 
 persistent: Notify the front-end of Home Assistant (with the service "notify/persistent_notification")
+
+interuption_level: {iOS Only} interruption level of a notification (passive/active/time-sensitive/critical)
 
 until (note: "tag" is required for "until" to work)
 until dynamically creates watcher(s) to clear notification.
@@ -153,8 +160,12 @@ class notifier(hass.Hass):
         
         if "persistent" in data:
             if data["persistent"]:
+                if 'tag' in data:
+                    notification_id = data['tag']
+                else:
+                    notification_id = str(self.get_now_ts())
                 self.log("Persisting the notification on Home Assistant Front-end ...")
-                self.call_service("notify/persistent_notification", title = data["title"], message = data["message"])
+                self.call_service("persistent_notification/create", title = data["title"], message = data["message"], notification_id = notification_id)
         
         if "until" in data and 'tag' in data:
             until = data["until"]
@@ -181,6 +192,7 @@ class notifier(hass.Hass):
         notification_data["tag"] = tag
         for person in self.args["persons"]:
             self.call_service(person["notification_service"], message = "clear_notification", data = notification_data)
+        self.call_service("persistent_notification/dismiss", notification_id = tag)
         self.cancel_watchers(tag)
 
     def cancel_watchers(self, tag):
@@ -198,11 +210,15 @@ class notifier(hass.Hass):
                     "action":callback["event"],
                     "title":callback["title"]
                 }
+                if "icon" in callback:
+                    action["icon"] = "sfsymbols:" + callback["icon"]
+                if "destructive" in callback:
+                    action["destructive"] = callback["destructive"]
                 notification_data["actions"].append(action)
         if "timeout" in data:
             notification_data["timeout"] = data["timeout"]
         if "click_url" in data:
-            notification_data["clickAction"] = data["click_url"]
+            notification_data["url"] = data["click_url"]
         if "image_url" in data:
             notification_data["image"] = data["image_url"]
         if "icon" in data:
@@ -211,6 +227,10 @@ class notifier(hass.Hass):
             notification_data["color"] = self.compute_color(data["color"])
         if "tag" in data:
             notification_data["tag"] = data["tag"]
+        if "interuption_level" in data:
+            notification_data["push"] = {
+                "interruption-level": data["interuption_level"]
+            }
         return notification_data
 
     def send_to_person(self, data, person):
