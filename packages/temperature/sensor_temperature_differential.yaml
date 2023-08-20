@@ -1,0 +1,33 @@
+sensor:
+  - platform: statistics
+    name: "livingroom_temperature_change_over_60_minutes"
+    unique_id: livingroom_temperature_change_over_60_minutes
+    entity_id: sensor.capteur_thp_salon_temperature
+    state_characteristic: change
+    max_age:
+      minutes: 60
+    precision: 3
+  - platform: statistics
+    name: "bedroom_temperature_change_over_60_minutes"
+    unique_id: bedroom_temperature_change_over_60_minutes
+    entity_id: sensor.capteur_thp_chambre_temperature
+    state_characteristic: change
+    max_age:
+      minutes: 60
+    precision: 3
+  - platform: statistics
+    name: "kid_bedroom_temperature_change_over_60_minutes"
+    unique_id: kid_bedroom_temperature_change_over_60_minutes
+    entity_id: sensor.capteur_thp_chambre_bebe_temperature
+    state_characteristic: change
+    max_age:
+      minutes: 60
+    precision: 3
+  - platform: statistics
+    name: "office_temperature_change_over_60_minutes"
+    unique_id: office_temperature_change_over_60_minutes
+    entity_id: sensor.capteur_thp_bureau_temperature
+    state_characteristic: change
+    max_age:
+      minutes: 60
+    precision: 3
