@@ -107,6 +107,8 @@ persistent: Notify the front-end of Home Assistant (with the service "notify/per
 
 interuption_level: {iOS Only} interruption level of a notification (passive/active/time-sensitive/critical)
 
+siri_shortcut_name: {iOS Only} Name of the shortcut to run when clicking on the notification
+
 until (note: "tag" is required for "until" to work)
 until dynamically creates watcher(s) to clear notification.
 I prefer to explain it with an example:
@@ -230,6 +232,10 @@ class notifier(hass.Hass):
         if "interuption_level" in data:
             notification_data["push"] = {
                 "interruption-level": data["interuption_level"]
+            }
+        if "siri_shortcut_name" in data:
+            notification_data["shortcut"] = {
+                "name": data["siri_shortcut_name"]
             }
         return notification_data
 

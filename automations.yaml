@@ -459,9 +459,10 @@
       action: send_to_jl
       title: "️\U0001F697 Tesla"
       message: La recharge est prevue de finir après la fin des heures creuse ({{actual_end_date}}).
-        Pense à reduire la cibe de recharge vers {{new_target_percentage}}%
+        Clique ici pour réduire la cible de recharge à {{new_target_percentage}}%
       click_url: /lovelace/tesla
       tag: tesla_end_charge_after_off_peak_hours
+      siri_shortcut_name: Tesla Set Charge Limit From Home Assistant
       until:
       - entity_id: sensor.tesla_charge_limit
         new_state: '{{new_target_percentage}}'
@@ -1871,9 +1872,11 @@
     event_data:
       action: send_to_jl
       title: "️\U0001F697 Tesla"
-      message: Pense à réinitialiser la cible de recharge (actuellement à {{states("sensor.tesla_charge_limit")}}%)
+      message: Clique ici pour réinitialiser la cible de recharge (actuellement à
+        {{states("sensor.tesla_charge_limit")}}%)
       click_url: /lovelace/tesla
       tag: tesla_reset_charge_limit
+      siri_shortcut_name: Tesla Reset Charge Limit From Home Assistant
       until:
       - entity_id: sensor.tesla_charge_limit
         new_state: '100'
@@ -2165,44 +2168,16 @@
   - platform: conversation
     command:
     - '{command1} et {command2}'
-    id: fr
-  - platform: conversation
-    command:
-    - '{command1} and {command2}'
-    id: en
   condition: []
   action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - fr
-      sequence:
-      - service: conversation.process
-        data:
-          agent_id: homeassistant
-          language: fr
-          text: '{{trigger.slots.command1}}'
-      - service: conversation.process
-        data:
-          agent_id: homeassistant
-          language: fr
-          text: '{{trigger.slots.command2}}'
-    - conditions:
-      - condition: trigger
-        id:
-        - en
-      sequence:
-      - service: conversation.process
-        data:
-          agent_id: homeassistant
-          language: en
-          text: '{{trigger.slots.command1}}'
-      - service: conversation.process
-        data:
-          agent_id: homeassistant
-          language: en
-          text: '{{trigger.slots.command2}}'
+  - service: conversation.process
+    data:
+      agent_id: homeassistant
+      text: '{{trigger.slots.command1}}'
+  - service: conversation.process
+    data:
+      agent_id: homeassistant
+      text: '{{trigger.slots.command2}}'
   mode: parallel
   max: 100
 - id: '1690881654351'
