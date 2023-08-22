@@ -15,11 +15,6 @@ notifier:
       notification_service: notify/mobile_app_iphone_de_valentine
       proximity_id: proximity.distance_valentine_home
 
-#sandbox:
-#  module: sandbox
-#  class: sandbox
-#  log: sandbox
-
 tesla_automations:
   module: tesla_automations
   class: tesla_automations

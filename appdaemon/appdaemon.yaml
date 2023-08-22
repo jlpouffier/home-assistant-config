@@ -22,9 +22,6 @@ logs:
   notifier:
     name: notifier
     filename: /config/appdaemon/logs/notifier.log
-  sandbox:
-    name: sandbox
-    filename: /config/appdaemon/logs/sandbox.log
   tesla_automations:
     name: tesla_automations
     filename: /config/appdaemon/logs/tesla_automations.log
