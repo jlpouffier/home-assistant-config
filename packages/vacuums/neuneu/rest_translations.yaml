@@ -1,0 +1,15 @@
+rest:
+  resource: https://raw.githubusercontent.com/Tasshack/dreame-vacuum/master/custom_components/dreame_vacuum/translations/fr.json
+  scan_interval: 60
+  sensor:
+    - name: neuneu_error_translations
+      unique_id: neuneu_error_translations
+      value_template: |
+        {% if 'entity' in  value_json and 'sensor' in value_json.entity and 'error' in value_json.entity.sensor and 'state' in value_json.entity.sensor.error %}
+          {{value_json.entity.sensor.error.state | count}}
+        {% else %}
+          0
+        {% endif %}
+      json_attributes_path: $.entity.sensor.error
+      json_attributes:
+        - state

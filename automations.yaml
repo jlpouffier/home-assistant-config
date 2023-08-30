@@ -552,9 +552,6 @@
   - condition: state
     entity_id: script.turn_on_media_center
     state: 'off'
-  - condition: state
-    entity_id: media_player.kef
-    state: 'off'
   action:
   - service: script.turn_on_media_center
     data: {}
@@ -1673,11 +1670,10 @@
   - platform: state
     entity_id:
     - vacuum.neuneu
-    to: docked
+    to: returning
     from:
     - paused
     - cleaning
-    - returning
   condition: []
   action:
   - event: NOTIFIER
@@ -1685,40 +1681,6 @@
       action: send_to_nearest
       title: ✅ NeuNeu a terminé
       message: 'Surface nettoyée: {{states(''sensor.neuneu_cleaned_area'')}}m²'
-      click_url: /lovelace/vacuums
-      tag: neuneu
-  - if:
-    - condition: state
-      entity_id: sensor.neuneu_water_tank
-      state: installed
-    then:
-    - event: NOTIFIER
-      event_data:
-        action: send_when_present
-        title: "\U0001F9FC Serpillière attachée"
-        message: La serpillière est toujours attachée à NeuNeu. Pensez a l'enlever!
-        click_url: /lovelace/vacuums
-        tag: neuneu_mop_installed
-        until:
-        - entity_id: sensor.neuneu_water_tank
-          new_state: not_installed
-  mode: single
-- id: '1688557488862'
-  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu erreur"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - vacuum.neuneu
-    to: error
-  condition: []
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_nearest
-      message: NeuNeu est en erreur
-      title: ⚠️ NeuNeu est en erreur
-      image_url: '{{state_attr(''camera.neuneu_map'', ''entity_picture'')}}'
       click_url: /lovelace/vacuums
       tag: neuneu
   mode: single
@@ -2540,6 +2502,9 @@
     state: 'on'
   - condition: template
     value_template: '{{as_datetime(states("sensor.chaban_delmas_next_closing_start_date"))
+      - now() > timedelta(hours = 4)}}'
+  - condition: template
+    value_template: '{{as_datetime(states("sensor.chaban_delmas_next_closing_start_date"))
       - now() < timedelta(days = 1, hours = 4)}}'
   action:
   - variables:
@@ -2587,4 +2552,47 @@
     data: {}
     target:
       entity_id: input_boolean.automation_presence_simulator
+  mode: single
+- id: '1693389795766'
+  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu Erreur"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.neuneu_error
+    not_to:
+    - unavailable
+    - unknown
+    - no_error
+  condition: []
+  action:
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.neuneu_error_translations
+      above: 0
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_when_present
+        title: "\U0001F9F9 NeuNeu"
+        message: '{% set translations = state_attr("sensor.neuneu_error_translations",
+          "state")%} {{translations[states(''sensor.neuneu_error'')]}}
+
+          '
+        click_url: /lovelace/vacuums
+        tag: neuneu_error
+        until:
+        - entity_id: sensor.neuneu_error
+          new_state: no_error
+    else:
+    - event: NOTIFIER
+      event_data:
+        action: send_when_present
+        title: "\U0001F9F9 NeuNeu"
+        message: 'Erreur inconnu (code: {{states(''sensor.neuneu_error'')}})'
+        click_url: /lovelace/vacuums
+        tag: neuneu_error
+        until:
+        - entity_id: sensor.neuneu_error
+          new_state: no_error
   mode: single
