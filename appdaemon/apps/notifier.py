@@ -146,25 +146,27 @@ class notifier(hass.Hass):
         self.log("NOTIFIER event received")  
         if "action" in data:
             action = data["action"]
-            for person in self.args["persons"]:
-                if action == "send_to_" + person["name"]:
-                    self.send_to_person(data, person)
-            if action == "send_to_all":
-                #send_to_all
-                self.send_to_all(data)
-            if action == "send_to_present":
-                #send_to_present
-                self.send_to_present(data)
-            if action == "send_to_absent":
-                #send_to_absent
-                self.send_to_absent(data)
-            if action == "send_to_nearest":
-                #send_to_nearest
-                self.send_to_nearest(data)
-            if action == "send_when_present":
-                #send_when_present
-                self.send_when_present(data) 
-        
+            match action:
+                case "send_to_all":
+                    # send_to_all
+                    self.send_to_all(data)
+                case "send_to_present":
+                    # send_to_present
+                    self.send_to_present(data)
+                case "send_to_absent":
+                    # send_to_absent
+                    self.send_to_absent(data)
+                case "send_to_nearest":
+                    # send_to_nearest
+                    self.send_to_nearest(data)
+                case "send_when_present":
+                    # send_when_present
+                    self.send_when_present(data)
+                case _:
+                    for person in self.args["persons"]:
+                        if action == "send_to_" + person["name"]:
+                            self.send_to_person(data, person)
+
         if "persistent" in data:
             if data["persistent"]:
                 if 'tag' in data:
