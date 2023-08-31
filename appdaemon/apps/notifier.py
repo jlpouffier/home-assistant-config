@@ -57,8 +57,10 @@ interuption_level: <string>
 until:
  - entity_id: <string>
    new_state: <string>
+   old_state: <string>
  - entity_id: <string>
    new_state: <string>
+   old_state: <string>
 
 Here are detailed explanations for each field: (fields with a star * are mandatory)
 
@@ -120,6 +122,8 @@ until:
  - entity_id: light.all_lights
    new_state : off
 This will make the notification(s) disappear as soon as the lights are off, or the home becomes occupied.
+In the same way, you can use 'old_state' for exemple when you want the cancel a notification when a user is leaving a zone.
+new_state and old_state can be used at the same time if you want to detect a specific transition
 That way, you make sure notifications are only displayed when relevant.
  
 """
@@ -174,10 +178,40 @@ class notifier(hass.Hass):
             until = data["until"]
             for watcher in until:
                 watcher_handle = {}
-                watcher_handle["id"] = self.listen_state(self.callback_until_watcher, watcher["entity_id"], new = str(watcher["new_state"]), oneshot = True, tag = data["tag"])
+                if "new_state" in watcher and "old_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        new=str(watcher["new_state"]),
+                        old=str(watcher["old_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"from {str(watcher['old_state'])} to {str(watcher['new_state'])}"
+                elif "new_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        new=str(watcher["new_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"to {str(watcher['new_state'])}"
+                elif "old_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        old=str(watcher["old_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"from {str(watcher['old_state'])}"
                 watcher_handle["tag"] = data["tag"]
                 self.watchers_handles.append(watcher_handle)
-                self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]))
+                self.log(
+                    f"All notifications with tag {data['tag']} will be cleared "
+                    f"if {watcher['entity_id']} transitions {transition}"
+                )
 
     def callback_notifier_discard_event_received(self, event_name, data, kwargs):
         self.clear_notifications(data["tag"])
