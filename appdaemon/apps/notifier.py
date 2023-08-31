@@ -2,13 +2,14 @@ import appdaemon.plugins.hass.hassapi as hass
 import math
 
 """
+Source : https://github.com/jlpouffier/home-assistant-config/blob/master/appdaemon/apps/notifier.py
  
 Notify is an app responsible for notifying the right occupant(s) at the right time, and making sure to discard notifications once they are not relevant anymore.
  
 Here is the list of parameter that you NEED to set in order to run the app:
 
 home_occupancy_sensor_id: the id of a binary sensor that will be true if someone is at home, and false otherwise
-proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for exmaple (Both will be pinged)
+proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for example (Both will be pinged)
 persons: A list of person, including
     name: their name
     id: the id of the person entity in home assistant
