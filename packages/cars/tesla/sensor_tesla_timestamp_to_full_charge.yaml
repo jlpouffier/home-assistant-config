@@ -1,8 +1,0 @@
-# https://www.home-assistant.io/integrations/template/
-
-template:
-  - sensor:
-      - name: tesla_timestamp_to_full_charge
-        unique_id: tesla_timestamp_to_full_charge
-        device_class: timestamp
-        state: "{{now() + timedelta(hours = states('sensor.tesla_time_to_full_charge') | float(default = 0))}}"
