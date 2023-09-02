@@ -1,0 +1,45 @@
+media_player:
+  - platform: universal
+    name: media_center
+    unique_id: media_center
+    device_class: tv
+    children:
+      - media_player.tv_cast
+      - media_player.kef
+    commands:
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.media_center
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.media_center
+      toggle:
+        service: switch.toggle
+        target:
+          entity_id: switch.media_center
+      volume_up:
+        service: media_player.volume_up
+        target:
+          entity_id: media_player.kef
+      volume_down:
+        service: media_player.volume_down
+        target:
+          entity_id: media_player.kef
+      volume_set:
+        service: media_player.volume_set
+        target:
+          entity_id: media_player.kef
+        data:
+          volume_level: "{{ volume_level }}"
+      volume_mute:
+        service: media_player.volume_mute
+        target:
+          entity_id: media_player.kef
+        data:
+          is_volume_muted: "{{is_volume_muted}}"
+    attributes:
+      state: binary_sensor.is_tv_on
+      is_volume_muted: media_player.kef|is_volume_muted
+      volume_level: media_player.kef|volume_level
