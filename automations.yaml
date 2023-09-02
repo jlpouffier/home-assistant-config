@@ -940,7 +940,8 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688368387161'
   alias: Bureau - Contrôler lumière par Webcam
   description: ''
@@ -1004,7 +1005,7 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
-  mode: parallel
+  mode: queued
   max: 10
 - id: '1688371319271'
   alias: Surveillance de la maison - Éteindre Alexa quand maison vide
