@@ -584,7 +584,7 @@
   trigger:
   - platform: state
     entity_id:
-    - media_player.tv_cast
+    - media_player.media_center
     from:
     to:
     variables:
@@ -602,12 +602,13 @@
   - condition: state
     entity_id: sun.sun
     state: below_horizon
+    enabled: true
   action:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["off", "paused", "idle", "buffering"] and
-          to_state == "playing" and to_app in supported_apps}}'
+        value_template: '{{from_state in ["off", "paused", "idle", "on", "buffering"]
+          and to_state == "playing" and to_app in supported_apps}}'
       sequence:
       - service: script.lights_set_tv
         data: {}
@@ -620,8 +621,8 @@
         data: {}
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["playing" , "paused", "buffering"] and to_state
-          in ["off" , "idle"] and from_app in supported_apps}}'
+        value_template: '{{from_state in ["playing", "paused", "buffering"] and to_state
+          in ["off", "on", "idle"] and from_app in supported_apps}}'
       sequence:
       - service: script.reset_lights_day_area
         data: {}
