@@ -5,7 +5,16 @@ media_player:
     device_class: tv
     children:
       - media_player.tv_cast
+      - media_player.philips_android_tv
       - media_player.kef
+    active_child_template: |
+      {% if is_state_attr('media_player.tv_cast', 'app_name', 'Netflix') %}
+      media_player.philips_android_tv
+      {% elif not is_state('media_player.tv_cast', 'off') %}
+      media_player.tv_cast
+      {% else %}
+      media_player.philips_android_tv
+      {% endif %}
     commands:
       turn_on:
         service: switch.turn_on
@@ -38,8 +47,16 @@ media_player:
         target:
           entity_id: media_player.kef
         data:
-          is_volume_muted: "{{is_volume_muted}}"
+          is_volume_muted: "{{ is_volume_muted }}"
+      select_source:
+        service: media_player.select_source
+        data:
+          source: "{{ source }}"
+        target:
+          entity_id: media_player.philips_android_tv
     attributes:
       state: binary_sensor.is_tv_on
       is_volume_muted: media_player.kef|is_volume_muted
       volume_level: media_player.kef|volume_level
+      source_list: media_player.philips_android_tv|source_list
+      source: media_player.philips_android_tv|source
