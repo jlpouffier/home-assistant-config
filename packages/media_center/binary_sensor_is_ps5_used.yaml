@@ -1,7 +1,0 @@
-# https://www.home-assistant.io/integrations/template/
-
-template:
-  - binary_sensor:
-      - name: is_ps5_used
-        unique_id: is_ps5_used
-        state: "{{is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW5')}}"

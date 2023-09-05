@@ -1,8 +1,0 @@
-# https://www.home-assistant.io/integrations/template/
-
-template:
-  - binary_sensor:
-      - name: is_exterior_sphere_bright
-        unique_id: is_exterior_sphere_bright
-        state: "{{ state_attr('light.exterieur_sphere' , 'brightness') | float(default = 0) > 128 }}"
-        device_class: light

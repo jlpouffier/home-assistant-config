@@ -1,7 +1,0 @@
-# https://www.home-assistant.io/integrations/template/
-
-template:
-  - binary_sensor:
-      - name: is_tv_on
-        unique_id: is_tv_on
-        state: "{{ is_state('remote.jl_s_tv', 'on') }}"

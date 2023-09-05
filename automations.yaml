@@ -584,7 +584,7 @@
   trigger:
   - platform: state
     entity_id:
-    - media_player.tv_cast
+    - media_player.media_center
     from:
     to:
     variables:
@@ -602,12 +602,13 @@
   - condition: state
     entity_id: sun.sun
     state: below_horizon
+    enabled: true
   action:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["off", "paused", "idle", "buffering"] and
-          to_state == "playing" and to_app in supported_apps}}'
+        value_template: '{{from_state in ["off", "paused", "idle", "on", "buffering"]
+          and to_state == "playing" and to_app in supported_apps}}'
       sequence:
       - service: script.lights_set_tv
         data: {}
@@ -620,8 +621,8 @@
         data: {}
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["playing" , "paused", "buffering"] and to_state
-          in ["off" , "idle"] and from_app in supported_apps}}'
+        value_template: '{{from_state in ["playing", "paused", "buffering"] and to_state
+          in ["off", "on", "idle"] and from_app in supported_apps}}'
       sequence:
       - service: script.reset_lights_day_area
         data: {}
@@ -940,7 +941,8 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688368387161'
   alias: Bureau - Contrôler lumière par Webcam
   description: ''
@@ -1004,7 +1006,7 @@
         data: {}
         target:
           entity_id: scene.office_previous_light_state
-  mode: parallel
+  mode: queued
   max: 10
 - id: '1688371319271'
   alias: Surveillance de la maison - Éteindre Alexa quand maison vide
@@ -2595,4 +2597,60 @@
         until:
         - entity_id: sensor.neuneu_error
           new_state: no_error
+  mode: single
+- id: '1693508452789'
+  alias: 'Nettoyage Intelligent - Démarrage automatique de NeuNeu avec serpillière '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.neuneu_water_tank
+    to: installed
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    from: not_installed
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_clean_house
+    state: 'on'
+  action:
+  - service: vacuum.start
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
+  mode: single
+- id: '1693509234441'
+  alias: "Tesla - \U0001F514 Rappel charge "
+  description: ''
+  trigger:
+  - platform: time
+    at: '21:00:00'
+  condition:
+  - condition: state
+    entity_id: device_tracker.tesla_device_tracker
+    state: home
+  - condition: state
+    entity_id: binary_sensor.tesla_plugged_in
+    state: 'off'
+  - condition: numeric_state
+    entity_id: sensor.tesla_battery_level
+    below: 65
+  - condition: state
+    entity_id: person.jenova70
+    state: home
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: "️\U0001F697 Tesla"
+      message: 'Pense à charger la voiture. Niveau de charge actuelle {{states(''sensor.tesla_battery_level'')}}%
+
+        '
+      click_url: /lovelace/tesla
+      tag: tesla_charge_reminder
+      until:
+      - entity_id: binary_sensor.tesla_plugged_in
+        new_state: 'on'
   mode: single
