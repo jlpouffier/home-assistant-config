@@ -2,6 +2,7 @@ template:
   - sensor:
       - name: low_batteries
         unique_id: low_batteries
+        unit_of_measurement: batteries
         state: "{{this.attributes.entities | length}}"
         attributes:
           entities: |
