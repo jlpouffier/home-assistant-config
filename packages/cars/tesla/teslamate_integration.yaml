@@ -11,7 +11,7 @@ mqtt:
       payload_off: "false"
       device_class: opening
       device:
-        configuration_url: http://jenova70server:4000/
+        configuration_url: http://jlo-server:4000/
         manufacturer: Tesla
         model: Model 3
         name: Tesla Model 3 (Mémé)
