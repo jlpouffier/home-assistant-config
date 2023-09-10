@@ -1,0 +1,21 @@
+template:
+  - sensor:
+      - name: unavailable_entities
+        unique_id: unavailable_entities
+        unit_of_measurement: entities
+        state: |
+          {{  expand(states)
+              | selectattr('state', 'eq', 'unavailable')
+              | selectattr('attributes.unavailability_expected', 'undefined')
+              | list
+              | count
+          }}
+        attributes:
+          entities: |
+            {{  expand(states)
+                | selectattr('state', 'eq', 'unavailable')
+                | selectattr('attributes.unavailability_expected', 'undefined')
+                | map(attribute='entity_id') 
+                | list
+                | sort
+            }}
