@@ -2625,8 +2625,16 @@
   alias: "Tesla - \U0001F514 Rappel charge "
   description: ''
   trigger:
-  - platform: time
-    at: '21:00:00'
+  - platform: state
+    entity_id:
+    - schedule.heures_pleines
+    from: 'on'
+    to: 'off'
+  - platform: state
+    entity_id:
+    - sensor.tesla_shift_state
+    from: D
+    to: P
   condition:
   - condition: state
     entity_id: device_tracker.tesla_device_tracker
@@ -2640,6 +2648,9 @@
   - condition: state
     entity_id: person.jenova70
     state: home
+  - condition: state
+    entity_id: schedule.heures_pleines
+    state: 'off'
   action:
   - event: NOTIFIER
     event_data:
