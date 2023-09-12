@@ -2665,3 +2665,33 @@
       - entity_id: binary_sensor.tesla_plugged_in
         new_state: 'on'
   mode: single
+- id: '1694358358430'
+  alias: "Surveillance du système - \U0001F514 Notifier Entrée Indispo."
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.unavailable_entities
+    to:
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_system
+    state: 'on'
+  - condition: template
+    value_template: '{{trigger.to_state.state | float(0) > 0}}'
+  action:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_jl
+      title: ✈️ Entrées indisponibles
+      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
+      click_url: /lovelace-system/overview
+      tag: unavailable_entities
+      until:
+      - entity_id: sensor.unavailable_entities
+        new_state: '0'
+  mode: single

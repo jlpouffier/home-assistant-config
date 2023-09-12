@@ -15,7 +15,7 @@ template:
             {{  expand(states)
                 | selectattr('state', 'eq', 'unavailable')
                 | selectattr('attributes.unavailability_expected', 'undefined')
-                | map(attribute='entity_id') 
+                | map(attribute='attributes.friendly_name') 
                 | list
                 | sort
             }}

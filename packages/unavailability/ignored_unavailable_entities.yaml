@@ -8,7 +8,11 @@ homeassistant:
       unavailability_expected: true
     media_player.tv_plex:
       unavailability_expected: true
+    media_player.media_center:
+      unavailability_expected: true
     remote.jl_s_tv:
       unavailability_expected: true
     update.m5stack_atom_echo_539640_firmware:
+      unavailability_expected: true
+    button.neuneu_clear_warning:
       unavailability_expected: true
