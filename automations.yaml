@@ -953,12 +953,20 @@
     to: 'on'
     id: webcam
     from: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
   - platform: state
     entity_id:
     - binary_sensor.jean_loics_laptop_camera_in_use
     to: 'off'
     id: no_webcam
     from: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
   condition:
   - condition: state
     entity_id: person.jenova70
@@ -1715,84 +1723,6 @@
     data: {}
     target:
       entity_id: vacuum.neuneu
-  mode: single
-- id: '1688561458713'
-  alias: Talkie - Changer Assistant
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.talkie_change_assistant_button
-    to: 'on'
-    variables:
-      available_assistants:
-      - Assist
-      - Jarvis
-      - Papa Noël
-      - Régis
-  condition: []
-  action:
-  - if:
-    - condition: template
-      value_template: '{{ states("select.talkie_pipeline_d_assistant") in available_assistants
-        }}'
-    then:
-    - variables:
-        array_length: '{{ available_assistants | length }}'
-        current_position: '{{ available_assistants.index(states(''select.talkie_pipeline_d_assistant''))
-          }}'
-        new_position: '{{ (current_position + 1) % array_length }}'
-        next_assistant: '{{ available_assistants[new_position] }}'
-    - service: select.select_option
-      data:
-        option: '{{next_assistant}}'
-      target:
-        entity_id: select.talkie_pipeline_d_assistant
-    else:
-    - variables:
-        new_position: 0
-        next_assistant: '{{ available_assistants[new_position] }}'
-    - service: select.select_option
-      data:
-        option: '{{next_assistant}}'
-      target:
-        entity_id: select.talkie_pipeline_d_assistant
-  - service: tts.cloud_say
-    data:
-      cache: false
-      entity_id: media_player.talkie_media_player
-      language: fr-FR
-      message: Vous êtes en communication avec {{states('select.talkie_pipeline_d_assistant')}}
-  mode: single
-- id: '1688562617686'
-  alias: Talkie - Réinitialiser Assistant
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.talkie_assistant_en_cours
-    from: 'on'
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 1
-      seconds: 0
-    variables:
-      available_assistants:
-      - Assist
-      - Papa Noël
-      - Jarvis
-      - Régis
-  condition: []
-  action:
-  - variables:
-      new_position: 0
-      next_assistant: '{{ available_assistants[new_position] }}'
-  - service: select.select_option
-    data:
-      option: '{{next_assistant}}'
-    target:
-      entity_id: select.talkie_pipeline_d_assistant
   mode: single
 - id: '1688571869274'
   alias: Nettoyage Intelligent - Réinitialiser Étage NeuNeu
@@ -2665,33 +2595,57 @@
       - entity_id: binary_sensor.tesla_plugged_in
         new_state: 'on'
   mode: single
-- id: '1694358358430'
-  alias: "Surveillance du système - \U0001F514 Notifier Entrée Indispo."
+- id: '1695458967964'
+  alias: Tesla - Attacher Tesla à JL en début de conduite
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - sensor.unavailable_entities
-    to:
+    - input_boolean.jl_connected_to_tesla
+    to: 'on'
+  condition: []
+  action:
+  - service: person.add_device_tracker
+    data:
+      entity_id: person.jenova70
+      device_tracker:
+      - device_tracker.tesla_device_tracker
+  - service: person.remove_device_tracker
+    data:
+      entity_id: person.jenova70
+      device_tracker:
+      - device_tracker.jean_loics_iphone
+  mode: single
+- id: '1695459020679'
+  alias: Tesla - Détacher Tesla à JL en fin de conduite
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.jl_connected_to_tesla
+    to: 'off'
     for:
       hours: 0
-      minutes: 5
+      minutes: 0
       seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_system
-    state: 'on'
-  - condition: template
-    value_template: '{{trigger.to_state.state | float(0) > 0}}'
+  condition: []
   action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: ✈️ Entrées indisponibles
-      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
-      click_url: /lovelace-system/overview
-      tag: unavailable_entities
-      until:
-      - entity_id: sensor.unavailable_entities
-        new_state: '0'
+  - service: notify.mobile_app_jean_loics_iphone
+    data:
+      message: request_location_update
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: person.add_device_tracker
+    data:
+      entity_id: person.jenova70
+      device_tracker:
+      - device_tracker.jean_loics_iphone
+  - service: person.remove_device_tracker
+    data:
+      entity_id: person.jenova70
+      device_tracker:
+      - device_tracker.tesla_device_tracker
   mode: single
