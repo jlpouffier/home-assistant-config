@@ -1,0 +1,20 @@
+rest:
+  - resource: "https://www.seeedstudio.com/rest/V1/product/stock/date"
+    scan_interval: 60
+    method: POST
+    headers:
+      content-type: "application/json; charset=UTF-8"
+    payload: '{"warehouse_id": 2, "id": 5792, "qty": 100000 }'
+    sensor:
+      - name: Home Assistant Green Stock
+        icon: mdi:package-variant
+        unit_of_measurement: items
+        unique_id: green_stock
+        value_template: "{{ value_json.data.instock_qty }}"
+        state_class: measurement
+      - name: Home Assistant Green Backorder stock
+        icon: mdi:package-variant
+        unit_of_measurement: items
+        unique_id: green_backorder_stock
+        value_template: "{{ value_json.data.backorder_qty }}"
+        state_class: measurement
