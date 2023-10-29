@@ -13,7 +13,7 @@ persons: A list of person, including
     name: their name
     id: the id of the person entity in home assistant
     notification_service: the name of the notification service used to ping the phone of this person.
-    proximity_id: the id of the proximity entity linked to this person 
+    distance_sensor: the id of sensor measuring the distance between the person and the home 
 
 
 Here is an exmaple on how to instantiate the app:
@@ -27,11 +27,11 @@ notifier:
     - name: jl
       id: person.jenova70
       notification_service: notify/mobile_app_pixel_6
-      proximity_id: proximity.distance_jl_home
+      distance_sensor: sensor.distance_jl_home
     - name: valentine
       id: person.valentine
       notification_service: notify/mobile_app_pixel_4a
-      proximity_id: proximity.distance_valentine_home
+      distance_sensor: sensor.distance_valentine_home
 
 The complete app can be called from anywhere by sending a custom event NOTIFIER with the following schema:
 
@@ -250,23 +250,23 @@ class notifier(hass.Hass):
 
     def send_to_present(self, data):
         for person in self.args["persons"]:
-            if self.get_state(person["id"]) == "home" or float(self.get_state(person["proximity_id"])) <= self.args["proximity_threshold"]:
+            if self.get_state(person["id"]) == "home" or float(self.get_state(person["distance_sensor"])) <= self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
                 
     def send_to_absent(self, data):
         for person in self.args["persons"]:
-            if self.get_state(person["id"]) != "home" or float(self.get_state(person["proximity_id"])) > self.args["proximity_threshold"]:
+            if self.get_state(person["id"]) != "home" or float(self.get_state(person["distance_sensor"])) > self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
 
     def send_to_nearest(self, data):
-        min_proximity = float(self.get_state(self.args["persons"][0]["proximity_id"]))
+        min_proximity = float(self.get_state(self.args["persons"][0]["distance_sensor"]))
         for person in self.args["persons"]:
-            person_proximity = float(self.get_state(person["proximity_id"]))
+            person_proximity = float(self.get_state(person["distance_sensor"]))
             if person_proximity <= min_proximity:
                 min_proximity = person_proximity
 
         for person in self.args["persons"]:
-            person_proximity = float(self.get_state(person["proximity_id"]))
+            person_proximity = float(self.get_state(person["distance_sensor"]))
             if person_proximity <= min_proximity + self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
     

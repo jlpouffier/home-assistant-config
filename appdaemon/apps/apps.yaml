@@ -9,11 +9,11 @@ notifier:
     - name: jl
       id: person.jenova70
       notification_service: notify/mobile_app_jean_loics_iphone
-      proximity_id: proximity.distance_jl_home
+      distance_sensor: sensor.distance_jl_home
     - name: valentine
       id: person.valentine
       notification_service: notify/mobile_app_iphone_de_valentine
-      proximity_id: proximity.distance_valentine_home
+      distance_sensor: sensor.distance_valentine_home
 
 tesla_automations:
   module: tesla_automations
