@@ -895,14 +895,7 @@
     entity_id:
     - binary_sensor.quest_in_use
     to: 'on'
-    id: quest
     from: 'off'
-  - platform: state
-    entity_id:
-    - binary_sensor.quest_in_use
-    to: 'off'
-    id: no_quest
-    from: 'on'
   condition:
   - condition: state
     entity_id: person.jenova70
@@ -911,36 +904,34 @@
     state: 'on'
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
   action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: quest
-      sequence:
-      - service: scene.create
-        data:
-          scene_id: office_previous_light_state
-          snapshot_entities:
-          - light.bureau
-      - service: light.turn_on
-        data:
-          brightness_pct: 100
-          kelvin: 3521
-        target:
-          entity_id:
-          - light.bureau
-          - light.hue_play_bars
-    - conditions:
-      - condition: trigger
-        id: no_quest
-      sequence:
-      - service: light.turn_off
-        data: {}
-        target:
-          entity_id: light.hue_play_bars
-      - service: scene.turn_on
-        data: {}
-        target:
-          entity_id: scene.office_previous_light_state
+  - service: scene.create
+    data:
+      scene_id: office_previous_light_state
+      snapshot_entities:
+      - light.bureau
+  - service: light.turn_on
+    data:
+      brightness_pct: 100
+      kelvin: 3521
+    target:
+      entity_id:
+      - light.bureau
+      - light.hue_play_bars
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.quest_in_use
+      to: 'off'
+      from: 'on'
+    continue_on_timeout: false
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.hue_play_bars
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.office_previous_light_state
   mode: queued
   max: 10
 - id: '1688368387161'
@@ -951,18 +942,7 @@
     entity_id:
     - binary_sensor.jean_loics_laptop_camera_in_use
     to: 'on'
-    id: webcam
     from: 'off'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 5
-  - platform: state
-    entity_id:
-    - binary_sensor.jean_loics_laptop_camera_in_use
-    to: 'off'
-    id: no_webcam
-    from: 'on'
     for:
       hours: 0
       minutes: 0
@@ -978,46 +958,43 @@
     entity_id: device_tracker.jean_loics_laptop
     state: home
   action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: webcam
-      sequence:
-      - service: scene.create
-        data:
-          scene_id: office_previous_light_state
-          snapshot_entities:
-          - light.bureau
-      - service: light.turn_on
-        data:
-          brightness_pct: 100
-          kelvin: 3521
-        target:
-          entity_id:
-          - light.bureau
-      - service: light.turn_on
-        data:
-          brightness_pct: 60
-          kelvin: 3521
-        target:
-          entity_id:
-          - light.hue_play_bars
-    - conditions:
-      - condition: trigger
-        id: no_webcam
-      sequence:
-      - service: light.turn_off
-        data: {}
-        target:
-          entity_id: light.hue_play_bars
-      - service: scene.turn_on
-        data: {}
-        target:
-          entity_id: scene.office_previous_light_state
-  mode: queued
-  max: 10
+  - service: scene.create
+    data:
+      scene_id: office_previous_light_state
+      snapshot_entities:
+      - light.bureau
+  - service: light.turn_on
+    data:
+      brightness_pct: 100
+      kelvin: 3521
+    target:
+      entity_id:
+      - light.bureau
+  - service: light.turn_on
+    data:
+      brightness_pct: 60
+      kelvin: 3521
+    target:
+      entity_id:
+      - light.hue_play_bars
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.jean_loics_laptop_camera_in_use
+      to: 'off'
+      from: 'on'
+    continue_on_timeout: false
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.hue_play_bars
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.office_previous_light_state
+  mode: single
 - id: '1688371319271'
-  alias: Surveillance de la maison - Éteindre Alexa quand maison vide
+  alias: Surveillance de la maison - Éteindre assistants quand maison vide
   description: ''
   trigger:
   - platform: state
@@ -1029,14 +1006,12 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  - condition: state
-    entity_id: switch.alexa
-    state: 'on'
   action:
   - service: switch.turn_off
     data: {}
     target:
-      entity_id: switch.alexa
+      entity_id:
+      - switch.microphones
   mode: single
 - id: '1688371620889'
   alias: "Surveillance de la maison - \U0001F514 Notifier appareils allumées et maison
@@ -1183,7 +1158,7 @@
           new_state: 'off'
   mode: single
 - id: '1688373819985'
-  alias: Surveillance de la maison - Allumer Alexa quand maison occupée
+  alias: Surveillance de la maison - Allumer assistants quand maison occupée
   description: ''
   trigger:
   - platform: state
@@ -1195,14 +1170,12 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  - condition: state
-    entity_id: switch.alexa
-    state: 'off'
   action:
   - service: switch.turn_on
     data: {}
     target:
-      entity_id: switch.alexa
+      entity_id:
+      - switch.microphones
   mode: single
 - id: '1688374658190'
   alias: "Surveillance de la maison - \U0001F514 Notifier machine à café allumée depuis
@@ -2036,25 +2009,6 @@
     target:
       entity_id: input_number.daily_rain
   mode: single
-- id: '1690555063262'
-  alias: Assist - Notifier rappel lointain
-  description: ''
-  trigger:
-  - platform: calendar
-    event: start
-    offset: 0:0:0
-    entity_id: calendar.reminders
-  condition: []
-  action:
-  - service: script.reminder_for_later
-    data:
-      days: 0
-      hours: 0
-      minutes: 0
-      seconds: 0
-      media_player: media_player.talkie_media_player
-      reminder: '{{trigger.calendar_event.summary}}'
-  mode: single
 - id: '1690826979664'
   alias: "Assist - \U0001F4E3 Commandes Multiple "
   description: ''
@@ -2446,7 +2400,7 @@
         '
   - if:
     - condition: numeric_state
-      entity_id: proximity.distance_jl_home
+      entity_id: sensor.distance_jl_home
       below: 10000
     then:
     - event: NOTIFIER
@@ -2457,7 +2411,7 @@
         tag: chaban_delmas_closing_tomorrow
   - if:
     - condition: numeric_state
-      entity_id: proximity.distance_valentine_home
+      entity_id: sensor.distance_valentine_home
       below: 10000
     then:
     - event: NOTIFIER
@@ -2648,4 +2602,43 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.tesla_device_tracker
+  mode: single
+- id: '1698182832051'
+  alias: TV intelligente - Activer / Désactiver Talkie
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.media_center
+    to: playing
+    id: playing
+  - platform: state
+    entity_id:
+    - media_player.media_center
+    from: playing
+    id: not_playing
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - playing
+      sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.talkie_use_wake_word
+    - conditions:
+      - condition: trigger
+        id:
+        - not_playing
+      sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.talkie_use_wake_word
   mode: single
