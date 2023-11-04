@@ -1937,44 +1937,6 @@
         entity_id:
         - light.2d_matrix
   mode: single
-- id: '1690221385338'
-  alias: "Assist - \U0001F4E3 Bureau Position Debout "
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - (Lève|Monte) le bureau
-    - '[(Mais|Mets|Passe)] le bureau [en] (mode|position) debout'
-  condition:
-  - condition: state
-    entity_id: binary_sensor.standing_desk_moving
-    state: 'off'
-  action:
-  - service: button.press
-    data: {}
-    target:
-      entity_id: button.standing_desk_move_desk_to_position_1
-    enabled: true
-  mode: single
-- id: '1690221432357'
-  alias: "Assist - \U0001F4E3 Bureau Position Assise"
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - (Baisse|descend|descends) le bureau
-    - '[(Mais|Mets|Passe)] le bureau [en] (mode|position) (assis|assise)'
-  condition:
-  - condition: state
-    entity_id: binary_sensor.standing_desk_moving
-    state: 'off'
-  action:
-  - service: button.press
-    data: {}
-    target:
-      entity_id: button.standing_desk_move_desk_to_position_2
-    enabled: true
-  mode: single
 - id: '1690362715725'
   alias: Pluie - Incrémenter Pluie Journalière
   description: ''

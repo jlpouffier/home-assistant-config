@@ -1,0 +1,12 @@
+language: "fr"
+intents:
+  RaiseTheDesk:
+    data:
+      - sentences:
+          - "(Lève|Lever) le bureau"
+          - "[(Mais|Mets|Passe)] le bureau [en] (mode|position) debout"
+  LowerTheDesk:
+    data:
+      - sentences:
+          - "(descend|descends|descendre) le bureau"
+          - "[(Mais|Mets|Passe)] le bureau [en] (mode|position) (assis|assise)"

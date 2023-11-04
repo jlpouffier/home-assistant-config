@@ -1,0 +1,30 @@
+intent_script:
+  RaiseTheDesk:
+    action:
+      - if:
+          - condition: state
+            entity_id: binary_sensor.standing_desk_moving
+            state: "off"
+        then:
+          - service: button.press
+            data: {}
+            target:
+              entity_id: button.standing_desk_move_desk_to_position_1
+            enabled: true
+    speech:
+      text: "Bureau en montée"
+
+  LowerTheDesk:
+    action:
+      - if:
+          - condition: state
+            entity_id: binary_sensor.standing_desk_moving
+            state: "off"
+        then:
+          - service: button.press
+            data: {}
+            target:
+              entity_id: button.standing_desk_move_desk_to_position_2
+            enabled: true
+    speech:
+      text: "Bureau en descente"
