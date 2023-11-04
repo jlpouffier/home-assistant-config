@@ -1,0 +1,30 @@
+intent_script:
+  PlayWhatever:
+    action:
+      - service: conversation.process
+        data:
+          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          text: "{{query}}"
+        response_variable: response_from_ai
+      - service: mass.play_media
+        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+        target:
+          entity_id:
+            - media_player.music_assistant_salon_kef
+    speech:
+      text: "Lecture lancée"
+
+  PlayWhateverEn:
+    action:
+      - service: conversation.process
+        data:
+          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          text: "{{query}}"
+        response_variable: response_from_ai
+      - service: mass.play_media
+        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+        target:
+          entity_id:
+            - media_player.music_assistant_salon_kef
+    speech:
+      text: "Playing now"

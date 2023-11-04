@@ -1,0 +1,10 @@
+language: "fr"
+intents:
+  PlayWhatever:
+    data:
+      - sentences:
+          - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query}
+
+lists:
+  query:
+    wildcard: true
