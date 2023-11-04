@@ -5,7 +5,7 @@ intent_script:
       target:
         entity_id: vacuum.neuneu
     speech:
-      text: "D'accord"
+      text: "Nettoyage lancé"
 
   SelectedRoomCleaning:
     action:
@@ -14,7 +14,7 @@ intent_script:
           entity_id: "{{room}}"
       - service: script.room_cleaning_first_floor
     speech:
-      text: "D'accord"
+      text: "Nettoyage lancé"
 
   StopCleaning:
     action:
@@ -22,4 +22,4 @@ intent_script:
       target:
         entity_id: vacuum.neuneu
     speech:
-      text: "D'accord"
+      text: "Nettoyage arreté"
