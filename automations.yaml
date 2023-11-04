@@ -2642,3 +2642,49 @@
         target:
           entity_id: switch.talkie_use_wake_word
   mode: single
+- id: '1699131143084'
+  alias: 'Music Assistant - Éteindre MASS lorsque KEF éteint '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.kef
+    to: 'off'
+    from: 'on'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: media_player.music_assistant_salon_kef
+      state: 'off'
+  action:
+  - service: media_player.turn_off
+    data: {}
+    target:
+      entity_id: media_player.music_assistant_salon_kef
+  mode: single
+- id: '1699131464359'
+  alias: TV intelligente - Changer Source quand Lecture en cours sur TV
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.media_center
+    to: playing
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: media_player.kef
+      attribute: source
+      state: Opt
+  action:
+  - service: media_player.select_source
+    data:
+      source: Opt
+    target:
+      entity_id: media_player.kef
+  mode: single
