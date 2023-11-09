@@ -1,0 +1,59 @@
+blueprint:
+  name: Play Music on Music Assistant
+  description: |
+    Play any music you want on any Music Assistant speaker
+    Requirements:
+      - Media Player coming from the Music Assistant integration
+      - OpenAI Conversation **configured with the prompt found [here](https://gist.github.com/jlpouffier/8d5dc8a6b94f42f4929bfd1df2f22008)**
+  domain: automation
+  author: JLo
+  homeassistant:
+    min_version: 2023.8.0
+  input:
+    assist_command:
+      name: Assist Command
+      description: |
+        The Assist command you will use to start the music
+        You can change the overall sentence to match your style and language. 
+        **WARNING** you **MUST** include `{query}` in order to pass that variable to OpenAI.
+      default: "Play {query}"
+      selector:
+        text:
+    open_ai_config_entry:
+      name: OpenAI Configuration
+      description: The OpenAI configuration **configured with the prompt found [here](https://gist.github.com/jlpouffier/8d5dc8a6b94f42f4929bfd1df2f22008)**
+      selector:
+        config_entry:
+          integration: "openai_conversation"
+    media_player:
+      name: Media player
+      description: Media player that will play the music
+      selector:
+        entity:
+          filter:
+            integration: "mass"
+            domain: "media_player"
+    additional_conditions:
+      name: Additional conditions
+      description: |
+        Extra conditions you may want to add to this automation 
+        (Example: Home occupied, Speaker on, etc)
+      default: []
+      selector:
+        condition:
+
+trigger:
+  - platform: conversation
+    command: !input assist_command
+condition: !input additional_conditions
+action:
+  - service: conversation.process
+    data:
+      agent_id: !input open_ai_config_entry
+      text: "{{trigger.slots.query}}"
+    response_variable: response_from_ai
+  - service: mass.play_media
+    data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+    target:
+      entity_id: !input media_player
+mode: single
