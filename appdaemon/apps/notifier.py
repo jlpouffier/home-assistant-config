@@ -1,14 +1,15 @@
-import hassapi as hass
+import appdaemon.plugins.hass.hassapi as hass
 import math
 
 """
+Source : https://github.com/jlpouffier/home-assistant-config/blob/master/appdaemon/apps/notifier.py
  
 Notify is an app responsible for notifying the right occupant(s) at the right time, and making sure to discard notifications once they are not relevant anymore.
  
 Here is the list of parameter that you NEED to set in order to run the app:
 
 home_occupancy_sensor_id: the id of a binary sensor that will be true if someone is at home, and false otherwise
-proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for exmaple (Both will be pinged)
+proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for example (Both will be pinged)
 persons: A list of person, including
     name: their name
     id: the id of the person entity in home assistant
@@ -56,8 +57,10 @@ interuption_level: <string>
 until:
  - entity_id: <string>
    new_state: <string>
+   old_state: <string>
  - entity_id: <string>
    new_state: <string>
+   old_state: <string>
 
 Here are detailed explanations for each field: (fields with a star * are mandatory)
 
@@ -119,6 +122,8 @@ until:
  - entity_id: light.all_lights
    new_state : off
 This will make the notification(s) disappear as soon as the lights are off, or the home becomes occupied.
+In the same way, you can use 'old_state' for exemple when you want the cancel a notification when a user is leaving a zone.
+new_state and old_state can be used at the same time if you want to detect a specific transition
 That way, you make sure notifications are only displayed when relevant.
  
 """
@@ -141,25 +146,27 @@ class notifier(hass.Hass):
         self.log("NOTIFIER event received")  
         if "action" in data:
             action = data["action"]
-            for person in self.args["persons"]:
-                if action == "send_to_" + person["name"]:
-                    self.send_to_person(data, person)
-            if action == "send_to_all":
-                #send_to_all
-                self.send_to_all(data)
-            if action == "send_to_present":
-                #send_to_present
-                self.send_to_present(data)
-            if action == "send_to_absent":
-                #send_to_absent
-                self.send_to_absent(data)
-            if action == "send_to_nearest":
-                #send_to_nearest
-                self.send_to_nearest(data)
-            if action == "send_when_present":
-                #send_when_present
-                self.send_when_present(data) 
-        
+            match action:
+                case "send_to_all":
+                    # send_to_all
+                    self.send_to_all(data)
+                case "send_to_present":
+                    # send_to_present
+                    self.send_to_present(data)
+                case "send_to_absent":
+                    # send_to_absent
+                    self.send_to_absent(data)
+                case "send_to_nearest":
+                    # send_to_nearest
+                    self.send_to_nearest(data)
+                case "send_when_present":
+                    # send_when_present
+                    self.send_when_present(data)
+                case _:
+                    for person in self.args["persons"]:
+                        if action == "send_to_" + person["name"]:
+                            self.send_to_person(data, person)
+
         if "persistent" in data:
             if data["persistent"]:
                 if 'tag' in data:
@@ -173,10 +180,40 @@ class notifier(hass.Hass):
             until = data["until"]
             for watcher in until:
                 watcher_handle = {}
-                watcher_handle["id"] = self.listen_state(self.callback_until_watcher, watcher["entity_id"], new = str(watcher["new_state"]), oneshot = True, tag = data["tag"])
+                if "new_state" in watcher and "old_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        new=str(watcher["new_state"]),
+                        old=str(watcher["old_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"from {str(watcher['old_state'])} to {str(watcher['new_state'])}"
+                elif "new_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        new=str(watcher["new_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"to {str(watcher['new_state'])}"
+                elif "old_state" in watcher:
+                    watcher_handle["id"] = self.listen_state(
+                        self.callback_until_watcher,
+                        watcher["entity_id"],
+                        old=str(watcher["old_state"]),
+                        oneshot=True,
+                        tag=data["tag"],
+                    )
+                    transition = f"from {str(watcher['old_state'])}"
                 watcher_handle["tag"] = data["tag"]
                 self.watchers_handles.append(watcher_handle)
-                self.log("All notifications with tag " + data["tag"] + " will be cleared if " + watcher["entity_id"] + " transitions to " + str(watcher["new_state"]))
+                self.log(
+                    f"All notifications with tag {data['tag']} will be cleared "
+                    f"if {watcher['entity_id']} transitions {transition}"
+                )
 
     def callback_notifier_discard_event_received(self, event_name, data, kwargs):
         self.clear_notifications(data["tag"])
