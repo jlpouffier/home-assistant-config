@@ -335,32 +335,10 @@
       entity_id: sun.sun
       state: below_horizon
     then:
-    - service: hue.activate_scene
-      data:
-        transition: 3
+    - service: script.turn_on
+      data: {}
       target:
-        entity_id: scene.entree_entree_100
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
-        milliseconds: 0
-    - service: hue.activate_scene
-      data:
-        transition: 3
-      target:
-        entity_id:
-        - scene.salon_salon_100
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
-        milliseconds: 0
-    - service: hue.activate_scene
-      data:
-        transition: 3
-      target:
-        entity_id: scene.cuisine_cuisine_100
+        entity_id: script.welcome_home
   mode: single
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
@@ -1043,28 +1021,10 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: light.turn_off
+  - service: script.turn_on
     data: {}
     target:
-      entity_id: light.all_lights
-  - service: media_player.turn_off
-    data: {}
-    target:
-      entity_id:
-      - media_player.kef
-      - media_player.media_center
-      - media_player.music_assistant_bureau_sonos
-      - media_player.music_assistant_chambre_marilou_muse_luxe
-      - media_player.music_assistant_salon_kef
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id:
-      - switch.microphones
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.coffeemaker
+      entity_id: script.leave_home
   - if:
     - condition: state
       entity_id: binary_sensor.all_doors

@@ -2,50 +2,66 @@ leave_home:
   alias: Quitter la maison
   mode: single
   sequence:
-  - parallel:
-    - service: light.turn_off
-      target:
-        entity_id:
-        - light.all_lights
-      data: {}
-    - service: media_player.turn_off
-      target:
-        entity_id:
-        - media_player.kef
-        - media_player.philips_android_tv
-      data: {}
-    - service: switch.turn_off
-      target:
-        entity_id: switch.coffeemaker
-      data: {}
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.all_lights
+    data: {}
+  - service: media_player.turn_off
+    target:
+      entity_id:
+      - media_player.all_media_players
+    data: {}
+  - service: switch.turn_off
+    target:
+      entity_id: switch.coffeemaker
+    data: {}
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.microphones
   icon: mdi:home-export-outline
 welcome_home:
   alias: Bienvenue a la maison
   mode: single
   sequence:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.microphones
   - service: hue.activate_scene
     target:
       entity_id: scene.entree_entree_100
-    data: {}
-  - delay: 3
+    data:
+      transition: 1
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
   - service: hue.activate_scene
     target:
       entity_id: scene.salon_salon_100
-    data: {}
-  - delay: 3
+    data:
+      transition: 1
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
   - service: hue.activate_scene
     target:
       entity_id: scene.cuisine_cuisine_100
-    data: {}
+    data:
+      transition: 1
   icon: mdi:home-import-outline
 reset_lights_day_area:
   alias: Réinitialisation Lumières Coin Jour
   mode: restart
   sequence:
-  - alias: activate hue scenes on salon, entrée and cuisine
-    service: hue.activate_scene
+  - service: hue.activate_scene
     data:
-      transition: 2
+      transition: 1
     target:
       entity_id:
       - scene.salon_salon_100
@@ -56,16 +72,15 @@ turn_off_media_center:
   alias: Turn Off Media center
   mode: single
   sequence:
-  - parallel:
-    - service: media_player.turn_off
-      target:
-        entity_id:
-        - media_player.kef
-      data: {}
-    - service: remote.turn_off
-      data: {}
-      target:
-        entity_id: remote.jl_s_tv
+  - service: media_player.turn_off
+    target:
+      entity_id:
+      - media_player.kef
+    data: {}
+  - service: remote.turn_off
+    data: {}
+    target:
+      entity_id: remote.jl_s_tv
   icon: mdi:remote-tv-off
 turn_on_media_center:
   alias: Turn On Media center
@@ -140,34 +155,31 @@ lights_set_tv:
   alias: Réglage lumières lors que la TV joue un média
   mode: restart
   sequence:
-  - alias: turn off cuisine entree
-    service: light.turn_off
+  - service: light.turn_off
     target:
       entity_id:
       - light.cuisine
       - light.entree
     data:
-      transition: 2
-  - alias: activate hue scene on salon
-    service: hue.activate_scene
+      transition: 1
+  - service: hue.activate_scene
     target:
       entity_id: scene.salon_salon_tv_playing
     data:
-      transition: 2
+      transition: 1
   icon: mdi:play
 lights_set_tv_paused:
   alias: Réglage lumières lors que la TV est en pause
   mode: restart
   sequence:
-  - alias: activate hue scene on salon entee and cuisine
-    service: hue.activate_scene
+  - service: hue.activate_scene
     target:
       entity_id:
       - scene.cuisine_cuisine_tv_paused
       - scene.entree_entree_tv_paused
       - scene.salon_salon_tv_paused
     data:
-      transition: 2
+      transition: 1
   icon: mdi:pause
 wake_up:
   alias: Réveil Lumineux - Lumières
