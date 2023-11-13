@@ -389,25 +389,10 @@
   trigger:
   - platform: time
     at: input_datetime.end_of_irrigation
-  condition:
-  - condition: state
-    entity_id: input_boolean.irrigation_automation
-    state: 'on'
-  - condition: state
-    entity_id: switch.irrigation_switch
-    state: 'on'
-  action:
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.irrigation_switch
-  mode: single
-- id: '1688131649930'
-  alias: Irrigation intelligente - Arrêter arrosage au démarrage si expiré
-  description: ''
-  trigger:
+    id: end
   - platform: homeassistant
     event: start
+    id: restart
   condition:
   - condition: state
     entity_id: input_boolean.irrigation_automation
@@ -415,14 +400,29 @@
   - condition: state
     entity_id: switch.irrigation_switch
     state: 'on'
-  - condition: template
-    value_template: '{{ as_timestamp(now()) > state_attr(''input_datetime.end_of_irrigation'',
-      ''timestamp'') }}'
   action:
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.irrigation_switch
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - end
+      sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.irrigation_switch
+    - conditions:
+      - condition: trigger
+        id:
+        - restart
+      sequence:
+      - condition: template
+        value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.end_of_irrigation'',
+          ''timestamp'') }}'
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.irrigation_switch
   mode: single
 - id: '1688134691132'
   alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
@@ -888,7 +888,7 @@
   mode: queued
   max: 10
 - id: '1688364991944'
-  alias: Bureau - Contrôler lumière par VR
+  alias: Bureau - Meetings VR
   description: ''
   trigger:
   - platform: state
@@ -917,6 +917,10 @@
       entity_id:
       - light.bureau
       - light.hue_play_bars
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.hal_use_wake_word
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -932,10 +936,14 @@
     data: {}
     target:
       entity_id: scene.office_previous_light_state
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.hal_use_wake_word
   mode: queued
   max: 10
 - id: '1688368387161'
-  alias: Bureau - Contrôler lumière par Webcam
+  alias: Bureau - Meetings
   description: ''
   trigger:
   - platform: state
@@ -977,6 +985,10 @@
     target:
       entity_id:
       - light.hue_play_bars
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.hal_use_wake_word
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -992,6 +1004,10 @@
     data: {}
     target:
       entity_id: scene.office_previous_light_state
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.hal_use_wake_word
   mode: single
 - id: '1688371319271'
   alias: Surveillance de la maison - Éteindre assistants quand maison vide
@@ -2603,7 +2619,8 @@
         data: {}
         target:
           entity_id: switch.talkie_use_wake_word
-  mode: single
+  mode: queued
+  max: 50
 - id: '1699131143084'
   alias: 'Music Assistant - Éteindre MASS lorsque KEF éteint '
   description: ''
@@ -2649,4 +2666,76 @@
       source: Opt
     target:
       entity_id: media_player.kef
+  mode: single
+- id: '1699868538036'
+  alias: Routine du sommeil Marilou - Arrêter
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+    id: restart
+  - platform: time
+    at: input_datetime.marilou_bedtime_routine_end
+    id: end
+  condition:
+  - condition: state
+    entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+    state: playing
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - end
+      sequence:
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+    - conditions:
+      - condition: trigger
+        id:
+        - restart
+      sequence:
+      - condition: template
+        value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.marilou_bedtime_routine_end'',
+          ''timestamp'')}}'
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  mode: single
+- id: '1699869463559'
+  alias: Routine du sommeil Marilou - Button Hue
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - event.chambre_bebe_switch_button_4
+    attribute: event_type
+    to: repeat
+  condition: []
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id: chambre_bebe
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+        state: playing
+      sequence:
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+      - service: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() }}'
+        target:
+          entity_id: input_datetime.marilou_bedtime_routine_end
+    default:
+    - service: script.start_marilou_bedtime_routine
+      data: {}
   mode: single

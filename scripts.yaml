@@ -233,3 +233,35 @@ room_cleaning_first_floor:
         - input_boolean.vacuum_zone_living_room
   mode: single
   icon: mdi:vacuum
+start_marilou_bedtime_routine:
+  alias: Démarrer la routine du sommeil de Marilou
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.35
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  - service: media_player.play_media
+    data:
+      media_content_id: library://playlist/6
+      media_content_type: playlist
+      enqueue: replace
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  - service: media_player.shuffle_set
+    data:
+      shuffle: true
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{ now() + timedelta (minutes = states(''input_number.marilou_bedtime_routine_duration'')
+        | int) }}'
+    target:
+      entity_id: input_datetime.marilou_bedtime_routine_end
+  mode: single
+  icon: mdi:bell-sleep
