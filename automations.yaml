@@ -306,6 +306,9 @@
   - condition: state
     entity_id: input_boolean.automation_welcome_home
     state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - wait_for_trigger:
     - platform: state
@@ -378,29 +381,24 @@
   - condition: state
     entity_id: switch.irrigation_switch
     state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - end
-      sequence:
-      - service: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.irrigation_switch
-    - conditions:
+  - condition: or
+    conditions:
+    - condition: trigger
+      id:
+      - end
+    - condition: and
+      conditions:
       - condition: trigger
         id:
         - restart
-      sequence:
       - condition: template
         value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.end_of_irrigation'',
           ''timestamp'') }}'
-      - service: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.irrigation_switch
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.irrigation_switch
   mode: single
 - id: '1688134691132'
   alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
@@ -581,6 +579,9 @@
     entity_id: sun.sun
     state: below_horizon
     enabled: true
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - choose:
     - conditions:
@@ -630,6 +631,9 @@
     entity_id: sun.sun
     state: below_horizon
     enabled: true
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - choose:
     - conditions:
@@ -987,26 +991,6 @@
     target:
       entity_id: switch.hal_use_wake_word
   mode: single
-- id: '1688371319271'
-  alias: Surveillance de la maison - Éteindre assistants quand maison vide
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    from: 'on'
-    to: 'off'
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  action:
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id:
-      - switch.microphones
-  mode: single
 - id: '1688371620889'
   alias: Surveillance de la maison - Éteindre appareils lors du départ
   description: ''
@@ -1020,6 +1004,9 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - service: script.turn_on
     data: {}
@@ -1351,6 +1338,9 @@
   - condition: state
     entity_id: input_boolean.automation_clean_house
     state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - if:
     - condition: state
@@ -1418,6 +1408,9 @@
     - condition: state
       entity_id: vacuum.neuneu
       state: cleaning
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - service: vacuum.start
     data: {}
@@ -2314,6 +2307,9 @@
   - condition: state
     entity_id: input_boolean.automation_clean_house
     state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - service: vacuum.start
     data: {}
@@ -2518,29 +2514,28 @@
   - condition: state
     entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
     state: playing
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - end
-      sequence:
-      - service: media_player.turn_off
-        data: {}
-        target:
-          entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
-    - conditions:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
       - condition: trigger
         id:
         - restart
-      sequence:
       - condition: template
         value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.marilou_bedtime_routine_end'',
           ''timestamp'')}}'
-      - service: media_player.turn_off
-        data: {}
-        target:
-          entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+    - condition: trigger
+      id:
+      - end
+  action:
+  - service: media_player.turn_off
+    data: {}
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id: chambre_bebe
   mode: single
 - id: '1699869463559'
   alias: Routine du sommeil Marilou - Button Hue

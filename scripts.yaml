@@ -126,6 +126,9 @@ turn_on_media_center:
 pulse_2d_led_matrix:
   alias: Pulse - Allumer
   sequence:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   - if:
     - condition: state
       entity_id: light.2d_matrix
@@ -254,7 +257,7 @@ start_marilou_bedtime_routine:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
   - service: media_player.volume_set
     data:
-      volume_level: 0.35
+      volume_level: 0.3
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
   - service: media_player.play_media
