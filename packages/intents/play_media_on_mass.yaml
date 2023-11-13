@@ -14,6 +14,20 @@ intent_script:
     speech:
       text: "Lecture lancée"
 
+  PlayWhateverOnArea:
+    action:
+      - service: conversation.process
+        data:
+          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          text: "{{query}}"
+        response_variable: response_from_ai
+      - service: mass.play_media
+        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+        target:
+          area_id: "{{area}}"
+    speech:
+      text: "Lecture lancée"
+
   PlayWhateverEn:
     action:
       - service: conversation.process
