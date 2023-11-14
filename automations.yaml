@@ -869,6 +869,9 @@
     from: 'off'
   condition:
   - condition: state
+    entity_id: input_boolean.automation_meetings
+    state: 'on'
+  - condition: state
     entity_id: person.jenova70
     state: home
   - condition: state
@@ -927,6 +930,9 @@
       minutes: 0
       seconds: 5
   condition:
+  - condition: state
+    entity_id: input_boolean.automation_meetings
+    state: 'on'
   - condition: state
     entity_id: person.jenova70
     state: home
@@ -1859,6 +1865,9 @@
     entity_id: calendar.nabucasa_calendar_social_time
     id: social_time
   condition:
+  - condition: state
+    entity_id: input_boolean.automation_meetings
+    state: 'on'
   - condition: state
     entity_id: binary_sensor.jean_loics_laptop_active
     state: 'on'
