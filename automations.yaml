@@ -381,19 +381,8 @@
   - condition: state
     entity_id: switch.irrigation_switch
     state: 'on'
-  - condition: or
-    conditions:
-    - condition: trigger
-      id:
-      - end
-    - condition: and
-      conditions:
-      - condition: trigger
-        id:
-        - restart
-      - condition: template
-        value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.end_of_irrigation'',
-          ''timestamp'') }}'
+  - condition: time
+    after: input_datetime.end_of_irrigation
   action:
   - service: switch.turn_off
     data: {}
@@ -2514,19 +2503,8 @@
   - condition: state
     entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
     state: playing
-  - condition: or
-    conditions:
-    - condition: and
-      conditions:
-      - condition: trigger
-        id:
-        - restart
-      - condition: template
-        value_template: '{{ as_timestamp(now()) >= state_attr(''input_datetime.marilou_bedtime_routine_end'',
-          ''timestamp'')}}'
-    - condition: trigger
-      id:
-      - end
+  - condition: time
+    after: input_datetime.marilou_bedtime_routine_end
   action:
   - service: media_player.turn_off
     data: {}
