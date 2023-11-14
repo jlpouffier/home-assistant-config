@@ -293,56 +293,6 @@
       message: Cycle de lavage terminé !
       tag: washing_mashine_over
   mode: single
-- id: '1688124199640'
-  alias: Bienvenue - Allumer lumières et ouvrir volets quand porte ouverte
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    to: 'on'
-    from: 'off'
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_welcome_home
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  action:
-  - wait_for_trigger:
-    - platform: state
-      entity_id:
-      - binary_sensor.capteur_ouverture_porte_entree
-      to: 'on'
-    timeout:
-      hours: 0
-      minutes: 15
-      seconds: 0
-      milliseconds: 0
-    continue_on_timeout: false
-  - if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: cover.living_room_cover
-        attribute: current_position
-        state: '100'
-    then:
-    - service: cover.open_cover
-      data: {}
-      target:
-        entity_id: cover.living_room_cover
-  - if:
-    - condition: state
-      entity_id: sun.sun
-      state: below_horizon
-    then:
-    - service: script.turn_on
-      data: {}
-      target:
-        entity_id: script.welcome_home
-  mode: single
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
   description: ''
@@ -1071,6 +1021,38 @@
     target:
       entity_id:
       - switch.microphones
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.capteur_ouverture_porte_entree
+      to: 'on'
+    timeout:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+    continue_on_timeout: false
+  - if:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: cover.living_room_cover
+        attribute: current_position
+        state: '100'
+    then:
+    - service: cover.open_cover
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  - if:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+    then:
+    - service: script.turn_on
+      data: {}
+      target:
+        entity_id: script.welcome_home
   mode: single
 - id: '1688374658190'
   alias: "Surveillance de la maison - \U0001F514 Notifier machine à café allumée depuis
