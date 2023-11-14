@@ -1571,53 +1571,17 @@
       - entity_id: sensor.tesla_charge_limit
         new_state: '100'
   mode: single
-- id: '1688927639584'
-  alias: 'Vélo - Contrôler charge en fonction du tarif électrique '
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - schedule.heures_pleines
-    from: 'on'
-    to: 'off'
-    id: off_peak
-  - platform: state
-    entity_id:
-    - schedule.heures_pleines
-    from: 'off'
-    to: 'on'
-    id: peak
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_smart_bike_charging
-    state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - peak
-      sequence:
-      - service: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.prise_velo
-    - conditions:
-      - condition: trigger
-        id:
-        - off_peak
-      sequence:
-      - service: switch.turn_on
-        data: {}
-        target:
-          entity_id: switch.prise_velo
-  mode: single
 - id: '1688927728999'
-  alias: Vélo - Réinitialisation prise démarrage Home Assistant
+  alias: 'Vélo - Contrôler charge en fonction du tarif électrique '
   description: ''
   trigger:
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - schedule.heures_pleines
+    from:
+    to:
   condition:
   - condition: state
     entity_id: input_boolean.automation_smart_bike_charging
