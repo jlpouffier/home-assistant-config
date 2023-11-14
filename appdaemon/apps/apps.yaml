@@ -2,7 +2,6 @@ notifier:
   module: notifier
   class: notifier
   log: notifier
-  constrain_input_boolean: input_boolean.automation_notification_center
   home_occupancy_sensor_id: binary_sensor.home_occupied
   proximity_threshold: 1000
   persons:
