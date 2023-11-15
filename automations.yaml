@@ -353,6 +353,9 @@
       seconds: 0
   condition:
   - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
+  - condition: state
     entity_id: device_tracker.tesla_device_tracker
     state: home
   - condition: state
@@ -1434,7 +1437,10 @@
     entity_id:
     - vacuum.neuneu
     to: cleaning
-  condition: []
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_notify_cleaning
+    state: 'on'
   action:
   - event: NOTIFIER
     event_data:
@@ -1480,7 +1486,10 @@
     from:
     - paused
     - cleaning
-  condition: []
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_notify_cleaning
+    state: 'on'
   action:
   - event: NOTIFIER
     event_data:
@@ -1549,6 +1558,9 @@
     from: 'on'
     to: 'off'
   condition:
+  - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
   - condition: state
     entity_id: device_tracker.tesla_device_tracker
     state: home
@@ -2136,6 +2148,9 @@
     at: '20:00:00'
   condition:
   - condition: state
+    entity_id: input_boolean.automation_notify_chaban_delmas_bridge
+    state: 'on'
+  - condition: state
     entity_id: binary_sensor.workday_tomorrow
     state: 'on'
   - condition: template
@@ -2202,7 +2217,10 @@
     - unavailable
     - unknown
     - no_error
-  condition: []
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_notify_cleaning
+    state: 'on'
   action:
   - if:
     - condition: numeric_state
@@ -2276,6 +2294,9 @@
     to: P
   condition:
   - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
+  - condition: state
     entity_id: device_tracker.tesla_device_tracker
     state: home
   - condition: state
@@ -2312,7 +2333,10 @@
     entity_id:
     - input_boolean.jl_connected_to_tesla
     to: 'on'
-  condition: []
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
   action:
   - service: person.add_device_tracker
     data:
@@ -2337,7 +2361,10 @@
       hours: 0
       minutes: 0
       seconds: 0
-  condition: []
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
   action:
   - service: notify.mobile_app_jean_loics_iphone
     data:
