@@ -716,42 +716,63 @@
   - platform: state
     entity_id:
     - sensor.heating_target_temperature
-    not_to:
-    - unavailable
-    - unknown
   - platform: homeassistant
     event: start
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_heat_home
-    state: 'on'
-  action:
-  - service: climate.set_temperature
-    target:
-      entity_id: climate.netatmo
-    data:
-      temperature: '{{trigger.to_state.state}}'
-  mode: single
-- id: '1688333506527'
-  alias: Chauffage intelligent - Vérifier cohérence
-  description: ''
-  trigger:
   - platform: state
     entity_id:
     - climate.netatmo
     attribute: temperature
+    id: temperature_changed
+  - platform: state
+    entity_id:
+    - input_boolean.heating_manual_boost
+  - platform: time
+    at: input_datetime.heating_manual_boost_end
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
     state: 'on'
-  - condition: template
-    value_template: '{{states("sensor.heating_target_temperature") | float != state_attr("climate.netatmo","temperature")}}'
   action:
-  - service: climate.set_temperature
-    target:
-      entity_id: climate.netatmo
-    data:
-      temperature: '{{states(''sensor.heating_target_temperature'')}}'
+  - choose:
+    - conditions:
+      - condition: time
+        after: input_datetime.heating_manual_boost_end
+      - condition: state
+        entity_id: input_boolean.heating_manual_boost
+        state: 'on'
+      sequence:
+      - service: input_boolean.turn_off
+        data: {}
+        target:
+          entity_id: input_boolean.heating_manual_boost
+    - conditions:
+      - condition: trigger
+        id:
+        - temperature_changed
+      - alias: When manually triggered by a user
+        condition: template
+        value_template: '{{ trigger.to_state.context.user_id != None }}'
+      sequence:
+      - service: input_boolean.turn_on
+        data: {}
+        target:
+          entity_id: input_boolean.heating_manual_boost
+    - conditions:
+      - condition: template
+        value_template: '{{states("sensor.heating_target_temperature") | float !=
+          state_attr("climate.netatmo","temperature")}}'
+        alias: When it's not coherent with the current schedule
+      - condition: state
+        entity_id: input_boolean.heating_manual_boost
+        state: 'off'
+      sequence:
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.netatmo
+        data:
+          temperature: '{{states("sensor.heating_target_temperature")}}
+
+            '
   mode: queued
   max: 10
 - id: '1688364991944'
@@ -2473,4 +2494,33 @@
     default:
     - service: script.start_marilou_bedtime_routine
       data: {}
+  mode: single
+- id: '1700129731183'
+  alias: Chauffage intelligent - Changer Fin du Boost Manuel
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_number.heating_manual_boost_duration
+  - platform: state
+    entity_id:
+    - input_boolean.heating_manual_boost
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.heating_manual_boost
+    state: 'on'
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{ now() + timedelta (minutes = states(''input_number.heating_manual_boost_duration'')
+        |
+
+        int) }}
+
+        '
+    target:
+      entity_id: input_datetime.heating_manual_boost_end
   mode: single
