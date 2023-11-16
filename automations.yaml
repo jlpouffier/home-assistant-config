@@ -661,22 +661,17 @@
       minutes: 1
       seconds: 0
     to: 'on'
-    id: open
   - platform: state
     entity_id:
     - binary_sensor.all_openings
     to: 'off'
-    id: closed
   - platform: state
     entity_id:
     - binary_sensor.home_occupied
-    to: 'on'
-    id: present
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    to: 'off'
-    id: absent
+    to:
+    from:
+  - platform: homeassistant
+    event: start
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -684,8 +679,9 @@
   action:
   - choose:
     - conditions:
-      - condition: trigger
-        id: open
+      - condition: state
+        entity_id: binary_sensor.all_openings
+        state: 'on'
       sequence:
       - service: input_select.select_option
         data:
@@ -693,80 +689,25 @@
         target:
           entity_id: input_select.heating_schedule_selector
     - conditions:
-      - condition: trigger
-        id: present
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'off'
       sequence:
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: binary_sensor.all_openings
-            state: 'on'
-            for:
-              hours: 0
-              minutes: 1
-              seconds: 0
-          sequence:
-          - service: input_select.select_option
-            data:
-              option: Frost Guard
-            target:
-              entity_id: input_select.heating_schedule_selector
-        default:
-        - service: input_select.select_option
-          data:
-            option: Présent
-          target:
-            entity_id: input_select.heating_schedule_selector
+      - service: input_select.select_option
+        data:
+          option: Absent
+        target:
+          entity_id: input_select.heating_schedule_selector
     - conditions:
-      - condition: trigger
-        id: absent
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
       sequence:
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: binary_sensor.all_openings
-            state: 'on'
-            for:
-              hours: 0
-              minutes: 1
-              seconds: 0
-          sequence:
-          - service: input_select.select_option
-            data:
-              option: Frost Guard
-            target:
-              entity_id: input_select.heating_schedule_selector
-        default:
-        - service: input_select.select_option
-          data:
-            option: Absent
-          target:
-            entity_id: input_select.heating_schedule_selector
-    - conditions:
-      - condition: trigger
-        id: closed
-      sequence:
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: binary_sensor.home_occupied
-            state: 'on'
-          sequence:
-          - service: input_select.select_option
-            data:
-              option: Présent
-            target:
-              entity_id: input_select.heating_schedule_selector
-        - conditions:
-          - condition: state
-            entity_id: binary_sensor.home_occupied
-            state: 'off'
-          sequence:
-          - service: input_select.select_option
-            data:
-              option: Absent
-            target:
-              entity_id: input_select.heating_schedule_selector
+      - service: input_select.select_option
+        data:
+          option: Présent
+        target:
+          entity_id: input_select.heating_schedule_selector
   mode: single
 - id: '1688333375509'
   alias: Chauffage intelligent - Changer Température
@@ -778,6 +719,8 @@
     not_to:
     - unavailable
     - unknown
+  - platform: homeassistant
+    event: start
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
