@@ -42,3 +42,17 @@ intent_script:
             - media_player.music_assistant_salon_kef
     speech:
       text: "Playing now"
+
+  PlayWhateverOnAreaEn:
+    action:
+      - service: conversation.process
+        data:
+          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          text: "{{query}}"
+        response_variable: response_from_ai
+      - service: mass.play_media
+        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+        target:
+          area_id: "{{area}}"
+    speech:
+      text: "Playing now"

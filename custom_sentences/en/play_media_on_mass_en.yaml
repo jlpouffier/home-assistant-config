@@ -4,6 +4,10 @@ intents:
     data:
       - sentences:
           - (Play|Listen) {query}
+  PlayWhateverOnAreaEn:
+    data:
+      - sentences:
+          - (Play|Listen) {query} [in] <area>
 
 lists:
   query:
