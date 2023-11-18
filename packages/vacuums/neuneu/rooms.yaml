@@ -27,10 +27,10 @@ homeassistant:
       vacuum_segment: 5
       vacuum_floor: 0
     input_boolean.vacuum_zone_celar:
-      vacuum_segment: 2
+      vacuum_segment: 1
       vacuum_floor: 0
     input_boolean.vacuum_zone_bathroom:
-      vacuum_segment: 1
+      vacuum_segment: 2
       vacuum_floor: 0
 
 template:
