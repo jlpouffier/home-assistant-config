@@ -257,7 +257,7 @@ start_marilou_bedtime_routine:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
   - service: media_player.volume_set
     data:
-      volume_level: 0.3
+      volume_level: 0.35
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
   - service: media_player.play_media
