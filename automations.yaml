@@ -459,45 +459,43 @@
       entity_id: switch.coffeemaker
   mode: single
 - id: '1688301259694'
-  alias: TV intelligente - Allumer KEF quand TV allumée
+  alias: TV intelligente - Allumer / Éteindre KEF
   description: ''
   trigger:
   - platform: state
     entity_id:
     - binary_sensor.is_tv_on
     to: 'on'
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  - condition: state
-    entity_id: script.turn_on_media_center
-    state: 'off'
-  action:
-  - service: script.turn_on_media_center
-    data: {}
-  mode: single
-- id: '1688301320320'
-  alias: 'TV intelligente - Éteindre KEF quand TV éteinte '
-  description: ''
-  trigger:
+    id: 'on'
   - platform: state
     entity_id:
     - binary_sensor.is_tv_on
     to: 'off'
+    id: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
-  - condition: state
-    entity_id: script.turn_off_media_center
-    state: 'off'
-  - condition: state
-    entity_id: media_player.kef
-    state: 'on'
   action:
-  - service: script.turn_off_media_center
-    data: {}
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - 'on'
+      sequence:
+      - service: media_player.turn_on
+        data: {}
+        target:
+          entity_id: media_player.kef
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
+      sequence:
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id: media_player.kef
   mode: single
 - id: '1688303443168'
   alias: 'TV intelligente - Controller Lumières '
@@ -531,22 +529,22 @@
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["off", "paused", "idle", "on", "buffering"]
-          and to_state == "playing" and to_app in supported_apps}}'
+        value_template: "{{\n  from_state in [\"off\", \"paused\", \"idle\", \"on\",
+          \"buffering\"] and \n  to_state == \"playing\" and \n  to_app in supported_apps\n}}"
       sequence:
       - service: script.lights_set_tv
         data: {}
     - conditions:
       - condition: template
-        value_template: '{{from_state == "playing" and to_state in ["paused", "buffering"]
-          and to_app in supported_apps}}'
+        value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
+          \"buffering\"] and \n  to_app in supported_apps\n}}"
       sequence:
       - service: script.lights_set_tv_paused
         data: {}
     - conditions:
       - condition: template
-        value_template: '{{from_state in ["playing", "paused", "buffering"] and to_state
-          in ["off", "on", "idle"] and from_app in supported_apps}}'
+        value_template: "{{\n  from_state in [\"playing\", \"paused\", \"buffering\"]
+          and \n  to_state in [\"off\", \"on\", \"idle\"] and \n  from_app in supported_apps\n}}"
       sequence:
       - service: script.reset_lights_day_area
         data: {}
