@@ -1,6 +1,6 @@
 leave_home:
   alias: Quitter la maison
-  mode: single
+  mode: queued
   sequence:
   - service: light.turn_off
     target:
@@ -23,7 +23,7 @@ leave_home:
   icon: mdi:home-export-outline
 welcome_home:
   alias: Bienvenue a la maison
-  mode: single
+  mode: queued
   sequence:
   - service: switch.turn_on
     data: {}
@@ -104,20 +104,6 @@ turn_on_media_center:
         entity_id: media_player.kef
       data:
         source: Opt
-  - repeat:
-      while:
-      - condition: state
-        entity_id: media_player.jl_s_tv
-        state: unavailable
-      sequence:
-      - service: wake_on_lan.send_magic_packet
-        data:
-          mac: 68:07:0A:4A:F5:AB
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 3
-          milliseconds: 0
   - service: remote.turn_on
     data: {}
     target:
