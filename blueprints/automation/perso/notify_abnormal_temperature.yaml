@@ -1,0 +1,115 @@
+blueprint:
+  name: Chauffage intelligent - 🛎️ Notifier Température anormale
+  domain: automation
+  author: JLo
+  input:
+    room_name:
+      name: Room name
+      description: Room name you want to monitor
+      selector:
+        text:
+    room_temperature:
+      name: Room temperature
+      description: Room temperature you want to monitor
+      selector:
+        entity:
+          filter:
+            device_class: temperature
+    room_temperature_trend:
+      name: Room temperature trend
+      description: Room temperature trend you want to monitor
+      selector:
+        entity:
+    room_opening:
+      name: Room opening
+      description: Room opening trend you want to monitor
+      selector:
+        entity:
+          filter:
+            device_class:
+              - opening
+              - door
+              - window
+
+trigger:
+  - platform: state
+    entity_id: !input room_temperature
+  - platform: state
+    entity_id: !input room_temperature_trend
+  - platform: state
+    entity_id: !input room_opening
+  - platform: state
+    entity_id: sensor.floirac_temperature
+  - platform: state
+    entity_id: input_number.interior_temperature_max_acceptable
+  - platform: state
+    entity_id: input_number.interior_temperature_min_acceptable
+  - platform: state
+    entity_id: input_boolean.automation_heat_home
+  - platform: homeassistant
+    event: start
+    id: restart
+condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: "on"
+action:
+  - variables:
+      room_name_variable: !input room_name
+  - variables:
+      tag_value: |
+        {{room_name_variable|lower|replace(" ", "_")}}_trend_temperature
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input room_temperature_trend
+            state: cooling
+          - condition: state
+            entity_id: !input room_opening
+            state: "on"
+          - condition: numeric_state
+            entity_id: !input room_temperature
+            below: input_number.interior_temperature_min_acceptable
+          - condition: numeric_state
+            entity_id: sensor.floirac_temperature
+            below: input_number.interior_temperature_min_acceptable
+        sequence:
+          - event: NOTIFIER
+            event_data:
+              action: send_to_present
+              title: ❄️ Perte de température
+              message: >-
+                {{room_name_variable}} refroidit car des fenêtres sont ouvertes il qu'il fait
+                froid dehors
+              tag: |
+                {{tag_value}}
+              until:
+                - entity_id: !input room_opening
+                  new_state: "off"
+      - conditions:
+          - condition: state
+            entity_id: !input room_temperature_trend
+            state: heating
+          - condition: state
+            entity_id: !input room_opening
+            state: "on"
+          - condition: numeric_state
+            entity_id: !input room_temperature
+            above: input_number.interior_temperature_max_acceptable
+          - condition: numeric_state
+            entity_id: sensor.floirac_temperature
+            above: input_number.interior_temperature_max_acceptable
+        sequence:
+          - event: NOTIFIER
+            event_data:
+              action: send_to_present
+              title: 🌡️ Gain de température
+              message: >-
+                {{room_name_variable}} chauffe car des fenêtres sont ouvertes il qu'il fait
+                chaud dehors
+              tag: |
+                {{tag_value}}
+              until:
+                - entity_id: !input room_opening
+                  new_state: "off"
+mode: single

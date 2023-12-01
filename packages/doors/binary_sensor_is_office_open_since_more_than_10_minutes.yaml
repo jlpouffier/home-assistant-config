@@ -1,0 +1,8 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_office_open_since_more_than_10_minutes
+        unique_id: is_office_open_since_more_than_10_minutes
+        state: "{{states('binary_sensor.capteur_ouverture_fenetre_bureau')}}"
+        delay_on: "0:10:00"

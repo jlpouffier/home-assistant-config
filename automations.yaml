@@ -225,7 +225,7 @@
       - condition: trigger
         id: 'on'
       sequence:
-      - service: script.reset_lights_day_area
+      - service: script.welcome_home
         data: {}
     - conditions:
       - condition: trigger
@@ -487,6 +487,11 @@
         data: {}
         target:
           entity_id: media_player.kef
+      - service: media_player.select_source
+        data:
+          source: Opt
+        target:
+          entity_id: media_player.kef
     - conditions:
       - condition: trigger
         id:
@@ -656,18 +661,6 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.all_openings
-    for:
-      hours: 0
-      minutes: 2
-      seconds: 0
-    to: 'on'
-  - platform: state
-    entity_id:
-    - binary_sensor.all_openings
-    to: 'off'
-  - platform: state
-    entity_id:
     - binary_sensor.home_occupied
     to:
     from:
@@ -676,6 +669,9 @@
   - platform: state
     entity_id:
     - input_boolean.automation_heat_home
+  - platform: state
+    entity_id:
+    - binary_sensor.is_home_open_since_more_than_one_minute
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -684,7 +680,7 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: binary_sensor.all_openings
+        entity_id: binary_sensor.is_home_open_since_more_than_one_minute
         state: 'on'
       sequence:
       - service: input_select.select_option
@@ -975,7 +971,8 @@
           new_state: 'on'
         - entity_id: binary_sensor.all_windows
           new_state: 'off'
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688373819985'
   alias: Surveillance de la maison - Allumer appareils lors de l'arrivée
   description: ''
@@ -1027,7 +1024,8 @@
       data: {}
       target:
         entity_id: script.welcome_home
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688374658190'
   alias: "Surveillance de la maison - \U0001F514 Notifier machine à café allumée depuis
     longtemps "
@@ -2047,6 +2045,18 @@
     - media_player.media_center
     from: playing
     id: not_playing
+  - platform: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    from: 'off'
+    to: 'on'
+    id: on_ps5
+  - platform: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    from: 'on'
+    to: 'off'
+    id: off_ps5
   condition:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
@@ -2057,6 +2067,7 @@
       - condition: trigger
         id:
         - playing
+        - on_ps5
       sequence:
       - service: switch.turn_off
         data: {}
@@ -2066,6 +2077,7 @@
       - condition: trigger
         id:
         - not_playing
+        - off_ps5
       sequence:
       - service: switch.turn_on
         data: {}
@@ -2538,3 +2550,76 @@
           target:
             entity_id: cover.living_room_cover
   mode: single
+- id: '1701249166858'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Salon"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature.yaml
+    input:
+      room_name: Salon
+      room_temperature: sensor.capteur_thp_salon_temperature
+      room_temperature_trend: sensor.livingroom_temperature_trend
+      room_opening: binary_sensor.is_living_room_open_since_more_than_10_minutes
+- id: '1701249721944'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature.yaml
+    input:
+      room_name: Chambre
+      room_temperature: sensor.capteur_thp_chambre_temperature
+      room_temperature_trend: sensor.bedroom_temperature_trend
+      room_opening: binary_sensor.is_bedroom_open_since_more_than_10_minutes
+- id: '1701249811714'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre
+    Marilou"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature.yaml
+    input:
+      room_name: Chambre Marilou
+      room_temperature: sensor.capteur_thp_chambre_bebe_temperature
+      room_temperature_trend: sensor.kid_bedroom_temperature_trend
+      room_opening: binary_sensor.is_kid_bedroom_open_since_more_than_10_minutes
+- id: '1701249857712'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Bureau"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature.yaml
+    input:
+      room_name: Bureau
+      room_temperature: sensor.capteur_thp_bureau_temperature
+      room_temperature_trend: sensor.office_temperature_trend
+      room_opening: binary_sensor.is_office_open_since_more_than_10_minutes
+- id: '1701341635863'
+  alias: Restaurer États Prises
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.prise_bureau
+  - platform: state
+    entity_id:
+    - switch.prise_frigo
+  - platform: state
+    entity_id:
+    - switch.prise_lave_vaisselle
+  - platform: state
+    entity_id:
+    - switch.prise_machine_a_laver
+  - platform: state
+    entity_id:
+    - switch.prise_media_center
+  - platform: state
+    entity_id:
+    - switch.prise_server
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.always_on_switches
+  mode: queued
+  max: 100
