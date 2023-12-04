@@ -15,11 +15,6 @@ blueprint:
         entity:
           filter:
             device_class: temperature
-    room_temperature_trend:
-      name: Room temperature trend
-      description: Room temperature trend you want to monitor
-      selector:
-        entity:
     room_opening:
       name: Room opening
       description: Room opening trend you want to monitor
@@ -30,16 +25,20 @@ blueprint:
               - opening
               - door
               - window
+    outside_temperature:
+      name: Outside temperature
+      selector:
+        entity:
+          filter:
+            device_class: temperature
 
 trigger:
   - platform: state
     entity_id: !input room_temperature
   - platform: state
-    entity_id: !input room_temperature_trend
-  - platform: state
     entity_id: !input room_opening
   - platform: state
-    entity_id: sensor.floirac_temperature
+    entity_id: !input outside_temperature
   - platform: state
     entity_id: input_number.interior_temperature_max_acceptable
   - platform: state
@@ -62,17 +61,17 @@ action:
   - choose:
       - conditions:
           - condition: state
-            entity_id: !input room_temperature_trend
-            state: cooling
-          - condition: state
             entity_id: !input room_opening
             state: "on"
           - condition: numeric_state
             entity_id: !input room_temperature
             below: input_number.interior_temperature_min_acceptable
           - condition: numeric_state
-            entity_id: sensor.floirac_temperature
+            entity_id: !input outside_temperature
             below: input_number.interior_temperature_min_acceptable
+          - condition: numeric_state
+            entity_id: !input outside_temperature
+            below: !input room_temperature
         sequence:
           - event: NOTIFIER
             event_data:
@@ -88,17 +87,17 @@ action:
                   new_state: "off"
       - conditions:
           - condition: state
-            entity_id: !input room_temperature_trend
-            state: heating
-          - condition: state
             entity_id: !input room_opening
             state: "on"
           - condition: numeric_state
             entity_id: !input room_temperature
             above: input_number.interior_temperature_max_acceptable
           - condition: numeric_state
-            entity_id: sensor.floirac_temperature
+            entity_id: !input outside_temperature
             above: input_number.interior_temperature_max_acceptable
+          - condition: numeric_state
+            entity_id: !input outside_temperature
+            above: !input room_temperature
         sequence:
           - event: NOTIFIER
             event_data:

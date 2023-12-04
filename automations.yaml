@@ -2558,8 +2558,8 @@
     input:
       room_name: Salon
       room_temperature: sensor.capteur_thp_salon_temperature
-      room_temperature_trend: sensor.livingroom_temperature_trend
       room_opening: binary_sensor.is_living_room_open_since_more_than_10_minutes
+      outside_temperature: sensor.floirac_temperature
 - id: '1701249721944'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre"
   description: ''
@@ -2568,8 +2568,8 @@
     input:
       room_name: Chambre
       room_temperature: sensor.capteur_thp_chambre_temperature
-      room_temperature_trend: sensor.bedroom_temperature_trend
       room_opening: binary_sensor.is_bedroom_open_since_more_than_10_minutes
+      outside_temperature: sensor.floirac_temperature
 - id: '1701249811714'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre
     Marilou"
@@ -2579,8 +2579,8 @@
     input:
       room_name: Chambre Marilou
       room_temperature: sensor.capteur_thp_chambre_bebe_temperature
-      room_temperature_trend: sensor.kid_bedroom_temperature_trend
       room_opening: binary_sensor.is_kid_bedroom_open_since_more_than_10_minutes
+      outside_temperature: sensor.floirac_temperature
 - id: '1701249857712'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Bureau"
   description: ''
@@ -2589,8 +2589,8 @@
     input:
       room_name: Bureau
       room_temperature: sensor.capteur_thp_bureau_temperature
-      room_temperature_trend: sensor.office_temperature_trend
       room_opening: binary_sensor.is_office_open_since_more_than_10_minutes
+      outside_temperature: sensor.floirac_temperature
 - id: '1701341635863'
   alias: Restaurer États Prises
   description: ''
