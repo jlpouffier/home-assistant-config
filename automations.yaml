@@ -1576,23 +1576,18 @@
   mode: parallel
   max: 10
 - id: '1689530050696'
-  alias: Pulse - Arrêter Pulse
+  alias: Pulse - Arrêter
   description: ''
   trigger:
   - platform: time
     at: input_datetime.pulse_end_time
   condition: []
   action:
-  - if:
-    - condition: state
-      entity_id: light.2d_matrix
-      state: 'on'
-    then:
-    - service: light.turn_off
-      data: {}
-      target:
-        entity_id:
-        - light.2d_matrix
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id:
+      - light.2d_matrix
   mode: single
 - id: '1690362715725'
   alias: Pluie - Incrémenter Pluie Journalière
@@ -1741,32 +1736,6 @@
     data: {}
     target:
       entity_id: scene.office_webcam_previous_light_state
-  mode: single
-- id: '1691506629807'
-  alias: Pulse - Arrêt plannifié
-  description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.pulse_end_schedule
-  condition: []
-  action:
-  - service: input_boolean.turn_off
-    data: {}
-    target:
-      entity_id: input_boolean.automation_matrix_2d
-  mode: single
-- id: '1691507032458'
-  alias: Pulse - Démarrage plannifié
-  description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.pulse_start_schedule
-  condition: []
-  action:
-  - service: input_boolean.turn_on
-    data: {}
-    target:
-      entity_id: input_boolean.automation_matrix_2d
   mode: single
 - id: '1691566363432'
   alias: "Simulation de présence - \U0001F6CE️ Notifier Éloignement domicile sans
