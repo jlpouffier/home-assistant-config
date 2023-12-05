@@ -1,0 +1,61 @@
+homeassistant:
+  customize:
+    sensor.capteur_ouverture_fenetre_bureau_battery:
+      type: CR1632
+    sensor.capteur_ouverture_fenetre_cellier_battery:
+      type: CR1632
+    sensor.capteur_ouverture_fenetre_chambre_battery:
+      type: CR1632
+    sensor.capteur_ouverture_fenetre_chambre_bebe_battery:
+      type: CR1632
+    sensor.capteur_ouverture_fenetre_cuisine_battery:
+      type: CR1632
+    sensor.capteur_ouverture_fenetre_salle_de_bain_battery:
+      type: CR1632
+    sensor.capteur_ouverture_porte_fenetre_salon_battery:
+      type: CR1632
+    sensor.capteur_ouverture_porte_entree_battery:
+      type: CR1632
+
+    sensor.bureau_switch_battery:
+      type: CR2032
+    sensor.exterieur_switch_battery:
+      type: CR2032
+    sensor.chambre_bebe_switch_battery:
+      type: CR2032
+
+    sensor.chambre_switch_battery:
+      type: CR2450
+    sensor.couloir_switch_etage_battery:
+      type: CR2450
+    sensor.cuisine_switch_battery:
+      type: CR2450
+    sensor.entree_switch_battery:
+      type: CR2450
+    sensor.salon_couloir_switch_battery:
+      type: CR2450
+    sensor.salon_switch_battery:
+      type: CR2450
+
+    sensor.capteur_mouvement_boite_aux_lettres_battery:
+      type: CR2450
+    sensor.capteur_mouvement_litiere_batterie:
+      type: CR2450
+
+    sensor.capteur_thp_bureau_battery:
+      type: CR2032
+    sensor.capteur_thp_chambre_battery:
+      type: CR2032
+    sensor.capteur_thp_chambre_bebe_battery:
+      type: CR2032
+    sensor.capteur_thp_salon_battery:
+      type: CR2032
+
+    sensor.irrigation_battery:
+      type: AA
+
+    sensor.zipulses_gaz_batterie:
+      type: CR2450
+
+    sensor.talkie_battery:
+      type: Lipo
