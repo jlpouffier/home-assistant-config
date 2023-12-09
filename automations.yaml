@@ -1415,6 +1415,10 @@
     - binary_sensor.tesla_plugged_in
     from: 'on'
     to: 'off'
+  - platform: state
+    entity_id:
+    - sensor.tesla_state
+    from: charging
   condition:
   - condition: state
     entity_id: input_boolean.automation_tesla
@@ -2592,3 +2596,19 @@
       entity_id: switch.always_on_switches
   mode: queued
   max: 100
+- id: '1702164245946'
+  alias: Routine du sommeil Marilou - Changer heure fin de routine
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_number.marilou_bedtime_routine_duration
+  condition: []
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      datetime: '{{ now() + timedelta (minutes = states(''input_number.marilou_bedtime_routine_duration'')
+        | int) }}'
+    target:
+      entity_id: input_datetime.marilou_bedtime_routine_end
+  mode: single
