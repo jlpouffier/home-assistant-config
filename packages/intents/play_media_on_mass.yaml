@@ -9,8 +9,7 @@ intent_script:
       - service: mass.play_media
         data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
         target:
-          entity_id:
-            - media_player.music_assistant_salon_kef
+          area_id: "{{area}}"
     speech:
       text: "Lecture lancée"
 
@@ -38,8 +37,7 @@ intent_script:
       - service: mass.play_media
         data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
         target:
-          entity_id:
-            - media_player.music_assistant_salon_kef
+          area_id: "{{area}}"
     speech:
       text: "Playing now"
 

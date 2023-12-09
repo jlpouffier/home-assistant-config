@@ -4,6 +4,9 @@ intents:
     data:
       - sentences:
           - (Play|Listen) {query}
+        requires_context:
+          area:
+            slot: true
   PlayWhateverOnAreaEn:
     data:
       - sentences:
