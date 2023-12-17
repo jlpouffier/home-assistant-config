@@ -406,12 +406,6 @@
         = 5)}}'
     target:
       entity_id: input_datetime.wake_up_time_lights
-  - service: input_datetime.set_datetime
-    data:
-      datetime: '{{today_at(states(''input_datetime.wake_up_time'')) - timedelta(minutes
-        = 30)}}'
-    target:
-      entity_id: input_datetime.wake_up_time_coffee_maker
   mode: single
 - id: '1688139621896'
   alias: Réveil intelligent - Allumer lumières
@@ -432,31 +426,6 @@
   action:
   - service: script.wake_up
     data: {}
-  mode: single
-- id: '1688139704214'
-  alias: Réveil intelligent - Allumer machine à café
-  description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.wake_up_time_coffee_maker
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.workday_today
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.wake_up_automation_control_coffee_maker
-    state: 'on'
-  action:
-  - service: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.coffeemaker
   mode: single
 - id: '1688301259694'
   alias: TV intelligente - Allumer / Éteindre KEF
@@ -1026,39 +995,6 @@
         entity_id: script.welcome_home
   mode: queued
   max: 10
-- id: '1688374658190'
-  alias: "Surveillance de la maison - \U0001F514 Notifier machine à café allumée depuis
-    longtemps "
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - switch.coffeemaker
-    to: 'on'
-    for:
-      hours: 1
-      minutes: 30
-      seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_present
-      title: ☕️ Machine a café allumé
-      message: La machine a café est allumée depuis longtemps
-      callback:
-      - title: Éteindre la machine a café
-        event: turn_off_coffee_maker
-        icon: stop.circle.fill
-      click_url: /lovelace/connected-devices
-      tag: coffee_maker_on_since_too_long
-      until:
-      - entity_id: switch.coffeemaker
-        new_state: 'off'
-  mode: single
 - id: '1688375110167'
   alias: "Surveillance de la maison - \U0001F514 Notifier pluie et portes/fenêtres
     ouvertes "

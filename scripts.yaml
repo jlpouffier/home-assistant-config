@@ -13,10 +13,6 @@ leave_home:
       - media_player.all_media_players
     data: {}
   - service: switch.turn_off
-    target:
-      entity_id: switch.coffeemaker
-    data: {}
-  - service: switch.turn_off
     data: {}
     target:
       entity_id: switch.microphones
