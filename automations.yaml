@@ -2552,3 +2552,85 @@
     target:
       entity_id: input_datetime.marilou_bedtime_routine_end
   mode: single
+- id: '1702834566659'
+  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir lors de
+    l’arrivée à la maison"
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_take_out_trash
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: input_boolean.poubelle_noire_a_sortir
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: "\U0001F5D1 Poubelle Noire"
+        message: N'oublie pas de sortir la poubelle noire
+        tag: black_trash
+        callback:
+        - title: Poubelle Noire Sortie
+          event: black_trash_taken_out
+          icon: checkmark.circle
+        until:
+        - entity_id: input_boolean.poubelle_noire_a_sortir
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: input_boolean.poubelle_verte_a_sortir
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_present
+        title: ♻️ Poubelle Verte
+        message: N'oublie pas de sortir la poubelle verte
+        tag: green_trash
+        callback:
+        - title: Poubelle Verte Sortie
+          event: green_trash_taken_out
+          icon: checkmark.circle
+        until:
+        - entity_id: input_boolean.poubelle_verte_a_sortir
+          new_state: 'off'
+  mode: single
+- id: '1702835659800'
+  alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle verte sortie depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: green_trash_taken_out
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.poubelle_verte_a_sortir
+    data: {}
+  mode: single
+- id: '1702835708226'
+  alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle noire sortie depuis notification"
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: black_trash_taken_out
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.poubelle_noire_a_sortir
+    data: {}
+  mode: single
