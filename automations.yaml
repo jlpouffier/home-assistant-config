@@ -2603,6 +2603,10 @@
   - platform: state
     entity_id:
     - input_number.marilou_bedtime_routine_duration
+  - platform: state
+    entity_id:
+    - media_player.music_assistant_chambre_marilou_muse_luxe
+    to: playing
   condition: []
   action:
   - service: input_datetime.set_datetime

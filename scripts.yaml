@@ -269,11 +269,5 @@ start_marilou_bedtime_routine:
       shuffle: true
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
-  - service: input_datetime.set_datetime
-    data:
-      datetime: '{{ now() + timedelta (minutes = states(''input_number.marilou_bedtime_routine_duration'')
-        | int) }}'
-    target:
-      entity_id: input_datetime.marilou_bedtime_routine_end
   mode: single
   icon: mdi:bell-sleep
