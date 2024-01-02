@@ -614,7 +614,8 @@
       - service: switch.turn_on
         data: {}
         target:
-          entity_id: switch.volet_salon_bouton_up_fallback
+          entity_id:
+          - switch.living_room_cover_volet_salon_bouton_up_fallback
     - conditions:
       - condition: trigger
         id: closed
@@ -622,7 +623,8 @@
       - service: switch.turn_on
         data: {}
         target:
-          entity_id: switch.volet_salon_bouton_down_fallback
+          entity_id:
+          - switch.living_room_cover_volet_salon_bouton_down_fallback
   mode: single
 - id: '1688333037837'
   alias: Chauffage intelligent - Choisir Planning
@@ -2541,8 +2543,8 @@
     - input_number.marilou_bedtime_routine_duration
   - platform: state
     entity_id:
-    - media_player.music_assistant_chambre_marilou_muse_luxe
-    to: playing
+    - script.start_marilou_bedtime_routine
+    to: 'on'
   condition: []
   action:
   - service: input_datetime.set_datetime
@@ -2646,6 +2648,12 @@
   - condition: state
     entity_id: input_boolean.automation_meetings
     state: 'on'
+  - condition: state
+    entity_id: binary_sensor.jean_loics_laptop_camera_in_use
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.quest_in_use
+    state: 'off'
   action:
   - choose:
     - conditions:
@@ -2653,17 +2661,14 @@
         entity_id: person.jenova70
         state: home
       - condition: state
+        entity_id: binary_sensor.jean_loics_laptop_active
+        state: 'on'
+      - condition: state
         entity_id: device_tracker.jean_loics_laptop
         state: home
       - condition: state
         entity_id: binary_sensor.capteur_presence_bureau_occupancy
         state: 'on'
-      - condition: state
-        entity_id: binary_sensor.quest_in_use
-        state: 'off'
-      - condition: state
-        entity_id: binary_sensor.jean_loics_laptop_camera_in_use
-        state: 'off'
       - condition: state
         entity_id: binary_sensor.workday_today
         state: 'on'
@@ -2676,16 +2681,82 @@
       - condition: template
         value_template: '{{ range(1, 4) | random == 1 }}'
       sequence:
-      - service: button.press
-        target:
-          entity_id:
-          - button.standing_desk_move_desk_to_position_1
-        data: {}
+      - repeat:
+          sequence:
+          - service: button.press
+            target:
+              entity_id:
+              - button.standing_desk_move_desk_to_position_1
+            data: {}
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'on'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 3
+              milliseconds: 0
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'off'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 20
+              milliseconds: 0
+          - if:
+            - condition: template
+              value_template: '{{ repeat.index >= 5 }}'
+            then:
+            - stop: ''
+          while:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: sensor.standing_desk_state
+              state: standing_position
     default:
-    - service: button.press
-      target:
-        entity_id: button.standing_desk_move_desk_to_position_2
-      data: {}
+    - repeat:
+        sequence:
+        - service: button.press
+          target:
+            entity_id: button.standing_desk_move_desk_to_position_2
+          data: {}
+        - wait_for_trigger:
+          - platform: state
+            entity_id:
+            - binary_sensor.standing_desk_moving
+            to: 'on'
+          timeout:
+            hours: 0
+            minutes: 0
+            seconds: 3
+            milliseconds: 0
+        - wait_for_trigger:
+          - platform: state
+            entity_id:
+            - binary_sensor.standing_desk_moving
+            to: 'off'
+          timeout:
+            hours: 0
+            minutes: 0
+            seconds: 20
+            milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{ repeat.index >= 5 }}'
+          then:
+          - stop: ''
+        while:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: sensor.standing_desk_state
+            state: seated_position
   mode: single
 - id: '1703178925143'
   alias: 'Box Chambre - Réduire Luminosité '
