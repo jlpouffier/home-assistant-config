@@ -85,6 +85,11 @@ action:
               until:
                 - entity_id: !input room_opening
                   new_state: "off"
+          - delay:
+              hours: 0
+              minutes: 10
+              seconds: 0
+              milliseconds: 0
       - conditions:
           - condition: state
             entity_id: !input room_opening
@@ -111,4 +116,9 @@ action:
               until:
                 - entity_id: !input room_opening
                   new_state: "off"
+          - delay:
+              hours: 0
+              minutes: 10
+              seconds: 0
+              milliseconds: 0
 mode: single
