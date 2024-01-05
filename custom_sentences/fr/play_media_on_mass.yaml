@@ -10,8 +10,8 @@ intents:
   PlayWhateverOnArea:
     data:
       - sentences:
-          - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query} <dans> <area>
-          - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query} sur les enceintes <de> <area>
+          - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query} <dans> [<le>]{area}
+          - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query} sur les enceintes <de> [<le>]{area}
 
 lists:
   query:

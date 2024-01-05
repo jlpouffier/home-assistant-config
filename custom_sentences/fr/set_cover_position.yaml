@@ -3,9 +3,9 @@ intents:
   SetCoverPosition:
     data:
       - sentences:
-          - "<regle> <name> [à|a|sur] {position}[ pourcent|%| %]"
-          - "<ouvre> <name> [à|a|sur] {position}[ pourcent|%| %]"
-          - "<ferme> <name> [à|a|sur] {position}[ pourcent|%| %]"
+          - "<regle> [<le>]{name} [à|a|sur] {position}[ pourcent|%| %]"
+          - "<ouvre> [<le>]{name} [à|a|sur] {position}[ pourcent|%| %]"
+          - "<ferme> [<le>]{name} [à|a|sur] {position}[ pourcent|%| %]"
         requires_context:
           domain: cover
 lists:

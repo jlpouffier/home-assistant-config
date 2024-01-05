@@ -10,9 +10,9 @@ intents:
   SelectedRoomCleaning:
     data:
       - sentences:
-          - "nettoie [le |la |les |l']{room}"
-          - "lance (NeuNeu|[l']aspirateur) dans [le |la |les |l']{room}"
-          - "<allume> (NeuNeu|[l']aspirateur) dans [le |la |les |l']{room}"
+          - "nettoie [<le>]{room}"
+          - "lance (NeuNeu|[l']aspirateur) [dans] [<le>]{room}"
+          - "<allume> (NeuNeu|[l']aspirateur) [dans] [<le>]{room}"
   StopCleaning:
     data:
       - sentences:
