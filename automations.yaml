@@ -299,9 +299,9 @@
   trigger:
   - platform: state
     entity_id:
-    - switch.irrigation_switch
-    to: 'on'
-    from: 'off'
+    - valve.irrigation
+    to: open
+    from: closed
   condition:
   - condition: state
     entity_id: input_boolean.irrigation_automation
@@ -332,15 +332,15 @@
     entity_id: input_boolean.irrigation_automation
     state: 'on'
   - condition: state
-    entity_id: switch.irrigation_switch
-    state: 'on'
+    entity_id: valve.irrigation
+    state: open
   - condition: time
     after: input_datetime.end_of_irrigation
   action:
-  - service: switch.turn_off
-    data: {}
+  - service: valve.close_valve
     target:
-      entity_id: switch.irrigation_switch
+      entity_id: valve.irrigation
+    data: {}
   mode: single
 - id: '1688134691132'
   alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
@@ -1138,6 +1138,10 @@
     entity_id:
     - sensor.low_batteries
     to:
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_system
