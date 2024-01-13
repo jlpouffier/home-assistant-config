@@ -1,6 +1,6 @@
 rest:
   resource: https://raw.githubusercontent.com/Tasshack/dreame-vacuum/master/custom_components/dreame_vacuum/translations/fr.json
-  scan_interval: 60
+  scan_interval: 3600
   sensor:
     - name: neuneu_error_translations
       unique_id: neuneu_error_translations

@@ -1,6 +1,6 @@
 rest:
   resource: https://opendata.bordeaux-metropole.fr/api/records/1.0/search/?dataset=previsions_pont_chaban&q=&rows=100&facet=bateau
-  scan_interval: 60
+  scan_interval: 3600
   binary_sensor:
     - name: is_chaban_delmas_bridge_open
       unique_id: is_chaban_delmas_bridge_open
