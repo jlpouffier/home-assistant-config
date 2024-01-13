@@ -1317,6 +1317,7 @@
       message: 'Surface nettoyée: {{states(''sensor.neuneu_cleaned_area'')}}m²'
       click_url: /lovelace/vacuums
       tag: neuneu
+      image_url: /api/camera_proxy/camera.neuneu_map
   mode: single
 - id: '1688557628209'
   alias: "Nettoyage Intelligent - \U0001F4F2 Démarrer NeuNeu depuis notification"
@@ -1834,6 +1835,7 @@
         title: "\U0001F9F9 NeuNeu"
         message: 'Erreur inconnu (code: {{states(''sensor.neuneu_error'')}})'
         click_url: /lovelace/vacuums
+        image_url: /api/camera_proxy/camera.neuneu_map
         tag: neuneu_error
         until:
         - entity_id: sensor.neuneu_error
@@ -1987,7 +1989,8 @@
       - service: switch.turn_off
         data: {}
         target:
-          entity_id: switch.talkie_use_wake_word
+          entity_id:
+          - switch.talkie_use_wake_word
     - conditions:
       - condition: trigger
         id:
@@ -1997,7 +2000,8 @@
       - service: switch.turn_on
         data: {}
         target:
-          entity_id: switch.talkie_use_wake_word
+          entity_id:
+          - switch.talkie_use_wake_word
   mode: queued
   max: 50
 - id: '1699131143084'
