@@ -248,13 +248,13 @@ start_marilou_bedtime_routine:
     data: {}
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
-  - service: media_player.play_media
-    data:
-      media_content_id: library://playlist/6
-      media_content_type: playlist
-      enqueue: replace
+  - service: mass.play_media
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+    data:
+      media_id: library://playlist/6
+      enqueue: replace
+      radio_mode: true
   - service: media_player.volume_set
     data:
       volume_level: 0.35
