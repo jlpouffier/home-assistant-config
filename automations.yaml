@@ -1949,7 +1949,7 @@
       - device_tracker.tesla_device_tracker
   mode: single
 - id: '1698182832051'
-  alias: TV intelligente - Activer / Désactiver Talkie
+  alias: TV intelligente - Activer / Désactiver Micros
   description: ''
   trigger:
   - platform: state
@@ -1990,7 +1990,7 @@
         data: {}
         target:
           entity_id:
-          - switch.talkie_use_wake_word
+          - switch.wyoming_satellite_salon_microphone
     - conditions:
       - condition: trigger
         id:
@@ -2001,7 +2001,7 @@
         data: {}
         target:
           entity_id:
-          - switch.talkie_use_wake_word
+          - switch.wyoming_satellite_salon_microphone
   mode: queued
   max: 50
 - id: '1699131143084'
