@@ -233,7 +233,25 @@
       sequence:
       - service: script.leave_home
         data: {}
-  mode: queued
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - event.entree_switch_button_4
+          attribute: event_type
+          to: repeat
+          id: 'off'
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 20
+          milliseconds: 0
+        continue_on_timeout: false
+      - service: vacuum.start
+        metadata: {}
+        data: {}
+        target:
+          entity_id: vacuum.neuneu
+  mode: parallel
   max: 10
 - id: '1688117431729'
   alias: Boutons Hue - Bouton Salon Couloir
@@ -270,8 +288,7 @@
           entity_id:
           - light.lumieres_rez_de_chaussee
           - light.exterieur
-  mode: queued
-  max: 10
+  mode: single
 - id: '1688118075093'
   alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
   description: ''
@@ -341,7 +358,8 @@
     target:
       entity_id: valve.irrigation
     data: {}
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688134691132'
   alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
   description: ''
@@ -679,7 +697,8 @@
           option: Présent
         target:
           entity_id: input_select.heating_schedule_selector
-  mode: single
+  mode: queued
+  max: 10
 - id: '1688333375509'
   alias: Chauffage intelligent - Changer Température
   description: ''
@@ -813,7 +832,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.jean_loics_laptop_camera_in_use
+    - binary_sensor.jean_loics_macbook_pro_camera_in_use
     to: 'on'
     from: 'off'
     for:
@@ -831,7 +850,7 @@
     state: 'on'
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
   - condition: state
-    entity_id: device_tracker.jean_loics_laptop
+    entity_id: device_tracker.jean_loics_macbook_pro
     state: home
   action:
   - service: scene.create
@@ -860,7 +879,7 @@
   - wait_for_trigger:
     - platform: state
       entity_id:
-      - binary_sensor.jean_loics_laptop_camera_in_use
+      - binary_sensor.jean_loics_macbook_pro_camera_in_use
       to: 'off'
       from: 'on'
     continue_on_timeout: false
@@ -1583,21 +1602,15 @@
     data:
       agent_id: homeassistant
       text: '{{trigger.slots.command1}}'
+    response_variable: response_1
   - service: conversation.process
     data:
       agent_id: homeassistant
       text: '{{trigger.slots.command2}}'
+    response_variable: response_2
+  - set_conversation_response: '{{response_1.response.speech.plain.speech}} et {{response_2.response.speech.plain.speech}}'
   mode: parallel
   max: 100
-- id: '1690881654351'
-  alias: "Assist - \U0001F4E3 Cast Dall-E Image"
-  description: ''
-  use_blueprint:
-    path: perso/cast_dall_e.yaml
-    input:
-      assist_command: Affiche sur la télé une image (de |d'){prompt}
-      open_ai_config_entry: fcd62e0ff1d58319b899d424dd59a3ec
-      media_player: media_player.tv_cast
 - id: '1691413517615'
   alias: Bureau - Notification Lumineuse Meetings
   description: ''
@@ -1627,7 +1640,7 @@
     entity_id: input_boolean.automation_meetings
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.jean_loics_laptop_active
+    entity_id: binary_sensor.jean_loics_macbook_pro_active
     state: 'on'
   - condition: state
     entity_id: person.jenova70
@@ -1990,7 +2003,7 @@
         data: {}
         target:
           entity_id:
-          - switch.wyoming_satellite_salon_microphone
+          - switch.talkie_use_wake_word
     - conditions:
       - condition: trigger
         id:
@@ -2001,7 +2014,7 @@
         data: {}
         target:
           entity_id:
-          - switch.wyoming_satellite_salon_microphone
+          - switch.talkie_use_wake_word
   mode: queued
   max: 50
 - id: '1699131143084'
@@ -2657,7 +2670,7 @@
     entity_id: input_boolean.automation_meetings
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.jean_loics_laptop_camera_in_use
+    entity_id: binary_sensor.jean_loics_macbook_pro_camera_in_use
     state: 'off'
   - condition: state
     entity_id: binary_sensor.quest_in_use
@@ -2669,10 +2682,10 @@
         entity_id: person.jenova70
         state: home
       - condition: state
-        entity_id: binary_sensor.jean_loics_laptop_active
+        entity_id: binary_sensor.jean_loics_macbook_pro_active
         state: 'on'
       - condition: state
-        entity_id: device_tracker.jean_loics_laptop
+        entity_id: device_tracker.jean_loics_macbook_pro
         state: home
       - condition: state
         entity_id: binary_sensor.capteur_presence_bureau_occupancy
@@ -2767,15 +2780,15 @@
             state: seated_position
   mode: single
 - id: '1703178925143'
-  alias: 'Box Chambre - Réduire Luminosité '
+  alias: 'Box Marilou - Réduire Luminosité '
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - light.chambre
+    - light.chambre_bebe
   - platform: state
     entity_id:
-    - light.casita_chambre_lcd_backlight
+    - light.casita_chambre_marilou_lcd_backlight
     attribute: brightness
   - platform: homeassistant
     event: start
@@ -2784,20 +2797,182 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: light.chambre
+        entity_id: light.chambre_bebe
         state: 'on'
       sequence:
       - service: light.turn_on
         target:
           entity_id:
-          - light.casita_chambre_lcd_backlight
+          - light.casita_chambre_marilou_lcd_backlight
         data:
           brightness_pct: 100
     default:
     - service: light.turn_on
       target:
         entity_id:
-        - light.casita_chambre_lcd_backlight
+        - light.casita_chambre_marilou_lcd_backlight
       data:
         brightness_pct: 20
+  mode: queued
+  max: 10
+- id: '1706048671788'
+  alias: Routine du sommeil Marilou - Suivant
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - event.chambre_bebe_switch_button_2
+    attribute: event_type
+    to: short_release
+    id: up
+  - platform: state
+    entity_id:
+    - event.chambre_bebe_switch_button_3
+    attribute: event_type
+    to: short_release
+    id: down
+  condition:
+  - condition: state
+    entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+    state: playing
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - event.chambre_bebe_switch_button_3
+          attribute: event_type
+          to: short_release
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+        continue_on_timeout: false
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - wait_for_trigger:
+        - platform: state
+          entity_id:
+          - event.chambre_bebe_switch_button_2
+          attribute: event_type
+          to: short_release
+        timeout:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+        continue_on_timeout: false
+  - service: media_player.media_next_track
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+  mode: queued
+  max: 10
+- id: '1707214155021'
+  alias: "Bureau - \U0001F4E3 Contrôle du Standing Desk par la voix"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - (Lève|Lever|Monte|Monter) [le] bureau
+    - (Mais|Mets|Mettre|Passe|Passer) [le] bureau [en] (mode|position) debout
+    id: up
+  - platform: conversation
+    command:
+    - (descend|descends|descendre|Baisse|Baisser) [le] bureau
+    - (Mais|Mets|Mettre|Passe|Passer) [le] bureau [en] (mode|position) (assis|assise)
+    id: down
+  condition:
+  - condition: state
+    entity_id: binary_sensor.standing_desk_moving
+    state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up
+      sequence:
+      - service: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.standing_desk_move_desk_to_position_1
+      - set_conversation_response: Bureau en montée
+    - conditions:
+      - condition: trigger
+        id:
+        - down
+      sequence:
+      - service: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - button.standing_desk_move_desk_to_position_2
+      - set_conversation_response: Bureau en descente
+  mode: single
+- id: '1707299287220'
+  alias: "Aspirateur - \U0001F4E3 Démarrer par commande vocale"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - (nettoie|nettoyer) [le] rez-de-chaussée
+    - (nettoie|nettoyer) [le] bas
+    - (allume|allumer|démarre|démarrer|lance|lancer) (neuneu|[l']aspirateur)
+    - (démarre|démarrer|lance|lancer) [le] nettoyage
+  condition: []
+  action:
+  - service: vacuum.start
+    metadata: {}
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
+  - set_conversation_response: Nettoyage lancé
+  mode: single
+- id: '1707299615275'
+  alias: "Aspirateur - \U0001F4E3 Arrêter par commande vocale"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - (stoppe|stopper|stop|arrête|arrêter) [le] nettoyage
+    - (stoppe|stopper|stop|arrête|arrêter) (neuneu|[l']aspirateur)
+  condition: []
+  action:
+  - service: vacuum.return_to_base
+    metadata: {}
+    data: {}
+    target:
+      entity_id: vacuum.neuneu
+  - set_conversation_response: Nettoyage arreté
+  mode: single
+- id: '1707327950754'
+  alias: "\U0001F4E3 Get room temperatures"
+  description: ''
+  trigger:
+  - platform: conversation
+    command: What is the temperature in my home
+  condition:
+  - condition: zone
+    entity_id: person.jenova70
+    zone: zone.home
+    alias: Confirm Paulus is home
+  action:
+  - alias: Set conversation response
+    set_conversation_response: 'The temperature in the living room is {{states("sensor.capteur_thp_salon_temperature")}}°
+      and
+
+      the temperature in the bedroom is {{states("sensor.capteur_thp_bureau_temperature")}}°'
   mode: single

@@ -1,12 +1,4 @@
 intent_script:
-  CleanFirstFloor:
-    action:
-      service: vacuum.start
-      target:
-        entity_id: vacuum.neuneu
-    speech:
-      text: "Nettoyage lancé"
-
   SelectedRoomCleaning:
     action:
       - service: input_boolean.turn_on
@@ -15,11 +7,3 @@ intent_script:
       - service: script.room_cleaning_first_floor
     speech:
       text: "Nettoyage lancé"
-
-  StopCleaning:
-    action:
-      service: vacuum.return_to_base
-      target:
-        entity_id: vacuum.neuneu
-    speech:
-      text: "Nettoyage arreté"

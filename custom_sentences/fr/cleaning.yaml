@@ -1,23 +1,10 @@
 language: "fr"
 intents:
-  CleanFirstFloor:
-    data:
-      - sentences:
-          - "nettoie [le] rez-de-chaussée"
-          - "nettoie [le] bas"
-          - "lance (NeuNeu|[l']aspirateur)"
-          - "<allume> (NeuNeu|[l']aspirateur)"
   SelectedRoomCleaning:
     data:
       - sentences:
-          - "nettoie [<le>]{room}"
-          - "lance (NeuNeu|[l']aspirateur) [dans] [<le>]{room}"
-          - "<allume> (NeuNeu|[l']aspirateur) [dans] [<le>]{room}"
-  StopCleaning:
-    data:
-      - sentences:
-          - "<eteins> le nettoyage"
-          - "<eteins> (NeuNeu|[l']aspirateur)"
+          - "(nettoie|nettoyer) [<le>]{room}"
+          - "(allume|allumer|démarre|démarrer|lance|lancer) (neuneu|[l']aspirateur) [dans] [<le>]{room}"
 
 lists:
   room:
