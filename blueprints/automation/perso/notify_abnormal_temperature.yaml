@@ -122,3 +122,4 @@ action:
               seconds: 0
               milliseconds: 0
 mode: single
+max_exceeded: silent
