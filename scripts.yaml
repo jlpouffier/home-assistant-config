@@ -25,31 +25,99 @@ welcome_home:
     data: {}
     target:
       entity_id: switch.microphones
-  - service: hue.activate_scene
-    target:
-      entity_id: scene.entree_entree_100
+  - service: light.turn_on
+    metadata: {}
     data:
-      transition: 1
+      transition: 2
+      brightness_pct: 100
+    target:
+      entity_id: light.entree_suspension
   - delay:
       hours: 0
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: hue.activate_scene
-    target:
-      entity_id: scene.salon_salon_100
+  - service: light.turn_on
+    metadata: {}
     data:
-      transition: 1
+      transition: 2
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.salon_buffet_gauche
   - delay:
       hours: 0
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: hue.activate_scene
-    target:
-      entity_id: scene.cuisine_cuisine_100
+  - service: light.turn_on
+    metadata: {}
     data:
-      transition: 1
+      transition: 2
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.salon_buffet_droit
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_on
+    metadata: {}
+    data:
+      transition: 2
+      brightness_pct: 100
+    target:
+      entity_id: light.salon_suspension_tv
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_on
+    metadata: {}
+    data:
+      transition: 2
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.salon_suspension_table
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_on
+    target:
+      entity_id: light.salon_trepied
+    data:
+      transition: 2
+      brightness_pct: 100
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.cuisine_comptoir
+    data:
+      transition: 2
+      brightness_pct: 100
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.cuisine_suspension
+    data:
+      transition: 2
+      brightness_pct: 100
   icon: mdi:home-import-outline
 reset_lights_day_area:
   alias: Réinitialisation Lumières Coin Jour
@@ -252,7 +320,7 @@ start_marilou_bedtime_routine:
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
     data:
-      media_id: library://playlist/6
+      media_id: library://playlist/11
       enqueue: replace
       radio_mode: true
   - service: media_player.volume_set
