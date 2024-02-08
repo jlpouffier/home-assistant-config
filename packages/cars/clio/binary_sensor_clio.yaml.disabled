@@ -1,0 +1,55 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: clio
+        unique_id: clio
+        state: "{{ this.attributes.connexion in ['jl', 'valentine'] | default(false)}}"
+        picture: "/local/clio.jpg"
+        attributes:
+          connexion: >
+            {% set jl_connected = namespace(value = false) -%}
+            {% set valentine_connected = namespace(value = false) -%}
+            {% set bt_mac_address = '04:4E:AF:AD:CA:B4' -%}
+            {% for device in state_attr('sensor.pixel_6_bluetooth_connection' , 'connected_paired_devices') -%}
+              {% if bt_mac_address in device -%}
+                {% set jl_connected.value = true -%}
+              {% endif -%}
+            {% endfor -%}
+            {% for device in state_attr('sensor.pixel_4a_bluetooth_connection' , 'connected_paired_devices') -%}
+              {% if bt_mac_address in device -%}
+                {% set valentine_connected.value = true -%}
+              {% endif -%}
+            {% endfor -%}
+            {% if jl_connected.value -%}
+              jl
+            {% elif valentine_connected.value -%}
+              valentine
+            {% else -%}
+              -
+            {% endif %}
+          latitude: >
+            {% if this.attributes.connexion == 'jl' -%}
+              {{state_attr('person.jenova70', 'latitude')}}
+            {% elif this.attributes.connexion == 'valentine' -%}
+              {{state_attr('person.valentine', 'latitude')}}
+            {% else -%}
+              {{ this.attributes.latitude | default(state_attr('zone.home', 'latitude')) }}
+            {% endif -%}
+          longitude: >
+            {% if this.attributes.connexion == 'jl' -%}
+              {{state_attr('person.jenova70', 'longitude')}}
+            {% elif this.attributes.connexion == 'valentine' -%}
+              {{state_attr('person.valentine', 'longitude')}}
+            {% else -%}
+              {{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}
+            {% endif -%}
+          gps_accuracy: >
+            {% if this.attributes.connexion == 'jl' -%}
+              {{state_attr('person.jenova70', 'gps_accuracy')}}
+            {% elif this.attributes.connexion == 'valentine' -%}
+              {{state_attr('person.valentine', 'gps_accuracy')}}
+            {% else -%}
+              {{ this.attributes.gps_accuracy | default(0) }}
+            {% endif -%}
+          direction_url: "https://www.google.com/maps/dir/?api=1&destination={{ this.attributes.latitude | default(state_attr('zone.home', 'latitude'))}}%2C{{ this.attributes.longitude | default(state_attr('zone.home', 'longitude')) }}"
