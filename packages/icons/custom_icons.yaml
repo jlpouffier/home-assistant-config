@@ -1,0 +1,4 @@
+frontend:
+  extra_module_url:
+    - /local/community/custom-brand-icons/custom-brand-icons.js
+    - /hacsfiles/hass-hue-icons/hass-hue-icons.js
