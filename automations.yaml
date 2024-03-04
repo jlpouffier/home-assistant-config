@@ -2929,8 +2929,6 @@
     command:
     - (nettoie|nettoyer) [le] rez-de-chaussée
     - (nettoie|nettoyer) [le] bas
-    - (allume|allumer|démarre|démarrer|lance|lancer) (neuneu|[l']aspirateur)
-    - (démarre|démarrer|lance|lancer) [le] nettoyage
   condition: []
   action:
   - service: vacuum.start
@@ -2939,23 +2937,6 @@
     target:
       entity_id: vacuum.neuneu
   - set_conversation_response: Nettoyage lancé
-  mode: single
-- id: '1707299615275'
-  alias: "Aspirateur - \U0001F4E3 Arrêter par commande vocale"
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - (stoppe|stopper|stop|arrête|arrêter) [le] nettoyage
-    - (stoppe|stopper|stop|arrête|arrêter) (neuneu|[l']aspirateur)
-  condition: []
-  action:
-  - service: vacuum.return_to_base
-    metadata: {}
-    data: {}
-    target:
-      entity_id: vacuum.neuneu
-  - set_conversation_response: Nettoyage arreté
   mode: single
 - id: '1707424061311'
   alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
@@ -2998,48 +2979,6 @@
       message: "La batterie du Quest est actuellement à {{states(\"sensor.quest_battery_level\")}}%.
         Pense à le recharger. \n"
       tag: charge_quest
-  mode: single
-- id: '1707905923894'
-  alias: TMP
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - Raise the desk
-    id: up
-  - platform: conversation
-    command:
-    - Lower the desk
-    id: down
-  condition:
-  - condition: state
-    entity_id: binary_sensor.standing_desk_moving
-    state: 'off'
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - up
-      sequence:
-      - service: button.press
-        metadata: {}
-        data: {}
-        target:
-          entity_id: button.standing_desk_move_desk_to_position_1
-      - set_conversation_response: Raising the desk
-    - conditions:
-      - condition: trigger
-        id:
-        - down
-      sequence:
-      - service: button.press
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - button.standing_desk_move_desk_to_position_2
-      - set_conversation_response: Lowering the desk
   mode: single
 - id: '1708194950863'
   alias: Party Time Marilou
