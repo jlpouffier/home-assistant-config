@@ -7,6 +7,9 @@ automation: !include automations.yaml
 # Scrits
 script: !include scripts.yaml
 
+# Scenes 
+scene: !include scenes.yaml
+
 # Packages
 homeassistant:
   packages: !include_dir_named packages
