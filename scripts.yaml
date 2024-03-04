@@ -41,7 +41,7 @@ welcome_home:
     metadata: {}
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 70
     target:
       entity_id:
       - light.salon_buffet_gauche
@@ -54,7 +54,7 @@ welcome_home:
     metadata: {}
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 70
     target:
       entity_id:
       - light.salon_buffet_droit
@@ -78,11 +78,11 @@ welcome_home:
   - service: light.turn_on
     metadata: {}
     data:
+      brightness_pct: 60
       transition: 2
-      brightness_pct: 100
     target:
       entity_id:
-      - light.salon_suspension_table
+      - light.hue_aurelle_panel_1
   - delay:
       hours: 0
       minutes: 0
@@ -105,7 +105,7 @@ welcome_home:
       - light.cuisine_comptoir
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 60
   - delay:
       hours: 0
       minutes: 0
