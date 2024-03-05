@@ -1823,36 +1823,18 @@
     entity_id: input_boolean.automation_notify_cleaning
     state: 'on'
   action:
-  - if:
-    - condition: numeric_state
-      entity_id: sensor.neuneu_error_translations
-      above: 0
-    then:
-    - event: NOTIFIER
-      event_data:
-        action: send_when_present
-        title: "\U0001F9F9 NeuNeu"
-        message: '{% set translations = state_attr("sensor.neuneu_error_translations",
-          "state")%} {{translations[states(''sensor.neuneu_error'')]}}
+  - event: NOTIFIER
+    event_data:
+      action: send_when_present
+      title: "\U0001F9F9 NeuNeu"
+      message: '{{state_translated("sensor.neuneu_error")}}
 
-          '
-        click_url: /lovelace/vacuums
-        tag: neuneu_error
-        until:
-        - entity_id: sensor.neuneu_error
-          new_state: no_error
-    else:
-    - event: NOTIFIER
-      event_data:
-        action: send_when_present
-        title: "\U0001F9F9 NeuNeu"
-        message: 'Erreur inconnu (code: {{states(''sensor.neuneu_error'')}})'
-        click_url: /lovelace/vacuums
-        image_url: /api/camera_proxy/camera.neuneu_map
-        tag: neuneu_error
-        until:
-        - entity_id: sensor.neuneu_error
-          new_state: no_error
+        '
+      click_url: /lovelace/vacuums
+      tag: neuneu_error
+      until:
+      - entity_id: sensor.neuneu_error
+        new_state: no_error
   mode: single
 - id: '1693509234441'
   alias: "Tesla - \U0001F514 Rappel charge "
