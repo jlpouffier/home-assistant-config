@@ -2952,7 +2952,7 @@
   condition:
   - condition: numeric_state
     entity_id: sensor.quest_battery_level
-    below: 50
+    below: 60
   action:
   - event: NOTIFIER
     event_data:
@@ -3054,3 +3054,27 @@
         target:
           area_id: chambre_bebe
   mode: single
+- id: '1710949489035'
+  alias: "Assist - \U0001F4E3 Multiple Commands (EN)"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - '{command1} and {command2}'
+  condition: []
+  action:
+  - service: conversation.process
+    data:
+      agent_id: homeassistant
+      text: '{{trigger.slots.command1}}'
+      language: en
+    response_variable: response_1
+  - service: conversation.process
+    data:
+      agent_id: homeassistant
+      text: '{{trigger.slots.command2}}'
+      language: en
+    response_variable: response_2
+  - set_conversation_response: '{{response_1.response.speech.plain.speech}} and {{response_2.response.speech.plain.speech}}'
+  mode: parallel
+  max: 100
