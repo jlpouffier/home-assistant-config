@@ -6,18 +6,15 @@ template:
         state: "{{this.attributes.entities | length}}"
         attributes:
           entities: |
-            {% set list =  
-              expand(states.sensor)
-                | selectattr('attributes.device_class', 'defined')
-                | selectattr('attributes.device_class', 'eq', 'battery')
-                | selectattr('state', 'is_number')
-                | map(attribute='entity_id') 
-                | reject("in", label_entities("ignorer_batterie"))
-            %}
             [
-              {% for entity_id in list %}
-                {% if states(entity_id) | float(100) <= 20 %}
-                    "{{ state_attr(entity_id, "friendly_name") }}",
+              {% for
+                entity in
+                  expand(states.sensor)
+                  | selectattr('attributes.device_class', 'defined')
+                  | selectattr('attributes.device_class', 'eq', 'battery')
+                  | rejectattr("entity_id", "in", label_entities("ignorer_batterie")) %}
+                {% if entity.state | float(100) <= 20 %}
+                    "{{ entity.attributes.friendly_name }}",
                 {% endif %}
               {% endfor %}
             ]
