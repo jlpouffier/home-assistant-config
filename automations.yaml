@@ -913,54 +913,8 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   action:
-  - service: script.turn_on
+  - service: script.leave_home
     data: {}
-    target:
-      entity_id: script.leave_home
-  - if:
-    - condition: state
-      entity_id: binary_sensor.all_doors
-      state: 'on'
-    then:
-    - variables:
-        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Porte(s) ouverte(s) !"
-        message: 'Les portes suivantes sont toujours ouvertes alors que personne n''est
-          présent:  {{open_doors}}'
-        click_url: /lovelace/openings
-        tag: home_empty_door_open
-        until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
-        - entity_id: binary_sensor.all_doors
-          new_state: 'off'
-  - if:
-    - condition: state
-      entity_id: binary_sensor.all_windows
-      state: 'on'
-    then:
-    - variables:
-        open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Fenêtre(s) ouverte(s) !"
-        message: 'Les fenêtres suivantes sont toujours ouvertes alors que personne
-          n''est présent: {{open_windows}}'
-        click_url: /lovelace/openings
-        tag: home_empty_window_open
-        until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
-        - entity_id: binary_sensor.all_windows
-          new_state: 'off'
   mode: queued
   max: 10
 - id: '1688373819985'
