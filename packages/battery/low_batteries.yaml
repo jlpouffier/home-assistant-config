@@ -10,8 +10,8 @@ template:
               expand(states.sensor)
                 | selectattr('attributes.device_class', 'defined')
                 | selectattr('attributes.device_class', 'eq', 'battery')
-                | selectattr('attributes.ignore_battery', 'undefined')
                 | map(attribute='entity_id') 
+                | reject("in", label_entities("ignorer_batterie"))
                 | list
             %}
             {% set filtered_list = namespace(value = []) -%}
