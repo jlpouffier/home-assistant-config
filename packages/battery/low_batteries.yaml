@@ -6,13 +6,14 @@ template:
         state: "{{this.attributes.entities | length}}"
         attributes:
           entities: |
+            {% set to_ignore = label_entities("ignorer_batterie") %}
             [
               {% for
                 entity in
                   expand(states.sensor)
                   | selectattr('attributes.device_class', 'defined')
                   | selectattr('attributes.device_class', 'eq', 'battery')
-                  | rejectattr("entity_id", "in", label_entities("ignorer_batterie")) %}
+                  | rejectattr("entity_id", "in", to_ignore) %}
                 {% if entity.state | float(100) <= 20 %}
                     "{{ entity.attributes.friendly_name }}",
                 {% endif %}
