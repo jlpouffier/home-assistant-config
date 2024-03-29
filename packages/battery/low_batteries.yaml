@@ -10,14 +10,14 @@ template:
               expand(states.sensor)
                 | selectattr('attributes.device_class', 'defined')
                 | selectattr('attributes.device_class', 'eq', 'battery')
+                | selectattr('state', 'is_number')
                 | map(attribute='entity_id') 
                 | reject("in", label_entities("ignorer_batterie"))
-                | list
             %}
-            {% set filtered_list = namespace(value = []) -%}
-            {% for element in list %}
-              {% if states(element) | float(100) <= 20.0 %}
-                {% set filtered_list.value = filtered_list.value + [state_attr(element,'friendly_name')] -%}
-              {% endif %}
-            {% endfor %}
-            {{filtered_list.value}}
+            [
+              {% for entity_id in list %}
+                {% if states(entity_id) | float(100) <= 20 %}
+                    "{{ state_attr(entity_id, "friendly_name") }}",
+                {% endif %}
+              {% endfor %}
+            ]
