@@ -55,6 +55,8 @@ condition:
 action:
   - variables:
       room_name_variable: !input room_name
+      room_temp: !input room_temperature
+      outside_temp: !input outside_temperature
   - variables:
       tag_value: |
         {{room_name_variable|lower|replace(" ", "_")}}_trend_temperature
@@ -78,8 +80,8 @@ action:
               action: send_to_present
               title: ❄️ Perte de température
               message: >-
-                {{room_name_variable}} refroidit car des fenêtres sont ouvertes il qu'il fait
-                froid dehors
+                {{room_name_variable}} refroidit ({{states(room_temp, with_unit=True)}}) car des fenêtres sont ouvertes il qu'il fait
+                froid dehors ({{states(outside_temp, with_unit=True)}})
               tag: |
                 {{tag_value}}
               until:
@@ -109,8 +111,8 @@ action:
               action: send_to_present
               title: 🌡️ Gain de température
               message: >-
-                {{room_name_variable}} chauffe car des fenêtres sont ouvertes il qu'il fait
-                chaud dehors
+                {{room_name_variable}} chauffe ({{states(room_temp, with_unit=True)}}) car des fenêtres sont ouvertes il qu'il fait
+                chaud dehors ({{states(outside_temp, with_unit=True)}})
               tag: |
                 {{tag_value}}
               until:

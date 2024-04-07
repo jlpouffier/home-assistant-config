@@ -716,6 +716,10 @@
   - platform: state
     entity_id:
     - input_boolean.heating_manual_boost
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
   - platform: time
     at: input_datetime.heating_manual_boost_end
   - platform: state
@@ -1361,42 +1365,6 @@
       - entity_id: sensor.tesla_charge_limit
         new_state: '100'
   mode: single
-- id: '1688927728999'
-  alias: 'Vélo - Contrôler charge en fonction du tarif électrique '
-  description: ''
-  trigger:
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
-    - schedule.heures_pleines
-    from:
-    to:
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_smart_bike_charging
-    state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: schedule.heures_pleines
-        state: 'on'
-      sequence:
-      - service: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.prise_velo
-    - conditions:
-      - condition: state
-        entity_id: schedule.heures_pleines
-        state: 'off'
-      sequence:
-      - service: switch.turn_on
-        data: {}
-        target:
-          entity_id: switch.prise_velo
-  mode: single
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF
   description: ''
@@ -1705,9 +1673,6 @@
   - condition: state
     entity_id: input_boolean.automation_notify_chaban_delmas_bridge
     state: 'on'
-  - condition: state
-    entity_id: binary_sensor.workday_tomorrow
-    state: 'on'
   - condition: template
     value_template: '{{as_datetime(states("sensor.chaban_delmas_next_closing_start_date"))
       - now() > timedelta(hours = 4)}}'
@@ -1723,22 +1688,11 @@
   - if:
     - condition: numeric_state
       entity_id: sensor.distance_jl_home
-      below: 10000
+      below: 20000
     then:
     - event: NOTIFIER
       event_data:
         action: send_to_jl
-        title: "\U0001F309 Pont Chaban Delmas"
-        message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
-        tag: chaban_delmas_closing_tomorrow
-  - if:
-    - condition: numeric_state
-      entity_id: sensor.distance_valentine_home
-      below: 10000
-    then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_valentine
         title: "\U0001F309 Pont Chaban Delmas"
         message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
         tag: chaban_delmas_closing_tomorrow
@@ -2095,7 +2049,8 @@
         '
     target:
       entity_id: input_datetime.heating_manual_boost_end
-  mode: single
+  mode: queued
+  max: 10
 - id: '1700265595004'
   alias: Nettoyage Intelligent - Contrôler NeuNeu
   description: ''
@@ -3032,3 +2987,42 @@
   - set_conversation_response: '{{response_1.response.speech.plain.speech}} and {{response_2.response.speech.plain.speech}}'
   mode: parallel
   max: 100
+- id: '1711723541187'
+  alias: "Assist - \U0001F4E3 Quitter la maison"
+  description: ''
+  trigger:
+  - platform: conversation
+    command:
+    - Je pars [faire un tour]
+    - Je m'en vais [faire un tour]
+    - On part [faire un tour]
+    - On s'en va [faire un tour]
+    - Au revoir
+    - À bientôt
+    - À plus
+  condition: []
+  action:
+  - service: script.leave_home
+    metadata: {}
+    data: {}
+    enabled: true
+  - set_conversation_response: '{% set time = now().hour %}
+
+      {% if (time >= 18) %}
+
+      Bonne soirée
+
+      {% elif (time >= 12) %}
+
+      Bonne après-midi
+
+      {% elif (time >= 5) %}
+
+      Bonne journée
+
+      {% else %}
+
+      Bonne nuit
+
+      {% endif %}'
+  mode: single

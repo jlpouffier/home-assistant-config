@@ -315,8 +315,8 @@ wake_up:
     target:
       entity_id:
       - light.chambre_suspension
-      - light.chambre_chevet_jl
-      - light.chambre_chevet_valentine
+      - light.chambre_chevet_droit
+      - light.chambre_chevet_gauche
   - delay:
       hours: 0
       minutes: 10
@@ -329,7 +329,7 @@ wake_up:
   mode: single
   icon: mdi:weather-sunset-up
 room_cleaning_first_floor:
-  alias: Room Cleaning (First Floor)
+  alias: Room Cleaning (Rez-De-Chaussée)
   sequence:
   - if:
     - condition: template
