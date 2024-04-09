@@ -232,7 +232,8 @@
         id: 'off'
       sequence:
       - service: script.leave_home
-        data: {}
+        data:
+          call_from_main_door: true
       - wait_for_trigger:
         - platform: state
           entity_id:
@@ -719,7 +720,7 @@
     for:
       hours: 0
       minutes: 0
-      seconds: 2
+      seconds: 5
   - platform: time
     at: input_datetime.heating_manual_boost_end
   - platform: state
@@ -918,7 +919,8 @@
     state: 'off'
   action:
   - service: script.leave_home
-    data: {}
+    data:
+      call_from_main_door: false
   mode: queued
   max: 10
 - id: '1688373819985'
@@ -1893,7 +1895,7 @@
         data: {}
         target:
           entity_id:
-          - switch.talkie_use_wake_word
+          - switch.wyoming_satellite_salon_microphone
     - conditions:
       - condition: trigger
         id:
@@ -1904,7 +1906,7 @@
         data: {}
         target:
           entity_id:
-          - switch.talkie_use_wake_word
+          - switch.wyoming_satellite_salon_microphone
   mode: queued
   max: 50
 - id: '1699131143084'
@@ -2670,24 +2672,24 @@
             state: seated_position
   mode: single
 - id: '1703178925143'
-  alias: 'Box Marilou - Réduire Luminosité '
+  alias: 'Box Marilou - Gérer Luminosité '
   description: ''
   trigger:
-  - platform: state
-    entity_id:
-    - light.chambre_bebe
   - platform: state
     entity_id:
     - light.casita_chambre_marilou_lcd_backlight
     attribute: brightness
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - binary_sensor.chambre_de_marilou_eclairee
   condition: []
   action:
   - choose:
     - conditions:
       - condition: state
-        entity_id: light.chambre_bebe
+        entity_id: binary_sensor.chambre_de_marilou_eclairee
         state: 'on'
       sequence:
       - service: light.turn_on
@@ -3004,7 +3006,8 @@
   action:
   - service: script.leave_home
     metadata: {}
-    data: {}
+    data:
+      call_from_main_door: false
     enabled: true
   - set_conversation_response: '{% set time = now().hour %}
 
@@ -3026,3 +3029,47 @@
 
       {% endif %}'
   mode: single
+- id: '1712660364204'
+  alias: 'Box Chambre - Gérer Luminosité '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sun.sun
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id:
+    - light.chambre
+  - platform: state
+    entity_id:
+    - light.box_chambre_lcd_backlight
+    attribute: brightness
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
+        - condition: state
+          entity_id: light.chambre
+          state: 'on'
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 100
+        target:
+          entity_id: light.box_chambre_lcd_backlight
+    default:
+    - service: light.turn_on
+      metadata: {}
+      data:
+        brightness_pct: 20
+      target:
+        entity_id: light.box_chambre_lcd_backlight
+  mode: queued
+  max: 10

@@ -20,6 +20,8 @@ leave_home:
     - condition: state
       entity_id: binary_sensor.all_doors
       state: 'on'
+    - condition: template
+      value_template: '{{call_from_main_door != True}}'
     then:
     - variables:
         open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
@@ -38,6 +40,35 @@ leave_home:
           new_state: 'on'
         - entity_id: binary_sensor.all_doors
           new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.all_doors
+      state: 'on'
+    - condition: template
+      value_template: '{{call_from_main_door == True}}'
+    then:
+    - variables:
+        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+          \   | selectattr('state', 'eq', 'on')        \n    | rejectattr('entity_id',
+          'eq', 'binary_sensor.capteur_ouverture_porte_entree')\n    | map(attribute='attributes.friendly_name')
+          \n    | list\n    | join(\", \")\n}}"
+    - if:
+      - condition: template
+        value_template: '{{open_doors != ""}}'
+      then:
+      - event: NOTIFIER
+        event_data:
+          action: send_to_nearest
+          title: "️\U0001F6AA Porte(s) ouverte(s) !"
+          message: 'Les portes suivantes sont toujours ouvertes alors que personne
+            n''est présent:  {{open_doors}}'
+          click_url: /lovelace/openings
+          tag: home_empty_door_open
+          until:
+          - entity_id: binary_sensor.home_occupied
+            new_state: 'on'
+          - entity_id: binary_sensor.all_doors
+            new_state: 'off'
   - if:
     - condition: state
       entity_id: binary_sensor.all_windows
@@ -60,7 +91,48 @@ leave_home:
           new_state: 'on'
         - entity_id: binary_sensor.all_windows
           new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.is_oven_running
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "\U0001F958 Four allumé !"
+        message: Le four est en marche alors que personne n'est présent!
+        tag: home_empty_oven_on
+        interuption_level: critical
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: binary_sensor.is_oven_running
+          new_state: 'off'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.is_induction_cooktop_running
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "\U0001F373 Plaques à induction allumé !"
+        message: Les plaques à induction sont en marche alors que personne n'est présent!
+        tag: home_empty_induction_cooktop_on
+        interuption_level: critical
+        until:
+        - entity_id: binary_sensor.home_occupied
+          new_state: 'on'
+        - entity_id: binary_sensor.is_induction_cooktop_running
+          new_state: 'off'
   icon: mdi:home-export-outline
+  fields:
+    call_from_main_door:
+      selector:
+        boolean: {}
+      name: Appel depuis la porte d'entrée
+      required: true
+      default: false
 welcome_home:
   alias: Bienvenue a la maison
   mode: queued

@@ -1,0 +1,10 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: is_oven_running
+        unique_id: is_oven_running
+        state: "{{ states('sensor.four_power') | float(default = 0) > 20 }}"
+        device_class: running
+        delay_on: "0:00:00"
+        delay_off: "0:01:00"
