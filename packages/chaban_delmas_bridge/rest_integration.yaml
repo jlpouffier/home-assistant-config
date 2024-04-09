@@ -7,8 +7,8 @@ rest:
       value_template: |
         {% set bridge_open = namespace(value = true) -%}
         {% for record in value_json.records -%}
-          {%- set start_date = as_datetime(record.fields.date_passage+" "+record.fields.fermeture_a_la_circulation+"+02:00") -%}
-          {%- set end_date_dirty = as_datetime(record.fields.date_passage+" "+record.fields.re_ouverture_a_la_circulation+"+02:00") -%}
+          {%- set start_date = as_local(as_datetime(record.fields.date_passage+" "+record.fields.fermeture_a_la_circulation)) -%}
+          {%- set end_date_dirty = as_local(as_datetime(record.fields.date_passage+" "+record.fields.re_ouverture_a_la_circulation)) -%}
           {%- set is_dirty  = start_date > end_date_dirty -%}
           {% if is_dirty %}
             {%- set end_date = end_date_dirty + timedelta(days = 1) -%}
