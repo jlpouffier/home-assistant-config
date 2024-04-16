@@ -4,6 +4,7 @@ intent_script:
       - service: input_boolean.turn_on
         target:
           entity_id: "{{room}}"
+      - delay: 1
       - service: script.room_cleaning_first_floor
     speech:
       text: "Nettoyage lancé"
