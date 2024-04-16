@@ -1,0 +1,33 @@
+blueprint:
+  name: Take action when the first person arrives home
+  description: |
+    Take action when the first person arrives home _(When you home becomes occupied)_.
+  domain: automation
+  author: JLo
+  input:
+    zone_home:
+      name: Home name
+      description: Select the zone that represents where you leave
+      selector:
+        entity:
+          filter:
+            - domain: zone
+      default: "zone.home"
+    actions:
+      name: Actions
+      description: Add any action you want to perform once your home becomes occupied here.
+      selector:
+        action:
+
+trigger:
+  - platform: state
+    entity_id:
+      - !input zone_home
+    to: "0"
+    from: null
+
+condition: []
+
+action: !input actions
+
+mode: single

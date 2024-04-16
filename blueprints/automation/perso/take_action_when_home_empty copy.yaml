@@ -1,0 +1,38 @@
+blueprint:
+  name: Take action when the last person leaves home
+  description: |
+    Take any action when the last person leaves home _(When you home becomes empty)_.
+  domain: automation
+  author: JLo
+  input:
+    zone_home:
+      name: Home name
+      description: Select the zone that represents where you leave
+      selector:
+        entity:
+          filter:
+            - domain: zone
+      default: "zone.home"
+    actions:
+      name: Actions
+      description: Add any action you want to perform once your home becomes empty here. _(A default action is provided that turns off all your lights)_
+      selector:
+        action:
+      default:
+        - service: light.turn_off
+          target:
+            entity_id: all
+          alias: Turn off all lights in your home
+
+trigger:
+  - platform: state
+    entity_id:
+      - !input zone_home
+    from: null
+    to: "0"
+
+condition: []
+
+action: !input actions
+
+mode: single
