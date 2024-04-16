@@ -2671,42 +2671,6 @@
             entity_id: sensor.standing_desk_state
             state: seated_position
   mode: single
-- id: '1703178925143'
-  alias: 'Box Marilou - Gérer Luminosité '
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - light.casita_chambre_marilou_lcd_backlight
-    attribute: brightness
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
-    - binary_sensor.chambre_de_marilou_eclairee
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.chambre_de_marilou_eclairee
-        state: 'on'
-      sequence:
-      - service: light.turn_on
-        target:
-          entity_id:
-          - light.casita_chambre_marilou_lcd_backlight
-        data:
-          brightness_pct: 100
-    default:
-    - service: light.turn_on
-      target:
-        entity_id:
-        - light.casita_chambre_marilou_lcd_backlight
-      data:
-        brightness_pct: 20
-  mode: queued
-  max: 10
 - id: '1706048671788'
   alias: Routine du sommeil Marilou - Suivant
   description: ''
