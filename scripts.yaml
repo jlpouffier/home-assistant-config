@@ -487,3 +487,31 @@ eteindre_temporairement_un_assistant_vocal:
       description: Assistant Vocal à désactiver temporairement.
   mode: parallel
   icon: mdi:microphone-message-off
+lancer_playlist_de_reveil:
+  alias: Réveil Lumineux - Musique
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      entity_id: media_player.bureau_droite
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.1
+    target:
+      entity_id:
+      - media_player.bureau_droite
+  - service: mass.play_media
+    target:
+      entity_id:
+      - media_player.bureau_droite
+    data:
+      media_id: library://playlist/21
+      enqueue: replace
+  - service: media_player.shuffle_set
+    data:
+      shuffle: true
+    target:
+      entity_id:
+      - media_player.bureau_droite
+  mode: single
+  icon: mdi:alarm

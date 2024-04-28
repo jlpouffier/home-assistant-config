@@ -427,7 +427,7 @@
       entity_id: input_datetime.wake_up_time_lights
   mode: single
 - id: '1688139621896'
-  alias: Réveil intelligent - Allumer lumières
+  alias: Réveil intelligent - Allumer Lumières
   description: ''
   trigger:
   - platform: time
@@ -3103,4 +3103,39 @@
       - set_conversation_response: Aucune scene par defaut trouvée
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
+  mode: single
+- id: '1714308060749'
+  alias: Réveil intelligent - Démarrer la Musique
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wake_up_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_wake_up
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.reveil_intelligent_musical
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.workday_today
+    state: 'on'
+  action:
+  - service: script.lancer_playlist_de_reveil
+    metadata: {}
+    data: {}
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - light.chambre
+      to: 'off'
+    continue_on_timeout: false
+  - service: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.bureau_droite
   mode: single
