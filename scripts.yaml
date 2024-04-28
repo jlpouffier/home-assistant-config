@@ -451,3 +451,39 @@ start_marilou_bedtime_routine:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
   mode: single
   icon: mdi:bell-sleep
+eteindre_temporairement_un_assistant_vocal:
+  alias: Éteindre temporairement un assistant vocal
+  sequence:
+  - variables:
+      target_entities: "{% set microphones = label_entities(\"Micro Assistant Vocal\")
+        %}\n[\n  {%- for entity in device_entities(device) -%}\n    {%- if entity
+        in microphones -%}\n      \"{{entity}}\",\n    {%- endif -%}\n  {%- endfor
+        -%}\n]\n"
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: '{{target_entities}}'
+  - delay:
+      hours: 0
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - service: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: '{{target_entities}}'
+  fields:
+    device:
+      selector:
+        device: {}
+      name: Appareil
+      description: Assistant Vocal à désactiver temporairement.
+  mode: parallel
+  icon: mdi:microphone-message-off
