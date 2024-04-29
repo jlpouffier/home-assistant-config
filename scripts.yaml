@@ -428,6 +428,10 @@ room_cleaning_first_floor:
 start_marilou_bedtime_routine:
   alias: Démarrer la routine du sommeil de Marilou
   sequence:
+  - service: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.chambre_bebe_initial
   - service: media_player.turn_on
     data: {}
     target:
@@ -436,9 +440,10 @@ start_marilou_bedtime_routine:
     target:
       entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
     data:
-      media_id: library://playlist/11
+      media_id: Au Dodo Marilou
       enqueue: replace
       radio_mode: true
+      media_type: playlist
   - service: media_player.volume_set
     data:
       volume_level: 0.35
@@ -505,8 +510,9 @@ lancer_playlist_de_reveil:
       entity_id:
       - media_player.bureau_droite
     data:
-      media_id: library://playlist/21
+      media_id: ⏰ Réveil
       enqueue: replace
+      media_type: playlist
   - service: media_player.shuffle_set
     data:
       shuffle: true
