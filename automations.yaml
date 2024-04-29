@@ -439,9 +439,14 @@
   - condition: state
     entity_id: binary_sensor.home_occupied
     state: 'on'
-  - condition: state
-    entity_id: binary_sensor.workday_today
-    state: 'on'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.workday_today
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.forcer_le_reveil
+      state: 'on'
   action:
   - service: script.wake_up
     data: {}
@@ -1997,10 +2002,6 @@
     to: repeat
   condition: []
   action:
-  - service: light.turn_off
-    data: {}
-    target:
-      area_id: chambre_bebe
   - choose:
     - conditions:
       - condition: state
@@ -2016,6 +2017,11 @@
           datetime: '{{ now() }}'
         target:
           entity_id: input_datetime.marilou_bedtime_routine_end
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          area_id: chambre_bebe
     default:
     - service: script.start_marilou_bedtime_routine
       data: {}
@@ -3120,9 +3126,14 @@
   - condition: state
     entity_id: binary_sensor.home_occupied
     state: 'on'
-  - condition: state
-    entity_id: binary_sensor.workday_today
-    state: 'on'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.workday_today
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.forcer_le_reveil
+      state: 'on'
   action:
   - service: script.lancer_playlist_de_reveil
     metadata: {}
