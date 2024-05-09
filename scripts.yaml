@@ -418,7 +418,6 @@ room_cleaning_first_floor:
       data: {}
       target:
         entity_id:
-        - input_boolean.vacuum_zone_celar
         - input_boolean.vacuum_zone_kitchen
         - input_boolean.vacuum_zone_entry
         - input_boolean.vacuum_zone_bathroom
@@ -435,10 +434,12 @@ start_marilou_bedtime_routine:
   - service: media_player.turn_on
     data: {}
     target:
-      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+      entity_id:
+      - media_player.music_assistant_chambre_marilou
   - service: mass.play_media
     target:
-      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+      entity_id:
+      - media_player.music_assistant_chambre_marilou
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
@@ -446,14 +447,16 @@ start_marilou_bedtime_routine:
       media_type: playlist
   - service: media_player.volume_set
     data:
-      volume_level: 0.35
+      volume_level: 0.1
     target:
-      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+      entity_id:
+      - media_player.music_assistant_chambre_marilou
   - service: media_player.shuffle_set
     data:
       shuffle: true
     target:
-      entity_id: media_player.music_assistant_chambre_marilou_muse_luxe
+      entity_id:
+      - media_player.music_assistant_chambre_marilou
   mode: single
   icon: mdi:bell-sleep
 eteindre_temporairement_un_assistant_vocal:
@@ -498,17 +501,18 @@ lancer_playlist_de_reveil:
   - service: media_player.turn_on
     data: {}
     target:
-      entity_id: media_player.bureau_droite
+      entity_id:
+      - media_player.music_assistant_chambre
   - service: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.bureau_droite
+      - media_player.music_assistant_chambre
   - service: mass.play_media
     target:
       entity_id:
-      - media_player.bureau_droite
+      - media_player.music_assistant_chambre
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -518,6 +522,6 @@ lancer_playlist_de_reveil:
       shuffle: true
     target:
       entity_id:
-      - media_player.bureau_droite
+      - media_player.music_assistant_chambre
   mode: single
   icon: mdi:alarm
