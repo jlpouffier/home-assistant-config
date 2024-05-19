@@ -3,13 +3,43 @@ intent_script:
     action:
       - service: conversation.process
         data:
-          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          agent_id: conversation.music_assistant_search_bot
           text: "{{query}}"
         response_variable: response_from_ai
-      - service: mass.play_media
-        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
-        target:
-          area_id: "{{area}}"
+      - variables:
+          media_data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["artist","album"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+              - variables:
+                  decorate_data:
+                    enqueue: add
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["track"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
     speech:
       text: "Lecture lancée"
 
@@ -17,13 +47,43 @@ intent_script:
     action:
       - service: conversation.process
         data:
-          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          agent_id: conversation.music_assistant_search_bot
           text: "{{query}}"
         response_variable: response_from_ai
-      - service: mass.play_media
-        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
-        target:
-          area_id: "{{area}}"
+      - variables:
+          media_data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["artist","album"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+              - variables:
+                  decorate_data:
+                    enqueue: add
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["track"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
     speech:
       text: "Lecture lancée"
 
@@ -31,13 +91,43 @@ intent_script:
     action:
       - service: conversation.process
         data:
-          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          agent_id: conversation.music_assistant_search_bot
           text: "{{query}}"
         response_variable: response_from_ai
-      - service: mass.play_media
-        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
-        target:
-          area_id: "{{area}}"
+      - variables:
+          media_data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["artist","album"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+              - variables:
+                  decorate_data:
+                    enqueue: add
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["track"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
     speech:
       text: "Playing now"
 
@@ -45,12 +135,42 @@ intent_script:
     action:
       - service: conversation.process
         data:
-          agent_id: 5149ebe4512026e4cac002f506e2deb0
+          agent_id: conversation.music_assistant_search_bot
           text: "{{query}}"
         response_variable: response_from_ai
-      - service: mass.play_media
-        data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
-        target:
-          area_id: "{{area}}"
+      - variables:
+          media_data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["artist","album"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+              - variables:
+                  decorate_data:
+                    enqueue: add
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
+          - conditions:
+              - condition: template
+                value_template: '{{media_data.media_type in ["track"]}}'
+            sequence:
+              - variables:
+                  decorate_data:
+                    enqueue: replace
+                    radio_mode: true
+              - service: mass.play_media
+                data: "{{ dict(media_data, **decorate_data) }}"
+                target:
+                  area_id: "{{area}}"
     speech:
       text: "Playing now"
