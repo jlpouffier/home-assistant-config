@@ -1,6 +1,6 @@
 substitutions:
   name: everything-presence-one-708114
-  friendly_name: "Capteur Presence Marilou"
+  friendly_name: "Capteur Presence Chambre"
 packages:
   Everything_Smart_Technology.Everything_Presence_One: github://everythingsmarthome/presence-one/everything-presence-one.yaml@main
 esphome:
