@@ -476,6 +476,11 @@
         id:
         - 'on'
       sequence:
+      - service: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.music_assistant_salon
       - service: media_player.turn_on
         data: {}
         target:
@@ -1240,6 +1245,7 @@
     entity_id:
     - vacuum.neuneu
     to: cleaning
+    not_from: unavailable
   condition:
   - condition: state
     entity_id: input_boolean.automation_notify_cleaning
@@ -1529,12 +1535,12 @@
   action:
   - service: conversation.process
     data:
-      agent_id: homeassistant
+      agent_id: conversation.home_assistant
       text: '{{trigger.slots.command1}}'
     response_variable: response_1
   - service: conversation.process
     data:
-      agent_id: homeassistant
+      agent_id: conversation.home_assistant
       text: '{{trigger.slots.command2}}'
     response_variable: response_2
   - set_conversation_response: '{{response_1.response.speech.plain.speech}} et {{response_2.response.speech.plain.speech}}'
@@ -2876,13 +2882,13 @@
   action:
   - service: conversation.process
     data:
-      agent_id: homeassistant
+      agent_id: conversation.home_assistant
       text: '{{trigger.slots.command1}}'
       language: en
     response_variable: response_1
   - service: conversation.process
     data:
-      agent_id: homeassistant
+      agent_id: conversation.home_assistant
       text: '{{trigger.slots.command2}}'
       language: en
     response_variable: response_2
@@ -2933,14 +2939,8 @@
   alias: 'Box Chambre - Gérer Luminosité '
   description: ''
   trigger:
-  - platform: state
-    entity_id:
-    - sun.sun
   - platform: homeassistant
     event: start
-  - platform: state
-    entity_id:
-    - light.chambre
   - platform: state
     entity_id:
     - light.box_chambre_lcd_backlight
@@ -2948,6 +2948,12 @@
   - platform: state
     entity_id:
     - binary_sensor.box_chambre_assist_en_cours
+  - platform: state
+    entity_id:
+    - binary_sensor.chambre_lumineuse
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
   condition: []
   action:
   - choose:
@@ -2955,14 +2961,16 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: sun.sun
-          state: above_horizon
-        - condition: state
-          entity_id: light.chambre
-          state: 'on'
-        - condition: state
           entity_id: binary_sensor.box_chambre_assist_en_cours
           state: 'on'
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.chambre_lumineuse
+            state: 'on'
+          - condition: state
+            entity_id: binary_sensor.capteur_presence_chambre_occupancy
+            state: 'on'
       sequence:
       - service: light.turn_on
         metadata: {}
