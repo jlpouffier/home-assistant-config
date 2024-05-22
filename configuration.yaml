@@ -7,7 +7,7 @@ automation: !include automations.yaml
 # Scrits
 script: !include scripts.yaml
 
-# Scenes 
+# Scenes
 scene: !include scenes.yaml
 
 # Packages
