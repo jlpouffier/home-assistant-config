@@ -18,7 +18,7 @@ substitutions:
   
 packages:
   esphome.voice-assistant: github://esphome/firmware/wake-word-voice-assistant/esp32-s3-box-3.yaml@main
-  #esphome.voice-assistant: !include custom_packages/esp32-s3-box-3.yaml
+
 esphome:
   name: ${name}
   name_add_mac_suffix: false
