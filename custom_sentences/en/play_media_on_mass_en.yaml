@@ -7,8 +7,6 @@ intents:
         requires_context:
           area:
             slot: true
-  PlayWhateverOnAreaEn:
-    data:
       - sentences:
           - (Play|Listen) {query} [in] <area>
 
