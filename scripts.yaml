@@ -536,18 +536,15 @@ gererer_texte_radio:
   - service: media_player.turn_on
     data: {}
     target:
-      entity_id:
-      - media_player.music_assistant_chambre
+      entity_id: '{{music_media_player}}'
   - service: media_player.volume_set
     data:
       volume_level: 0.1
     target:
-      entity_id:
-      - media_player.music_assistant_chambre
+      entity_id: '{{music_media_player}}'
   - service: mass.play_media
     target:
-      entity_id:
-      - media_player.music_assistant_chambre
+      entity_id: '{{music_media_player}}'
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -556,8 +553,7 @@ gererer_texte_radio:
     data:
       shuffle: true
     target:
-      entity_id:
-      - media_player.music_assistant_chambre
+      entity_id: '{{music_media_player}}'
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -588,23 +584,38 @@ gererer_texte_radio:
         current time: {{ now().strftime(\"%X\") }} and the current date: {{now().strftime(\"%x\")
         }}    \n- SUBJECT: WEATHER. The current weather and the forecast for the day:
         {{weather_forecast}}\n- SUBJECT: CURRENTLY PLAYING. The current song playing:
-        {{state_attr(\"media_player.music_assistant_chambre\", \"media_title\")}}
-        by {{state_attr(\"media_player.music_assistant_chambre\", \"media_artist\")}}.
-        Add some interesting info about the song or artist, if you know. It is not
-        mandatory"
+        {{state_attr(music_media_player, \"media_title\")}} by {{state_attr(music_media_player,
+        \"media_artist\")}}. Add some interesting info about the song or artist, if
+        you know. It is not mandatory"
     response_variable: welcome_radio_generated_response
   - variables:
       welcome_radio_generated_response_formated: '{{ welcome_radio_generated_response.response.speech.plain.speech|from_json}}'
-  - service: tts.speak
-    target:
-      entity_id: tts.home_assistant_cloud
-    data:
-      cache: true
-      media_player_entity_id: media_player.sonos_chambre
-      message: '{{welcome_radio_generated_response_formated.text}}'
-      language: fr-FR
-      options:
-        voice: ClaudeNeural
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "home_assistant_cloud"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.home_assistant_cloud
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{welcome_radio_generated_response_formated.text}}'
+          language: fr-FR
+          options:
+            voice: ClaudeNeural
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "elevenlabs"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.elevenlabs_tts
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{welcome_radio_generated_response_formated.text}}'
   - delay:
       hours: 0
       minutes: 0
@@ -631,16 +642,32 @@ gererer_texte_radio:
     response_variable: task_radio_generated_response
   - variables:
       task_radio_generated_response_formated: '{{ task_radio_generated_response.response.speech.plain.speech|from_json}}'
-  - service: tts.speak
-    target:
-      entity_id: tts.home_assistant_cloud
-    data:
-      cache: true
-      media_player_entity_id: media_player.sonos_chambre
-      message: '{{task_radio_generated_response_formated.text}}'
-      language: fr-FR
-      options:
-        voice: ClaudeNeural
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "home_assistant_cloud"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.home_assistant_cloud
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{task_radio_generated_response_formated.text}}'
+          language: fr-FR
+          options:
+            voice: ClaudeNeural
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "elevenlabs"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.elevenlabs_tts
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{task_radio_generated_response_formated.text}}'
   - delay:
       hours: 0
       minutes: 0
@@ -673,15 +700,62 @@ gererer_texte_radio:
     response_variable: calendar_radio_generated_response
   - variables:
       calendar_radio_generated_response_formated: '{{calendar_radio_generated_response.response.speech.plain.speech|from_json}}'
-  - service: tts.speak
-    target:
-      entity_id: tts.home_assistant_cloud
-    data:
-      cache: true
-      media_player_entity_id: media_player.sonos_chambre
-      message: '{{calendar_radio_generated_response_formated.text}}'
-      language: fr-FR
-      options:
-        voice: ClaudeNeural
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "home_assistant_cloud"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.home_assistant_cloud
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{calendar_radio_generated_response_formated.text}}'
+          language: fr-FR
+          options:
+            voice: ClaudeNeural
+    - conditions:
+      - condition: template
+        value_template: '{{voice_provider == "elevenlabs"}}'
+      sequence:
+      - service: tts.speak
+        target:
+          entity_id: tts.elevenlabs_tts
+        data:
+          cache: true
+          media_player_entity_id: '{{radio_media_player}}'
+          message: '{{calendar_radio_generated_response_formated.text}}'
   mode: single
   icon: mdi:radio
+  fields:
+    voice_provider:
+      selector:
+        select:
+          options:
+          - label: ElevenLabs
+            value: elevenlabs
+          - label: Home Assistant Cloud
+            value: home_assistant_cloud
+      default: home_assistant_cloud
+      required: true
+      name: Fournisseur de voix
+    music_media_player:
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - integration: mass
+            domain: media_player
+      name: Lecteur Multimedia pour la Musique
+      default: media_player.music_assistant_chambre
+      required: true
+    radio_media_player:
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain: media_player
+      name: Lecteur Multimedia pour la radio
+      default: media_player.sonos_chambre
+      required: true

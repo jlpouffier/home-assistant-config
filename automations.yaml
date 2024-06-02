@@ -2943,7 +2943,11 @@
     enabled: false
   - service: script.turn_on
     metadata: {}
-    data: {}
+    data:
+      variables:
+        voice_provider: home_assistant_cloud
+        music_media_player: media_player.music_assistant_chambre
+        radio_media_player: media_player.sonos_chambre
     target:
       entity_id: script.gererer_texte_radio
   - wait_for_trigger:
