@@ -1,0 +1,13 @@
+conversation:
+  intents:
+    LeaveHome:
+      - "Leave home"
+
+intent_script:
+  LeaveHome:
+    description: "Launch the leave home script. To be used when I am about to leave my home."
+    action:
+      - service: script.leave_home
+        data: {}
+    speech:
+      text: "Done"

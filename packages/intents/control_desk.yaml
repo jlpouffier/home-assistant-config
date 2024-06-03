@@ -1,0 +1,26 @@
+conversation:
+  intents:
+    RaiseDesk:
+      - "Raise the standing desk"
+    LowerDesk:
+      - "Lower the standing desk"
+
+intent_script:
+  RaiseDesk:
+    description: "Raise the standing desk in my office."
+    action:
+      - service: button.press
+        data: {}
+        target:
+          entity_id: button.standing_desk_move_desk_to_position_1
+    speech:
+      text: "Done"
+  LowerDesk:
+    description: "Lower the standing desk in my office."
+    action:
+      - service: button.press
+        data: {}
+        target:
+          entity_id: button.standing_desk_move_desk_to_position_2
+    speech:
+      text: "Done"

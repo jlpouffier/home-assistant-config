@@ -1,0 +1,13 @@
+conversation:
+  intents:
+    StartMarilouBedtimeRoutine:
+      - "Start Marilou Bedtime Routine"
+
+intent_script:
+  StartMarilouBedtimeRoutine:
+    description: "Start the bedtime routine of my daugther Marilou. To be used when I put her to sleep."
+    action:
+      - service: script.start_marilou_bedtime_routine
+        data: {}
+    speech:
+      text: "Done"
