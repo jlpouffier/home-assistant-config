@@ -1,6 +1,6 @@
 language: "fr"
 intents:
-  PlayWhatever:
+  PlayMusic:
     data:
       - sentences:
           - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query}
