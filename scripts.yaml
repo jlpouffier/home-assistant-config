@@ -759,3 +759,150 @@ gererer_texte_radio:
       name: Lecteur Multimedia pour la radio
       default: media_player.sonos_chambre
       required: true
+room_cleaning_rez_de_chaussee_areas:
+  alias: Room Cleaning (Rez-De-Chaussée) (Pièces)
+  sequence:
+  - variables:
+      targeted_areas: '{{areas}}'
+      input_booleans: '{{label_entities(''Nettoyage ciblé'')}}'
+      targeted_input_booleans: "[\n  {%- for input_boolean in input_booleans -%}\n
+        \   {%- for area in areas -%}\n      {%- if input_boolean in area_entities(area)
+        -%}\n        \"{{input_boolean}}\",\n      {%- endif -%}\n    {%- endfor -%}\n
+        \ {%- endfor -%}\n]\n"
+  - service: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: '{{targeted_input_booleans}}'
+  - if:
+    - condition: template
+      value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
+        1}}'
+    then:
+    - service: dreame_vacuum.vacuum_clean_segment
+      data:
+        segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
+          }}'
+      target:
+        entity_id: vacuum.neuneu
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.vacuum_zone_kitchen
+        - input_boolean.vacuum_zone_entry
+        - input_boolean.vacuum_zone_bathroom
+        - input_boolean.vacuum_zone_living_room
+  mode: single
+  icon: mdi:vacuum
+  fields:
+    areas:
+      selector:
+        area:
+          multiple: true
+      name: Pièces
+      default: []
+      required: true
+  description: ''
+controler_le_standing_desk:
+  alias: Controler le Standing desk
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{target_position == ''standing''}}'
+      sequence:
+      - repeat:
+          sequence:
+          - service: button.press
+            target:
+              entity_id:
+              - button.standing_desk_move_desk_to_position_1
+            data: {}
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'on'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 3
+              milliseconds: 0
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'off'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 20
+              milliseconds: 0
+          - if:
+            - condition: template
+              value_template: '{{ repeat.index >= 5 }}'
+            then:
+            - stop: ''
+          while:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: sensor.standing_desk_state
+              state: standing_position
+    - conditions:
+      - condition: template
+        value_template: '{{target_position == ''sitting''}}'
+      sequence:
+      - repeat:
+          sequence:
+          - service: button.press
+            target:
+              entity_id: button.standing_desk_move_desk_to_position_2
+            data: {}
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'on'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 3
+              milliseconds: 0
+          - wait_for_trigger:
+            - platform: state
+              entity_id:
+              - binary_sensor.standing_desk_moving
+              to: 'off'
+            timeout:
+              hours: 0
+              minutes: 0
+              seconds: 20
+              milliseconds: 0
+          - if:
+            - condition: template
+              value_template: '{{ repeat.index >= 5 }}'
+            then:
+            - stop: ''
+          while:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: sensor.standing_desk_state
+              state: seated_position
+  fields:
+    target_position:
+      selector:
+        select:
+          options:
+          - label: Position debout
+            value: standing
+          - label: Position assise
+            value: sitting
+          multiple: false
+      name: Position cible
+      description: Position cible du standing desk (Assise ou Debout)
+      required: true
+  description: ''
+  icon: mdi:desk

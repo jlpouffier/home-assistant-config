@@ -2468,82 +2468,15 @@
       - condition: template
         value_template: '{{ range(1, 4) | random == 1 }}'
       sequence:
-      - repeat:
-          sequence:
-          - service: button.press
-            target:
-              entity_id:
-              - button.standing_desk_move_desk_to_position_1
-            data: {}
-          - wait_for_trigger:
-            - platform: state
-              entity_id:
-              - binary_sensor.standing_desk_moving
-              to: 'on'
-            timeout:
-              hours: 0
-              minutes: 0
-              seconds: 3
-              milliseconds: 0
-          - wait_for_trigger:
-            - platform: state
-              entity_id:
-              - binary_sensor.standing_desk_moving
-              to: 'off'
-            timeout:
-              hours: 0
-              minutes: 0
-              seconds: 20
-              milliseconds: 0
-          - if:
-            - condition: template
-              value_template: '{{ repeat.index >= 5 }}'
-            then:
-            - stop: ''
-          while:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: sensor.standing_desk_state
-              state: standing_position
+      - service: script.controler_le_standing_desk
+        metadata: {}
+        data:
+          target_position: standing
     default:
-    - repeat:
-        sequence:
-        - service: button.press
-          target:
-            entity_id: button.standing_desk_move_desk_to_position_2
-          data: {}
-        - wait_for_trigger:
-          - platform: state
-            entity_id:
-            - binary_sensor.standing_desk_moving
-            to: 'on'
-          timeout:
-            hours: 0
-            minutes: 0
-            seconds: 3
-            milliseconds: 0
-        - wait_for_trigger:
-          - platform: state
-            entity_id:
-            - binary_sensor.standing_desk_moving
-            to: 'off'
-          timeout:
-            hours: 0
-            minutes: 0
-            seconds: 20
-            milliseconds: 0
-        - if:
-          - condition: template
-            value_template: '{{ repeat.index >= 5 }}'
-          then:
-          - stop: ''
-        while:
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: sensor.standing_desk_state
-            state: seated_position
+    - service: script.controler_le_standing_desk
+      metadata: {}
+      data:
+        target_position: sitting
   mode: single
 - id: '1707214155021'
   alias: "Bureau - \U0001F4E3 Contrôle du Standing Desk par la voix"
@@ -2570,23 +2503,26 @@
         id:
         - up
       sequence:
-      - service: button.press
+      - service: script.turn_on
         metadata: {}
-        data: {}
+        data:
+          variables:
+            target_position: standing
         target:
-          entity_id: button.standing_desk_move_desk_to_position_1
+          entity_id: script.controler_le_standing_desk
       - set_conversation_response: Bureau en montée
     - conditions:
       - condition: trigger
         id:
         - down
       sequence:
-      - service: button.press
+      - service: script.turn_on
         metadata: {}
-        data: {}
+        data:
+          variables:
+            target_position: sitting
         target:
-          entity_id:
-          - button.standing_desk_move_desk_to_position_2
+          entity_id: script.controler_le_standing_desk
       - set_conversation_response: Bureau en descente
   mode: single
 - id: '1707299287220'
@@ -3031,7 +2967,7 @@
       data: {}
       target:
         entity_id: vacuum.neuneu
-  mode: single
+  mode: restart
 - id: '1716920545052'
   alias: Nettoyage Intelligent - Lancer NeuNeu
   description: ''
