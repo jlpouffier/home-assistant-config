@@ -1,0 +1,37 @@
+conversation:
+  intents:
+    GetWeatherForecastHourly:
+      - "Get the hourly weather forecast"
+    GetWeatherForecastDaily:
+      - "Get the daily weather forecast"
+
+intent_script:
+  GetWeatherForecastHourly:
+    description: "Get the hourly weather forecast at my home location"
+    action:
+      - service: weather.get_forecasts
+        target:
+          entity_id:
+            - weather.floirac
+        data:
+          type: hourly
+        response_variable: result
+      - stop: ""
+        response_variable: result
+    speech:
+      text: "{{ action_response }}"
+
+  GetWeatherForecastDaily:
+    description: "Get the daily weather forecast at my home location"
+    action:
+      - service: weather.get_forecasts
+        target:
+          entity_id:
+            - weather.floirac
+        data:
+          type: daily
+        response_variable: result
+      - stop: ""
+        response_variable: result
+    speech:
+      text: "{{ action_response }}"
