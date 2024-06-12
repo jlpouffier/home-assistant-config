@@ -12,7 +12,7 @@ intent_script:
       - choose:
           - conditions:
               - condition: template
-                value_template: '{{media_data.media_type in ["artist","album"]}}'
+                value_template: '{{media_data.media_type in ["artist","album","track"]}}' #track seem not to play the track in radio mode. Temporary fix.
             sequence:
               - variables:
                   decorate_data:
@@ -20,7 +20,7 @@ intent_script:
               - service: mass.play_media
                 data: "{{ dict(media_data, **decorate_data) }}"
                 target:
-                  area_id: "{{area}}"
+                  area_id: "{{area_id(area)}}"
               - variables:
                   decorate_data:
                     enqueue: add
@@ -28,10 +28,10 @@ intent_script:
               - service: mass.play_media
                 data: "{{ dict(media_data, **decorate_data) }}"
                 target:
-                  area_id: "{{area}}"
+                  area_id: "{{area_id(area)}}"
           - conditions:
               - condition: template
-                value_template: '{{media_data.media_type in ["track"]}}'
+                value_template: '{{media_data.media_type in ["track"]}}' # This will never be caleed for now.
             sequence:
               - variables:
                   decorate_data:
@@ -40,6 +40,6 @@ intent_script:
               - service: mass.play_media
                 data: "{{ dict(media_data, **decorate_data) }}"
                 target:
-                  area_id: "{{area}}"
+                  area_id: "{{area_id(area)}}"
     speech:
       text: "Lecture lancée"
