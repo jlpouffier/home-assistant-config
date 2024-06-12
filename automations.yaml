@@ -414,10 +414,7 @@
   - platform: state
     entity_id:
     - input_datetime.wake_up_time
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
+  condition: []
   action:
   - service: input_datetime.set_datetime
     data:
@@ -951,7 +948,8 @@
     data: {}
     target:
       entity_id:
-      - switch.microphones
+      - switch.alexa
+      - switch.wyoming_satellite_salon_microphone
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -1979,7 +1977,7 @@
     id: end
   condition:
   - condition: state
-    entity_id: media_player.music_assistant_chambre_marilou
+    entity_id: media_player.chambre_marilou_sonos_music_assistant
     state: playing
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
@@ -1988,7 +1986,7 @@
     data: {}
     target:
       entity_id:
-      - media_player.music_assistant_chambre_marilou
+      - media_player.chambre_marilou_sonos_music_assistant
   - service: light.turn_off
     data: {}
     target:
@@ -2009,13 +2007,13 @@
     - conditions:
       - condition: state
         state: playing
-        entity_id: media_player.music_assistant_chambre_marilou
+        entity_id: media_player.chambre_marilou_sonos_music_assistant
       sequence:
       - service: media_player.turn_off
         data: {}
         target:
           entity_id:
-          - media_player.music_assistant_chambre_marilou
+          - media_player.chambre_marilou_sonos_music_assistant
       - service: input_datetime.set_datetime
         data:
           datetime: '{{ now() }}'
@@ -2567,6 +2565,9 @@
     to: 'off'
     from: 'on'
   condition:
+  - condition: state
+    entity_id: input_boolean.recevoir_notification_batterie_meta_quest
+    state: 'on'
   - condition: numeric_state
     entity_id: sensor.quest_battery_level
     below: 60
@@ -2882,8 +2883,8 @@
     data:
       variables:
         voice_provider: home_assistant_cloud
-        music_media_player: media_player.music_assistant_chambre
-        radio_media_player: media_player.sonos_chambre
+        music_media_player: media_player.chambre_sonos_music_assistant
+        radio_media_player: media_player.chambre_sonos_music_assistant
     target:
       entity_id: script.gererer_texte_radio
   - wait_for_trigger:
@@ -2897,7 +2898,7 @@
     data: {}
     target:
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
   - service: script.turn_off
     metadata: {}
     data: {}
@@ -3027,4 +3028,209 @@
       option: Rez-De-Chaussée
     target:
       entity_id: select.neuneu_selected_map
+  mode: single
+- id: '1718020295304'
+  alias: Éteindre Bureau si plus de présence
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.hue_play_bars
+      - light.bureau
+  - service: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.standing_desk_move_desk_to_position_2
+  - service: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.sonos_bureau
+  - service: media_player.unjoin
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.bureau_sonos_music_assistant
+  - service: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.bureau_sonos_music_assistant
+  - service: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.hal_use_wake_word
+  mode: single
+- id: '1718020351848'
+  alias: Éteindre Chambre si plus de présence
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.chambre
+  - service: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.sonos_chambre
+  - service: media_player.unjoin
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.chambre_sonos_music_assistant
+  - service: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.chambre_sonos_music_assistant
+  - service: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.casita_chambre_microphone
+  mode: single
+- id: '1718020490708'
+  alias: Éteindre Chambre Marilou si plus de présence
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.chambre_bebe
+  - service: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - media_player.sonos_chambre_marilou
+  - service: media_player.unjoin
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.chambre_marilou_sonos_music_assistant
+  - service: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.chambre_marilou_sonos_music_assistant
+  - service: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.talkie_use_wake_word
+  mode: single
+- id: '1718020708014'
+  alias: Allumer Assistant vocal quand présence - Chambre
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.casita_chambre_microphone
+  mode: single
+- id: '1718020743731'
+  alias: Allumer Assistant vocal quand présence - Chambre Marilou
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.talkie_use_wake_word
+  mode: single
+- id: '1718020763612'
+  alias: Allumer Assistant vocal quand présence - Bureau
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.hal_use_wake_word
   mode: single
