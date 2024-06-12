@@ -7,10 +7,8 @@ leave_home:
       entity_id:
       - light.all_lights
     data: {}
-  - service: media_player.turn_off
-    target:
-      entity_id:
-      - media_player.all_media_players
+  - service: script.eteindre_tous_les_lecteur_multimedia
+    metadata: {}
     data: {}
   - service: switch.turn_off
     data: {}
@@ -440,11 +438,11 @@ start_marilou_bedtime_routine:
     data: {}
     target:
       entity_id:
-      - media_player.music_assistant_chambre_marilou
+      - media_player.chambre_marilou_sonos_music_assistant
   - service: mass.play_media
     target:
       entity_id:
-      - media_player.music_assistant_chambre_marilou
+      - media_player.chambre_marilou_sonos_music_assistant
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
@@ -455,13 +453,13 @@ start_marilou_bedtime_routine:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.music_assistant_chambre_marilou
+      - media_player.chambre_marilou_sonos_music_assistant
   - service: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
-      - media_player.music_assistant_chambre_marilou
+      - media_player.chambre_marilou_sonos_music_assistant
   mode: single
   icon: mdi:bell-sleep
 eteindre_temporairement_un_assistant_vocal:
@@ -507,17 +505,17 @@ lancer_playlist_de_reveil:
     data: {}
     target:
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
   - service: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
   - service: mass.play_media
     target:
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -527,7 +525,7 @@ lancer_playlist_de_reveil:
       shuffle: true
     target:
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
   mode: single
   icon: mdi:alarm
 gererer_texte_radio:
@@ -559,7 +557,7 @@ gererer_texte_radio:
   - wait_for_trigger:
     - platform: state
       entity_id:
-      - media_player.music_assistant_chambre
+      - media_player.chambre_sonos_music_assistant
       to: playing
     timeout:
       hours: 0
@@ -571,7 +569,9 @@ gererer_texte_radio:
       minutes: 1
       seconds: 0
       milliseconds: 0
-  - sequence:
+    enabled: true
+  - alias: Greetings and Weather
+    sequence:
     - service: weather.get_forecasts
       metadata: {}
       data:
@@ -592,7 +592,7 @@ gererer_texte_radio:
           if you know. It is not mandatory"
       response_variable: welcome_radio_generated_response
     - variables:
-        welcome_radio_generated_response_formated: '{{ welcome_radio_generated_response.response.speech.plain.speech|from_json}}'
+        welcome_radio_generated_response_formated: '{{ welcome_radio_generated_response.response.speech.plain.speech}}'
     - choose:
       - conditions:
         - condition: template
@@ -604,7 +604,7 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{welcome_radio_generated_response_formated.text}}'
+            message: '{{welcome_radio_generated_response_formated}}'
             language: fr-FR
             options:
               voice: ClaudeNeural
@@ -618,28 +618,21 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{welcome_radio_generated_response_formated.text}}'
-    alias: Greetings and Weather
-  - continue_on_error: true
-    delay:
-      hours: 0
-      minutes: 0
-      seconds: '{{welcome_radio_generated_response_formated.duration|int}}'
-      milliseconds: 0
+            message: '{{welcome_radio_generated_response_formated}}'
   - delay:
       hours: 0
-      minutes: 1
+      minutes: 2
       seconds: 0
       milliseconds: 0
-  - sequence:
+  - alias: Chores
+    sequence:
     - service: conversation.process
       metadata: {}
       data:
         agent_id: conversation.gpt_radio
-        text: "- This is not the first message of the stream\n- Here is your last
-          message for context: {{welcome_radio_generated_response_formated.text}}\n-
-          SUBJECT: TAKING OUT TRASH. Tell me if I need to take out my black bin or
-          not. Here is a  boolean that is true if I need to: {{states(\"input_boolean.poubelle_noire_a_sortir\")}}.
+        text: "- This is not the first message of the stream\n- SUBJECT: TAKING OUT
+          TRASH. Tell me if I need to take out my black bin or not. Here is a  boolean
+          that is true if I need to: {{states(\"input_boolean.poubelle_noire_a_sortir\")}}.
           Tell me if I need to take out my recycling green bin or not. Here is a boolean
           that is true if I need to: {{states(\"input_boolean.poubelle_verte_a_sortir\")}}
           \ \n- SUBJECT: CAT LITTER. Tell me if I need to clean my cat litter. HEre
@@ -652,7 +645,7 @@ gererer_texte_radio:
           only it is going to happen in the next few days (or today)"
       response_variable: task_radio_generated_response
     - variables:
-        task_radio_generated_response_formated: '{{ task_radio_generated_response.response.speech.plain.speech|from_json}}'
+        task_radio_generated_response_formated: '{{ task_radio_generated_response.response.speech.plain.speech}}'
     - choose:
       - conditions:
         - condition: template
@@ -664,7 +657,7 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{task_radio_generated_response_formated.text}}'
+            message: '{{task_radio_generated_response_formated}}'
             language: fr-FR
             options:
               voice: ClaudeNeural
@@ -678,20 +671,14 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{task_radio_generated_response_formated.text}}'
-    alias: Chores
+            message: '{{task_radio_generated_response_formated}}'
   - delay:
       hours: 0
-      minutes: 1
+      minutes: 2
       seconds: 0
       milliseconds: 0
-  - continue_on_error: true
-    delay:
-      hours: 0
-      minutes: 0
-      seconds: '{{task_radio_generated_response_formated.duration|int}}'
-      milliseconds: 0
-  - sequence:
+  - alias: Calendar
+    sequence:
     - service: calendar.get_events
       metadata: {}
       data:
@@ -706,9 +693,7 @@ gererer_texte_radio:
       metadata: {}
       data:
         agent_id: conversation.gpt_radio
-        text: "- This is not the first message of the stream\n- Here is your last
-          two messages for context.\n- Message 1: {{welcome_radio_generated_response_formated.text}}\n-
-          Message 2: {{task_radio_generated_response_formated.text}}\n- SUBJECT: PROFESSIONAL
+        text: "- This is not the first message of the stream\n- SUBJECT: PROFESSIONAL
           MEETINGS. The meetings I need to attend at work. Here are the events for
           the next 24 hours: {{calendar_events}} \nPlease note that today's date is
           {{now().strftime(\"%x\") }} and that the current time is {{ now().strftime(\"%X\")
@@ -719,7 +704,7 @@ gererer_texte_radio:
           of the stream."
       response_variable: calendar_radio_generated_response
     - variables:
-        calendar_radio_generated_response_formated: '{{calendar_radio_generated_response.response.speech.plain.speech|from_json}}'
+        calendar_radio_generated_response_formated: '{{calendar_radio_generated_response.response.speech.plain.speech}}'
     - choose:
       - conditions:
         - condition: template
@@ -731,7 +716,7 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{calendar_radio_generated_response_formated.text}}'
+            message: '{{calendar_radio_generated_response_formated}}'
             language: fr-FR
             options:
               voice: ClaudeNeural
@@ -745,8 +730,7 @@ gererer_texte_radio:
           data:
             cache: true
             media_player_entity_id: '{{radio_media_player}}'
-            message: '{{calendar_radio_generated_response_formated.text}}'
-    alias: Calendar
+            message: '{{calendar_radio_generated_response_formated}}'
   mode: single
   icon: mdi:radio
   fields:
@@ -927,3 +911,22 @@ controler_le_standing_desk:
       required: true
   description: ''
   icon: mdi:desk
+eteindre_tous_les_lecteur_multimedia:
+  alias: Éteindre tous les lecteurs multimédia
+  sequence:
+  - service: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - media_player.sonos_bureau
+      - media_player.sonos_chambre
+      - media_player.sonos_chambre_marilou
+      - media_player.sonos_salle_de_douche_2
+  - service: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.all_media_players
+  description: ''
+  icon: mdi:television-speaker-off
