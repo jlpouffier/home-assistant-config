@@ -1,5 +1,19 @@
 template:
-  - binary_sensor:
+  - trigger:
+      - platform: state
+        entity_id:
+          - media_player.meme_lecteur_multimedia
+        from: null
+        to: null
+      - platform: state
+        entity_id:
+          - media_player.meme_lecteur_multimedia
+        attribute: media_title
+      - platform: state
+        entity_id:
+          - media_player.meme_lecteur_multimedia
+        attribute: media_artist
+    binary_sensor:
       - name: tesla_recent_playback
         unique_id: tesla_recent_playback
         delay_off: "0:05:00"
@@ -9,11 +23,11 @@ template:
             {% if state_attr('media_player.meme_lecteur_multimedia','media_title') != None %}
               {{state_attr('media_player.meme_lecteur_multimedia','media_title')}}
             {% else %}
-              {{this.attributes.title | default('-')}}
+              {{this.attributes.title | default(None)}}
             {% endif %}
           artist: |
             {% if state_attr('media_player.meme_lecteur_multimedia','media_artist') != None %}
               {{state_attr('media_player.meme_lecteur_multimedia','media_artist')}}
             {% else %}
-              {{this.attributes.artist | default('-')}}
+              {{this.attributes.artist| default(None)}}
             {% endif %}
