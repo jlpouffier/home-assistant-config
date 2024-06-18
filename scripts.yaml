@@ -16,6 +16,16 @@ leave_home:
       entity_id: switch.microphones
   - if:
     - condition: state
+      entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
+      state: 'on'
+    then:
+    - service: cover.close_cover
+      metadata: {}
+      data: {}
+      target:
+        entity_id: cover.living_room_cover
+  - if:
+    - condition: state
       entity_id: binary_sensor.all_doors
       state: 'on'
     - condition: template
@@ -135,10 +145,6 @@ welcome_home:
   alias: Bienvenue a la maison
   mode: queued
   sequence:
-  - service: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.microphones
   - service: light.turn_on
     metadata: {}
     data:

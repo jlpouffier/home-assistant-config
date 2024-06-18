@@ -1,0 +1,19 @@
+template:
+  - binary_sensor:
+      - name: tesla_recent_playback
+        unique_id: tesla_recent_playback
+        delay_off: "0:05:00"
+        state: "{{ is_state('media_player.meme_lecteur_multimedia','playing') and is_state_attr('media_player.meme_lecteur_multimedia','source','Tidal') }}"
+        attributes:
+          title: |
+            {% if state_attr('media_player.meme_lecteur_multimedia','media_title') != None %}
+              {{state_attr('media_player.meme_lecteur_multimedia','media_title')}}
+            {% else %}
+              {{this.attributes.title | default('-')}}
+            {% endif %}
+          artist: |
+            {% if state_attr('media_player.meme_lecteur_multimedia','media_artist') != None %}
+              {{state_attr('media_player.meme_lecteur_multimedia','media_artist')}}
+            {% else %}
+              {{this.attributes.artist | default('-')}}
+            {% endif %}

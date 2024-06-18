@@ -225,6 +225,16 @@
       - condition: trigger
         id: 'on'
       sequence:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.alexa
+          - switch.wyoming_satellite_salon_microphone
+      - service: cover.open_cover
+        data: {}
+        target:
+          entity_id: cover.living_room_cover
       - service: script.welcome_home
         data: {}
     - conditions:
@@ -362,12 +372,12 @@
   mode: queued
   max: 10
 - id: '1688134691132'
-  alias: "Tesla - \U0001F514 Notifier charge hors heures creuses"
+  alias: Tesla - Modifier cible charge heure Creuses
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - sensor.tesla_state
+    - sensor.meme_charge
     to: charging
     for:
       hours: 0
@@ -378,34 +388,32 @@
     entity_id: input_boolean.automation_tesla
     state: 'on'
   - condition: state
-    entity_id: device_tracker.tesla_device_tracker
+    entity_id: device_tracker.meme_emplacement
     state: home
   - condition: state
     entity_id: schedule.heures_pleines
     state: 'off'
   - condition: template
-    value_template: '{{ now() + timedelta(hours = states("sensor.tesla_time_to_full_charge")
-      | float) > state_attr(''schedule.heures_pleines'', ''next_event'') }}'
+    value_template: '{{as_datetime(states("sensor.meme_temps_avant_la_charge_complete"))
+      > state_attr(''schedule.heures_pleines'', ''next_event'') }}'
   action:
   - variables:
-      new_target_percentage: '{{ (( states(''sensor.tesla_charge_limit'')|float -  states(''sensor.tesla_battery_level'')|float)
-        * (state_attr(''schedule.heures_pleines'', ''next_event'') - now()) / timedelta(
-        hours = states(''sensor.tesla_time_to_full_charge'') | float) + states(''sensor.tesla_battery_level'')|float)
-        | round(0)}}'
-      actual_end_date: '{{ (now() + timedelta(hours = states("sensor.tesla_time_to_full_charge")
-        |float)).strftime("%H:%M") }}'
+      new_target_percentage: '{{((states(''number.meme_limite_de_recharge'')|float-states(''sensor.meme_niveau_de_la_batterie'')|float)*(state_attr(''schedule.heures_pleines'',''next_event'')-now())/(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))-now())+states(''sensor.meme_niveau_de_la_batterie'')|float)|round(0)}}'
+      actual_end_date: '{{as_local(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))).strftime("%H:%M")}}'
+  - service: number.set_value
+    metadata: {}
+    data:
+      value: '{{new_target_percentage}}'
+    target:
+      entity_id: number.meme_limite_de_recharge
   - event: NOTIFIER
     event_data:
       action: send_to_jl
       title: "️\U0001F697 Tesla"
-      message: La recharge est prevue de finir après la fin des heures creuse ({{actual_end_date}}).
-        Clique ici pour réduire la cible de recharge à {{new_target_percentage}}%
+      message: Cible de recharge modifiée ({{new_target_percentage}}%) pour finir
+        dans les heures creuses.
       click_url: /lovelace/tesla
       tag: tesla_end_charge_after_off_peak_hours
-      siri_shortcut_name: Tesla Set Charge Limit From Home Assistant
-      until:
-      - entity_id: sensor.tesla_charge_limit
-        new_state: '{{new_target_percentage}}'
   mode: single
 - id: '1688139412657'
   alias: Réveil intelligent - Régler heures de déclenchement
@@ -961,18 +969,10 @@
       seconds: 0
       milliseconds: 0
     continue_on_timeout: false
-  - if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: cover.living_room_cover
-        attribute: current_position
-        state: '100'
-    then:
-    - service: cover.open_cover
-      data: {}
-      target:
-        entity_id: cover.living_room_cover
+  - service: cover.open_cover
+    data: {}
+    target:
+      entity_id: cover.living_room_cover
   - if:
     - condition: state
       entity_id: sun.sun
@@ -1076,31 +1076,6 @@
         new_state: '0'
   mode: queued
   max: 10
-- id: '1688386909438'
-  alias: "Surveillance du système - \U0001F514 Notifier mise a jour tesla dispo"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.tesla_update_available
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_system
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "\U0001F389 Mise a jour disponible"
-      message: Tesla
-      click_url: /config/dashboard
-      tag: tesla_update
-      until:
-      - entity_id: binary_sensor.tesla_update_available
-        new_state: 'off'
-  mode: single
 - id: '1688387237599'
   alias: Surveillance du système - Backup
   description: ''
@@ -1338,43 +1313,41 @@
       entity_id: vacuum.neuneu
   mode: single
 - id: '1688927204517'
-  alias: "Tesla - \U0001F514 Notifier réinitialisation de cible de charge "
+  alias: 'Tesla - Réinitialisation de cible de charge '
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.tesla_plugged_in
+    - binary_sensor.meme_cable_de_charge
     from: 'on'
     to: 'off'
   - platform: state
     entity_id:
-    - sensor.tesla_state
-    from: charging
+    - sensor.meme_charge
+    to: complete
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
   condition:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
   - condition: state
-    entity_id: device_tracker.tesla_device_tracker
+    entity_id: device_tracker.meme_emplacement
     state: home
   - condition: not
     conditions:
     - condition: state
-      entity_id: sensor.tesla_charge_limit
+      entity_id: number.meme_limite_de_recharge
       state: '100'
   action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "️\U0001F697 Tesla"
-      message: Clique ici pour réinitialiser la cible de recharge (actuellement à
-        {{states("sensor.tesla_charge_limit")}}%)
-      click_url: /lovelace/tesla
-      tag: tesla_reset_charge_limit
-      siri_shortcut_name: Tesla Reset Charge Limit From Home Assistant
-      until:
-      - entity_id: sensor.tesla_charge_limit
-        new_state: '100'
+  - service: number.set_value
+    metadata: {}
+    data:
+      value: '100'
+    target:
+      entity_id: number.meme_limite_de_recharge
   mode: single
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF
@@ -1766,21 +1739,21 @@
     to: 'off'
   - platform: state
     entity_id:
-    - sensor.tesla_shift_state
-    from: D
-    to: P
+    - sensor.meme_rapport_engage
+    from: d
+    to: p
   condition:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
   - condition: state
-    entity_id: device_tracker.tesla_device_tracker
+    entity_id: device_tracker.meme_emplacement
     state: home
   - condition: state
-    entity_id: binary_sensor.tesla_plugged_in
+    entity_id: binary_sensor.meme_cable_de_charge
     state: 'off'
   - condition: numeric_state
-    entity_id: sensor.tesla_battery_level
+    entity_id: sensor.meme_niveau_de_la_batterie
     below: 65
   - condition: state
     entity_id: person.jenova70
@@ -1793,13 +1766,13 @@
     event_data:
       action: send_to_jl
       title: "️\U0001F697 Tesla"
-      message: 'Pense à charger la voiture. Niveau de charge actuelle {{states(''sensor.tesla_battery_level'')}}%
+      message: 'Pense à charger la voiture. Niveau de charge actuelle {{states(''sensor.meme_niveau_de_la_batterie'')}}%
 
         '
       click_url: /lovelace/tesla
       tag: tesla_charge_reminder
       until:
-      - entity_id: binary_sensor.tesla_plugged_in
+      - entity_id: binary_sensor.meme_cable_de_charge
         new_state: 'on'
   mode: single
 - id: '1695458967964'
@@ -1819,12 +1792,13 @@
     data:
       entity_id: person.jenova70
       device_tracker:
-      - device_tracker.tesla_device_tracker
+      - device_tracker.meme_emplacement
   - service: person.remove_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
+      - device_tracker.jlo_s_iphone_bluetooth
   mode: single
 - id: '1695459020679'
   alias: Tesla - Détacher Tesla à JL en fin de conduite
@@ -1856,11 +1830,12 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
+      - device_tracker.jlo_s_iphone_bluetooth
   - service: person.remove_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
-      - device_tracker.tesla_device_tracker
+      - device_tracker.meme_emplacement
   mode: single
 - id: '1698182832051'
   alias: TV intelligente - Activer / Désactiver Micros
@@ -2877,7 +2852,7 @@
   - service: script.lancer_playlist_de_reveil
     metadata: {}
     data: {}
-    enabled: false
+    enabled: true
   - service: script.turn_on
     metadata: {}
     data:
@@ -2887,6 +2862,7 @@
         radio_media_player: media_player.chambre_sonos_music_assistant
     target:
       entity_id: script.gererer_texte_radio
+    enabled: false
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -2904,6 +2880,7 @@
     data: {}
     target:
       entity_id: script.gererer_texte_radio
+    enabled: false
   mode: single
 - id: '1716920054507'
   alias: Nettoyage Intelligent - Lancer NeuNeu si serpillère installée
@@ -3234,3 +3211,150 @@
       entity_id:
       - switch.hal_use_wake_word
   mode: single
+- id: '1718706928319'
+  alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - device_tracker.meme_destination
+    from:
+    to:
+  - platform: state
+    entity_id:
+    - sensor.meme_distance_jusqu_a_l_arrivee
+    from:
+    to:
+  - platform: state
+    entity_id:
+    - input_boolean.transfert_musique_tesla_vers_maison
+    from:
+    to:
+  - platform: state
+    entity_id:
+    - binary_sensor.tesla_recent_playback
+    to:
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.transfert_musique_tesla_vers_maison
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: device_tracker.meme_destination
+        state: home
+      - condition: state
+        entity_id: binary_sensor.tesla_recent_playback
+        state: 'on'
+      - condition: numeric_state
+        entity_id: sensor.meme_distance_jusqu_a_l_arrivee
+        below: 2
+      sequence:
+      - service: media_player.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - media_player.kef
+          - media_player.music_assistant_salon
+    default:
+    - service: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.music_assistant_salon
+  mode: single
+- id: '1718707293101'
+  alias: Transfert Musique Tesla vers Maison - Transférer Musique
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_tesla
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.transfert_musique_tesla_vers_maison
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  action:
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.capteur_ouverture_porte_entree
+      to: 'on'
+    timeout:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+    continue_on_timeout: false
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.tesla_recent_playback
+        state: 'on'
+      - condition: template
+        value_template: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')
+          != None}}'
+      - condition: template
+        value_template: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')
+          != None}}'
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.music_assistant_salon
+          state: 'off'
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.kef
+          state: 'off'
+      sequence:
+      - service: mass.play_media
+        metadata: {}
+        data:
+          media_type: track
+          enqueue: replace
+          artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
+          media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
+        target:
+          entity_id: media_player.music_assistant_salon
+      - service: mass.play_media
+        metadata: {}
+        data:
+          media_type: track
+          enqueue: add
+          radio_mode: true
+          artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
+          media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
+        target:
+          entity_id: media_player.music_assistant_salon
+    default:
+    - service: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - media_player.kef
+        - media_player.music_assistant_salon
+  mode: queued
+  max: 10

@@ -1,0 +1,6 @@
+homeassistant:
+  customize:
+    device_tracker.meme_emplacement:
+      entity_picture: "/local/tesla.jpg"
+    device_tracker.meme_destination:
+      entity_picture: "/local/pin.jpg"
