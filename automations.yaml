@@ -2554,6 +2554,26 @@
       message: "La batterie du Quest est actuellement à {{states(\"sensor.quest_battery_level\")}}%.
         Pense à le recharger. \n"
       tag: charge_quest
+  - if:
+    - condition: state
+      entity_id: binary_sensor.capteur_presence_bureau_occupancy
+      state: 'on'
+    - condition: state
+      entity_id: person.jenova70
+      state: home
+    then:
+    - service: tts.speak
+      metadata: {}
+      data:
+        cache: true
+        media_player_entity_id: media_player.bureau_sonos_music_assistant
+        message: La batterie du Quest est actuellement à   {{states("sensor.quest_battery_level")}}%.
+          Pense à le recharger.
+        language: fr-FR
+        options:
+          voice: ClaudeNeural
+      target:
+        entity_id: tts.home_assistant_cloud
   mode: single
 - id: '1708194950863'
   alias: Party Time Marilou
@@ -2857,7 +2877,7 @@
     metadata: {}
     data:
       variables:
-        voice_provider: home_assistant_cloud
+        voice_provider: elevenlabs
         music_media_player: media_player.chambre_sonos_music_assistant
         radio_media_player: media_player.chambre_sonos_music_assistant
     target:
@@ -3267,6 +3287,12 @@
           entity_id:
           - media_player.kef
           - media_player.music_assistant_salon
+      - service: media_player.select_source
+        metadata: {}
+        data:
+          source: Wifi
+        target:
+          entity_id: media_player.kef
     default:
     - service: media_player.turn_off
       metadata: {}
