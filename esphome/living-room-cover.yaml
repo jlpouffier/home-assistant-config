@@ -17,6 +17,7 @@ api:
 
 
 ota:
+  platform: esphome
 
 
 wifi:

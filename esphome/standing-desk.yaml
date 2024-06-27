@@ -5,7 +5,8 @@ esphome:
     - desk_height_sensor.h
 
 esp32:
-  board: esp32dev
+  #board: esp32dev
+  board: adafruit_feather_esp32_v2
   framework:
     type: arduino
 
@@ -18,6 +19,7 @@ api:
     key: !secret standing-desk-api-encryption-key
 
 ota:
+  platform: esphome
   password: !secret standing-desk-ota-password
 
 wifi:

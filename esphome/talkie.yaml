@@ -75,6 +75,7 @@ api:
 
 
 ota:
+  platform: esphome
   password: !secret talkie_ota_password
 
 

@@ -1,6 +1,6 @@
 substitutions:
   name: esp32-s3-box-3-5a9f28
-  friendly_name: Box S3
+  friendly_name: ESP32 S3 Box 3 5a9f28
 
   loading_illustration_file: box_illustrations/jarvis/loading.png
   idle_illustration_file: box_illustrations/jarvis/idle.png
@@ -8,14 +8,8 @@ substitutions:
   thinking_illustration_file: box_illustrations/jarvis/thinking.png
   replying_illustration_file: box_illustrations/jarvis/replying.png
   error_illustration_file: box_illustrations/jarvis/error.png
+  timer_finished_illustration_file: box_illustrations/jarvis/timer_finished.png
 
-  #loading_illustration_background_color: '000000'
-  #idle_illustration_background_color: '000000'
-  #listening_illustration_background_color: 'FFFFFF'
-  #thinking_illustration_background_color: 'FFFFFF'
-  #replying_illustration_background_color: 'FFFFFF'
-  #error_illustration_background_color: '000000'
-  
 packages:
   esphome.voice-assistant: github://esphome/firmware/wake-word-voice-assistant/esp32-s3-box-3.yaml@main
 
@@ -23,10 +17,10 @@ esphome:
   name: ${name}
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
+  
 api:
   encryption:
     key: !secret voice-assistant-encryption-key
-
 
 wifi:
   ssid: !secret wifi_ssid

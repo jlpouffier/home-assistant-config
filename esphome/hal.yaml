@@ -75,6 +75,7 @@ api:
 
 
 ota:
+  platform: esphome
   password: !secret voice-assistant-ota-password
 
 
