@@ -915,7 +915,8 @@ controler_le_standing_desk:
       name: Position cible
       description: Position cible du standing desk (Assise ou Debout)
       required: true
-  description: ''
+  description: Contrôler les standing desk dans le bureau en donnant une position
+    cible. (Assise ou Debout)
   icon: mdi:desk
 eteindre_tous_les_lecteur_multimedia:
   alias: Éteindre tous les lecteurs multimédia
