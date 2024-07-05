@@ -115,6 +115,13 @@ light:
     rmt_channel: 0
     effects:
       - pulse:
+          name: "Slow Pulse"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 50%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
           transition_length: 100ms
           update_interval: 100ms
           min_brightness: 50%
@@ -171,11 +178,15 @@ script:
             - script.execute: control_led_init_state
 
 
-  # Script executed during initialisation: In this example: Turn the LED in green with a slow pulse 🟢
+  # Script executed during initialisation: In this example: Turn the LED in white with a slow pulse ⚪
   - id: control_led_init_state
     then:
-      - light.turn_off:
+      - light.turn_on:
           id: led
+          blue: 100%
+          red: 100%
+          green: 100%
+          effect: "Slow Pulse"
   
 
   # Script executed when the device has no connection to Home Assistant: In this example: Turn off the LED 
@@ -197,7 +208,7 @@ script:
           effect: "none"
 
 
-  # Script executed when the voice assistant is listenintg to a command: In this example: Turn the LED in blue with a slow pulse 🔵
+  # Script executed when the voice assistant is listenintg to a command: In this example: Turn the LED in red with a slow pulse 🔴
   - id: control_led_voice_assist_listening_phase
     then:
       - light.turn_on:
@@ -205,11 +216,10 @@ script:
           blue: 0%
           red: 100%
           green: 0%
-          brightness: 100%
-          effect: "none"
+          effect: "Slow Pulse"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in blue with a fast pulse 🔵         
+  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in red with a fast pulse 🔴        
   - id: control_led_voice_assist_thinking_phase
     then:
       - light.turn_on:
@@ -217,10 +227,10 @@ script:
           blue: 0%
           red: 100%
           green: 0%
-          effect: "pulse"
+          effect: "Fast Pulse"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in blue, solid (no pulse) 🔵         
+  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in red, solid (no pulse) 🔴          
   - id: control_led_voice_assist_replying_phase
     then:
       - light.turn_on:
@@ -232,7 +242,7 @@ script:
           effect: "none"
 
 
-  # Script executed when the voice assistant is thinking to a command: In this example: Turn the LED in red, solid (no pulse) 🔴        
+  # Script executed when the voice assistant is thinking to a command: In this example: Turn off the LED      
   - id: control_led_voice_assist_error_phase
     then:
       - light.turn_off:
