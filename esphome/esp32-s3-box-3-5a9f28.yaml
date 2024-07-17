@@ -11,7 +11,10 @@ substitutions:
   timer_finished_illustration_file: box_illustrations/jarvis/timer_finished.png
 
 packages:
-  esphome.voice-assistant: github://esphome/firmware/wake-word-voice-assistant/esp32-s3-box-3.yaml@main
+  esphome.voice-assistant:
+    url: https://github.com/esphome/firmware
+    file: wake-word-voice-assistant/esp32-s3-box-3.yaml
+    refresh: 0s
 
 esphome:
   name: ${name}
