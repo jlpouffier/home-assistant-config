@@ -208,17 +208,32 @@
   trigger:
   - platform: state
     entity_id:
-    - event.entree_switch_button_1
+    - event.hue_tap_dial_switch_1_bouton_1
     attribute: event_type
     to: repeat
     id: 'on'
   - platform: state
     entity_id:
-    - event.entree_switch_button_4
+    - event.hue_tap_dial_switch_1_bouton_2
     attribute: event_type
     to: repeat
-    id: 'off'
-  condition: []
+    id: 'on'
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_1_bouton_3
+    attribute: event_type
+    to: repeat
+    id: off_no_vacuum
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_1_bouton_4
+    attribute: event_type
+    to: repeat
+    id: off_vacuum
+  condition:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - choose:
     - conditions:
@@ -239,24 +254,19 @@
         data: {}
     - conditions:
       - condition: trigger
-        id: 'off'
+        id:
+        - off_no_vacuum
+        - off_vacuum
       sequence:
       - service: script.leave_home
         data:
           call_from_main_door: true
-      - wait_for_trigger:
-        - platform: state
-          entity_id:
-          - event.entree_switch_button_4
-          attribute: event_type
-          to: repeat
-          id: 'off'
-        timeout:
-          hours: 0
-          minutes: 0
-          seconds: 20
-          milliseconds: 0
-        continue_on_timeout: false
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - off_vacuum
+      sequence:
       - service: vacuum.start
         metadata: {}
         data: {}
@@ -270,35 +280,79 @@
   trigger:
   - platform: state
     entity_id:
-    - event.salon_couloir_switch_button_1
+    - event.hue_tap_dial_switch_7_bouton_1
     attribute: event_type
     to: repeat
-    id: 'on'
+    id: on_no_cover
   - platform: state
     entity_id:
-    - event.salon_couloir_switch_button_4
+    - event.hue_tap_dial_switch_7_bouton_2
     attribute: event_type
     to: repeat
-    id: 'off'
-  condition: []
+    id: on_cover
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_7_bouton_3
+    attribute: event_type
+    to: repeat
+    id: off_no_cover
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_7_bouton_4
+    attribute: event_type
+    to: repeat
+    id: off_cover
+  condition:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - choose:
     - conditions:
       - condition: trigger
-        id: 'on'
+        id:
+        - on_no_cover
+        - on_cover
       sequence:
-      - service: script.reset_lights_day_area
-        data: {}
+      - service: hue.activate_scene
+        target:
+          entity_id:
+          - scene.salon_salon_100
+          - scene.entree_entree_100
+          - scene.cuisine_cuisine_100
+        data:
+          transition: 1
     - conditions:
       - condition: trigger
-        id: 'off'
+        id:
+        - off_no_cover
+        - off_cover
       sequence:
       - service: light.turn_off
         data: {}
         target:
+          floor_id: rez_de_chaussee
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - on_cover
+      sequence:
+      - service: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.living_room_cover
+    - conditions:
+      - condition: trigger
+        id:
+        - off_cover
+      sequence:
+      - service: cover.close_cover
+        target:
           entity_id:
-          - light.lumieres_rez_de_chaussee
-          - light.exterieur
+          - cover.living_room_cover
+        data: {}
   mode: single
 - id: '1688118075093'
   alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
@@ -403,7 +457,7 @@
   - service: number.set_value
     metadata: {}
     data:
-      value: '{{new_target_percentage}}'
+      value: '{{max(new_target_percentage,50)}}'
     target:
       entity_id: number.meme_limite_de_recharge
   - event: NOTIFIER
@@ -545,22 +599,44 @@
         value_template: "{{\n  from_state in [\"off\", \"paused\", \"idle\", \"on\",
           \"buffering\"] and \n  to_state == \"playing\" and \n  to_app in supported_apps\n}}"
       sequence:
-      - service: script.lights_set_tv
+      - service: hue.activate_scene
+        target:
+          entity_id: scene.salon_salon_tv_playing
         data: {}
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
     - conditions:
       - condition: template
         value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
           \"buffering\"] and \n  to_app in supported_apps\n}}"
       sequence:
-      - service: script.lights_set_tv_paused
+      - service: hue.activate_scene
+        metadata: {}
         data: {}
+        target:
+          entity_id:
+          - scene.salon_salon_tv_paused
+          - scene.entree_entree_tv_paused
+          - scene.cuisine_cuisine_tv_paused
     - conditions:
       - condition: template
         value_template: "{{\n  from_state in [\"playing\", \"paused\", \"buffering\"]
           and \n  to_state in [\"off\", \"on\", \"idle\"] and \n  from_app in supported_apps\n}}"
       sequence:
-      - service: script.reset_lights_day_area
-        data: {}
+      - service: hue.activate_scene
+        metadata: {}
+        data:
+          transition: 10
+        target:
+          entity_id:
+          - scene.salon_salon_100
+          - scene.entree_entree_100
+          - scene.cuisine_cuisine_100
   mode: queued
   max: 10
 - id: '1688305917710'
@@ -596,14 +672,30 @@
       - condition: trigger
         id: 'on'
       sequence:
-      - service: script.lights_set_tv
+      - service: hue.activate_scene
+        target:
+          entity_id: scene.salon_salon_tv_playing
         data: {}
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
     - conditions:
       - condition: trigger
         id: 'off'
       sequence:
-      - service: script.reset_lights_day_area
-        data: {}
+      - service: hue.activate_scene
+        metadata: {}
+        data:
+          transition: 10
+        target:
+          entity_id:
+          - scene.salon_salon_100
+          - scene.entree_entree_100
+          - scene.cuisine_cuisine_100
   mode: single
 - id: '1688329966467'
   alias: Volet - Edge Cases
@@ -956,6 +1048,9 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   action:
   - service: switch.turn_on
     data: {}
@@ -3285,9 +3380,11 @@
       - service: media_player.volume_set
         metadata: {}
         data:
-          volume_level: 0.65
+          volume_level: 0.5
         target:
-          entity_id: media_player.kef
+          entity_id:
+          - media_player.kef
+          - media_player.music_assistant_salon
     default:
     - service: media_player.turn_off
       metadata: {}
@@ -3439,6 +3536,253 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
       assist_in_progress_binary_sensor: binary_sensor.wyoming_satellite_salon_assist_en_cours
-      media_player: media_player.kef
+      media_player: media_player.music_assistant_salon
       listening_volume: 0.3
       threshold_volume: 0.4
+- id: '1721160666723'
+  alias: Télécommande Table Basse
+  description: ''
+  trigger:
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+    id: 'off'
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_off
+    id: hue_single_click
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: turn_off
+    id: hue_double_click
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: dim_down
+    id: dim_down
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: dim_down
+    id: dim_down
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: dim_down
+    id: dim_down_fast
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_triple_press
+    subtype: dim_down
+    id: dim_down_fast
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_quadruple_press
+    subtype: dim_down
+    id: dim_down_fast_af
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_quintuple_press
+    subtype: dim_down
+    id: dim_down_fast_af
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: dim_up
+    id: dim_up
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: dim_up
+    id: dim_up
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: dim_up
+    id: dim_up_fast
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_triple_press
+    subtype: dim_up
+    id: dim_up_fast
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_quadruple_press
+    subtype: dim_up
+    id: dim_up_fast_af
+  - device_id: ae76e6c6103a236589c774e616d441a1
+    domain: zha
+    platform: device
+    type: remote_button_quintuple_press
+    subtype: dim_up
+    id: dim_up_fast_af
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: light.salon
+            state: 'on'
+          - condition: state
+            entity_id: light.cuisine
+            state: 'on'
+          - condition: state
+            entity_id: light.entree
+            state: 'on'
+        then:
+        - service: light.turn_off
+          metadata: {}
+          data: {}
+          target:
+            area_id:
+            - 71e221f94f4a4e929747570179d52280
+            - entree
+            - bd4ba6262e7a4e72b2fd740a22c70403
+        else:
+        - service: hue.activate_scene
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - scene.salon_salon_100
+            - scene.cuisine_cuisine_100
+            - scene.entree_entree_100
+    - conditions:
+      - condition: trigger
+        id:
+        - hue_single_click
+      sequence:
+      - service: hue.activate_scene
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.salon_salon_100
+          - scene.cuisine_cuisine_100
+          - scene.entree_entree_100
+    - conditions:
+      - condition: trigger
+        id:
+        - hue_double_click
+      sequence:
+      - service: hue.activate_scene
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.salon_salon_tv_playing
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_down
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_down_fast
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -20
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_down_fast_af
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -50
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_up
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_up_fast
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 20
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+    - conditions:
+      - condition: trigger
+        id:
+        - dim_up_fast_af
+      sequence:
+      - service: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 50
+        target:
+          area_id:
+          - 71e221f94f4a4e929747570179d52280
+          - entree
+          - bd4ba6262e7a4e72b2fd740a22c70403
+  mode: single

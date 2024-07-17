@@ -239,19 +239,6 @@ welcome_home:
       transition: 2
       brightness_pct: 100
   icon: mdi:home-import-outline
-reset_lights_day_area:
-  alias: Réinitialisation Lumières Coin Jour
-  mode: restart
-  sequence:
-  - service: hue.activate_scene
-    data:
-      transition: 1
-    target:
-      entity_id:
-      - scene.salon_salon_100
-      - scene.entree_entree_100
-      - scene.cuisine_cuisine_100
-  icon: mdi:sofa
 turn_off_media_center:
   alias: Turn Off Media center
   mode: single
@@ -340,36 +327,6 @@ pulse_2d_led_matrix:
   mode: queued
   icon: mdi:crop-square
   max: 1000
-lights_set_tv:
-  alias: Réglage lumières lors que la TV joue un média
-  mode: restart
-  sequence:
-  - service: light.turn_off
-    target:
-      entity_id:
-      - light.cuisine
-      - light.entree
-    data:
-      transition: 1
-  - service: hue.activate_scene
-    target:
-      entity_id: scene.salon_salon_tv_playing
-    data:
-      transition: 1
-  icon: mdi:play
-lights_set_tv_paused:
-  alias: Réglage lumières lors que la TV est en pause
-  mode: restart
-  sequence:
-  - service: hue.activate_scene
-    target:
-      entity_id:
-      - scene.cuisine_cuisine_tv_paused
-      - scene.entree_entree_tv_paused
-      - scene.salon_salon_tv_paused
-    data:
-      transition: 1
-  icon: mdi:pause
 wake_up:
   alias: Réveil Lumineux - Lumières
   sequence:
