@@ -388,6 +388,12 @@ room_cleaning_first_floor:
         - input_boolean.vacuum_zone_entry
         - input_boolean.vacuum_zone_bathroom
         - input_boolean.vacuum_zone_living_room
+    else:
+    - service: vacuum.start
+      metadata: {}
+      data: {}
+      target:
+        entity_id: vacuum.neuneu
   mode: single
   icon: mdi:vacuum
 start_marilou_bedtime_routine:
@@ -727,51 +733,6 @@ gererer_texte_radio:
       name: Lecteur Multimedia pour la radio
       default: media_player.sonos_chambre
       required: true
-room_cleaning_rez_de_chaussee_areas:
-  alias: Room Cleaning (Rez-De-Chaussée) (Pièces)
-  sequence:
-  - variables:
-      targeted_areas: '{{areas}}'
-      input_booleans: '{{label_entities(''Nettoyage ciblé'')}}'
-      targeted_input_booleans: "[\n  {%- for input_boolean in input_booleans -%}\n
-        \   {%- for area in areas -%}\n      {%- if input_boolean in area_entities(area)
-        -%}\n        \"{{input_boolean}}\",\n      {%- endif -%}\n    {%- endfor -%}\n
-        \ {%- endfor -%}\n]\n"
-  - service: input_boolean.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: '{{targeted_input_booleans}}'
-  - if:
-    - condition: template
-      value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
-        1}}'
-    then:
-    - service: dreame_vacuum.vacuum_clean_segment
-      data:
-        segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
-          }}'
-      target:
-        entity_id: vacuum.neuneu
-    - service: input_boolean.turn_off
-      data: {}
-      target:
-        entity_id:
-        - input_boolean.vacuum_zone_kitchen
-        - input_boolean.vacuum_zone_entry
-        - input_boolean.vacuum_zone_bathroom
-        - input_boolean.vacuum_zone_living_room
-  mode: single
-  icon: mdi:vacuum
-  fields:
-    areas:
-      selector:
-        area:
-          multiple: true
-      name: Pièces
-      default: []
-      required: true
-  description: ''
 controler_le_standing_desk:
   alias: Controler le Standing desk
   sequence:

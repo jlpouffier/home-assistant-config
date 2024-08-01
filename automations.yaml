@@ -261,6 +261,12 @@
       - service: script.leave_home
         data:
           call_from_main_door: true
+      - service: automation.trigger
+        metadata: {}
+        data:
+          skip_condition: true
+        target:
+          entity_id: automation.take_out_trash_on_arrival
   - choose:
     - conditions:
       - condition: trigger
@@ -452,7 +458,7 @@
       > state_attr(''schedule.heures_pleines'', ''next_event'') }}'
   action:
   - variables:
-      new_target_percentage: '{{((states(''number.meme_limite_de_recharge'')|float-states(''sensor.meme_niveau_de_la_batterie'')|float)*(state_attr(''schedule.heures_pleines'',''next_event'')-now())/(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))-now())+states(''sensor.meme_niveau_de_la_batterie'')|float)|round(0)}}'
+      new_target_percentage: '{{max(50,((states(''number.meme_limite_de_recharge'')|float-states(''sensor.meme_niveau_de_la_batterie'')|float)*(state_attr(''schedule.heures_pleines'',''next_event'')-now())/(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))-now())+states(''sensor.meme_niveau_de_la_batterie'')|float)|round(0))}}'
       actual_end_date: '{{as_local(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))).strftime("%H:%M")}}'
   - service: number.set_value
     metadata: {}
@@ -970,29 +976,29 @@
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
   action:
-  - service: scene.create
-    data:
+  - data:
       scene_id: office_previous_light_state
       snapshot_entities:
       - light.bureau
-  - service: light.turn_on
-    data:
+    action: scene.create
+  - data:
       brightness_pct: 100
       kelvin: 3521
     target:
       entity_id:
       - light.bureau
-  - service: light.turn_on
-    data:
+    action: light.turn_on
+  - data:
       brightness_pct: 60
       kelvin: 3521
     target:
       entity_id:
       - light.hue_play_bars
-  - service: switch.turn_off
-    data: {}
+    action: light.turn_on
+  - data: {}
     target:
       entity_id: switch.hal_use_wake_word
+    action: switch.turn_off
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -1000,18 +1006,18 @@
       to: 'off'
       from: 'on'
     continue_on_timeout: false
-  - service: light.turn_off
-    data: {}
+  - data: {}
     target:
       entity_id: light.hue_play_bars
-  - service: scene.turn_on
-    data: {}
+    action: light.turn_off
+  - data: {}
     target:
       entity_id: scene.office_previous_light_state
-  - service: switch.turn_on
-    data: {}
+    action: scene.turn_on
+  - data: {}
     target:
       entity_id: switch.hal_use_wake_word
+    action: switch.turn_on
   mode: single
 - id: '1688371620889'
   alias: Surveillance de la maison - Éteindre appareils lors du départ
@@ -2077,16 +2083,42 @@
   trigger:
   - platform: state
     entity_id:
-    - event.chambre_bebe_switch_button_4
+    - event.hue_tap_dial_switch_13_bouton_1
     attribute: event_type
     to: repeat
+    id: 'on'
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_13_bouton_2
+    attribute: event_type
+    to: repeat
+    id: 'on'
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_13_bouton_3
+    attribute: event_type
+    to: repeat
+    id: 'off'
+  - platform: state
+    entity_id:
+    - event.hue_tap_dial_switch_13_bouton_4
+    attribute: event_type
+    to: repeat
+    id: 'off'
   condition: []
   action:
   - choose:
     - conditions:
-      - condition: state
-        state: playing
-        entity_id: media_player.chambre_marilou_sonos_music_assistant
+      - condition: trigger
+        id:
+        - 'on'
+      sequence:
+      - service: script.start_marilou_bedtime_routine
+        data: {}
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
       sequence:
       - service: media_player.turn_off
         data: {}
@@ -2103,9 +2135,6 @@
         data: {}
         target:
           area_id: chambre_bebe
-    default:
-    - service: script.start_marilou_bedtime_routine
-      data: {}
   mode: single
 - id: '1700129731183'
   alias: Chauffage intelligent - Changer Fin du Boost Manuel
@@ -2372,32 +2401,6 @@
       room_temperature: sensor.capteur_thp_bureau_temperature
       room_opening: binary_sensor.is_office_open_since_more_than_10_minutes
       outside_temperature: sensor.floirac_temperature
-- id: '1701341635863'
-  alias: Restaurer États Prises
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - switch.prise_frigo
-  - platform: state
-    entity_id:
-    - switch.prise_lave_vaisselle
-  - platform: state
-    entity_id:
-    - switch.prise_machine_a_laver
-  - platform: state
-    entity_id:
-    - switch.prise_server
-  - platform: homeassistant
-    event: start
-  condition: []
-  action:
-  - service: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.always_on_switches
-  mode: queued
-  max: 100
 - id: '1702164245946'
   alias: Routine du sommeil Marilou - Changer heure fin de routine
   description: ''
@@ -2419,19 +2422,18 @@
       entity_id: input_datetime.marilou_bedtime_routine_end
   mode: single
 - id: '1702834566659'
-  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir lors de
-    l’arrivée à la maison"
+  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir"
   description: ''
   trigger:
   - platform: state
     entity_id:
     - binary_sensor.home_occupied
     to: 'on'
-  condition:
+  condition: []
+  action:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
-  action:
   - if:
     - condition: state
       entity_id: input_boolean.poubelle_noire_a_sortir
@@ -2815,6 +2817,12 @@
     data:
       call_from_main_door: false
     enabled: true
+  - service: automation.trigger
+    metadata: {}
+    data:
+      skip_condition: true
+    target:
+      entity_id: automation.take_out_trash_on_arrival
   - set_conversation_response: '{% set time = now().hour %}
 
       {% if (time >= 18) %}
@@ -2843,11 +2851,11 @@
     event: start
   - platform: state
     entity_id:
-    - light.box_chambre_lcd_backlight
+    - light.s3box_chambre_lcd_backlight
     attribute: brightness
   - platform: state
     entity_id:
-    - binary_sensor.box_chambre_assist_en_cours
+    - binary_sensor.s3box_chambre_assist_en_cours
   - platform: state
     entity_id:
     - binary_sensor.chambre_lumineuse
@@ -2861,7 +2869,7 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: binary_sensor.box_chambre_assist_en_cours
+          entity_id: binary_sensor.s3box_chambre_assist_en_cours
           state: 'on'
         - condition: and
           conditions:
@@ -2877,14 +2885,16 @@
         data:
           brightness_pct: 100
         target:
-          entity_id: light.box_chambre_lcd_backlight
+          entity_id:
+          - light.s3box_chambre_lcd_backlight
     default:
     - service: light.turn_on
       metadata: {}
       data:
         brightness_pct: 20
       target:
-        entity_id: light.box_chambre_lcd_backlight
+        entity_id:
+        - light.s3box_chambre_lcd_backlight
   mode: queued
   max: 10
 - id: '1713855798081'
@@ -3221,7 +3231,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.casita_chambre_microphone
+      entity_id:
+      - switch.s3box_chambre_microphone
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -3287,7 +3298,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.casita_chambre_microphone
+      entity_id:
+      - switch.s3box_chambre_microphone
   mode: single
 - id: '1718020743731'
   alias: Allumer Assistant vocal quand présence - Chambre Marilou
@@ -3466,6 +3478,14 @@
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
           entity_id: media_player.music_assistant_salon
+      - service: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.5
+        target:
+          entity_id:
+          - media_player.kef
+          - media_player.music_assistant_salon
     default:
     - service: media_player.turn_off
       metadata: {}
@@ -3525,7 +3545,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.box_chambre_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.s3box_chambre_assist_en_cours
       media_player: media_player.sonos_chambre
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -3785,4 +3805,47 @@
           - 71e221f94f4a4e929747570179d52280
           - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
+  mode: single
+- id: '1721384561151'
+  alias: Télécommande Bureau
+  description: ''
+  trigger:
+  - device_id: 0870ac18c5e224c05d39a1a6a3fbfaaa
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_off
+  condition: []
+  action:
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.sonos_bureau
+    data:
+      media_content_id: media-source://media_source/local/ok_nabu.flac
+      media_content_type: audio/flac
+    metadata:
+      title: ok_nabu.flac
+      thumbnail:
+      media_class: music
+      children_media_class:
+      navigateIds:
+      - {}
+      - media_content_type: app
+        media_content_id: media-source://media_source
+  mode: single
+- id: '1722438455205'
+  alias: Nouvelle automatisation
+  description: ''
+  trigger:
+  - event_data:
+      actionID: 97294FED-F7EE-47DD-9255-35C9A4E08D50
+    event_type: ios.action_fired
+    platform: event
+  condition: []
+  action:
+  - service: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      area_id: bureau
   mode: single
