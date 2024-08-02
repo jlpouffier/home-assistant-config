@@ -855,3 +855,65 @@ eteindre_tous_les_lecteur_multimedia:
       entity_id: media_player.all_media_players
   description: ''
   icon: mdi:television-speaker-off
+test_2:
+  alias: Crazy Wake Up
+  sequence:
+  - action: media_player.play_media
+    target:
+      entity_id: media_player.sonos_chambre
+    data:
+      media_content_id: media-source://media_source/local/wake_up.mp3
+      media_content_type: audio/mpeg
+    metadata:
+      title: wake_up.mp3
+      thumbnail:
+      media_class: music
+      children_media_class:
+      navigateIds:
+      - {}
+      - media_content_type: app
+        media_content_id: media-source://media_source
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - media_player.sonos_chambre
+      to: playing
+  - action: light.turn_on
+    metadata: {}
+    data:
+      transition: 14
+    target:
+      area_id: chambre
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 12
+      milliseconds: 0
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: chambre
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - repeat:
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          flash: short
+        target:
+          entity_id: light.chambre
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      while:
+      - condition: state
+        entity_id: media_player.sonos_chambre
+        state: playing
+  description: ''
