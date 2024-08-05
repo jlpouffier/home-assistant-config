@@ -2,15 +2,15 @@ leave_home:
   alias: Quitter la maison
   mode: queued
   sequence:
-  - service: light.turn_off
+  - action: light.turn_off
     target:
       entity_id:
       - light.all_lights
     data: {}
-  - service: script.eteindre_tous_les_lecteur_multimedia
+  - action: script.eteindre_tous_les_lecteur_multimedia
     metadata: {}
     data: {}
-  - service: switch.turn_off
+  - action: switch.turn_off
     data: {}
     target:
       entity_id: switch.microphones
@@ -19,7 +19,7 @@ leave_home:
       entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
       state: 'on'
     then:
-    - service: cover.close_cover
+    - action: cover.close_cover
       metadata: {}
       data: {}
       target:
@@ -145,7 +145,7 @@ welcome_home:
   alias: Bienvenue a la maison
   mode: queued
   sequence:
-  - service: light.turn_on
+  - action: light.turn_on
     metadata: {}
     data:
       transition: 2
@@ -157,7 +157,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     metadata: {}
     data:
       transition: 2
@@ -170,7 +170,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     metadata: {}
     data:
       transition: 2
@@ -183,7 +183,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     metadata: {}
     data:
       transition: 2
@@ -195,7 +195,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     metadata: {}
     data:
       brightness_pct: 60
@@ -208,7 +208,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     target:
       entity_id: light.salon_trepied
     data:
@@ -219,7 +219,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_comptoir
@@ -231,7 +231,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_suspension
@@ -239,16 +239,17 @@ welcome_home:
       transition: 2
       brightness_pct: 100
   icon: mdi:home-import-outline
+  description: ''
 turn_off_media_center:
   alias: Turn Off Media center
   mode: single
   sequence:
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     target:
       entity_id:
       - media_player.kef
     data: {}
-  - service: remote.turn_off
+  - action: remote.turn_off
     data: {}
     target:
       entity_id: remote.jl_s_tv
@@ -257,12 +258,12 @@ turn_on_media_center:
   alias: Turn On Media center
   mode: single
   sequence:
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: media_player.music_assistant_salon
-  - service: media_player.turn_on
+  - action: media_player.turn_on
     target:
       entity_id:
       - media_player.kef
@@ -275,12 +276,12 @@ turn_on_media_center:
         state: Opt
         attribute: source
     then:
-    - service: media_player.select_source
+    - action: media_player.select_source
       target:
         entity_id: media_player.kef
       data:
         source: Opt
-  - service: remote.turn_on
+  - action: remote.turn_on
     data: {}
     target:
       entity_id: remote.jl_s_tv
@@ -302,25 +303,25 @@ pulse_2d_led_matrix:
           entity_id: light.2d_matrix
           state: 'off'
         then:
-        - service: light.turn_on
+        - action: light.turn_on
           data: {}
           target:
             entity_id:
             - light.2d_matrix
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           data:
             datetime: '{{ now() + timedelta( seconds = 3 ) }}'
           target:
             entity_id: input_datetime.pulse_end_time
         else:
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           data:
             datetime: '{{as_datetime(states(''input_datetime.pulse_end_time'')) +   timedelta(
               seconds = 3 )}}'
           target:
             entity_id: input_datetime.pulse_end_time
     default:
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.2d_matrix
       data: {}
@@ -330,11 +331,11 @@ pulse_2d_led_matrix:
 wake_up:
   alias: Réveil Lumineux - Lumières
   sequence:
-  - service: light.turn_off
+  - action: light.turn_off
     data: {}
     target:
       entity_id: light.chambre
-  - service: light.turn_on
+  - action: light.turn_on
     data:
       transition: 300
       brightness_pct: 100
@@ -346,7 +347,7 @@ wake_up:
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     data:
       transition: 300
       brightness_pct: 100
@@ -360,7 +361,7 @@ wake_up:
       minutes: 10
       seconds: 0
       milliseconds: 0
-  - service: light.turn_on
+  - action: light.turn_on
     data: {}
     target:
       entity_id: light.chambre_guirlande
@@ -374,13 +375,13 @@ room_cleaning_first_floor:
       value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
         1}}'
     then:
-    - service: dreame_vacuum.vacuum_clean_segment
+    - action: dreame_vacuum.vacuum_clean_segment
       data:
         segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
           }}'
       target:
         entity_id: vacuum.neuneu
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       data: {}
       target:
         entity_id:
@@ -389,7 +390,7 @@ room_cleaning_first_floor:
         - input_boolean.vacuum_zone_bathroom
         - input_boolean.vacuum_zone_living_room
     else:
-    - service: vacuum.start
+    - action: vacuum.start
       metadata: {}
       data: {}
       target:
@@ -399,16 +400,16 @@ room_cleaning_first_floor:
 start_marilou_bedtime_routine:
   alias: Démarrer la routine du sommeil de Marilou
   sequence:
-  - service: scene.turn_on
+  - action: scene.turn_on
     metadata: {}
     target:
       entity_id: scene.chambre_bebe_initial
-  - service: media_player.turn_on
+  - action: media_player.turn_on
     data: {}
     target:
       entity_id:
       - media_player.chambre_marilou_sonos_music_assistant
-  - service: mass.play_media
+  - action: mass.play_media
     target:
       entity_id:
       - media_player.chambre_marilou_sonos_music_assistant
@@ -417,13 +418,13 @@ start_marilou_bedtime_routine:
       enqueue: replace
       radio_mode: true
       media_type: playlist
-  - service: media_player.volume_set
+  - action: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
       - media_player.chambre_marilou_sonos_music_assistant
-  - service: media_player.shuffle_set
+  - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
@@ -444,7 +445,7 @@ eteindre_temporairement_un_assistant_vocal:
       minutes: 0
       seconds: 5
       milliseconds: 0
-  - service: switch.turn_off
+  - action: switch.turn_off
     metadata: {}
     data: {}
     target:
@@ -454,7 +455,7 @@ eteindre_temporairement_un_assistant_vocal:
       minutes: 30
       seconds: 0
       milliseconds: 0
-  - service: switch.turn_on
+  - action: switch.turn_on
     metadata: {}
     data: {}
     target:
@@ -470,18 +471,18 @@ eteindre_temporairement_un_assistant_vocal:
 lancer_playlist_de_reveil:
   alias: Réveil Lumineux - Musique
   sequence:
-  - service: media_player.turn_on
+  - action: media_player.turn_on
     data: {}
     target:
       entity_id:
       - media_player.chambre_sonos_music_assistant
-  - service: media_player.volume_set
+  - action: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
       - media_player.chambre_sonos_music_assistant
-  - service: mass.play_media
+  - action: mass.play_media
     target:
       entity_id:
       - media_player.chambre_sonos_music_assistant
@@ -489,7 +490,7 @@ lancer_playlist_de_reveil:
       media_id: ⏰ Réveil
       enqueue: replace
       media_type: playlist
-  - service: media_player.shuffle_set
+  - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
@@ -501,23 +502,23 @@ gererer_texte_radio:
   alias: Radio
   sequence:
   - sequence:
-    - service: media_player.turn_on
+    - action: media_player.turn_on
       data: {}
       target:
         entity_id: '{{music_media_player}}'
-    - service: media_player.volume_set
+    - action: media_player.volume_set
       data:
         volume_level: 0.1
       target:
         entity_id: '{{music_media_player}}'
-    - service: mass.play_media
+    - action: mass.play_media
       target:
         entity_id: '{{music_media_player}}'
       data:
         media_id: ⏰ Réveil
         enqueue: replace
         media_type: playlist
-    - service: media_player.shuffle_set
+    - action: media_player.shuffle_set
       data:
         shuffle: true
       target:
@@ -541,14 +542,14 @@ gererer_texte_radio:
     enabled: true
   - alias: Greetings and Weather
     sequence:
-    - service: weather.get_forecasts
+    - action: weather.get_forecasts
       metadata: {}
       data:
         type: hourly
       target:
         entity_id: weather.floirac
       response_variable: weather_forecast
-    - service: conversation.process
+    - action: conversation.process
       metadata: {}
       data:
         agent_id: conversation.gpt_radio
@@ -567,7 +568,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "home_assistant_cloud"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.home_assistant_cloud
           data:
@@ -581,7 +582,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "elevenlabs"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.elevenlabs_tts
           data:
@@ -595,7 +596,7 @@ gererer_texte_radio:
       milliseconds: 0
   - alias: Chores
     sequence:
-    - service: conversation.process
+    - action: conversation.process
       metadata: {}
       data:
         agent_id: conversation.gpt_radio
@@ -620,7 +621,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "home_assistant_cloud"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.home_assistant_cloud
           data:
@@ -634,7 +635,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "elevenlabs"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.elevenlabs_tts
           data:
@@ -648,7 +649,7 @@ gererer_texte_radio:
       milliseconds: 0
   - alias: Calendar
     sequence:
-    - service: calendar.get_events
+    - action: calendar.get_events
       metadata: {}
       data:
         duration:
@@ -658,7 +659,7 @@ gererer_texte_radio:
       target:
         entity_id: calendar.nabucasa_calendar_personal
       response_variable: calendar_events
-    - service: conversation.process
+    - action: conversation.process
       metadata: {}
       data:
         agent_id: conversation.gpt_radio
@@ -679,7 +680,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "home_assistant_cloud"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.home_assistant_cloud
           data:
@@ -693,7 +694,7 @@ gererer_texte_radio:
         - condition: template
           value_template: '{{voice_provider == "elevenlabs"}}'
         sequence:
-        - service: tts.speak
+        - action: tts.speak
           target:
             entity_id: tts.elevenlabs_tts
           data:
@@ -743,7 +744,7 @@ controler_le_standing_desk:
       sequence:
       - repeat:
           sequence:
-          - service: button.press
+          - action: button.press
             target:
               entity_id:
               - button.standing_desk_move_desk_to_position_1
@@ -785,7 +786,7 @@ controler_le_standing_desk:
       sequence:
       - repeat:
           sequence:
-          - service: button.press
+          - action: button.press
             target:
               entity_id: button.standing_desk_move_desk_to_position_2
             data: {}
@@ -839,7 +840,7 @@ controler_le_standing_desk:
 eteindre_tous_les_lecteur_multimedia:
   alias: Éteindre tous les lecteurs multimédia
   sequence:
-  - service: media_player.media_pause
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
@@ -848,7 +849,7 @@ eteindre_tous_les_lecteur_multimedia:
       - media_player.sonos_chambre
       - media_player.sonos_chambre_marilou
       - media_player.sonos_salle_de_douche_2
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:

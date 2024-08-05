@@ -12,7 +12,7 @@
     entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
   action:
-  - service: input_number.increment
+  - action: input_number.increment
     data: {}
     target:
       entity_id: input_number.litter_tracking
@@ -57,7 +57,7 @@
       action: reset_litter_tracking
   condition: []
   action:
-  - service: input_number.set_value
+  - action: input_number.set_value
     data:
       value: 0
     target:
@@ -77,7 +77,7 @@
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
   action:
-  - service: input_boolean.turn_on
+  - action: input_boolean.turn_on
     data: {}
     target:
       entity_id: input_boolean.poubelle_noire_a_sortir
@@ -96,7 +96,7 @@
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
   action:
-  - service: input_boolean.turn_on
+  - action: input_boolean.turn_on
     data: {}
     target:
       entity_id: input_boolean.poubelle_verte_a_sortir
@@ -124,7 +124,7 @@
       title: "\U0001F5D1 Poubelle Noire"
       message: N'oublie pas de sortir la poubelle noire
       tag: black_trash
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     data: {}
     target:
       entity_id: input_boolean.poubelle_noire_a_sortir
@@ -152,7 +152,7 @@
       title: ♻️ Poubelle Verte
       message: N'oublie pas de sortir la poubelle verte
       tag: green_trash
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     data: {}
     target:
       entity_id: input_boolean.poubelle_verte_a_sortir
@@ -240,17 +240,17 @@
       - condition: trigger
         id: 'on'
       sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         data: {}
         target:
           entity_id:
           - switch.alexa
           - switch.wyoming_satellite_salon_microphone
-      - service: cover.open_cover
+      - action: cover.open_cover
         data: {}
         target:
           entity_id: cover.living_room_cover
-      - service: script.welcome_home
+      - action: script.welcome_home
         data: {}
     - conditions:
       - condition: trigger
@@ -258,10 +258,10 @@
         - off_no_vacuum
         - off_vacuum
       sequence:
-      - service: script.leave_home
+      - action: script.leave_home
         data:
           call_from_main_door: true
-      - service: automation.trigger
+      - action: automation.trigger
         metadata: {}
         data:
           skip_condition: true
@@ -273,7 +273,7 @@
         id:
         - off_vacuum
       sequence:
-      - service: vacuum.start
+      - action: vacuum.start
         metadata: {}
         data: {}
         target:
@@ -320,7 +320,7 @@
         - on_no_cover
         - on_cover
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         target:
           entity_id:
           - scene.salon_salon_100
@@ -334,7 +334,7 @@
         - off_no_cover
         - off_cover
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           floor_id: rez_de_chaussee
@@ -344,7 +344,7 @@
         id:
         - on_cover
       sequence:
-      - service: cover.open_cover
+      - action: cover.open_cover
         metadata: {}
         data: {}
         target:
@@ -354,7 +354,7 @@
         id:
         - off_cover
       sequence:
-      - service: cover.close_cover
+      - action: cover.close_cover
         target:
           entity_id:
           - cover.living_room_cover
@@ -395,7 +395,7 @@
     entity_id: input_boolean.irrigation_automation
     state: 'on'
   action:
-  - service: input_datetime.set_datetime
+  - action: input_datetime.set_datetime
     data:
       datetime: '{{ now() + timedelta (minutes = states(''input_number.irrigation_time'')
         | int) }}'
@@ -425,7 +425,7 @@
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.end_of_irrigation")))}}'
   action:
-  - service: valve.close_valve
+  - action: valve.close_valve
     target:
       entity_id: valve.irrigation
     data: {}
@@ -460,7 +460,7 @@
   - variables:
       new_target_percentage: '{{max(50,((states(''number.meme_limite_de_recharge'')|float-states(''sensor.meme_niveau_de_la_batterie'')|float)*(state_attr(''schedule.heures_pleines'',''next_event'')-now())/(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))-now())+states(''sensor.meme_niveau_de_la_batterie'')|float)|round(0))}}'
       actual_end_date: '{{as_local(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))).strftime("%H:%M")}}'
-  - service: number.set_value
+  - action: number.set_value
     metadata: {}
     data:
       value: '{{max(new_target_percentage,50)}}'
@@ -484,7 +484,7 @@
     - input_datetime.wake_up_time
   condition: []
   action:
-  - service: input_datetime.set_datetime
+  - action: input_datetime.set_datetime
     data:
       datetime: '{{today_at(states(''input_datetime.wake_up_time'')) - timedelta(minutes
         = 5)}}'
@@ -513,7 +513,7 @@
       entity_id: input_boolean.forcer_le_reveil
       state: 'on'
   action:
-  - service: script.wake_up
+  - action: script.wake_up
     data: {}
   mode: single
 - id: '1688301259694'
@@ -546,16 +546,16 @@
         id:
         - 'on'
       sequence:
-      - service: media_player.turn_off
+      - action: media_player.turn_off
         metadata: {}
         data: {}
         target:
           entity_id: media_player.music_assistant_salon
-      - service: media_player.turn_on
+      - action: media_player.turn_on
         data: {}
         target:
           entity_id: media_player.kef
-      - service: media_player.select_source
+      - action: media_player.select_source
         data:
           source: Opt
         target:
@@ -565,7 +565,7 @@
         id:
         - 'off'
       sequence:
-      - service: media_player.turn_off
+      - action: media_player.turn_off
         data: {}
         target:
           entity_id: media_player.kef
@@ -605,11 +605,11 @@
         value_template: "{{\n  from_state in [\"off\", \"paused\", \"idle\", \"on\",
           \"buffering\"] and \n  to_state == \"playing\" and \n  to_app in supported_apps\n}}"
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         target:
           entity_id: scene.salon_salon_tv_playing
         data: {}
-      - service: light.turn_off
+      - action: light.turn_off
         metadata: {}
         data: {}
         target:
@@ -621,7 +621,7 @@
         value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
           \"buffering\"] and \n  to_app in supported_apps\n}}"
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         metadata: {}
         data: {}
         target:
@@ -634,7 +634,7 @@
         value_template: "{{\n  from_state in [\"playing\", \"paused\", \"buffering\"]
           and \n  to_state in [\"off\", \"on\", \"idle\"] and \n  from_app in supported_apps\n}}"
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         metadata: {}
         data:
           transition: 10
@@ -678,11 +678,11 @@
       - condition: trigger
         id: 'on'
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         target:
           entity_id: scene.salon_salon_tv_playing
         data: {}
-      - service: light.turn_off
+      - action: light.turn_off
         metadata: {}
         data: {}
         target:
@@ -693,7 +693,7 @@
       - condition: trigger
         id: 'off'
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         metadata: {}
         data:
           transition: 10
@@ -711,7 +711,7 @@
     event_type: call_service
     event_data:
       domain: cover
-      service: open_cover
+      action: open_cover
       service_data:
         entity_id: cover.living_room_cover
     id: open
@@ -719,7 +719,7 @@
     event_type: call_service
     event_data:
       domain: cover
-      service: close_cover
+      action: close_cover
       service_data:
         entity_id: cover.living_room_cover
     id: closed
@@ -748,7 +748,7 @@
       - condition: trigger
         id: open
       sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         data: {}
         target:
           entity_id:
@@ -757,7 +757,7 @@
       - condition: trigger
         id: closed
       sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         data: {}
         target:
           entity_id:
@@ -791,7 +791,7 @@
         entity_id: binary_sensor.is_home_open_since_more_than_one_minute
         state: 'on'
       sequence:
-      - service: input_select.select_option
+      - action: input_select.select_option
         data:
           option: Frost Guard
         target:
@@ -801,7 +801,7 @@
         entity_id: binary_sensor.home_occupied
         state: 'off'
       sequence:
-      - service: input_select.select_option
+      - action: input_select.select_option
         data:
           option: Absent
         target:
@@ -811,7 +811,7 @@
         entity_id: binary_sensor.home_occupied
         state: 'on'
       sequence:
-      - service: input_select.select_option
+      - action: input_select.select_option
         data:
           option: Présent
         target:
@@ -857,7 +857,7 @@
         entity_id: input_boolean.heating_manual_boost
         state: 'on'
       sequence:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         data: {}
         target:
           entity_id: input_boolean.heating_manual_boost
@@ -869,7 +869,7 @@
         condition: template
         value_template: '{{ trigger.to_state.context.user_id != None }}'
       sequence:
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         data: {}
         target:
           entity_id: input_boolean.heating_manual_boost
@@ -882,7 +882,7 @@
         entity_id: input_boolean.heating_manual_boost
         state: 'off'
       sequence:
-      - service: climate.set_temperature
+      - action: climate.set_temperature
         target:
           entity_id: climate.netatmo
         data:
@@ -911,12 +911,17 @@
     state: 'on'
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
   action:
-  - service: scene.create
+  - action: scene.create
     data:
       scene_id: office_previous_light_state
       snapshot_entities:
       - light.bureau
-  - service: light.turn_on
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: light.turn_on
     data:
       brightness_pct: 100
       kelvin: 3521
@@ -924,7 +929,7 @@
       entity_id:
       - light.bureau
       - light.hue_play_bars
-  - service: switch.turn_off
+  - action: switch.turn_off
     data: {}
     target:
       entity_id: switch.hal_use_wake_word
@@ -935,15 +940,15 @@
       to: 'off'
       from: 'on'
     continue_on_timeout: false
-  - service: light.turn_off
+  - action: light.turn_off
     data: {}
     target:
       entity_id: light.hue_play_bars
-  - service: scene.turn_on
+  - action: scene.turn_on
     data: {}
     target:
       entity_id: scene.office_previous_light_state
-  - service: switch.turn_on
+  - action: switch.turn_on
     data: {}
     target:
       entity_id: switch.hal_use_wake_word
@@ -981,6 +986,11 @@
       snapshot_entities:
       - light.bureau
     action: scene.create
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
   - data:
       brightness_pct: 100
       kelvin: 3521
@@ -1036,7 +1046,7 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   action:
-  - service: script.leave_home
+  - action: script.leave_home
     data:
       call_from_main_door: false
   mode: queued
@@ -1058,7 +1068,7 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   action:
-  - service: switch.turn_on
+  - action: switch.turn_on
     data: {}
     target:
       entity_id:
@@ -1075,7 +1085,7 @@
       seconds: 0
       milliseconds: 0
     continue_on_timeout: false
-  - service: cover.open_cover
+  - action: cover.open_cover
     data: {}
     target:
       entity_id: cover.living_room_cover
@@ -1084,7 +1094,7 @@
       entity_id: sun.sun
       state: below_horizon
     then:
-    - service: script.turn_on
+    - action: script.turn_on
       data: {}
       target:
         entity_id: script.welcome_home
@@ -1193,7 +1203,7 @@
     entity_id: input_boolean.automation_monitor_system
     state: 'on'
   action:
-  - service: hassio.backup_full
+  - action: hassio.backup_full
     data:
       compressed: true
       name: Home Assistant Backup {{now()}}
@@ -1357,7 +1367,7 @@
       seconds: 0
   condition: []
   action:
-  - service: input_datetime.set_datetime
+  - action: input_datetime.set_datetime
     data:
       datetime: '{{now()}}'
     target:
@@ -1398,7 +1408,7 @@
       action: start_neuneu
   condition: []
   action:
-  - service: vacuum.start
+  - action: vacuum.start
     data: {}
     target:
       entity_id: vacuum.neuneu
@@ -1413,7 +1423,7 @@
       action: rth_neuneu
   condition: []
   action:
-  - service: vacuum.return_to_base
+  - action: vacuum.return_to_base
     data: {}
     target:
       entity_id: vacuum.neuneu
@@ -1448,7 +1458,7 @@
       entity_id: number.meme_limite_de_recharge
       state: '100'
   action:
-  - service: number.set_value
+  - action: number.set_value
     metadata: {}
     data:
       value: '100'
@@ -1510,7 +1520,7 @@
         entity_id: light.plafonnier_exterieur
         state: 'off'
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         data: {}
         target:
           entity_id: light.plafonnier_exterieur
@@ -1522,7 +1532,7 @@
         entity_id: light.plafonnier_exterieur
         state: 'on'
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id: light.plafonnier_exterieur
@@ -1534,7 +1544,7 @@
         entity_id: binary_sensor.is_exterior_sphere_bright
         state: 'off'
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -1547,7 +1557,7 @@
         entity_id: binary_sensor.is_exterior_sphere_bright
         state: 'on'
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id: light.exterieur
@@ -1561,7 +1571,7 @@
     at: input_datetime.pulse_end_time
   condition: []
   action:
-  - service: light.turn_off
+  - action: light.turn_off
     data: {}
     target:
       entity_id:
@@ -1580,7 +1590,7 @@
     entity_id: binary_sensor.is_raining_now
     state: 'on'
   action:
-  - service: input_number.increment
+  - action: input_number.increment
     data: {}
     target:
       entity_id: input_number.daily_rain
@@ -1595,7 +1605,7 @@
     seconds: '0'
   condition: []
   action:
-  - service: input_number.set_value
+  - action: input_number.set_value
     data:
       value: 0
     target:
@@ -1610,12 +1620,12 @@
     - '{command1} et {command2}'
   condition: []
   action:
-  - service: conversation.process
+  - action: conversation.process
     data:
       agent_id: conversation.home_assistant
       text: '{{trigger.slots.command1}}'
     response_variable: response_1
-  - service: conversation.process
+  - action: conversation.process
     data:
       agent_id: conversation.home_assistant
       text: '{{trigger.slots.command2}}'
@@ -1661,18 +1671,23 @@
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
     state: 'on'
   action:
-  - service: scene.create
+  - action: scene.create
     data:
       scene_id: office_webcam_previous_light_state
       snapshot_entities:
       - light.hue_play_bars
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
   - choose:
     - conditions:
       - condition: trigger
         id:
         - personal
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
           rgb_color:
@@ -1688,7 +1703,7 @@
         id:
         - social_time
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
           rgb_color:
@@ -1699,12 +1714,24 @@
         target:
           entity_id:
           - light.hue_play_bars
+    default:
+    - action: light.turn_on
+      data:
+        brightness_pct: 100
+        rgb_color:
+        - 0
+        - 76
+        - 255
+        transition: 1
+      target:
+        entity_id:
+        - light.hue_play_bars
   - delay:
       hours: 0
       minutes: 0
       seconds: 2
       milliseconds: 0
-  - service: scene.turn_on
+  - action: scene.turn_on
     data: {}
     target:
       entity_id: scene.office_webcam_previous_light_state
@@ -1748,7 +1775,7 @@
       action: start_presence_simulation
   condition: []
   action:
-  - service: input_boolean.turn_on
+  - action: input_boolean.turn_on
     data: {}
     target:
       entity_id: input_boolean.automation_presence_simulator
@@ -1800,7 +1827,7 @@
     entity_id: input_boolean.automation_presence_simulator
     state: 'on'
   action:
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     data: {}
     target:
       entity_id: input_boolean.automation_presence_simulator
@@ -1897,12 +1924,12 @@
     entity_id: input_boolean.automation_tesla
     state: 'on'
   action:
-  - service: person.add_device_tracker
+  - action: person.add_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.meme_emplacement
-  - service: person.remove_device_tracker
+  - action: person.remove_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
@@ -1926,7 +1953,7 @@
     entity_id: input_boolean.automation_tesla
     state: 'on'
   action:
-  - service: notify.mobile_app_jean_loics_iphone
+  - action: notify.mobile_app_jean_loics_iphone
     data:
       message: request_location_update
   - delay:
@@ -1934,13 +1961,13 @@
       minutes: 0
       seconds: 5
       milliseconds: 0
-  - service: person.add_device_tracker
+  - action: person.add_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
       - device_tracker.jlo_s_iphone_bluetooth
-  - service: person.remove_device_tracker
+  - action: person.remove_device_tracker
     data:
       entity_id: person.jenova70
       device_tracker:
@@ -1985,7 +2012,7 @@
         - playing
         - on_ps5
       sequence:
-      - service: switch.turn_off
+      - action: switch.turn_off
         data: {}
         target:
           entity_id:
@@ -1996,7 +2023,7 @@
         - not_playing
         - off_ps5
       sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         data: {}
         target:
           entity_id:
@@ -2019,7 +2046,7 @@
       state: 'off'
       entity_id: media_player.music_assistant_salon
   action:
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     data: {}
     target:
       entity_id:
@@ -2044,7 +2071,7 @@
       attribute: source
       state: Opt
   action:
-  - service: media_player.select_source
+  - action: media_player.select_source
     data:
       source: Opt
     target:
@@ -2067,12 +2094,12 @@
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
   action:
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     data: {}
     target:
       entity_id:
       - media_player.chambre_marilou_sonos_music_assistant
-  - service: light.turn_off
+  - action: light.turn_off
     data: {}
     target:
       area_id: chambre_bebe
@@ -2113,24 +2140,24 @@
         id:
         - 'on'
       sequence:
-      - service: script.start_marilou_bedtime_routine
+      - action: script.start_marilou_bedtime_routine
         data: {}
     - conditions:
       - condition: trigger
         id:
         - 'off'
       sequence:
-      - service: media_player.turn_off
+      - action: media_player.turn_off
         data: {}
         target:
           entity_id:
           - media_player.chambre_marilou_sonos_music_assistant
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         data:
           datetime: '{{ now() }}'
         target:
           entity_id: input_datetime.marilou_bedtime_routine_end
-      - service: light.turn_off
+      - action: light.turn_off
         metadata: {}
         data: {}
         target:
@@ -2157,7 +2184,7 @@
     entity_id: input_boolean.heating_manual_boost
     state: 'on'
   action:
-  - service: input_datetime.set_datetime
+  - action: input_datetime.set_datetime
     data:
       datetime: '{{ now() + timedelta (minutes = states(''input_number.heating_manual_boost_duration'')
         |
@@ -2201,7 +2228,7 @@
         entity_id: sensor.presence_simulator_current_step
         state: out
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
           - light.all_lights
@@ -2211,7 +2238,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.close_cover
+        - action: cover.close_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2220,14 +2247,14 @@
         entity_id: sensor.presence_simulator_current_step
         state: wake_up
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id:
           - light.lumieres_rez_de_chaussee
           - light.couloir
           - light.exterieur
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -2240,7 +2267,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.close_cover
+        - action: cover.close_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2249,7 +2276,7 @@
         entity_id: sensor.presence_simulator_current_step
         state: breakfast
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id:
@@ -2258,7 +2285,7 @@
           - light.bureau
           - light.couloir
           - light.exterieur
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -2268,7 +2295,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.open_cover
+        - action: cover.open_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2277,7 +2304,7 @@
         entity_id: sensor.presence_simulator_current_step
         state: chill
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id:
@@ -2285,7 +2312,7 @@
           - light.chambre_bebe
           - light.bureau
           - light.couloir
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -2297,7 +2324,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.open_cover
+        - action: cover.open_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2306,7 +2333,7 @@
         entity_id: sensor.presence_simulator_current_step
         state: eating
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id:
@@ -2314,7 +2341,7 @@
           - light.chambre_bebe
           - light.bureau
           - light.couloir
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -2326,7 +2353,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.open_cover
+        - action: cover.open_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2335,14 +2362,14 @@
         entity_id: sensor.presence_simulator_current_step
         state: bedtime
       sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         data: {}
         target:
           entity_id:
           - light.lumieres_rez_de_chaussee
           - light.couloir
           - light.exterieur
-      - service: light.turn_on
+      - action: light.turn_on
         data:
           brightness_pct: 100
         target:
@@ -2355,7 +2382,7 @@
           entity_id: input_boolean.presence_simulator_control_cover
           state: 'on'
         then:
-        - service: cover.open_cover
+        - action: cover.open_cover
           data: {}
           target:
             entity_id: cover.living_room_cover
@@ -2414,7 +2441,7 @@
     to: 'on'
   condition: []
   action:
-  - service: input_datetime.set_datetime
+  - action: input_datetime.set_datetime
     data:
       datetime: '{{ now() + timedelta (minutes = states(''input_number.marilou_bedtime_routine_duration'')
         | int) }}'
@@ -2481,7 +2508,7 @@
       action: green_trash_taken_out
   condition: []
   action:
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     target:
       entity_id: input_boolean.poubelle_verte_a_sortir
     data: {}
@@ -2496,7 +2523,7 @@
       action: black_trash_taken_out
   condition: []
   action:
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     target:
       entity_id:
       - input_boolean.poubelle_noire_a_sortir
@@ -2547,12 +2574,12 @@
       - condition: template
         value_template: '{{ range(1, 4) | random == 1 }}'
       sequence:
-      - service: script.controler_le_standing_desk
+      - action: script.controler_le_standing_desk
         metadata: {}
         data:
           target_position: standing
     default:
-    - service: script.controler_le_standing_desk
+    - action: script.controler_le_standing_desk
       metadata: {}
       data:
         target_position: sitting
@@ -2582,7 +2609,7 @@
         id:
         - up
       sequence:
-      - service: script.turn_on
+      - action: script.turn_on
         metadata: {}
         data:
           variables:
@@ -2595,7 +2622,7 @@
         id:
         - down
       sequence:
-      - service: script.turn_on
+      - action: script.turn_on
         metadata: {}
         data:
           variables:
@@ -2614,7 +2641,7 @@
     - (nettoie|nettoyer) [le] bas
   condition: []
   action:
-  - service: vacuum.start
+  - action: vacuum.start
     metadata: {}
     data: {}
     target:
@@ -2631,7 +2658,7 @@
     - (Au lit)|(Ollie)|(Holly)
   condition: []
   action:
-  - service: script.start_marilou_bedtime_routine
+  - action: script.start_marilou_bedtime_routine
     metadata: {}
     data: {}
   - set_conversation_response: Bonne nuit
@@ -2668,7 +2695,7 @@
       entity_id: person.jenova70
       state: home
     then:
-    - service: tts.speak
+    - action: tts.speak
       metadata: {}
       data:
         cache: true
@@ -2696,7 +2723,7 @@
         entity_id: input_boolean.party_time_marilou
         state: 'on'
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           rgb_color:
@@ -2706,7 +2733,7 @@
           brightness_pct: 100
         target:
           entity_id: light.chambre_bebe_leds
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           rgb_color:
@@ -2717,7 +2744,7 @@
         target:
           entity_id:
           - light.miffy
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           rgb_color:
@@ -2728,7 +2755,7 @@
         target:
           entity_id:
           - light.chambre_bebe_suspension
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           effect: prism
@@ -2737,18 +2764,18 @@
           - light.chambre_bebe_suspension
           - light.chambre_bebe_leds
           - light.miffy
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           effect: candle
         target:
           entity_id: light.chambre_bebe_etoile
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data: {}
         target:
           entity_id: light.chambre_bebe_guirlande
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_pct: 100
@@ -2759,7 +2786,7 @@
         entity_id: input_boolean.party_time_marilou
         state: 'off'
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_pct: 100
@@ -2767,7 +2794,7 @@
           kelvin: 2457
         target:
           area_id: chambre_bebe
-      - service: light.turn_off
+      - action: light.turn_off
         metadata: {}
         data: {}
         target:
@@ -2782,13 +2809,13 @@
     - '{command1} and {command2}'
   condition: []
   action:
-  - service: conversation.process
+  - action: conversation.process
     data:
       agent_id: conversation.home_assistant
       text: '{{trigger.slots.command1}}'
       language: en
     response_variable: response_1
-  - service: conversation.process
+  - action: conversation.process
     data:
       agent_id: conversation.home_assistant
       text: '{{trigger.slots.command2}}'
@@ -2812,12 +2839,12 @@
     - À plus
   condition: []
   action:
-  - service: script.leave_home
+  - action: script.leave_home
     metadata: {}
     data:
       call_from_main_door: false
     enabled: true
-  - service: automation.trigger
+  - action: automation.trigger
     metadata: {}
     data:
       skip_condition: true
@@ -2913,7 +2940,7 @@
       value_template: '{{ trigger.device_id != None}}'
       enabled: true
     then:
-    - service: script.turn_on
+    - action: script.turn_on
       metadata: {}
       data:
         variables:
@@ -2947,7 +2974,7 @@
       - condition: template
         value_template: '{{ target_scene_list | count >=1 }}'
       then:
-      - service: scene.turn_on
+      - action: scene.turn_on
         metadata: {}
         target:
           entity_id: '{{target_scene_list}}'
@@ -2982,11 +3009,11 @@
       entity_id: input_boolean.forcer_le_reveil
       state: 'on'
   action:
-  - service: script.lancer_playlist_de_reveil
+  - action: script.lancer_playlist_de_reveil
     metadata: {}
     data: {}
     enabled: true
-  - service: script.turn_on
+  - action: script.turn_on
     metadata: {}
     data:
       variables:
@@ -3002,13 +3029,13 @@
       - light.chambre
       to: 'off'
     continue_on_timeout: false
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
       - media_player.chambre_sonos_music_assistant
-  - service: script.turn_off
+  - action: script.turn_off
     metadata: {}
     data: {}
     target:
@@ -3040,7 +3067,7 @@
         entity_id: vacuum.neuneu
         state: cleaning
     then:
-    - service: vacuum.start
+    - action: vacuum.start
       data: {}
       target:
         entity_id: vacuum.neuneu
@@ -3073,7 +3100,7 @@
       entity_id: vacuum.neuneu
       state: cleaning
     then:
-    - service: vacuum.return_to_base
+    - action: vacuum.return_to_base
       metadata: {}
       data: {}
       target:
@@ -3112,7 +3139,7 @@
     entity_id: binary_sensor.should_neuneu_run
     state: 'on'
   action:
-  - service: vacuum.start
+  - action: vacuum.start
     metadata: {}
     data: {}
     target:
@@ -3133,7 +3160,7 @@
       entity_id: select.neuneu_selected_map
       state: Rez-De-Chaussée
   action:
-  - service: select.select_option
+  - action: select.select_option
     data:
       option: Rez-De-Chaussée
     target:
@@ -3156,34 +3183,34 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: light.turn_off
+  - action: light.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
       - light.hue_play_bars
       - light.bureau
-  - service: button.press
+  - action: button.press
     metadata: {}
     data: {}
     target:
       entity_id: button.standing_desk_move_desk_to_position_2
-  - service: media_player.media_pause
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
       entity_id: media_player.sonos_bureau
-  - service: media_player.unjoin
+  - action: media_player.unjoin
     metadata: {}
     data: {}
     target:
       entity_id: media_player.bureau_sonos_music_assistant
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: media_player.bureau_sonos_music_assistant
-  - service: switch.turn_off
+  - action: switch.turn_off
     metadata: {}
     data: {}
     target:
@@ -3206,27 +3233,27 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: light.turn_off
+  - action: light.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: light.chambre
-  - service: media_player.media_pause
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
       entity_id: media_player.sonos_chambre
-  - service: media_player.unjoin
+  - action: media_player.unjoin
     metadata: {}
     data: {}
     target:
       entity_id: media_player.chambre_sonos_music_assistant
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: media_player.chambre_sonos_music_assistant
-  - service: switch.turn_off
+  - action: switch.turn_off
     metadata: {}
     data: {}
     target:
@@ -3250,28 +3277,28 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: light.turn_off
+  - action: light.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: light.chambre_bebe
-  - service: media_player.media_pause
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
       entity_id:
       - media_player.sonos_chambre_marilou
-  - service: media_player.unjoin
+  - action: media_player.unjoin
     metadata: {}
     data: {}
     target:
       entity_id: media_player.chambre_marilou_sonos_music_assistant
-  - service: media_player.turn_off
+  - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id: media_player.chambre_marilou_sonos_music_assistant
-  - service: switch.turn_off
+  - action: switch.turn_off
     metadata: {}
     data: {}
     target:
@@ -3293,7 +3320,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: switch.turn_on
+  - action: switch.turn_on
     metadata: {}
     data: {}
     target:
@@ -3316,7 +3343,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: switch.turn_on
+  - action: switch.turn_on
     metadata: {}
     data: {}
     target:
@@ -3339,7 +3366,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   action:
-  - service: switch.turn_on
+  - action: switch.turn_on
     metadata: {}
     data: {}
     target:
@@ -3375,20 +3402,20 @@
         entity_id: media_player.meme_lecteur_multimedia
         state: playing
       sequence:
-      - service: media_player.turn_on
+      - action: media_player.turn_on
         metadata: {}
         data: {}
         target:
           entity_id:
           - media_player.kef
           - media_player.music_assistant_salon
-      - service: media_player.select_source
+      - action: media_player.select_source
         metadata: {}
         data:
           source: Wifi
         target:
           entity_id: media_player.kef
-      - service: media_player.volume_set
+      - action: media_player.volume_set
         metadata: {}
         data:
           volume_level: 0.5
@@ -3397,7 +3424,7 @@
           - media_player.kef
           - media_player.music_assistant_salon
     default:
-    - service: media_player.turn_off
+    - action: media_player.turn_off
       metadata: {}
       data: {}
       target:
@@ -3458,7 +3485,7 @@
           entity_id: media_player.kef
           state: 'off'
       sequence:
-      - service: mass.play_media
+      - action: mass.play_media
         metadata: {}
         data:
           media_type: track
@@ -3467,7 +3494,7 @@
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
           entity_id: media_player.music_assistant_salon
-      - service: mass.play_media
+      - action: mass.play_media
         metadata: {}
         data:
           media_type: track
@@ -3477,7 +3504,7 @@
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
           entity_id: media_player.music_assistant_salon
-      - service: media_player.volume_set
+      - action: media_player.volume_set
         metadata: {}
         data:
           volume_level: 0.5
@@ -3486,7 +3513,7 @@
           - media_player.kef
           - media_player.music_assistant_salon
     default:
-    - service: media_player.turn_off
+    - action: media_player.turn_off
       metadata: {}
       data: {}
       target:
@@ -3511,7 +3538,7 @@
     entity_id: input_boolean.jl_connected_to_tesla
     state: 'on'
   action:
-  - service: input_boolean.turn_off
+  - action: input_boolean.turn_off
     metadata: {}
     data: {}
     target:
@@ -3673,7 +3700,7 @@
             entity_id: light.entree
             state: 'on'
         then:
-        - service: light.turn_off
+        - action: light.turn_off
           metadata: {}
           data: {}
           target:
@@ -3682,7 +3709,7 @@
             - entree
             - bd4ba6262e7a4e72b2fd740a22c70403
         else:
-        - service: hue.activate_scene
+        - action: hue.activate_scene
           metadata: {}
           data: {}
           target:
@@ -3695,7 +3722,7 @@
         id:
         - hue_single_click
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         metadata: {}
         data: {}
         target:
@@ -3708,12 +3735,12 @@
         id:
         - hue_double_click
       sequence:
-      - service: hue.activate_scene
+      - action: hue.activate_scene
         metadata: {}
         data: {}
         target:
           entity_id: scene.salon_salon_tv_playing
-      - service: light.turn_off
+      - action: light.turn_off
         metadata: {}
         data: {}
         target:
@@ -3725,7 +3752,7 @@
         id:
         - dim_down
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: -10
@@ -3739,7 +3766,7 @@
         id:
         - dim_down_fast
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: -20
@@ -3753,7 +3780,7 @@
         id:
         - dim_down_fast_af
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: -50
@@ -3767,7 +3794,7 @@
         id:
         - dim_up
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: 10
@@ -3781,7 +3808,7 @@
         id:
         - dim_up_fast
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: 20
@@ -3795,7 +3822,7 @@
         id:
         - dim_up_fast_af
       sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         metadata: {}
         data:
           brightness_step_pct: 50
@@ -3816,7 +3843,7 @@
     subtype: turn_off
   condition: []
   action:
-  - service: media_player.play_media
+  - action: media_player.play_media
     target:
       entity_id: media_player.sonos_bureau
     data:
