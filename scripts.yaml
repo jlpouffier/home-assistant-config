@@ -859,6 +859,11 @@ eteindre_tous_les_lecteur_multimedia:
 test_2:
   alias: Crazy Wake Up
   sequence:
+  - action: media_player.volume_set
+    target:
+      entity_id: media_player.sonos_chambre
+    data:
+      volume_level: 0.7
   - action: media_player.play_media
     target:
       entity_id: media_player.sonos_chambre
