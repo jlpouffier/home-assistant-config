@@ -53,7 +53,6 @@ media_player:
         target:
           entity_id: media_player.philips_android_tv
     attributes:
-      state: binary_sensor.is_tv_on
       is_volume_muted: media_player.kef|is_volume_muted
       volume_level: media_player.kef|volume_level
       source_list: media_player.philips_android_tv|source_list

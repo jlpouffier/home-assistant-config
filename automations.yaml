@@ -522,12 +522,12 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.is_tv_on
+    - remote.jl_s_tv
     to: 'on'
     id: 'on'
   - platform: state
     entity_id:
-    - binary_sensor.is_tv_on
+    - remote.jl_s_tv
     to: 'off'
     id: 'off'
   condition:
@@ -838,7 +838,7 @@
     for:
       hours: 0
       minutes: 0
-      seconds: 5
+      seconds: 1
   - platform: time
     at: input_datetime.heating_manual_boost_end
   - platform: state
@@ -910,6 +910,12 @@
   - condition: state
     state: 'on'
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
+  - condition: state
+    entity_id: binary_sensor.jean_loics_macbook_pro_active
+    state: 'on'
+  - condition: state
+    entity_id: device_tracker.jean_loics_macbook_pro
+    state: home
   action:
   - action: scene.create
     data:
@@ -977,6 +983,9 @@
   - condition: state
     state: 'on'
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
+  - condition: state
+    entity_id: binary_sensor.jean_loics_macbook_pro_active
+    state: 'on'
   - condition: state
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
@@ -1577,40 +1586,6 @@
       entity_id:
       - light.2d_matrix
   mode: single
-- id: '1690362715725'
-  alias: Pluie - Incrémenter Pluie Journalière
-  description: ''
-  trigger:
-  - platform: time_pattern
-    minutes: '*'
-    hours: '*'
-    seconds: '1'
-  condition:
-  - condition: state
-    entity_id: binary_sensor.is_raining_now
-    state: 'on'
-  action:
-  - action: input_number.increment
-    data: {}
-    target:
-      entity_id: input_number.daily_rain
-  mode: single
-- id: '1690362812143'
-  alias: Pluie - Réinitialiser Pluie Journalière
-  description: ''
-  trigger:
-  - platform: time_pattern
-    hours: '0'
-    minutes: '0'
-    seconds: '0'
-  condition: []
-  action:
-  - action: input_number.set_value
-    data:
-      value: 0
-    target:
-      entity_id: input_number.daily_rain
-  mode: single
 - id: '1690826979664'
   alias: "Assist - \U0001F4E3 Commandes Multiple "
   description: ''
@@ -1662,14 +1637,17 @@
     entity_id: input_boolean.automation_meetings
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.jean_loics_macbook_pro_active
-    state: 'on'
-  - condition: state
     entity_id: person.jenova70
     state: home
   - condition: state
     entity_id: binary_sensor.capteur_presence_bureau_occupancy
     state: 'on'
+  - condition: state
+    entity_id: binary_sensor.jean_loics_macbook_pro_active
+    state: 'on'
+  - condition: state
+    entity_id: device_tracker.jean_loics_macbook_pro
+    state: home
   action:
   - action: scene.create
     data:
