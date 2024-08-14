@@ -23,39 +23,31 @@ media_player:
     #   {% endif %}
     commands:
       turn_on:
-        service: switch.turn_on
-        target:
-          entity_id: switch.media_center
+        action: script.turn_on_media_center
       turn_off:
-        service: switch.turn_off
-        target:
-          entity_id: switch.media_center
-      toggle:
-        service: switch.toggle
-        target:
-          entity_id: switch.media_center
+        action: script.turn_off_media_center
       volume_up:
-        service: media_player.volume_up
+        action: media_player.volume_up
         target:
           entity_id: media_player.kef
       volume_down:
-        service: media_player.volume_down
+        action: media_player.volume_down
         target:
           entity_id: media_player.kef
       volume_set:
-        service: media_player.volume_set
+        action: media_player.volume_set
         target:
           entity_id: media_player.kef
         data:
           volume_level: "{{ volume_level }}"
       volume_mute:
-        service: media_player.volume_mute
+        action: media_player.volume_mute
         target:
           entity_id: media_player.kef
         data:
           is_volume_muted: "{{ is_volume_muted }}"
       select_source:
-        service: media_player.select_source
+        action: media_player.select_source
         data:
           source: "{{ source }}"
         target:
