@@ -3144,6 +3144,9 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
   action:
   - action: light.turn_off
     metadata: {}
@@ -3194,6 +3197,9 @@
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
   action:
   - action: light.turn_off
     metadata: {}
@@ -3237,6 +3243,9 @@
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.home_occupied
     state: 'on'
   action:
   - action: light.turn_off
