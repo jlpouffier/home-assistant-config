@@ -18,12 +18,6 @@ media_player:
       {% else %}
         media_player.philips_android_tv
       {% endif %}
-    # active_child_template: |
-    #   {% if not is_state('media_player.tv_cast', 'off') %}
-    #   media_player.tv_cast
-    #   {% else %}
-    #   media_player.philips_android_tv
-    #   {% endif %}
     commands:
       turn_on:
         action: script.turn_on_media_center
@@ -49,24 +43,6 @@ media_player:
           entity_id: media_player.kef
         data:
           is_volume_muted: "{{ is_volume_muted }}"
-      select_source:
-        action: media_player.select_source
-        data:
-          source: "{{ source }}"
-        target:
-          entity_id: media_player.philips_android_tv
     attributes:
       is_volume_muted: media_player.kef|is_volume_muted
       volume_level: media_player.kef|volume_level
-      source_list: |
-        {% if is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW2') %}
-          media_player.apple_tv_salon|source_list
-        {% else %}
-          media_player.philips_android_tv|source_list
-        {% endif %}
-      source: |
-        {% if is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW2') %}
-          media_player.apple_tv_salon|source
-        {% else %}
-          media_player.philips_android_tv|source
-        {% endif %}

@@ -618,6 +618,11 @@ eteindre_tous_les_lecteur_multimedia:
     data: {}
     target:
       entity_id: media_player.all_media_players
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.apple_tv_salon
   description: ''
   icon: mdi:television-speaker-off
 test_2:
