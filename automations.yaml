@@ -431,50 +431,6 @@
     data: {}
   mode: queued
   max: 10
-- id: '1688134691132'
-  alias: Tesla - Modifier cible charge heure Creuses
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.meme_charge
-    to: charging
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  - condition: state
-    entity_id: device_tracker.meme_emplacement
-    state: home
-  - condition: state
-    entity_id: schedule.heures_pleines
-    state: 'off'
-  - condition: template
-    value_template: '{{as_datetime(states("sensor.meme_temps_avant_la_charge_complete"))
-      > state_attr(''schedule.heures_pleines'', ''next_event'') }}'
-  action:
-  - variables:
-      new_target_percentage: '{{max(50,((states(''number.meme_limite_de_recharge'')|float-states(''sensor.meme_niveau_de_la_batterie'')|float)*(state_attr(''schedule.heures_pleines'',''next_event'')-now())/(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))-now())+states(''sensor.meme_niveau_de_la_batterie'')|float)|round(0))}}'
-      actual_end_date: '{{as_local(as_datetime(states(''sensor.meme_temps_avant_la_charge_complete''))).strftime("%H:%M")}}'
-  - action: number.set_value
-    metadata: {}
-    data:
-      value: '{{max(new_target_percentage,50)}}'
-    target:
-      entity_id: number.meme_limite_de_recharge
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "️\U0001F697 Tesla"
-      message: Cible de recharge modifiée ({{new_target_percentage}}%) pour finir
-        dans les heures creuses.
-      click_url: /lovelace/tesla
-      tag: tesla_end_charge_after_off_peak_hours
-  mode: single
 - id: '1688139412657'
   alias: Réveil intelligent - Régler heures de déclenchement
   description: ''
@@ -763,134 +719,6 @@
           entity_id:
           - switch.living_room_cover_volet_salon_bouton_down_fallback
   mode: single
-- id: '1688333037837'
-  alias: Chauffage intelligent - Choisir Planning
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    to:
-    from:
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
-    - input_boolean.automation_heat_home
-  - platform: state
-    entity_id:
-    - binary_sensor.is_home_open_since_more_than_one_minute
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_heat_home
-    state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.is_home_open_since_more_than_one_minute
-        state: 'on'
-      sequence:
-      - action: input_select.select_option
-        data:
-          option: Frost Guard
-        target:
-          entity_id: input_select.heating_schedule_selector
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'off'
-      sequence:
-      - action: input_select.select_option
-        data:
-          option: Absent
-        target:
-          entity_id: input_select.heating_schedule_selector
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
-      sequence:
-      - action: input_select.select_option
-        data:
-          option: Présent
-        target:
-          entity_id: input_select.heating_schedule_selector
-  mode: queued
-  max: 10
-- id: '1688333375509'
-  alias: Chauffage intelligent - Changer Température
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.heating_target_temperature
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
-    - climate.netatmo
-    attribute: temperature
-    id: temperature_changed
-  - platform: state
-    entity_id:
-    - input_boolean.heating_manual_boost
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
-  - platform: time
-    at: input_datetime.heating_manual_boost_end
-  - platform: state
-    entity_id:
-    - input_boolean.automation_heat_home
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_heat_home
-    state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{now() >= as_local(as_datetime(states("input_datetime.heating_manual_boost_end")))}}'
-      - condition: state
-        entity_id: input_boolean.heating_manual_boost
-        state: 'on'
-      sequence:
-      - action: input_boolean.turn_off
-        data: {}
-        target:
-          entity_id: input_boolean.heating_manual_boost
-    - conditions:
-      - condition: trigger
-        id:
-        - temperature_changed
-      - alias: When manually triggered by a user
-        condition: template
-        value_template: '{{ trigger.to_state.context.user_id != None }}'
-      sequence:
-      - action: input_boolean.turn_on
-        data: {}
-        target:
-          entity_id: input_boolean.heating_manual_boost
-    - conditions:
-      - condition: template
-        value_template: '{{states("sensor.heating_target_temperature") | float !=
-          state_attr("climate.netatmo","temperature")}}'
-        alias: When it's not coherent with the current schedule
-      - condition: state
-        entity_id: input_boolean.heating_manual_boost
-        state: 'off'
-      sequence:
-      - action: climate.set_temperature
-        target:
-          entity_id: climate.netatmo
-        data:
-          temperature: '{{states("sensor.heating_target_temperature")}}
-
-            '
-  mode: queued
-  max: 10
 - id: '1688364991944'
   alias: Bureau - Meetings VR
   description: ''
@@ -1437,43 +1265,6 @@
     target:
       entity_id: vacuum.neuneu
   mode: single
-- id: '1688927204517'
-  alias: 'Tesla - Réinitialisation de cible de charge '
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.meme_cable_de_charge
-    from: 'on'
-    to: 'off'
-  - platform: state
-    entity_id:
-    - sensor.meme_charge
-    to: complete
-    for:
-      hours: 0
-      minutes: 1
-      seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  - condition: state
-    entity_id: device_tracker.meme_emplacement
-    state: home
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: number.meme_limite_de_recharge
-      state: '100'
-  action:
-  - action: number.set_value
-    metadata: {}
-    data:
-      value: '100'
-    target:
-      entity_id: number.meme_limite_de_recharge
-  mode: single
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF
   description: ''
@@ -1912,7 +1703,6 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
-      - device_tracker.jlo_s_iphone_bluetooth
   mode: single
 - id: '1695459020679'
   alias: Tesla - Détacher Tesla à JL en fin de conduite
@@ -1944,7 +1734,6 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
-      - device_tracker.jlo_s_iphone_bluetooth
   - action: person.remove_device_tracker
     data:
       entity_id: person.jenova70
@@ -2141,39 +1930,6 @@
         target:
           area_id: chambre_bebe
   mode: single
-- id: '1700129731183'
-  alias: Chauffage intelligent - Changer Fin du Boost Manuel
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_number.heating_manual_boost_duration
-  - platform: state
-    entity_id:
-    - input_boolean.heating_manual_boost
-  - platform: state
-    entity_id:
-    - input_boolean.automation_heat_home
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_heat_home
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.heating_manual_boost
-    state: 'on'
-  action:
-  - action: input_datetime.set_datetime
-    data:
-      datetime: '{{ now() + timedelta (minutes = states(''input_number.heating_manual_boost_duration'')
-        |
-
-        int) }}
-
-        '
-    target:
-      entity_id: input_datetime.heating_manual_boost_end
-  mode: queued
-  max: 10
 - id: '1700410464307'
   alias: Simulation de présence
   description: ''
@@ -3829,4 +3585,575 @@
       - {}
       - media_content_type: app
         media_content_id: media-source://media_source
+  mode: single
+- id: '1726171964785'
+  alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+    - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_fenetre_cuisine
+    - binary_sensor.capteur_ouverture_porte_entree
+    - binary_sensor.capteur_ouverture_porte_fenetre_salon
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_cuisine
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_porte_entree
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+          state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Frost Guard
+        target:
+          entity_id: input_select.mode_chauffage_rez_de_chaussee
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
+          state: 'off'
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'off'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Absent
+        target:
+          entity_id: input_select.mode_chauffage_rez_de_chaussee
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
+      - condition: state
+        entity_id: schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
+        state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id: input_select.mode_chauffage_rez_de_chaussee
+  mode: single
+- id: '1726172240853'
+  alias: Chauffage Intelligent - Choisir Mode Bureau
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_fenetre_bureau
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_ouverture_fenetre_bureau
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+        state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Frost Guard
+        target:
+          entity_id:
+          - input_select.mode_chauffage_bureau
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_presence_bureau_occupancy
+          state: 'off'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'off'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Absent
+        target:
+          entity_id:
+          - input_select.mode_chauffage_bureau
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_bureau_occupancy
+        state: 'on'
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id: input_select.mode_chauffage_bureau
+  mode: single
+- id: '1726172527832'
+  alias: Chauffage Intelligent - Choisir Mode Chambre
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_fenetre_chambre
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+        state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Frost Guard
+        target:
+          entity_id: input_select.mode_chauffage_chambre
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_presence_chambre_occupancy
+          state: 'off'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'off'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Absent
+        target:
+          entity_id:
+          - input_select.mode_chauffage_chambre
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_chambre_occupancy
+        state: 'on'
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id:
+          - input_select.mode_chauffage_chambre
+  mode: single
+- id: '1726172622795'
+  alias: Chauffage Intelligent - Choisir Mode Chambre Marilou
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.home_occupied
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: state
+    entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+        state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Frost Guard
+        target:
+          entity_id:
+          - input_select.mode_chauffage_chambre_marilou
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+          state: 'off'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'off'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Absent
+        target:
+          entity_id:
+          - input_select.mode_chauffage_chambre_marilou
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        state: 'on'
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 0
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id:
+          - input_select.mode_chauffage_chambre_marilou
+  mode: single
+- id: '1726173163311'
+  alias: Chauffage Intelligent - Régler Température Rez-De-Chaussée
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.temperature_cible_chauffage_rez_de_chassee
+    id: target_changed
+  - platform: state
+    entity_id:
+    - climate.netatmo
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  - platform: time_pattern
+    minutes: '0'
+    seconds: '0'
+    id: tick
+  - platform: homeassistant
+    event: start
+    id: restart
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')}}'
+        target:
+          entity_id: climate.netatmo
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')|float(0)
+            == state_attr(''climate.netatmo'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')}}'
+          target:
+            entity_id: climate.netatmo
+  mode: single
+- id: '1726173315597'
+  alias: Chauffage Intelligent - Régler Température Bureau
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.temperature_cible_chauffage_bureau
+    id: target_changed
+  - platform: state
+    entity_id:
+    - climate.radiateur_bureau
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  - platform: time_pattern
+    minutes: '0'
+    seconds: '0'
+    id: tick
+  - platform: homeassistant
+    event: start
+    id: restart
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_bureau'')}}'
+        target:
+          entity_id: climate.radiateur_bureau
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_bureau'')|float(0)
+            == state_attr(''climate.radiateur_bureau'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_bureau'')}}'
+          target:
+            entity_id: climate.radiateur_bureau
+  mode: single
+- id: '1726173501857'
+  alias: Chauffage Intelligent - Régler Température Chambre
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.temperature_cible_chauffage_chambre
+    id: target_changed
+  - platform: state
+    entity_id:
+    - climate.radiateur_chambre
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  - platform: time_pattern
+    minutes: '0'
+    seconds: '0'
+    id: tick
+  - platform: homeassistant
+    event: start
+    id: restart
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_chambre'')}}'
+        target:
+          entity_id: climate.radiateur_chambre
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_chambre'')|float(0)
+            == state_attr(''climate.radiateur_chambre'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_chambre'')}}'
+          target:
+            entity_id: climate.radiateur_chambre
+  mode: single
+- id: '1726173575899'
+  alias: Chauffage Intelligent - Régler Température Chambre Marilou
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.temperature_cible_chauffage_chambre_marilou
+    id: target_changed
+  - platform: state
+    entity_id:
+    - climate.radiateur_chambre_marilou
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  - platform: time_pattern
+    minutes: '0'
+    seconds: '0'
+    id: tick
+  - platform: homeassistant
+    event: start
+    id: restart
+  condition:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')}}'
+        target:
+          entity_id: climate.radiateur_chambre_marilou
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')|float(0)
+            == state_attr(''climate.radiateur_chambre_marilou'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')}}'
+          target:
+            entity_id: climate.radiateur_chambre_marilou
   mode: single
