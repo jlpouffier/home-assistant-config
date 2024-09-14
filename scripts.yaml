@@ -24,59 +24,7 @@ leave_home:
       data: {}
       target:
         entity_id: cover.living_room_cover
-  - if:
-    - condition: state
-      entity_id: binary_sensor.all_doors
-      state: 'on'
-    - condition: template
-      value_template: '{{call_from_main_door != True}}'
-    then:
-    - variables:
-        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Porte(s) ouverte(s) !"
-        message: 'Les portes suivantes sont toujours ouvertes alors que personne n''est
-          présent:  {{open_doors}}'
-        click_url: /lovelace/openings
-        tag: home_empty_door_open
-        until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
-        - entity_id: binary_sensor.all_doors
-          new_state: 'off'
-  - if:
-    - condition: state
-      entity_id: binary_sensor.all_doors
-      state: 'on'
-    - condition: template
-      value_template: '{{call_from_main_door == True}}'
-    then:
-    - variables:
-        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')        \n    | rejectattr('entity_id',
-          'eq', 'binary_sensor.capteur_ouverture_porte_entree')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
-    - if:
-      - condition: template
-        value_template: '{{open_doors != ""}}'
-      then:
-      - event: NOTIFIER
-        event_data:
-          action: send_to_nearest
-          title: "️\U0001F6AA Porte(s) ouverte(s) !"
-          message: 'Les portes suivantes sont toujours ouvertes alors que personne
-            n''est présent:  {{open_doors}}'
-          click_url: /lovelace/openings
-          tag: home_empty_door_open
-          until:
-          - entity_id: binary_sensor.home_occupied
-            new_state: 'on'
-          - entity_id: binary_sensor.all_doors
-            new_state: 'off'
+    alias: Close shutters
   - if:
     - condition: state
       entity_id: binary_sensor.all_windows
@@ -99,6 +47,7 @@ leave_home:
           new_state: 'on'
         - entity_id: binary_sensor.all_windows
           new_state: 'off'
+    alias: Notify windows open
   - if:
     - condition: state
       entity_id: binary_sensor.is_oven_running
@@ -116,6 +65,7 @@ leave_home:
           new_state: 'on'
         - entity_id: binary_sensor.is_oven_running
           new_state: 'off'
+    alias: Notify oven running
   - if:
     - condition: state
       entity_id: binary_sensor.is_induction_cooktop_running
@@ -133,14 +83,78 @@ leave_home:
           new_state: 'on'
         - entity_id: binary_sensor.is_induction_cooktop_running
           new_state: 'off'
+    alias: Notify cooktop running
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{calling_location == "home"}}'
+      sequence:
+      - if:
+        - condition: state
+          entity_id: binary_sensor.all_doors
+          state: 'on'
+        then:
+        - variables:
+            open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+              \   | selectattr('state', 'eq', 'on')        \n    | rejectattr('entity_id',
+              'eq', 'binary_sensor.capteur_ouverture_porte_entree')\n    | map(attribute='attributes.friendly_name')
+              \n    | list\n    | join(\", \")\n}}"
+        - if:
+          - condition: template
+            value_template: '{{open_doors != ""}}'
+          then:
+          - event: NOTIFIER
+            event_data:
+              action: send_to_nearest
+              title: "️\U0001F6AA Porte(s) ouverte(s) !"
+              message: 'Les portes suivantes sont toujours ouvertes alors que personne
+                n''est présent:  {{open_doors}}'
+              click_url: /lovelace/openings
+              tag: home_empty_door_open
+              until:
+              - entity_id: binary_sensor.home_occupied
+                new_state: 'on'
+              - entity_id: binary_sensor.all_doors
+                new_state: 'off'
+        alias: Notify doors open
+      alias: Called form home
+    default:
+    - if:
+      - condition: state
+        entity_id: binary_sensor.all_doors
+        state: 'on'
+      then:
+      - variables:
+          open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
+            \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
+            \n    | list\n    | join(\", \")\n}}"
+      - event: NOTIFIER
+        event_data:
+          action: send_to_nearest
+          title: "️\U0001F6AA Porte(s) ouverte(s) !"
+          message: 'Les portes suivantes sont toujours ouvertes alors que personne
+            n''est présent:  {{open_doors}}'
+          click_url: /lovelace/openings
+          tag: home_empty_door_open
+          until:
+          - entity_id: binary_sensor.home_occupied
+            new_state: 'on'
+          - entity_id: binary_sensor.all_doors
+            new_state: 'off'
+      alias: Notify doors open
   icon: mdi:home-export-outline
   fields:
-    call_from_main_door:
+    calling_location:
       selector:
-        boolean: {}
-      name: Appel depuis la porte d'entrée
+        select:
+          options:
+          - label: Présent
+            value: home
+          - label: Absent
+            value: not_home
+      name: Emplacement
+      description: Emplacement lors de l'appel de script
       required: true
-      default: false
 welcome_home:
   alias: Bienvenue a la maison
   mode: queued

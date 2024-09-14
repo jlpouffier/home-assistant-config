@@ -245,7 +245,7 @@
         target:
           entity_id:
           - switch.alexa
-          - switch.wyoming_satellite_salon_microphone
+          - switch.voicekit_microphone
       - action: cover.open_cover
         data: {}
         target:
@@ -260,7 +260,7 @@
       sequence:
       - action: script.leave_home
         data:
-          call_from_main_door: true
+          calling_location: home
       - action: automation.trigger
         metadata: {}
         data:
@@ -885,7 +885,7 @@
   action:
   - action: script.leave_home
     data:
-      call_from_main_door: false
+      calling_location: not_home
   mode: queued
   max: 10
 - id: '1688373819985'
@@ -910,7 +910,7 @@
     target:
       entity_id:
       - switch.alexa
-      - switch.wyoming_satellite_salon_microphone
+      - switch.voicekit_microphone
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -1783,7 +1783,7 @@
         data: {}
         target:
           entity_id:
-          - switch.wyoming_satellite_salon_microphone
+          - switch.voicekit_microphone
     - conditions:
       - condition: trigger
         id:
@@ -1794,7 +1794,7 @@
         data: {}
         target:
           entity_id:
-          - switch.wyoming_satellite_salon_microphone
+          - switch.voicekit_microphone
   mode: queued
   max: 50
 - id: '1699131143084'
@@ -2576,7 +2576,7 @@
   - action: script.leave_home
     metadata: {}
     data:
-      call_from_main_door: false
+      calling_location: home
     enabled: true
   - action: automation.trigger
     metadata: {}
@@ -2894,7 +2894,7 @@
     to: 'off'
     for:
       hours: 0
-      minutes: 10
+      minutes: 5
       seconds: 0
   condition:
   - condition: state
@@ -2947,7 +2947,7 @@
     to: 'off'
     for:
       hours: 0
-      minutes: 10
+      minutes: 5
       seconds: 0
   condition:
   - condition: state
@@ -2994,7 +2994,7 @@
     to: 'off'
     for:
       hours: 0
-      minutes: 10
+      minutes: 5
       seconds: 0
   condition:
   - condition: state
@@ -3308,7 +3308,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.wyoming_satellite_salon_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.esphome_voice_kit_21c660_assist_en_cours
       media_player: media_player.music_assistant_salon
       listening_volume: 0.3
       threshold_volume: 0.4
@@ -3941,6 +3941,9 @@
   - platform: homeassistant
     event: start
     id: restart
+  - platform: state
+    entity_id:
+    - input_boolean.automation_heat_home
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -4001,6 +4004,9 @@
   - platform: homeassistant
     event: start
     id: restart
+  - platform: state
+    entity_id:
+    - input_boolean.automation_heat_home
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -4061,6 +4067,9 @@
   - platform: homeassistant
     event: start
     id: restart
+  - platform: state
+    entity_id:
+    - input_boolean.automation_heat_home
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home
@@ -4121,6 +4130,9 @@
   - platform: homeassistant
     event: start
     id: restart
+  - platform: state
+    entity_id:
+    - input_boolean.automation_heat_home
   condition:
   - condition: state
     entity_id: input_boolean.automation_heat_home

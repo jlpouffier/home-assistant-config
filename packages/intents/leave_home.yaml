@@ -8,6 +8,7 @@ intent_script:
     description: "Launch the leave home script. To be used when I am about to leave my home."
     action:
       - service: script.leave_home
-        data: {}
+        data:
+          calling_location: home
     speech:
       text: "Done"
