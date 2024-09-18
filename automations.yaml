@@ -245,7 +245,7 @@
         target:
           entity_id:
           - switch.alexa
-          - switch.voicekit_microphone
+          - switch.voicekit_salon_microphone
       - action: cover.open_cover
         data: {}
         target:
@@ -261,12 +261,6 @@
       - action: script.leave_home
         data:
           calling_location: home
-      - action: automation.trigger
-        metadata: {}
-        data:
-          skip_condition: true
-        target:
-          entity_id: automation.take_out_trash_on_arrival
   - choose:
     - conditions:
       - condition: trigger
@@ -493,7 +487,7 @@
   - condition: not
     conditions:
     - condition: state
-      entity_id: media_player.music_assistant_salon
+      entity_id: media_player.kef_salon_music_assistant
       state: playing
   action:
   - choose:
@@ -506,7 +500,7 @@
         metadata: {}
         data: {}
         target:
-          entity_id: media_player.music_assistant_salon
+          entity_id: media_player.kef_salon_music_assistant
       - action: media_player.turn_on
         data: {}
         target:
@@ -910,7 +904,7 @@
     target:
       entity_id:
       - switch.alexa
-      - switch.voicekit_microphone
+      - switch.voicekit_salon_microphone
   - wait_for_trigger:
     - platform: state
       entity_id:
@@ -1049,31 +1043,25 @@
   alias: "Surveillance du système - \U0001F514 Notifier batteries faibles"
   description: ''
   trigger:
-  - platform: state
-    entity_id:
-    - sensor.low_batteries
-    to:
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
+  - platform: time
+    at: '21:00:00'
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_system
     state: 'on'
-  - condition: template
-    value_template: '{{trigger.to_state.state | float(0) > 0}}'
+  - condition: state
+    entity_id: person.jenova70
+    state: home
+  - condition: numeric_state
+    entity_id: sensor.low_batteries
+    above: 0
   action:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
       title: "\U0001FAAB Batteries faibles !"
-      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
-      click_url: /config/dashboard
+      message: '{{state_attr(''sensor.low_batteries'',''entities'') | join('', '')}}'
       tag: low-battery
-      until:
-      - entity_id: sensor.low_batteries
-        new_state: '0'
   mode: single
 - id: '1688537182551'
   alias: "Servarr - \U0001F514 Notification "
@@ -1783,7 +1771,7 @@
         data: {}
         target:
           entity_id:
-          - switch.voicekit_microphone
+          - switch.voicekit_salon_microphone
     - conditions:
       - condition: trigger
         id:
@@ -1794,7 +1782,7 @@
         data: {}
         target:
           entity_id:
-          - switch.voicekit_microphone
+          - switch.voicekit_salon_microphone
   mode: queued
   max: 50
 - id: '1699131143084'
@@ -1811,13 +1799,13 @@
     conditions:
     - condition: state
       state: 'off'
-      entity_id: media_player.music_assistant_salon
+      entity_id: media_player.kef_salon_music_assistant
   action:
   - action: media_player.turn_off
     data: {}
     target:
       entity_id:
-      - media_player.music_assistant_salon
+      - media_player.kef_salon_music_assistant
   mode: single
 - id: '1699131464359'
   alias: TV intelligente - Changer Source quand Lecture en cours sur TV
@@ -1856,7 +1844,7 @@
     id: end
   condition:
   - condition: state
-    entity_id: media_player.chambre_marilou_sonos_music_assistant
+    entity_id: media_player.sonos_chambre_marilou_music_assistant
     state: playing
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
@@ -1865,7 +1853,7 @@
     data: {}
     target:
       entity_id:
-      - media_player.chambre_marilou_sonos_music_assistant
+      - media_player.sonos_chambre_marilou_music_assistant
   - action: light.turn_off
     data: {}
     target:
@@ -1918,7 +1906,7 @@
         data: {}
         target:
           entity_id:
-          - media_player.chambre_marilou_sonos_music_assistant
+          - media_player.sonos_chambre_marilou_music_assistant
       - action: input_datetime.set_datetime
         data:
           datetime: '{{ now() }}'
@@ -2121,47 +2109,6 @@
           target:
             entity_id: cover.living_room_cover
   mode: single
-- id: '1701249166858'
-  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Salon"
-  description: ''
-  use_blueprint:
-    path: perso/notify_abnormal_temperature.yaml
-    input:
-      room_name: Salon
-      room_temperature: sensor.capteur_thp_salon_temperature
-      room_opening: binary_sensor.is_living_room_open_since_more_than_10_minutes
-      outside_temperature: sensor.floirac_temperature
-- id: '1701249721944'
-  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre"
-  description: ''
-  use_blueprint:
-    path: perso/notify_abnormal_temperature.yaml
-    input:
-      room_name: Chambre
-      room_temperature: sensor.capteur_thp_chambre_temperature
-      room_opening: binary_sensor.is_bedroom_open_since_more_than_10_minutes
-      outside_temperature: sensor.floirac_temperature
-- id: '1701249811714'
-  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre
-    Marilou"
-  description: ''
-  use_blueprint:
-    path: perso/notify_abnormal_temperature.yaml
-    input:
-      room_name: Chambre Marilou
-      room_temperature: sensor.capteur_thp_chambre_bebe_temperature
-      room_opening: binary_sensor.is_kid_bedroom_open_since_more_than_10_minutes
-      outside_temperature: sensor.floirac_temperature
-- id: '1701249857712'
-  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Bureau"
-  description: ''
-  use_blueprint:
-    path: perso/notify_abnormal_temperature.yaml
-    input:
-      room_name: Bureau
-      room_temperature: sensor.capteur_thp_bureau_temperature
-      room_opening: binary_sensor.is_office_open_since_more_than_10_minutes
-      outside_temperature: sensor.floirac_temperature
 - id: '1702164245946'
   alias: Routine du sommeil Marilou - Changer heure fin de routine
   description: ''
@@ -2758,7 +2705,7 @@
     data: {}
     target:
       entity_id:
-      - media_player.chambre_sonos_music_assistant
+      - media_player.sonos_chambre_music_assistant
   mode: single
 - id: '1716920054507'
   alias: Nettoyage Intelligent - Lancer NeuNeu si serpillère installée
@@ -2925,12 +2872,14 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.bureau_sonos_music_assistant
+      entity_id:
+      - media_player.sonos_bureau_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.bureau_sonos_music_assistant
+      entity_id:
+      - media_player.sonos_bureau_music_assistant
   - action: switch.turn_off
     metadata: {}
     data: {}
@@ -2971,12 +2920,14 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.chambre_sonos_music_assistant
+      entity_id:
+      - media_player.sonos_chambre_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.chambre_sonos_music_assistant
+      entity_id:
+      - media_player.sonos_chambre_music_assistant
   - action: switch.turn_off
     metadata: {}
     data: {}
@@ -3019,12 +2970,12 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.chambre_marilou_sonos_music_assistant
+      entity_id: media_player.sonos_chambre_marilou_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.chambre_marilou_sonos_music_assistant
+      entity_id: media_player.sonos_chambre_marilou_music_assistant
   - action: switch.turn_off
     metadata: {}
     data: {}
@@ -3135,7 +3086,7 @@
         target:
           entity_id:
           - media_player.kef
-          - media_player.music_assistant_salon
+          - media_player.kef_salon_music_assistant
       - action: media_player.select_source
         metadata: {}
         data:
@@ -3149,7 +3100,7 @@
         target:
           entity_id:
           - media_player.kef
-          - media_player.music_assistant_salon
+          - media_player.kef_salon_music_assistant
     default:
     - action: media_player.turn_off
       metadata: {}
@@ -3157,7 +3108,7 @@
       target:
         entity_id:
         - media_player.kef
-        - media_player.music_assistant_salon
+        - media_player.kef_salon_music_assistant
   mode: single
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
@@ -3204,7 +3155,7 @@
       - condition: not
         conditions:
         - condition: state
-          entity_id: media_player.music_assistant_salon
+          entity_id: media_player.kef_salon_music_assistant
           state: 'off'
       - condition: not
         conditions:
@@ -3220,7 +3171,7 @@
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
-          entity_id: media_player.music_assistant_salon
+          entity_id: media_player.kef_salon_music_assistant
       - action: mass.play_media
         metadata: {}
         data:
@@ -3230,7 +3181,7 @@
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
-          entity_id: media_player.music_assistant_salon
+          entity_id: media_player.kef_salon_music_assistant
       - action: media_player.volume_set
         metadata: {}
         data:
@@ -3238,7 +3189,7 @@
         target:
           entity_id:
           - media_player.kef
-          - media_player.music_assistant_salon
+          - media_player.kef_salon_music_assistant
     default:
     - action: media_player.turn_off
       metadata: {}
@@ -3246,7 +3197,7 @@
       target:
         entity_id:
         - media_player.kef
-        - media_player.music_assistant_salon
+        - media_player.kef_salon_music_assistant
   mode: queued
   max: 10
 - id: '1719771128107'
@@ -3279,7 +3230,7 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
       assist_in_progress_binary_sensor: binary_sensor.hal_assist_en_cours
-      media_player: media_player.bureau_sonos_music_assistant
+      media_player: media_player.sonos_bureau_music_assistant
       threshold_volume: 0.2
       listening_volume: 0.1
 - id: '1719820593325'
@@ -3308,8 +3259,8 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.esphome_voice_kit_21c660_assist_en_cours
-      media_player: media_player.music_assistant_salon
+      assist_in_progress_binary_sensor: binary_sensor.voicekit_salon_assist_en_cours
+      media_player: media_player.kef_salon_music_assistant
       listening_volume: 0.3
       threshold_volume: 0.4
 - id: '1721160666723'
@@ -3558,33 +3509,6 @@
           - 71e221f94f4a4e929747570179d52280
           - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
-  mode: single
-- id: '1721384561151'
-  alias: Télécommande Bureau
-  description: ''
-  trigger:
-  - device_id: 0870ac18c5e224c05d39a1a6a3fbfaaa
-    domain: zha
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_off
-  condition: []
-  action:
-  - action: media_player.play_media
-    target:
-      entity_id: media_player.sonos_bureau
-    data:
-      media_content_id: media-source://media_source/local/ok_nabu.flac
-      media_content_type: audio/flac
-    metadata:
-      title: ok_nabu.flac
-      thumbnail:
-      media_class: music
-      children_media_class:
-      navigateIds:
-      - {}
-      - media_content_type: app
-        media_content_id: media-source://media_source
   mode: single
 - id: '1726171964785'
   alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
@@ -4169,3 +4093,54 @@
           target:
             entity_id: climate.radiateur_chambre_marilou
   mode: single
+- id: '1726663233965'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Salon"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature_v2.yaml
+    input:
+      room_name: Salon
+      room_temperature: sensor.capteur_thp_salon_temperature
+      room_openings:
+      - binary_sensor.capteur_ouverture_fenetre_cuisine
+      - binary_sensor.capteur_ouverture_porte_entree
+      - binary_sensor.capteur_ouverture_porte_fenetre_salon
+      room_openings_duration: 00:05:00
+      outside_temperature: sensor.floirac_temperature
+- id: '1726663270597'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature_v2.yaml
+    input:
+      room_name: Chambre
+      room_temperature: sensor.capteur_thp_chambre_temperature
+      room_openings:
+      - binary_sensor.capteur_ouverture_fenetre_chambre
+      room_openings_duration: 00:05:00
+      outside_temperature: sensor.floirac_temperature
+- id: '1726663301942'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre
+    Marilou"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature_v2.yaml
+    input:
+      room_name: Chambre Marilou
+      room_temperature: sensor.capteur_thp_chambre_bebe_temperature
+      room_openings:
+      - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
+      room_openings_duration: 00:05:00
+      outside_temperature: sensor.floirac_temperature
+- id: '1726663330892'
+  alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Bureau"
+  description: ''
+  use_blueprint:
+    path: perso/notify_abnormal_temperature_v2.yaml
+    input:
+      room_name: Bureau
+      room_temperature: sensor.capteur_thp_bureau_temperature
+      room_openings:
+      - binary_sensor.capteur_ouverture_fenetre_bureau
+      room_openings_duration: 00:05:00
+      outside_temperature: sensor.floirac_temperature

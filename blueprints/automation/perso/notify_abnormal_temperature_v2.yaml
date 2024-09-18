@@ -1,5 +1,5 @@
 blueprint:
-  name: Chauffage intelligent - 🛎️ Notifier Température anormale
+  name: Chauffage intelligent - 🛎️ Notifier Température anormale (v2)
   domain: automation
   author: JLo
   input:
@@ -15,16 +15,22 @@ blueprint:
         entity:
           filter:
             device_class: temperature
-    room_opening:
-      name: Room opening
-      description: Room opening trend you want to monitor
+    room_openings:
+      name: Room openings
+      description: Room openings you want to monitor
       selector:
         entity:
+          multiple: true
           filter:
             device_class:
               - opening
               - door
               - window
+    room_openings_duration:
+      name: Room openings duration
+      description: how long the room openings need to be left open for the automation to trigger
+      selector:
+        time:
     outside_temperature:
       name: Outside temperature
       selector:
@@ -36,7 +42,12 @@ trigger:
   - platform: state
     entity_id: !input room_temperature
   - platform: state
-    entity_id: !input room_opening
+    entity_id: !input room_openings
+    to: "on"
+    for: !input room_openings_duration
+  - platform: state
+    entity_id: !input room_openings
+    to: "off"
   - platform: state
     entity_id: !input outside_temperature
   - platform: state
@@ -63,7 +74,7 @@ action:
   - choose:
       - conditions:
           - condition: state
-            entity_id: !input room_opening
+            entity_id: !input room_openings
             state: "on"
           - condition: numeric_state
             entity_id: !input room_temperature
@@ -84,9 +95,6 @@ action:
                 froid dehors ({{states(outside_temp, with_unit=True)}})
               tag: |
                 {{tag_value}}
-              until:
-                - entity_id: !input room_opening
-                  new_state: "off"
           - delay:
               hours: 0
               minutes: 10
@@ -94,7 +102,7 @@ action:
               milliseconds: 0
       - conditions:
           - condition: state
-            entity_id: !input room_opening
+            entity_id: !input room_openings
             state: "on"
           - condition: numeric_state
             entity_id: !input room_temperature
@@ -115,9 +123,6 @@ action:
                 chaud dehors ({{states(outside_temp, with_unit=True)}})
               tag: |
                 {{tag_value}}
-              until:
-                - entity_id: !input room_opening
-                  new_state: "off"
           - delay:
               hours: 0
               minutes: 10
