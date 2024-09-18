@@ -117,6 +117,12 @@ leave_home:
               - entity_id: binary_sensor.all_doors
                 new_state: 'off'
         alias: Notify doors open
+      - action: automation.trigger
+        metadata: {}
+        data:
+          skip_condition: true
+        target:
+          entity_id: automation.take_out_trash_on_arrival
       alias: Called form home
     default:
     - if:
@@ -276,7 +282,7 @@ turn_on_media_center:
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.music_assistant_salon
+      entity_id: media_player.kef_salon_music_assistant
   - action: media_player.turn_on
     target:
       entity_id:
@@ -422,11 +428,11 @@ start_marilou_bedtime_routine:
     data: {}
     target:
       entity_id:
-      - media_player.chambre_marilou_sonos_music_assistant
+      - media_player.sonos_chambre_marilou_music_assistant
   - action: mass.play_media
     target:
       entity_id:
-      - media_player.chambre_marilou_sonos_music_assistant
+      - media_player.sonos_chambre_marilou_music_assistant
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
@@ -437,13 +443,13 @@ start_marilou_bedtime_routine:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.chambre_marilou_sonos_music_assistant
+      - media_player.sonos_chambre_marilou_music_assistant
   - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
-      - media_player.chambre_marilou_sonos_music_assistant
+      - media_player.sonos_chambre_marilou_music_assistant
   mode: single
   icon: mdi:bell-sleep
 eteindre_temporairement_un_assistant_vocal:
@@ -489,17 +495,17 @@ lancer_playlist_de_reveil:
     data: {}
     target:
       entity_id:
-      - media_player.chambre_sonos_music_assistant
+      - media_player.sonos_chambre_music_assistant
   - action: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.chambre_sonos_music_assistant
+      - media_player.sonos_chambre_music_assistant
   - action: mass.play_media
     target:
       entity_id:
-      - media_player.chambre_sonos_music_assistant
+      - media_player.sonos_chambre_music_assistant
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -509,7 +515,7 @@ lancer_playlist_de_reveil:
       shuffle: true
     target:
       entity_id:
-      - media_player.chambre_sonos_music_assistant
+      - media_player.sonos_chambre_music_assistant
   mode: single
   icon: mdi:alarm
 controler_le_standing_desk:
@@ -626,7 +632,6 @@ eteindre_tous_les_lecteur_multimedia:
       - media_player.sonos_bureau
       - media_player.sonos_chambre
       - media_player.sonos_chambre_marilou
-      - media_player.sonos_salle_de_douche_2
   - action: media_player.turn_off
     metadata: {}
     data: {}
@@ -706,3 +711,31 @@ test_2:
         entity_id: media_player.sonos_chambre
         state: playing
   description: ''
+transfer_music_music_assistant:
+  alias: Transférer Musique (Music Assistant)
+  sequence:
+  - action: mass.transfer_queue
+    metadata: {}
+    target: '{{target}}'
+    data:
+      source_player: '{{source}}'
+      auto_play: true
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: '{{source}}'
+  fields:
+    target:
+      selector:
+        target: {}
+      name: Target location of the music stream (After Transfer)
+      required: true
+    source:
+      selector:
+        entity:
+          domain: media_player
+          integration: mass
+      name: Source location of the music stream (Currently playing)
+  description: ''
+  icon: mdi:account-music
