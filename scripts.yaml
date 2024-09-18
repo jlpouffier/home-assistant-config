@@ -306,48 +306,6 @@ turn_on_media_center:
     target:
       entity_id: remote.jl_s_tv
   icon: mdi:remote-tv
-pulse_2d_led_matrix:
-  alias: Pulse - Allumer
-  sequence:
-  - choose:
-    - conditions:
-      - condition: time
-        after: input_datetime.pulse_start_schedule
-        before: input_datetime.pulse_end_schedule
-      - condition: state
-        entity_id: input_boolean.guest_mode
-        state: 'off'
-      sequence:
-      - if:
-        - condition: state
-          entity_id: light.2d_matrix
-          state: 'off'
-        then:
-        - action: light.turn_on
-          data: {}
-          target:
-            entity_id:
-            - light.2d_matrix
-        - action: input_datetime.set_datetime
-          data:
-            datetime: '{{ now() + timedelta( seconds = 3 ) }}'
-          target:
-            entity_id: input_datetime.pulse_end_time
-        else:
-        - action: input_datetime.set_datetime
-          data:
-            datetime: '{{as_datetime(states(''input_datetime.pulse_end_time'')) +   timedelta(
-              seconds = 3 )}}'
-          target:
-            entity_id: input_datetime.pulse_end_time
-    default:
-    - action: light.turn_off
-      target:
-        entity_id: light.2d_matrix
-      data: {}
-  mode: queued
-  icon: mdi:crop-square
-  max: 1000
 wake_up:
   alias: Réveil Lumineux - Lumières
   sequence:
