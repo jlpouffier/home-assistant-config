@@ -400,7 +400,6 @@ speaker:
     dac_type: external
     i2s_audio_id: i2s_out
     i2s_dout_pin: 27
-    mode: mono
 
 
 # This is the declaration of our microphone. 
