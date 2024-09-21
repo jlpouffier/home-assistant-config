@@ -223,13 +223,13 @@
     - event.hue_tap_dial_switch_1_bouton_3
     attribute: event_type
     to: repeat
-    id: off_no_vacuum
+    id: 'off'
   - platform: state
     entity_id:
     - event.hue_tap_dial_switch_1_bouton_4
     attribute: event_type
     to: repeat
-    id: off_vacuum
+    id: 'off'
   condition:
   - condition: state
     entity_id: input_boolean.guest_mode
@@ -255,23 +255,11 @@
     - conditions:
       - condition: trigger
         id:
-        - off_no_vacuum
-        - off_vacuum
+        - 'off'
       sequence:
       - action: script.leave_home
         data:
           calling_location: home
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - off_vacuum
-      sequence:
-      - action: vacuum.start
-        metadata: {}
-        data: {}
-        target:
-          entity_id: vacuum.neuneu
   mode: parallel
   max: 10
 - id: '1688117431729'
@@ -1119,140 +1107,6 @@
       icon: mdi:television-shimmer
       tag: '{{tag}}'
   mode: single
-- id: '1688556025376'
-  alias: "Nettoyage Intelligent - \U0001F514 Notifier rez-de-chaussée très sale"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.should_neuneu_run_urgently
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_clean_house
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.house_cleaning_first_floor
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_nearest
-      title: "\U0001F9F9 Rez-de-chaussé sale"
-      message: NeuNeu n'a pas tourné depuis longtemps! Ne pas oublier de le lancer!
-      callback:
-      - title: Lancer NeuNeu
-        event: start_neuneu
-        icon: play.circle.fill
-      click_url: /lovelace/vacuums
-      tag: first_floor_very_dirty
-      until:
-      - entity_id: vacuum.neuneu
-        new_state: cleaning
-  mode: single
-- id: '1688556280183'
-  alias: "Nettoyage Intelligent - \U0001F514 Notifier Nettoyage NeuNeu"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - vacuum.neuneu
-    to: cleaning
-    not_from: unavailable
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_notify_cleaning
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_nearest
-      title: "\U0001F9F9 Nettoyage"
-      message: NeuNeu démarre son nettoyage
-      callback:
-      - title: Arrêter  NeuNeu
-        event: rth_neuneu
-        icon: stop.circle.fill
-        destructive: true
-      click_url: /lovelace/vacuums
-      tag: neuneu
-  mode: single
-- id: '1688556647795'
-  alias: Nettoyage Intelligent - Considérer rez-de-chaussée propre
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - vacuum.neuneu
-    to: cleaning
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-  condition: []
-  action:
-  - action: input_datetime.set_datetime
-    data:
-      datetime: '{{now()}}'
-    target:
-      entity_id: input_datetime.dernier_nettoyage_de_neuneu
-  mode: single
-- id: '1688557191445'
-  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu terminé"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - vacuum.neuneu
-    to: returning
-    from:
-    - paused
-    - cleaning
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_notify_cleaning
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_nearest
-      title: ✅ NeuNeu a terminé
-      message: 'Surface nettoyée: {{states(''sensor.neuneu_cleaned_area'')}}m²'
-      click_url: /lovelace/vacuums
-      tag: neuneu
-      image_url: /api/camera_proxy/camera.neuneu_map
-  mode: single
-- id: '1688557628209'
-  alias: "Nettoyage Intelligent - \U0001F4F2 Démarrer NeuNeu depuis notification"
-  description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: start_neuneu
-  condition: []
-  action:
-  - action: vacuum.start
-    data: {}
-    target:
-      entity_id: vacuum.neuneu
-  mode: single
-- id: '1688557670153'
-  alias: "Nettoyage Intelligent - \U0001F4F2 RTH NeuNeu depuis notification"
-  description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: rth_neuneu
-  condition: []
-  action:
-  - action: vacuum.return_to_base
-    data: {}
-    target:
-      entity_id: vacuum.neuneu
-  mode: single
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF
   description: ''
@@ -1574,35 +1428,6 @@
     data: {}
     target:
       entity_id: input_boolean.automation_presence_simulator
-  mode: single
-- id: '1693389795766'
-  alias: "Nettoyage Intelligent - \U0001F514 Notifier NeuNeu Erreur"
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.neuneu_error
-    not_to:
-    - unavailable
-    - unknown
-    - no_error
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_notify_cleaning
-    state: 'on'
-  action:
-  - event: NOTIFIER
-    event_data:
-      action: send_when_present
-      title: "\U0001F9F9 NeuNeu"
-      message: '{{state_translated("sensor.neuneu_error")}}
-
-        '
-      click_url: /lovelace/vacuums
-      tag: neuneu_error
-      until:
-      - entity_id: sensor.neuneu_error
-        new_state: no_error
   mode: single
 - id: '1693509234441'
   alias: "Tesla - \U0001F514 Rappel charge "
@@ -2298,23 +2123,6 @@
           entity_id: script.controler_le_standing_desk
       - set_conversation_response: Bureau en descente
   mode: single
-- id: '1707299287220'
-  alias: "Aspirateur - \U0001F4E3 Démarrer par commande vocale"
-  description: ''
-  trigger:
-  - platform: conversation
-    command:
-    - (nettoie|nettoyer) [le] rez-de-chaussée
-    - (nettoie|nettoyer) [le] bas
-  condition: []
-  action:
-  - action: vacuum.start
-    metadata: {}
-    data: {}
-    target:
-      entity_id: vacuum.neuneu
-  - set_conversation_response: Nettoyage lancé
-  mode: single
 - id: '1707424061311'
   alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
   description: ''
@@ -2692,130 +2500,6 @@
     target:
       entity_id:
       - media_player.sonos_chambre_music_assistant
-  mode: single
-- id: '1716920054507'
-  alias: Nettoyage Intelligent - Lancer NeuNeu si serpillère installée
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.neuneu_water_tank
-    to: installed
-    for:
-      hours: 0
-      minutes: 10
-      seconds: 0
-    from: not_installed
-  condition:
-  - condition: state
-    entity_id: input_boolean.automation_clean_house
-    state: 'on'
-  action:
-  - if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: vacuum.neuneu
-        state: cleaning
-    then:
-    - action: vacuum.start
-      data: {}
-      target:
-        entity_id: vacuum.neuneu
-  mode: single
-- id: '1716920379412'
-  alias: Nettoyage Intelligent - RTH NeuNeu lorsque maison occupée
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    to: 'on'
-  condition: []
-  action:
-  - wait_for_trigger:
-    - platform: state
-      entity_id:
-      - binary_sensor.capteur_ouverture_porte_entree
-      to: 'on'
-    timeout:
-      hours: 0
-      minutes: 15
-      seconds: 0
-      milliseconds: 0
-  - if:
-    - condition: state
-      entity_id: binary_sensor.home_occupied
-      state: 'on'
-    - condition: state
-      entity_id: vacuum.neuneu
-      state: cleaning
-    then:
-    - action: vacuum.return_to_base
-      metadata: {}
-      data: {}
-      target:
-        entity_id: vacuum.neuneu
-  mode: restart
-- id: '1716920545052'
-  alias: Nettoyage Intelligent - Lancer NeuNeu
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.home_occupied
-    to: 'off'
-  - platform: state
-    entity_id:
-    - binary_sensor.should_neuneu_run
-    to: 'on'
-  - platform: state
-    entity_id:
-    - input_boolean.guest_mode
-    to: 'off'
-  condition:
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.automation_clean_house
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.house_cleaning_first_floor
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'off'
-  - condition: state
-    entity_id: binary_sensor.should_neuneu_run
-    state: 'on'
-  action:
-  - action: vacuum.start
-    metadata: {}
-    data: {}
-    target:
-      entity_id: vacuum.neuneu
-  mode: single
-- id: '1716920627853'
-  alias: Nettoyage Intelligent - Réinitialiser Carte de nettoyage
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - vacuum.neuneu
-    to: docked
-  condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: select.neuneu_selected_map
-      state: Rez-De-Chaussée
-  action:
-  - action: select.select_option
-    data:
-      option: Rez-De-Chaussée
-    target:
-      entity_id: select.neuneu_selected_map
   mode: single
 - id: '1718020295304'
   alias: Éteindre Bureau si plus de présence

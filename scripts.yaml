@@ -345,36 +345,6 @@ wake_up:
       entity_id: light.chambre_guirlande
   mode: single
   icon: mdi:weather-sunset-up
-room_cleaning_first_floor:
-  alias: Room Cleaning (Rez-De-Chaussée)
-  sequence:
-  - if:
-    - condition: template
-      value_template: '{{states("sensor.vacuum_selected_room_firsr_floor") | int >=
-        1}}'
-    then:
-    - action: dreame_vacuum.vacuum_clean_segment
-      data:
-        segments: '{{ state_attr(''sensor.vacuum_selected_room_firsr_floor'', ''room_list'')
-          }}'
-      target:
-        entity_id: vacuum.neuneu
-    - action: input_boolean.turn_off
-      data: {}
-      target:
-        entity_id:
-        - input_boolean.vacuum_zone_kitchen
-        - input_boolean.vacuum_zone_entry
-        - input_boolean.vacuum_zone_bathroom
-        - input_boolean.vacuum_zone_living_room
-    else:
-    - action: vacuum.start
-      metadata: {}
-      data: {}
-      target:
-        entity_id: vacuum.neuneu
-  mode: single
-  icon: mdi:vacuum
 start_marilou_bedtime_routine:
   alias: Démarrer la routine du sommeil de Marilou
   sequence:
