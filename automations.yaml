@@ -3187,6 +3187,8 @@
   - platform: state
     entity_id:
     - binary_sensor.home_occupied
+  - platform: state
+    entity_id:
     - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
   - platform: state
     entity_id:
@@ -3199,6 +3201,9 @@
       seconds: 0
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - input_boolean.guest_mode
   condition: []
   action:
   - choose:
@@ -3234,28 +3239,17 @@
         target:
           entity_id: input_select.mode_chauffage_rez_de_chaussee
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
-          state: 'off'
-        - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Absent
-        target:
-          entity_id: input_select.mode_chauffage_rez_de_chaussee
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
       - condition: state
         entity_id: schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
         state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -3263,6 +3257,13 @@
           option: Présent
         target:
           entity_id: input_select.mode_chauffage_rez_de_chaussee
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Absent
+      target:
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
   mode: single
 - id: '1726172240853'
   alias: Chauffage Intelligent - Choisir Mode Bureau
@@ -3287,6 +3288,9 @@
       seconds: 0
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - input_boolean.guest_mode
   condition: []
   action:
   - choose:
@@ -3307,37 +3311,17 @@
           entity_id:
           - input_select.mode_chauffage_bureau
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_presence_bureau_occupancy
-          state: 'off'
-          for:
-            hours: 0
-            minutes: 0
-            seconds: 0
-        - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Absent
-        target:
-          entity_id:
-          - input_select.mode_chauffage_bureau
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
       - condition: state
         entity_id: binary_sensor.capteur_presence_bureau_occupancy
         state: 'on'
-        for:
-          hours: 0
-          minutes: 0
-          seconds: 0
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -3345,6 +3329,14 @@
           option: Présent
         target:
           entity_id: input_select.mode_chauffage_bureau
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Absent
+      target:
+        entity_id:
+        - input_select.mode_chauffage_bureau
   mode: single
 - id: '1726172527832'
   alias: Chauffage Intelligent - Choisir Mode Chambre
@@ -3369,6 +3361,9 @@
       seconds: 0
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - input_boolean.guest_mode
   condition: []
   action:
   - choose:
@@ -3388,30 +3383,6 @@
         target:
           entity_id: input_select.mode_chauffage_chambre
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_presence_chambre_occupancy
-          state: 'off'
-          for:
-            hours: 0
-            minutes: 0
-            seconds: 0
-        - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Absent
-        target:
-          entity_id:
-          - input_select.mode_chauffage_chambre
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
       - condition: state
         entity_id: binary_sensor.capteur_presence_chambre_occupancy
         state: 'on'
@@ -3419,6 +3390,14 @@
           hours: 0
           minutes: 0
           seconds: 0
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -3427,6 +3406,14 @@
         target:
           entity_id:
           - input_select.mode_chauffage_chambre
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Absent
+      target:
+        entity_id:
+        - input_select.mode_chauffage_chambre
   mode: single
 - id: '1726172622795'
   alias: Chauffage Intelligent - Choisir Mode Chambre Marilou
@@ -3451,6 +3438,9 @@
       seconds: 0
   - platform: homeassistant
     event: start
+  - platform: state
+    entity_id:
+    - input_boolean.guest_mode
   condition: []
   action:
   - choose:
@@ -3471,30 +3461,6 @@
           entity_id:
           - input_select.mode_chauffage_chambre_marilou
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
-          state: 'off'
-          for:
-            hours: 0
-            minutes: 0
-            seconds: 0
-        - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Absent
-        target:
-          entity_id:
-          - input_select.mode_chauffage_chambre_marilou
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
       - condition: state
         entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
         state: 'on'
@@ -3502,6 +3468,14 @@
           hours: 0
           minutes: 0
           seconds: 0
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.home_occupied
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -3510,6 +3484,14 @@
         target:
           entity_id:
           - input_select.mode_chauffage_chambre_marilou
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Absent
+      target:
+        entity_id:
+        - input_select.mode_chauffage_chambre_marilou
   mode: single
 - id: '1726173163311'
   alias: Chauffage Intelligent - Régler Température Rez-De-Chaussée
