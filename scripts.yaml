@@ -43,8 +43,8 @@ leave_home:
         click_url: /lovelace/openings
         tag: home_empty_window_open
         until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
+        - entity_id: input_select.mode_de_presence_de_la_maison
+          new_state: Occupée
         - entity_id: binary_sensor.all_windows
           new_state: 'off'
     alias: Notify windows open
@@ -61,8 +61,8 @@ leave_home:
         tag: home_empty_oven_on
         interuption_level: critical
         until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
+        - entity_id: input_select.mode_de_presence_de_la_maison
+          new_state: Occupée
         - entity_id: binary_sensor.is_oven_running
           new_state: 'off'
     alias: Notify oven running
@@ -79,8 +79,8 @@ leave_home:
         tag: home_empty_induction_cooktop_on
         interuption_level: critical
         until:
-        - entity_id: binary_sensor.home_occupied
-          new_state: 'on'
+        - entity_id: input_select.mode_de_presence_de_la_maison
+          new_state: Occupée
         - entity_id: binary_sensor.is_induction_cooktop_running
           new_state: 'off'
     alias: Notify cooktop running
@@ -112,8 +112,8 @@ leave_home:
               click_url: /lovelace/openings
               tag: home_empty_door_open
               until:
-              - entity_id: binary_sensor.home_occupied
-                new_state: 'on'
+              - entity_id: input_select.mode_de_presence_de_la_maison
+                new_state: Occupée
               - entity_id: binary_sensor.all_doors
                 new_state: 'off'
         alias: Notify doors open
@@ -143,8 +143,8 @@ leave_home:
           click_url: /lovelace/openings
           tag: home_empty_door_open
           until:
-          - entity_id: binary_sensor.home_occupied
-            new_state: 'on'
+          - entity_id: input_select.mode_de_presence_de_la_maison
+            new_state: Occupée
           - entity_id: binary_sensor.all_doors
             new_state: 'off'
       alias: Notify doors open

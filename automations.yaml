@@ -440,8 +440,8 @@
     entity_id: input_boolean.automation_wake_up
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   - condition: or
     conditions:
     - condition: state
@@ -854,9 +854,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    from: 'on'
-    to: 'off'
+    - input_select.mode_de_presence_de_la_maison
+    to: Vide
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -876,9 +875,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    from: 'off'
-    to: 'on'
+    - input_select.mode_de_presence_de_la_maison
+    to: Occupée
   condition:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -934,8 +932,8 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   - condition: state
     entity_id: binary_sensor.all_openings
     state: 'on'
@@ -1417,8 +1415,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    to: 'on'
+    - input_select.mode_de_presence_de_la_maison
+    to: Occupée
   condition:
   - condition: state
     entity_id: input_boolean.automation_presence_simulator
@@ -1744,7 +1742,7 @@
     - input_boolean.presence_simulator_control_cover
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
+    - input_select.mode_de_presence_de_la_maison
   - platform: homeassistant
     event: start
   condition:
@@ -1752,8 +1750,8 @@
     entity_id: input_boolean.automation_presence_simulator
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'off'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Vide
   action:
   - choose:
     - conditions:
@@ -1946,8 +1944,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    to: 'on'
+    - input_select.mode_de_presence_de_la_maison
+    to: Occupée
   condition: []
   action:
   - condition: state
@@ -2473,8 +2471,8 @@
     entity_id: input_boolean.reveil_intelligent_musical
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   - condition: or
     conditions:
     - condition: state
@@ -2518,8 +2516,8 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   action:
   - action: light.turn_off
     metadata: {}
@@ -2574,8 +2572,8 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   action:
   - action: light.turn_off
     metadata: {}
@@ -2623,8 +2621,8 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: binary_sensor.home_occupied
-    state: 'on'
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
   action:
   - action: light.turn_off
     metadata: {}
@@ -2787,9 +2785,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    from: 'off'
-    to: 'on'
+    - input_select.mode_de_presence_de_la_maison
+    to: Occupée
   condition:
   - condition: state
     entity_id: input_boolean.automation_tesla
@@ -3187,7 +3184,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
+    - input_select.mode_de_presence_de_la_maison
   - platform: state
     entity_id:
     - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
@@ -3246,8 +3243,8 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'on'
+          entity_id: input_select.mode_de_presence_de_la_maison
+          state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
@@ -3272,7 +3269,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
+    - input_select.mode_de_presence_de_la_maison
   - platform: state
     entity_id:
     - binary_sensor.capteur_ouverture_fenetre_bureau
@@ -3318,8 +3315,8 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'on'
+          entity_id: input_select.mode_de_presence_de_la_maison
+          state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
@@ -3345,7 +3342,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
+    - input_select.mode_de_presence_de_la_maison
   - platform: state
     entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre
@@ -3394,8 +3391,8 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'on'
+          entity_id: input_select.mode_de_presence_de_la_maison
+          state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
@@ -3422,7 +3419,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
+    - input_select.mode_de_presence_de_la_maison
   - platform: state
     entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
@@ -3472,8 +3469,8 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: binary_sensor.home_occupied
-          state: 'on'
+          entity_id: input_select.mode_de_presence_de_la_maison
+          state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
@@ -3855,8 +3852,8 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.home_occupied
-    to: 'on'
+    - input_select.mode_de_presence_de_la_maison
+    to: Occupée
   condition:
   - condition: state
     entity_id: input_boolean.guest_mode
