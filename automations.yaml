@@ -1,17 +1,17 @@
 - id: '1688111538910'
   alias: Litière Intelligente - Incrementer passages litière
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_mouvement_litiere
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
-  action:
+  actions:
   - action: input_number.increment
     data: {}
     target:
@@ -20,17 +20,17 @@
 - id: '1688112377959'
   alias: "Litière Intelligente - \U0001F514 Notifier litière pleine"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.is_litter_full
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_when_present
@@ -50,13 +50,13 @@
   alias: "Litière Intelligente - \U0001F4F2 Remettre à zero passages litière depuis
     notification"
   description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
+  triggers:
+  - event_type: mobile_app_notification_action
     event_data:
       action: reset_litter_tracking
-  condition: []
-  action:
+    trigger: event
+  conditions: []
+  actions:
   - action: input_number.set_value
     data:
       value: 0
@@ -66,17 +66,17 @@
 - id: '1688114260897'
   alias: Poubelles Intelligentes - Informer poubelle noire à sortir
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - schedule.planning_poubelle_noire
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
-  action:
+  actions:
   - action: input_boolean.turn_on
     data: {}
     target:
@@ -85,17 +85,17 @@
 - id: '1688114327500'
   alias: Poubelles Intelligentes - Informer poubelle verte à sortir
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - schedule.planning_poubelle_verte
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
-  action:
+  actions:
   - action: input_boolean.turn_on
     data: {}
     target:
@@ -104,20 +104,20 @@
 - id: '1688114732811'
   alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle noir non sortie"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - schedule.planning_poubelle_noire
     to: 'off'
     from: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
   - condition: state
     entity_id: input_boolean.poubelle_noire_a_sortir
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_present
@@ -132,20 +132,20 @@
 - id: '1688114808231'
   alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle verte non sortie"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - schedule.planning_poubelle_verte
     to: 'off'
     from: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
   - condition: state
     entity_id: input_boolean.poubelle_verte_a_sortir
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_present
@@ -160,20 +160,20 @@
 - id: '1688116237944'
   alias: "Boîte aux Lettres Intelligente - \U0001F514 Notifier courrier "
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_mouvement_boite_aux_lettres
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_mailbox
     state: 'on'
   - condition: state
     entity_id: binary_sensor.is_front_door_recently_open
     state: 'off'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_when_present
@@ -184,20 +184,20 @@
 - id: '1688116301973'
   alias: Boîte aux Lettres Intelligente - Supprimer notification courrier
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_mouvement_boite_aux_lettres
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_mailbox
     state: 'on'
   - condition: state
     entity_id: binary_sensor.is_front_door_recently_open
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER_DISCARD
     event_data:
       tag: you_got_mail
@@ -205,36 +205,36 @@
 - id: '1688117249626'
   alias: Boutons Hue - Bouton Entrée
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - event.hue_tap_dial_switch_1_bouton_1
     attribute: event_type
     to: repeat
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_1_bouton_2
     attribute: event_type
     to: repeat
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_1_bouton_3
     attribute: event_type
     to: repeat
     id: 'off'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_1_bouton_4
     attribute: event_type
     to: repeat
     id: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -264,36 +264,36 @@
 - id: '1688117431729'
   alias: Boutons Hue - Bouton Salon Couloir
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - event.hue_tap_dial_switch_7_bouton_1
     attribute: event_type
     to: repeat
     id: on_no_cover
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_7_bouton_2
     attribute: event_type
     to: repeat
     id: on_cover
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_7_bouton_3
     attribute: event_type
     to: repeat
     id: off_no_cover
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_7_bouton_4
     attribute: event_type
     to: repeat
     id: off_cover
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -344,17 +344,17 @@
 - id: '1688118075093'
   alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.is_washing_machine_running
     to: 'off'
     from: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_washing_machine
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_when_present
@@ -365,17 +365,17 @@
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - valve.irrigation
     to: open
     from: closed
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.irrigation_automation
     state: 'on'
-  action:
+  actions:
   - action: input_datetime.set_datetime
     data:
       datetime: '{{ now() + timedelta (minutes = states(''input_number.irrigation_time'')
@@ -386,17 +386,17 @@
 - id: '1688129871554'
   alias: Irrigation intelligente - Arrêter arrosage
   description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.end_of_irrigation
+  triggers:
+  - at: input_datetime.end_of_irrigation
     id: end
-  - platform: homeassistant
-    event: start
+    trigger: time
+  - event: start
     id: restart
-  - platform: state
-    entity_id:
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.irrigation_automation
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.irrigation_automation
     state: 'on'
@@ -405,7 +405,7 @@
     state: open
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.end_of_irrigation")))}}'
-  action:
+  actions:
   - action: valve.close_valve
     target:
       entity_id: valve.irrigation
@@ -415,12 +415,12 @@
 - id: '1688139412657'
   alias: Réveil intelligent - Régler heures de déclenchement
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_datetime.wake_up_time
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - action: input_datetime.set_datetime
     data:
       datetime: '{{today_at(states(''input_datetime.wake_up_time'')) - timedelta(minutes
@@ -431,10 +431,10 @@
 - id: '1688139621896'
   alias: Réveil intelligent - Allumer Lumières
   description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.wake_up_time_lights
-  condition:
+  triggers:
+  - at: input_datetime.wake_up_time_lights
+    trigger: time
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_wake_up
     state: 'on'
@@ -449,25 +449,25 @@
     - condition: state
       entity_id: input_boolean.forcer_le_reveil
       state: 'on'
-  action:
+  actions:
   - action: script.wake_up
     data: {}
   mode: single
 - id: '1688301259694'
   alias: TV intelligente - Allumer / Éteindre KEF
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - remote.jl_s_tv
     to: 'on'
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - remote.jl_s_tv
     to: 'off'
     id: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
@@ -476,7 +476,7 @@
     - condition: state
       entity_id: media_player.kef_salon_music_assistant
       state: playing
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -645,24 +645,24 @@
 - id: '1688329966467'
   alias: Volet - Edge Cases
   description: ''
-  trigger:
-  - platform: event
-    event_type: call_service
+  triggers:
+  - event_type: call_service
     event_data:
       domain: cover
       action: open_cover
       service_data:
         entity_id: cover.living_room_cover
     id: open
-  - platform: event
-    event_type: call_service
+    trigger: event
+  - event_type: call_service
     event_data:
       domain: cover
       action: close_cover
       service_data:
         entity_id: cover.living_room_cover
     id: closed
-  condition:
+    trigger: event
+  conditions:
   - condition: or
     conditions:
     - condition: and
@@ -681,7 +681,7 @@
         entity_id: cover.living_room_cover
         attribute: current_position
         state: 0
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -705,13 +705,13 @@
 - id: '1688364991944'
   alias: Bureau - Meetings VR
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.quest_in_use
     to: 'on'
     from: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_meetings
     state: 'on'
@@ -727,7 +727,7 @@
   - condition: state
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
-  action:
+  actions:
   - action: scene.create
     data:
       scene_id: office_previous_light_state
@@ -751,11 +751,11 @@
     target:
       entity_id: switch.voicekit_bureau_microphone
   - wait_for_trigger:
-    - platform: state
-      entity_id:
+    - entity_id:
       - binary_sensor.quest_in_use
       to: 'off'
       from: 'on'
+      trigger: state
     continue_on_timeout: false
   - action: light.turn_off
     data: {}
@@ -774,9 +774,8 @@
 - id: '1688368387161'
   alias: Bureau - Meetings
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.jean_loics_macbook_pro_camera_in_use
     to: 'on'
     from: 'off'
@@ -784,7 +783,8 @@
       hours: 0
       minutes: 0
       seconds: 5
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_meetings
     state: 'on'
@@ -800,7 +800,7 @@
   - condition: state
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
-  action:
+  actions:
   - data:
       scene_id: office_previous_light_state
       snapshot_entities:
@@ -830,11 +830,11 @@
       entity_id: switch.voicekit_bureau_microphone
     action: switch.turn_off
   - wait_for_trigger:
-    - platform: state
-      entity_id:
+    - entity_id:
       - binary_sensor.jean_loics_macbook_pro_camera_in_use
       to: 'off'
       from: 'on'
+      trigger: state
     continue_on_timeout: false
   - data: {}
     target:
@@ -852,19 +852,19 @@
 - id: '1688371620889'
   alias: Surveillance de la maison - Éteindre appareils lors du départ
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Vide
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - action: script.leave_home
     data:
       calling_location: not_home
@@ -873,19 +873,19 @@
 - id: '1688373819985'
   alias: Surveillance de la maison - Allumer appareils lors de l'arrivée
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Occupée
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - action: switch.turn_on
     data: {}
     target:
@@ -893,10 +893,10 @@
       - switch.alexa
       - switch.voicekit_salon_microphone
   - wait_for_trigger:
-    - platform: state
-      entity_id:
+    - entity_id:
       - binary_sensor.capteur_ouverture_porte_entree
       to: 'on'
+      trigger: state
     timeout:
       hours: 0
       minutes: 15
@@ -922,13 +922,13 @@
   alias: "Surveillance de la maison - \U0001F514 Notifier pluie et portes/fenêtres
     ouvertes "
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.is_raining_now
     from: 'off'
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
@@ -938,7 +938,7 @@
   - condition: state
     entity_id: binary_sensor.all_openings
     state: 'on'
-  action:
+  actions:
   - if:
     - condition: state
       entity_id: binary_sensor.all_doors
@@ -986,18 +986,18 @@
 - id: '1688386134462'
   alias: "Surveillance du système - \U0001F514 Notifier mise a jour dispo"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.pending_updates
     attribute: entities
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_system
     state: 'on'
   - condition: template
     value_template: '{{trigger.to_state.state | int(0) > 0}}'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
@@ -1013,14 +1013,14 @@
 - id: '1688387237599'
   alias: Surveillance du système - Backup
   description: ''
-  trigger:
-  - platform: time
-    at: 01:00:00
-  condition:
+  triggers:
+  - at: 01:00:00
+    trigger: time
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_system
     state: 'on'
-  action:
+  actions:
   - action: hassio.backup_full
     data:
       compressed: true
@@ -1029,10 +1029,10 @@
 - id: '1688390987276'
   alias: "Surveillance du système - \U0001F514 Notifier batteries faibles"
   description: ''
-  trigger:
-  - platform: time
-    at: '21:00:00'
-  condition:
+  triggers:
+  - at: '21:00:00'
+    trigger: time
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_system
     state: 'on'
@@ -1042,7 +1042,7 @@
   - condition: numeric_state
     entity_id: sensor.low_batteries
     above: 0
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
@@ -1053,9 +1053,8 @@
 - id: '1688537182551'
   alias: "Servarr - \U0001F514 Notification "
   description: ''
-  trigger:
-  - platform: webhook
-    allowed_methods:
+  triggers:
+  - allowed_methods:
     - POST
     local_only: true
     webhook_id: sonarr-grab--KqTQ4vReuFd_as1xTR_hPqk2
@@ -1065,8 +1064,8 @@
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
-  - platform: webhook
-    allowed_methods:
+    trigger: webhook
+  - allowed_methods:
     - POST
     local_only: true
     webhook_id: sonarr-download--KqTQ4vReuFd_as1xTR_hPqk2
@@ -1076,8 +1075,8 @@
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
-  - platform: webhook
-    allowed_methods:
+    trigger: webhook
+  - allowed_methods:
     - POST
     local_only: true
     webhook_id: radarr-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
@@ -1086,8 +1085,8 @@
       title: "\U0001F3A5 Film en télechargement ..."
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
-  - platform: webhook
-    allowed_methods:
+    trigger: webhook
+  - allowed_methods:
     - POST
     local_only: true
     webhook_id: radarr-download-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
@@ -1096,8 +1095,9 @@
       title: "\U0001F3A5 Film téléchargé !"
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
-  condition: []
-  action:
+    trigger: webhook
+  conditions: []
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
@@ -1109,9 +1109,8 @@
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.is_exterior_sphere_bright
     from: 'off'
     to: 'on'
@@ -1120,8 +1119,8 @@
       hours: 0
       minutes: 0
       seconds: 1
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.is_exterior_sphere_bright
     from: 'on'
     to: 'off'
@@ -1130,8 +1129,8 @@
       hours: 0
       minutes: 0
       seconds: 1
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - light.plafonnier_exterieur
     from: 'off'
     to: 'on'
@@ -1140,8 +1139,8 @@
       hours: 0
       minutes: 0
       seconds: 1
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - light.plafonnier_exterieur
     from: 'on'
     to: 'off'
@@ -1150,8 +1149,9 @@
       hours: 0
       minutes: 0
       seconds: 1
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1207,12 +1207,12 @@
 - id: '1690826979664'
   alias: "Assist - \U0001F4E3 Commandes Multiple "
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - '{command1} et {command2}'
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - action: conversation.process
     data:
       agent_id: conversation.home_assistant
@@ -1229,28 +1229,28 @@
 - id: '1691413517615'
   alias: Bureau - Notification Lumineuse Meetings
   description: ''
-  trigger:
-  - platform: calendar
-    event: start
+  triggers:
+  - event: start
     offset: -0:5:0
     entity_id: calendar.nabucasa_calendar_personal
     id: personal
-  - platform: calendar
-    event: start
+    trigger: calendar
+  - event: start
     offset: -0:5:0
     entity_id: calendar.nabucasa_calendar_social_time
     id: social_time
-  - platform: calendar
-    event: start
+    trigger: calendar
+  - event: start
     offset: -0:1:0
     entity_id: calendar.nabucasa_calendar_personal
     id: personal
-  - platform: calendar
-    event: start
+    trigger: calendar
+  - event: start
     offset: -0:1:0
     entity_id: calendar.nabucasa_calendar_social_time
     id: social_time
-  condition:
+    trigger: calendar
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_meetings
     state: 'on'
@@ -1266,7 +1266,7 @@
   - condition: state
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
-  action:
+  actions:
   - action: scene.create
     data:
       scene_id: office_webcam_previous_light_state
@@ -1336,16 +1336,16 @@
   alias: "Simulation de présence - \U0001F6CE️ Notifier Éloignement domicile sans
     simulation de présence"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.far_away
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_presence_simulator
     state: 'off'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_nearest
@@ -1364,13 +1364,13 @@
 - id: '1691566452704'
   alias: "Simulation de Présence - \U0001F4F2 Activer Simulation de Présence"
   description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
+  triggers:
+  - event_type: mobile_app_notification_action
     event_data:
       action: start_presence_simulation
-  condition: []
-  action:
+    trigger: event
+  conditions: []
+  actions:
   - action: input_boolean.turn_on
     data: {}
     target:
@@ -1379,10 +1379,10 @@
 - id: '1691758172267'
   alias: "Pont Chaban Delmas - \U0001F6CE️ Notifier fermeture demain"
   description: ''
-  trigger:
-  - platform: time
-    at: '20:00:00'
-  condition:
+  triggers:
+  - at: '20:00:00'
+    trigger: time
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_notify_chaban_delmas_bridge
     state: 'on'
@@ -1392,7 +1392,7 @@
   - condition: template
     value_template: '{{as_datetime(states("sensor.chaban_delmas_next_closing_start_date"))
       - now() < timedelta(days = 1, hours = 4)}}'
-  action:
+  actions:
   - variables:
       human_redeable_closing_time: '{{as_timestamp(states("sensor.chaban_delmas_next_closing_start_date"))
         | timestamp_custom(''%H:%M'')}}
@@ -1413,16 +1413,16 @@
 - id: '1692118004694'
   alias: Simulation de présence - Arrêter lors du retour
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Occupée
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_presence_simulator
     state: 'on'
-  action:
+  actions:
   - action: input_boolean.turn_off
     data: {}
     target:
@@ -1431,21 +1431,21 @@
 - id: '1693509234441'
   alias: "Tesla - \U0001F514 Rappel charge "
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - schedule.heures_pleines
     from: 'on'
     to: 'off'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - device_tracker.meme_emplacement
     to: home
     for:
       hours: 0
       minutes: 1
       seconds: 0
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
@@ -1464,7 +1464,7 @@
   - condition: state
     entity_id: schedule.heures_pleines
     state: 'off'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
@@ -1481,16 +1481,16 @@
 - id: '1695458967964'
   alias: Tesla - Attacher Tesla à JL en début de conduite
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_boolean.jl_connected_to_tesla
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
-  action:
+  actions:
   - action: person.add_device_tracker
     data:
       entity_id: person.jenova70
@@ -1505,20 +1505,20 @@
 - id: '1695459020679'
   alias: Tesla - Détacher Tesla à JL en fin de conduite
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_boolean.jl_connected_to_tesla
     to: 'off'
     for:
       hours: 0
       minutes: 0
       seconds: 0
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
-  action:
+  actions:
   - action: notify.mobile_app_jean_loics_iphone
     data:
       message: request_location_update
@@ -1542,34 +1542,34 @@
 - id: '1698182832051'
   alias: TV intelligente - Activer / Désactiver Micros
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - media_player.media_center
     to: playing
     id: playing
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - media_player.media_center
     from: playing
     id: not_playing
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.is_ps5_used
     from: 'off'
     to: 'on'
     id: on_ps5
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.is_ps5_used
     from: 'on'
     to: 'off'
     id: off_ps5
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1598,19 +1598,19 @@
 - id: '1699131143084'
   alias: 'Music Assistant - Éteindre MASS lorsque KEF éteint '
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - media_player.kef
     to: 'off'
     from: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: not
     conditions:
     - condition: state
       state: 'off'
       entity_id: media_player.kef_salon_music_assistant
-  action:
+  actions:
   - action: media_player.turn_off
     data: {}
     target:
@@ -1620,12 +1620,12 @@
 - id: '1699131464359'
   alias: TV intelligente - Changer Source quand Lecture en cours sur TV
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - media_player.media_center
     to: playing
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
@@ -1635,7 +1635,7 @@
       entity_id: media_player.kef
       attribute: source
       state: Opt
-  action:
+  actions:
   - action: media_player.select_source
     data:
       source: Opt
@@ -1645,20 +1645,20 @@
 - id: '1699868538036'
   alias: Routine du sommeil Marilou - Arrêter
   description: ''
-  trigger:
-  - platform: homeassistant
-    event: start
+  triggers:
+  - event: start
     id: restart
-  - platform: time
-    at: input_datetime.marilou_bedtime_routine_end
+    trigger: homeassistant
+  - at: input_datetime.marilou_bedtime_routine_end
     id: end
-  condition:
+    trigger: time
+  conditions:
   - condition: state
     entity_id: media_player.sonos_chambre_marilou_music_assistant
     state: playing
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
-  action:
+  actions:
   - action: media_player.turn_off
     data: {}
     target:
@@ -1672,33 +1672,33 @@
 - id: '1699869463559'
   alias: Routine du sommeil Marilou - Button Hue
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - event.hue_tap_dial_switch_13_bouton_1
     attribute: event_type
     to: repeat
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_13_bouton_2
     attribute: event_type
     to: repeat
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_13_bouton_3
     attribute: event_type
     to: repeat
     id: 'off'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - event.hue_tap_dial_switch_13_bouton_4
     attribute: event_type
     to: repeat
     id: 'off'
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1731,29 +1731,29 @@
 - id: '1700410464307'
   alias: Simulation de présence
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.presence_simulator_current_step
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - input_boolean.automation_presence_simulator
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - input_boolean.presence_simulator_control_cover
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
-  - platform: homeassistant
-    event: start
-  condition:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_presence_simulator
     state: 'on'
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Vide
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -1922,16 +1922,16 @@
 - id: '1702164245946'
   alias: Routine du sommeil Marilou - Changer heure fin de routine
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_number.marilou_bedtime_routine_duration
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - script.start_marilou_bedtime_routine
     to: 'on'
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - action: input_datetime.set_datetime
     data:
       datetime: '{{ now() + timedelta (minutes = states(''input_number.marilou_bedtime_routine_duration'')
@@ -1942,13 +1942,13 @@
 - id: '1702834566659'
   alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Occupée
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
@@ -1992,13 +1992,13 @@
 - id: '1702835659800'
   alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle verte sortie depuis notification"
   description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
+  triggers:
+  - event_type: mobile_app_notification_action
     event_data:
       action: green_trash_taken_out
-  condition: []
-  action:
+    trigger: event
+  conditions: []
+  actions:
   - action: input_boolean.turn_off
     target:
       entity_id: input_boolean.poubelle_verte_a_sortir
@@ -2007,13 +2007,13 @@
 - id: '1702835708226'
   alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle noire sortie depuis notification"
   description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
+  triggers:
+  - event_type: mobile_app_notification_action
     event_data:
       action: black_trash_taken_out
-  condition: []
-  action:
+    trigger: event
+  conditions: []
+  actions:
   - action: input_boolean.turn_off
     target:
       entity_id:
@@ -2023,12 +2023,12 @@
 - id: '1703176659308'
   alias: Bureau - Standing Desk Autonome
   description: ''
-  trigger:
-  - platform: time_pattern
-    minutes: '25'
-  - platform: time_pattern
-    minutes: '55'
-  condition:
+  triggers:
+  - minutes: '25'
+    trigger: time_pattern
+  - minutes: '55'
+    trigger: time_pattern
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_meetings
     state: 'on'
@@ -2038,7 +2038,7 @@
   - condition: state
     entity_id: binary_sensor.quest_in_use
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -2078,22 +2078,22 @@
 - id: '1707214155021'
   alias: "Bureau - \U0001F4E3 Contrôle du Standing Desk par la voix"
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - (Lève|Lever|Monte|Monter) [le] bureau
     - (Mais|Mets|Mettre|Passe|Passer) [le] bureau [en] (mode|position) debout
     id: up
-  - platform: conversation
-    command:
+    trigger: conversation
+  - command:
     - (descend|descends|descendre|Baisse|Baisser) [le] bureau
     - (Mais|Mets|Mettre|Passe|Passer) [le] bureau [en] (mode|position) (assis|assise)
     id: down
-  condition:
+    trigger: conversation
+  conditions:
   - condition: state
     entity_id: binary_sensor.standing_desk_moving
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -2125,13 +2125,13 @@
 - id: '1707424061311'
   alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - 'Au dodo '
     - (Au lit)|(Ollie)|(Holly)
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - action: script.start_marilou_bedtime_routine
     metadata: {}
     data: {}
@@ -2140,20 +2140,20 @@
 - id: '1707728356919'
   alias: "Meta Quest - \U0001F6CE️ Notification batterie faible."
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.quest_in_use
     to: 'off'
     from: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.recevoir_notification_batterie_meta_quest
     state: 'on'
   - condition: numeric_state
     entity_id: sensor.quest_battery_level
     below: 60
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_jl
@@ -2185,12 +2185,12 @@
 - id: '1708194950863'
   alias: Party Time Marilou
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_boolean.party_time_marilou
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -2277,12 +2277,12 @@
 - id: '1710949489035'
   alias: "Assist - \U0001F4E3 Multiple Commands (EN)"
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - '{command1} and {command2}'
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - action: conversation.process
     data:
       agent_id: conversation.home_assistant
@@ -2301,9 +2301,8 @@
 - id: '1711723541187'
   alias: "Assist - \U0001F4E3 Quitter la maison"
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - Je pars [faire un tour]
     - Je m'en vais [faire un tour]
     - On part [faire un tour]
@@ -2311,8 +2310,9 @@
     - Au revoir
     - À bientôt
     - À plus
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - action: input_select.select_option
     metadata: {}
     data:
@@ -2342,24 +2342,24 @@
 - id: '1712660364204'
   alias: 'Box Chambre - Gérer Luminosité '
   description: ''
-  trigger:
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+  triggers:
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - light.esp32_s3_box_3_5a9f28_screen
     attribute: brightness
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.s3box_chambre_assist_en_cours
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.chambre_lumineuse
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_presence_chambre_occupancy
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: or
@@ -2395,15 +2395,15 @@
 - id: '1713855798081'
   alias: "Assist - \U0001F4E3 Éteindre temporairement un assistant vocal"
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - Tais-toi
     - Ta gueule
     - Chut
     - Silence
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - if:
     - condition: template
       value_template: '{{ trigger.device_id != None}}'
@@ -2423,12 +2423,12 @@
 - id: '1714134719761'
   alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
   description: ''
-  trigger:
-  - platform: conversation
-    command:
+  triggers:
+  - command:
     - réinitialise[r] (la|les) lumière[s]
-  condition: []
-  action:
+    trigger: conversation
+  conditions: []
+  actions:
   - if:
     - condition: template
       value_template: '{{ trigger.device_id != None}}'
@@ -2456,10 +2456,10 @@
 - id: '1714308060749'
   alias: Réveil intelligent - Démarrer la Musique
   description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.wake_up_time
-  condition:
+  triggers:
+  - at: input_datetime.wake_up_time
+    trigger: time
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_wake_up
     state: 'on'
@@ -2477,16 +2477,16 @@
     - condition: state
       entity_id: input_boolean.forcer_le_reveil
       state: 'on'
-  action:
+  actions:
   - action: script.lancer_playlist_de_reveil
     metadata: {}
     data: {}
     enabled: true
   - wait_for_trigger:
-    - platform: state
-      entity_id:
+    - entity_id:
       - light.chambre
       to: 'off'
+      trigger: state
     continue_on_timeout: false
   - action: media_player.turn_off
     metadata: {}
@@ -2498,23 +2498,23 @@
 - id: '1718020295304'
   alias: Éteindre Bureau si plus de présence
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_bureau_occupancy
     to: 'off'
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
-  action:
+  actions:
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -2554,23 +2554,23 @@
 - id: '1718020351848'
   alias: Éteindre Chambre si plus de présence
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_chambre_occupancy
     to: 'off'
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
-  action:
+  actions:
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -2650,19 +2650,19 @@
 - id: '1718020708014'
   alias: Allumer Assistant vocal quand présence - Chambre
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_chambre_occupancy
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  action:
+  actions:
   - action: switch.turn_on
     metadata: {}
     data: {}
@@ -2696,19 +2696,19 @@
 - id: '1718020763612'
   alias: Allumer Assistant vocal quand présence - Bureau
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_bureau_occupancy
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  action:
+  actions:
   - action: switch.turn_on
     metadata: {}
     data: {}
@@ -2719,13 +2719,13 @@
 - id: '1718706928319'
   alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - device_tracker.meme_emplacement
     from:
     to:
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
@@ -2735,7 +2735,7 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -2858,19 +2858,19 @@
 - id: '1719771128107'
   alias: Tesla - Détacher Tesla à JL en fin de conduite (Backup)
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.meme_conducteur
     to: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
   - condition: state
     entity_id: input_boolean.jl_connected_to_tesla
     state: 'on'
-  action:
+  actions:
   - action: input_boolean.turn_off
     metadata: {}
     data: {}
@@ -2921,99 +2921,99 @@
 - id: '1721160666723'
   alias: Télécommande Table Basse
   description: ''
-  trigger:
+  triggers:
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: turn_on
     id: 'off'
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: turn_off
     id: hue_single_click
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_double_press
     subtype: turn_off
     id: hue_double_click
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: dim_down
     id: dim_down
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_long_press
     subtype: dim_down
     id: dim_down
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_double_press
     subtype: dim_down
     id: dim_down_fast
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_triple_press
     subtype: dim_down
     id: dim_down_fast
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_quadruple_press
     subtype: dim_down
     id: dim_down_fast_af
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_quintuple_press
     subtype: dim_down
     id: dim_down_fast_af
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: dim_up
     id: dim_up
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_long_press
     subtype: dim_up
     id: dim_up
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_double_press
     subtype: dim_up
     id: dim_up_fast
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_triple_press
     subtype: dim_up
     id: dim_up_fast
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_quadruple_press
     subtype: dim_up
     id: dim_up_fast_af
+    trigger: device
   - device_id: ae76e6c6103a236589c774e616d441a1
     domain: zha
-    platform: device
     type: remote_button_quintuple_press
     subtype: dim_up
     id: dim_up_fast_af
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -3168,15 +3168,14 @@
 - id: '1726171964785'
   alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_cuisine
     - binary_sensor.capteur_ouverture_porte_entree
     - binary_sensor.capteur_ouverture_porte_fenetre_salon
@@ -3184,13 +3183,14 @@
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.guest_mode
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: or
@@ -3253,31 +3253,31 @@
 - id: '1726172240853'
   alias: Chauffage Intelligent - Choisir Mode Bureau
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_bureau
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_presence_bureau_occupancy
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.guest_mode
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -3326,31 +3326,31 @@
 - id: '1726172527832'
   alias: Chauffage Intelligent - Choisir Mode Chambre
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_presence_chambre_occupancy
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.guest_mode
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -3481,13 +3481,12 @@
 - id: '1726173163311'
   alias: Chauffage Intelligent - Régler Température Rez-De-Chaussée
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.temperature_cible_chauffage_rez_de_chassee
     id: target_changed
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - climate.netatmo
     attribute: temperature
     id: device_changed_1_hour_ago
@@ -3495,21 +3494,22 @@
       hours: 1
       minutes: 0
       seconds: 0
-  - platform: time_pattern
-    minutes: '0'
+    trigger: state
+  - minutes: '0'
     seconds: '0'
     id: tick
-  - platform: homeassistant
-    event: start
+    trigger: time_pattern
+  - event: start
     id: restart
-  - platform: state
-    entity_id:
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.automation_heat_home
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_heat_home
     state: 'on'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -3544,13 +3544,12 @@
 - id: '1726173315597'
   alias: Chauffage Intelligent - Régler Température Bureau
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.temperature_cible_chauffage_bureau
     id: target_changed
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - climate.radiateur_bureau
     attribute: temperature
     id: device_changed_1_hour_ago
@@ -3558,21 +3557,22 @@
       hours: 1
       minutes: 0
       seconds: 0
-  - platform: time_pattern
-    minutes: '0'
+    trigger: state
+  - minutes: '0'
     seconds: '0'
     id: tick
-  - platform: homeassistant
-    event: start
+    trigger: time_pattern
+  - event: start
     id: restart
-  - platform: state
-    entity_id:
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.automation_heat_home
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_heat_home
     state: 'on'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -3607,13 +3607,12 @@
 - id: '1726173501857'
   alias: Chauffage Intelligent - Régler Température Chambre
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.temperature_cible_chauffage_chambre
     id: target_changed
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - climate.radiateur_chambre
     attribute: temperature
     id: device_changed_1_hour_ago
@@ -3621,21 +3620,22 @@
       hours: 1
       minutes: 0
       seconds: 0
-  - platform: time_pattern
-    minutes: '0'
+    trigger: state
+  - minutes: '0'
     seconds: '0'
     id: tick
-  - platform: homeassistant
-    event: start
+    trigger: time_pattern
+  - event: start
     id: restart
-  - platform: state
-    entity_id:
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.automation_heat_home
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_heat_home
     state: 'on'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -3670,13 +3670,12 @@
 - id: '1726173575899'
   alias: Chauffage Intelligent - Régler Température Chambre Marilou
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.temperature_cible_chauffage_chambre_marilou
     id: target_changed
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - climate.radiateur_chambre_marilou
     attribute: temperature
     id: device_changed_1_hour_ago
@@ -3684,21 +3683,22 @@
       hours: 1
       minutes: 0
       seconds: 0
-  - platform: time_pattern
-    minutes: '0'
+    trigger: state
+  - minutes: '0'
     seconds: '0'
     id: tick
-  - platform: homeassistant
-    event: start
+    trigger: time_pattern
+  - event: start
     id: restart
-  - platform: state
-    entity_id:
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.automation_heat_home
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_heat_home
     state: 'on'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -3784,24 +3784,24 @@
 - id: '1726666291089'
   alias: Pulse - Allumer / Éteindre
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_bureau_occupancy
     - input_boolean.automation_matrix_2d
     - input_datetime.pulse_end_schedule
     - input_datetime.pulse_start_schedule
-  - platform: time
-    at: input_datetime.pulse_start_schedule
-  - platform: time
-    at: input_datetime.pulse_end_schedule
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+    trigger: state
+  - at: input_datetime.pulse_start_schedule
+    trigger: time
+  - at: input_datetime.pulse_end_schedule
+    trigger: time
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - if:
     - condition: state
       entity_id: binary_sensor.capteur_presence_bureau_occupancy
@@ -3836,16 +3836,16 @@
 - id: '1727025004524'
   alias: "Mode Invité - \U0001F514 Notifier mode invité lors de l'arrivée"
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Occupée
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'on'
-  action:
+  actions:
   - event: NOTIFIER
     event_data:
       action: send_to_present
@@ -3863,13 +3863,13 @@
 - id: '1727025092626'
   alias: "Mode Invité - \U0001F4F2 Désactiver mode invité depuis notification"
   description: ''
-  trigger:
-  - platform: event
-    event_type: mobile_app_notification_action
+  triggers:
+  - event_type: mobile_app_notification_action
     event_data:
       action: deactivate_guest_mode
-  condition: []
-  action:
+    trigger: event
+  conditions: []
+  actions:
   - action: input_boolean.turn_off
     metadata: {}
     data: {}
