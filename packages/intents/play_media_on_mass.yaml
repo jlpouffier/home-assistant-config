@@ -12,7 +12,7 @@ intent_script:
       - choose:
           - conditions:
               - condition: template
-                value_template: '{{media_data.media_type in ["artist","album","track"]}}' #track seem not to play the track in radio mode. Temporary fix.
+                value_template: '{{media_data.media_type in ["artist","album"]}}'
             sequence:
               - variables:
                   decorate_data:
@@ -31,7 +31,7 @@ intent_script:
                   area_id: "{{area_id(area)}}"
           - conditions:
               - condition: template
-                value_template: '{{media_data.media_type in ["track"]}}' # This will never be caleed for now.
+                value_template: '{{media_data.media_type in ["track"]}}'
             sequence:
               - variables:
                   decorate_data:
