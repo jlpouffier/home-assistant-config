@@ -510,9 +510,8 @@
 - id: '1688303443168'
   alias: 'TV intelligente - Controller Lumières '
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - media_player.media_center
     from:
     to:
@@ -524,7 +523,8 @@
       to_app: "{% if 'app_name' in trigger.to_state.attributes -%}\n  {{trigger.to_state.attributes.app_name}}\n{%-
         else -%}\n  no_app\n{%- endif %}"
       supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
@@ -535,7 +535,7 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: template
@@ -553,6 +553,7 @@
           area_id:
           - 71e221f94f4a4e929747570179d52280
           - entree
+          entity_id: light.couloir_applique_escalier
     - conditions:
       - condition: template
         value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
@@ -585,20 +586,20 @@
 - id: '1688305917710'
   alias: TV intelligente - Controller Lumières (PS5)
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.is_ps5_used
     from: 'off'
     to: 'on'
     id: 'on'
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.is_ps5_used
     from: 'on'
     to: 'off'
     id: 'off'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
@@ -609,7 +610,7 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -626,6 +627,7 @@
           area_id:
           - 71e221f94f4a4e929747570179d52280
           - entree
+          entity_id: light.couloir_applique_escalier
     - conditions:
       - condition: trigger
         id: 'off'
@@ -2601,23 +2603,23 @@
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
     to: 'off'
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
-  action:
+  actions:
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -2643,7 +2645,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.talkie_use_wake_word
+      entity_id: switch.voicekit_chambre_marilou_microphone
   mode: single
 - id: '1718020708014'
   alias: Allumer Assistant vocal quand présence - Chambre
@@ -2671,25 +2673,25 @@
 - id: '1718020743731'
   alias: Allumer Assistant vocal quand présence - Chambre Marilou
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
     to: 'on'
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_select.mode_de_presence_de_la_maison
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  action:
+  actions:
   - action: switch.turn_on
     metadata: {}
     data: {}
     target:
       entity_id:
-      - switch.talkie_use_wake_word
+      - switch.voicekit_chambre_marilou_microphone
   mode: single
 - id: '1718020763612'
   alias: Allumer Assistant vocal quand présence - Bureau
@@ -2776,12 +2778,12 @@
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - input_select.mode_de_presence_de_la_maison
     to: Occupée
-  condition:
+    trigger: state
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
@@ -2791,12 +2793,12 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  action:
+  actions:
   - wait_for_trigger:
-    - platform: state
-      entity_id:
+    - entity_id:
       - binary_sensor.capteur_ouverture_porte_entree
       to: 'on'
+      trigger: state
     timeout:
       hours: 0
       minutes: 15
@@ -2830,15 +2832,6 @@
         data:
           media_type: track
           enqueue: replace
-          artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
-          media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
-        target:
-          entity_id: media_player.kef_salon_music_assistant
-      - action: mass.play_media
-        metadata: {}
-        data:
-          media_type: track
-          enqueue: add
           radio_mode: true
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
@@ -2901,7 +2894,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.talkie_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.voicekit_chambre_marilou_assist_en_cours_2
       media_player: media_player.sonos_chambre_marilou
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -3886,14 +3879,14 @@
 - id: '1727267613496'
   alias: Changer le mode de présence de la maison
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
+  triggers:
+  - entity_id:
     - binary_sensor.home_occupied
-  - platform: homeassistant
-    event: start
-  condition: []
-  action:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -3917,4 +3910,61 @@
           option: Vide
         target:
           entity_id: input_select.mode_de_presence_de_la_maison
+  mode: single
+- id: '1727807421914'
+  alias: "\U0001F514 Notifier porte d'entrée ouverte"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_porte_entree
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
+  actions:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: "\U0001FA9F Porte d'entrée"
+      message: La porte d'entrée est restée ouverte!
+      tag: front_door_open
+      interuption_level: critical
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      message: La porte d'entrée est restée ouverte!
+    target:
+      entity_id: assist_satellite.voicekit_salon_none
+  mode: single
+- id: '1727807641536'
+  alias: Éteindre Couloir automatiquement
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - light.couloir
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: input_select.mode_de_presence_de_la_maison
+    state: Occupée
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: couloir
   mode: single
