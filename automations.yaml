@@ -202,65 +202,6 @@
     event_data:
       tag: you_got_mail
   mode: single
-- id: '1688117249626'
-  alias: Boutons Hue - Bouton Entrée
-  description: ''
-  triggers:
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_1
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_2
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_3
-    attribute: event_type
-    to: repeat
-    id: 'off'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_4
-    attribute: event_type
-    to: repeat
-    id: 'off'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: 'on'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Occupée
-        target:
-          entity_id: input_select.mode_de_presence_de_la_maison
-      - action: script.welcome_home
-        data: {}
-    - conditions:
-      - condition: trigger
-        id:
-        - 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Vide
-        target:
-          entity_id: input_select.mode_de_presence_de_la_maison
-  mode: parallel
-  max: 10
 - id: '1688117431729'
   alias: Boutons Hue - Bouton Salon Couloir
   description: ''
@@ -439,7 +380,7 @@
     entity_id: input_boolean.automation_wake_up
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: or
     conditions:
@@ -853,10 +794,10 @@
   alias: Surveillance de la maison - Éteindre appareils lors du départ
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
     to: Vide
-    trigger: state
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -866,18 +807,17 @@
     state: 'off'
   actions:
   - action: script.leave_home
-    data:
-      calling_location: not_home
+    data: {}
   mode: queued
   max: 10
 - id: '1688373819985'
   alias: Surveillance de la maison - Allumer appareils lors de l'arrivée
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
     to: Occupée
-    trigger: state
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -892,17 +832,6 @@
       entity_id:
       - switch.alexa
       - switch.voicekit_salon_microphone
-  - wait_for_trigger:
-    - entity_id:
-      - binary_sensor.capteur_ouverture_porte_entree
-      to: 'on'
-      trigger: state
-    timeout:
-      hours: 0
-      minutes: 15
-      seconds: 0
-      milliseconds: 0
-    continue_on_timeout: false
   - action: cover.open_cover
     data: {}
     target:
@@ -933,7 +862,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: state
     entity_id: binary_sensor.all_openings
@@ -1414,10 +1343,10 @@
   alias: Simulation de présence - Arrêter lors du retour
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
     to: Occupée
-    trigger: state
   conditions:
   - condition: state
     entity_id: input_boolean.automation_presence_simulator
@@ -1741,9 +1670,9 @@
   - entity_id:
     - input_boolean.presence_simulator_control_cover
     trigger: state
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   - event: start
     trigger: homeassistant
   conditions:
@@ -1751,7 +1680,7 @@
     entity_id: input_boolean.automation_presence_simulator
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Vide
   actions:
   - choose:
@@ -1943,10 +1872,14 @@
   alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir"
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    to: Occupée
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Arrivée en cours
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
   conditions: []
   actions:
   - condition: state
@@ -2298,47 +2231,6 @@
   - set_conversation_response: '{{response_1.response.speech.plain.speech}} and {{response_2.response.speech.plain.speech}}'
   mode: parallel
   max: 100
-- id: '1711723541187'
-  alias: "Assist - \U0001F4E3 Quitter la maison"
-  description: ''
-  triggers:
-  - command:
-    - Je pars [faire un tour]
-    - Je m'en vais [faire un tour]
-    - On part [faire un tour]
-    - On s'en va [faire un tour]
-    - Au revoir
-    - À bientôt
-    - À plus
-    trigger: conversation
-  conditions: []
-  actions:
-  - action: input_select.select_option
-    metadata: {}
-    data:
-      option: Vide
-    target:
-      entity_id: input_select.mode_de_presence_de_la_maison
-  - set_conversation_response: '{% set time = now().hour %}
-
-      {% if (time >= 18) %}
-
-      Bonne soirée
-
-      {% elif (time >= 12) %}
-
-      Bonne après-midi
-
-      {% elif (time >= 5) %}
-
-      Bonne journée
-
-      {% else %}
-
-      Bonne nuit
-
-      {% endif %}'
-  mode: single
 - id: '1712660364204'
   alias: 'Box Chambre - Gérer Luminosité '
   description: ''
@@ -2467,7 +2359,7 @@
     entity_id: input_boolean.reveil_intelligent_musical
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: or
     conditions:
@@ -2512,7 +2404,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   actions:
   - action: light.turn_off
@@ -2568,7 +2460,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   actions:
   - action: light.turn_off
@@ -2617,7 +2509,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   actions:
   - action: light.turn_off
@@ -2657,7 +2549,7 @@
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -2680,7 +2572,7 @@
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -2703,7 +2595,7 @@
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -2779,10 +2671,10 @@
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
     to: Occupée
-    trigger: state
   conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
@@ -2794,17 +2686,6 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   actions:
-  - wait_for_trigger:
-    - entity_id:
-      - binary_sensor.capteur_ouverture_porte_entree
-      to: 'on'
-      trigger: state
-    timeout:
-      hours: 0
-      minutes: 15
-      seconds: 0
-      milliseconds: 0
-    continue_on_timeout: false
   - choose:
     - conditions:
       - condition: state
@@ -3169,9 +3050,9 @@
   alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   - entity_id:
     - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
     trigger: state
@@ -3230,7 +3111,7 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: input_select.mode_de_presence_de_la_maison
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
           state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
@@ -3254,9 +3135,9 @@
   alias: Chauffage Intelligent - Choisir Mode Bureau
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_bureau
     for:
@@ -3302,7 +3183,7 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: input_select.mode_de_presence_de_la_maison
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
           state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
@@ -3327,9 +3208,9 @@
   alias: Chauffage Intelligent - Choisir Mode Chambre
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre
     for:
@@ -3378,7 +3259,7 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: input_select.mode_de_presence_de_la_maison
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
           state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
@@ -3403,31 +3284,31 @@
 - id: '1726172622795'
   alias: Chauffage Intelligent - Choisir Mode Chambre Marilou
   description: ''
-  trigger:
-  - platform: state
+  triggers:
+  - trigger: state
     entity_id:
-    - input_select.mode_de_presence_de_la_maison
-  - platform: state
-    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: state
-    entity_id:
+    trigger: state
+  - entity_id:
     - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
     for:
       hours: 0
       minutes: 5
       seconds: 0
-  - platform: homeassistant
-    event: start
-  - platform: state
-    entity_id:
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  - entity_id:
     - input_boolean.guest_mode
-  condition: []
-  action:
+    trigger: state
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: state
@@ -3456,7 +3337,7 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: input_select.mode_de_presence_de_la_maison
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
           state: Occupée
         - condition: state
           entity_id: input_boolean.guest_mode
@@ -3797,9 +3678,9 @@
     trigger: time
   - event: start
     trigger: homeassistant
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   conditions: []
   actions:
   - if:
@@ -3813,7 +3694,7 @@
       entity_id: input_boolean.automation_matrix_2d
       state: 'on'
     - condition: state
-      entity_id: input_select.mode_de_presence_de_la_maison
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
       state: Occupée
     then:
     - action: light.turn_on
@@ -3837,10 +3718,10 @@
   alias: "Mode Invité - \U0001F514 Notifier mode invité lors de l'arrivée"
   description: ''
   triggers:
-  - entity_id:
-    - input_select.mode_de_presence_de_la_maison
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
     to: Occupée
-    trigger: state
   conditions:
   - condition: state
     entity_id: input_boolean.guest_mode
@@ -3876,41 +3757,6 @@
     target:
       entity_id: input_boolean.guest_mode
   mode: single
-- id: '1727267613496'
-  alias: Changer le mode de présence de la maison
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.home_occupied
-    trigger: state
-  - event: start
-    trigger: homeassistant
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'on'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Occupée
-        target:
-          entity_id: input_select.mode_de_presence_de_la_maison
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.home_occupied
-        state: 'off'
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Vide
-        target:
-          entity_id: input_select.mode_de_presence_de_la_maison
-  mode: single
 - id: '1727807421914'
   alias: "\U0001F514 Notifier porte d'entrée ouverte"
   description: ''
@@ -3925,7 +3771,7 @@
       seconds: 0
   conditions:
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   actions:
   - event: NOTIFIER
@@ -3935,6 +3781,9 @@
       message: La porte d'entrée est restée ouverte!
       tag: front_door_open
       interuption_level: critical
+      until:
+      - entity_id: binary_sensor.capteur_ouverture_porte_entree
+        new_state: 'off'
   - action: assist_satellite.announce
     metadata: {}
     data:
@@ -3959,7 +3808,7 @@
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
   - condition: state
-    entity_id: input_select.mode_de_presence_de_la_maison
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   actions:
   - action: light.turn_off
@@ -4283,4 +4132,24 @@
   - action: script.welcome_home
     data: {}
   mode: parallel
+  max: 10
+- id: '1727989830960'
+  alias: Surveillance de la maison - Notifier appareils allumé lors du départ
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  actions:
+  - action: script.preparer_depart_maison
+    data: {}
+  mode: queued
   max: 10
