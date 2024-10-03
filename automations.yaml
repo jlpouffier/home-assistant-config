@@ -3968,3 +3968,319 @@
     target:
       area_id: couloir
   mode: single
+- id: '1727985869387'
+  alias: Modes de presence de la maison - Occupée au démarrage
+  description: ''
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'on'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Occupée
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727985928425'
+  alias: Modes de presence de la maison - Occupée lors de l'ouverture de la porte
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_porte_entree
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Arrivée en cours
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Occupée
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727985974297'
+  alias: Modes de presence de la maison - Occupée si porte déjà ouverte lors de l'arrivée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Arrivée en cours
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.capteur_ouverture_porte_entree
+    state: 'on'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Occupée
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986078836'
+  alias: Modes de presence de la maison - Occupée via le Dial Hue
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.hue_tap_dial_switch_1_bouton_1
+    attribute: event_type
+    to: long_release
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - event.hue_tap_dial_switch_1_bouton_2
+    attribute: event_type
+    to: long_release
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Arrivée en cours
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Occupée
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986554484'
+  alias: Modes de presence de la maison - Départ en cours via Occupation de la maison
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'off'
+  conditions:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state: Occupée
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state: Arrivée en cours
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Départ en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986656573'
+  alias: Modes de presence de la maison - Vide lors de l'ouverture de la porte
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_ouverture_porte_entree
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Départ en cours
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Vide
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986721466'
+  alias: Modes de presence de la maison - Vide si porte déjà ouverte lors du départ
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.capteur_ouverture_porte_entree
+    state: 'on'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Vide
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986811171'
+  alias: Modes de presence de la maison - Vide si Occupation de la maison déjà vide
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'off'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Vide
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727986902983'
+  alias: Modes de presence de la maison - Départ en cours via le Dial Hue
+  description: ''
+  triggers:
+  - entity_id:
+    - event.hue_tap_dial_switch_1_bouton_3
+    attribute: event_type
+    to: repeat
+    id: 'on'
+    trigger: state
+  - entity_id:
+    - event.hue_tap_dial_switch_1_bouton_4
+    attribute: event_type
+    to: repeat
+    id: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Départ en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: parallel
+  max: 10
+- id: '1727986956298'
+  alias: Modes de presence de la maison - Départ en cours via la voix
+  description: ''
+  triggers:
+  - command:
+    - Je pars [faire un tour]
+    - Je m'en vais [faire un tour]
+    - On part [faire un tour]
+    - On s'en va [faire un tour]
+    - Au revoir
+    - À bientôt
+    - À plus
+    trigger: conversation
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Départ en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  - set_conversation_response: '{% set time = now().hour %}
+
+      {% if (time >= 18) %}
+
+      Bonne soirée
+
+      {% elif (time >= 12) %}
+
+      Bonne après-midi
+
+      {% elif (time >= 5) %}
+
+      Bonne journée
+
+      {% else %}
+
+      Bonne nuit
+
+      {% endif %}'
+  mode: single
+- id: '1727987133642'
+  alias: Modes de presence de la maison - Vide au démarrage
+  description: ''
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.home_occupied
+    state: 'off'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Vide
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727987264453'
+  alias: Modes de presence de la maison - Arrivée en cours via Occupation de la maison
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.home_occupied
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Arrivée en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1727987389149'
+  alias: Modes de presence de la maison - Arrivée en cours via le Dial Hue
+  description: ''
+  triggers:
+  - entity_id:
+    - event.hue_tap_dial_switch_1_bouton_1
+    attribute: event_type
+    to: repeat
+    id: 'on'
+    trigger: state
+  - entity_id:
+    - event.hue_tap_dial_switch_1_bouton_2
+    attribute: event_type
+    to: repeat
+    id: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Arrivée en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  - action: script.welcome_home
+    data: {}
+  mode: parallel
+  max: 10
