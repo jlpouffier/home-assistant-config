@@ -218,7 +218,7 @@ start_marilou_bedtime_routine:
     metadata: {}
     data: {}
     target:
-      entity_id: light.couloir_applique_escalier
+      entity_id: light.couloir_suspension_etage
   - action: scene.turn_on
     metadata: {}
     target:
