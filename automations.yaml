@@ -23,24 +23,30 @@
   triggers:
   - entity_id:
     - binary_sensor.is_litter_full
-    to: 'on'
-    from: 'off'
     trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
   conditions:
   - condition: state
     entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: binary_sensor.is_litter_full
+    state: 'on'
   actions:
   - event: NOTIFIER
     event_data:
-      action: send_when_present
+      action: send_to_present
       title: "\U0001F408  Litière"
       message: Penser a nettoyer la litière !
       callback:
       - title: Litière Nettoyée
         event: reset_litter_tracking
         icon: sfsymbols:checkmark.circle.fill
-      persistent: true
       tag: litter_full
       until:
       - entity_id: binary_sensor.is_litter_full
@@ -64,7 +70,7 @@
       entity_id: input_number.litter_tracking
   mode: single
 - id: '1688114260897'
-  alias: Poubelles Intelligentes - Informer poubelle noire à sortir
+  alias: Poubelles Intelligentes - Poubelle noire à sortir
   description: ''
   triggers:
   - entity_id:
@@ -72,10 +78,7 @@
     to: 'on'
     from: 'off'
     trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_take_out_trash
-    state: 'on'
+  conditions: []
   actions:
   - action: input_boolean.turn_on
     data: {}
@@ -83,7 +86,7 @@
       entity_id: input_boolean.poubelle_noire_a_sortir
   mode: single
 - id: '1688114327500'
-  alias: Poubelles Intelligentes - Informer poubelle verte à sortir
+  alias: Poubelles Intelligentes - Poubelle verte à sortir
   description: ''
   triggers:
   - entity_id:
@@ -91,10 +94,7 @@
     to: 'on'
     from: 'off'
     trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_take_out_trash
-    state: 'on'
+  conditions: []
   actions:
   - action: input_boolean.turn_on
     data: {}
@@ -102,7 +102,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688114732811'
-  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle noir non sortie"
+  alias: "Poubelles Intelligentes - \U0001F514 Poubelle noir non sortie à temps"
   description: ''
   triggers:
   - entity_id:
@@ -130,7 +130,7 @@
       entity_id: input_boolean.poubelle_noire_a_sortir
   mode: single
 - id: '1688114808231'
-  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelle verte non sortie"
+  alias: "Poubelles Intelligentes - \U0001F514 Poubelle verte non sortie à temps"
   description: ''
   triggers:
   - entity_id:
@@ -158,7 +158,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688116237944'
-  alias: "Boîte aux Lettres Intelligente - \U0001F514 Notifier courrier "
+  alias: Boîte aux Lettres Intelligente - Courrier à relever
   description: ''
   triggers:
   - entity_id:
@@ -167,22 +167,18 @@
     from: 'off'
     trigger: state
   conditions:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_mailbox
-    state: 'on'
   - condition: state
     entity_id: binary_sensor.is_front_door_recently_open
     state: 'off'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_when_present
-      title: "\U0001F4EC  Boite aux lettres"
-      message: Vous avez du courrier !
-      tag: you_got_mail
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.courrier_a_relever
   mode: single
 - id: '1688116301973'
-  alias: Boîte aux Lettres Intelligente - Supprimer notification courrier
+  alias: Boîte aux Lettres Intelligente - Courrier relever
   description: ''
   triggers:
   - entity_id:
@@ -192,15 +188,14 @@
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_monitor_mailbox
-    state: 'on'
-  - condition: state
     entity_id: binary_sensor.is_front_door_recently_open
     state: 'on'
   actions:
-  - event: NOTIFIER_DISCARD
-    event_data:
-      tag: you_got_mail
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.courrier_a_relever
   mode: single
 - id: '1688117431729'
   alias: Boutons Hue - Bouton Salon Couloir
@@ -283,7 +278,7 @@
         data: {}
   mode: single
 - id: '1688118075093'
-  alias: "Machine a Laver Intelligente - \U0001F514 Notifier cycle de lavage terminé"
+  alias: Machine a Laver Intelligente - Machine à laver a vider
   description: ''
   triggers:
   - entity_id:
@@ -291,17 +286,13 @@
     to: 'off'
     from: 'on'
     trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_washing_machine
-    state: 'on'
+  conditions: []
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_when_present
-      title: "\U0001FAE7 Machine à laver"
-      message: Cycle de lavage terminé !
-      tag: washing_mashine_over
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.machine_a_laver_a_vider
   mode: single
 - id: '1688129246113'
   alias: Irrigation intelligente - Calculer fin arrosage
@@ -818,6 +809,7 @@
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
     to: Occupée
+    from: Arrivée en cours
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -1869,26 +1861,32 @@
       entity_id: input_datetime.marilou_bedtime_routine_end
   mode: single
 - id: '1702834566659'
-  alias: "Poubelles Intelligentes - \U0001F514 Notifier poubelles a sortir"
+  alias: "Poubelles Intelligentes - \U0001F514 Notifier"
   description: ''
   triggers:
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
-    to: Arrivée en cours
   - trigger: state
     entity_id:
-    - input_select.modes_de_presence_de_la_maison_v2
-    to: Départ en cours
-  conditions: []
-  actions:
+    - input_boolean.poubelle_noire_a_sortir
+  - trigger: state
+    entity_id:
+    - input_boolean.poubelle_verte_a_sortir
+  conditions:
   - condition: state
     entity_id: input_boolean.automation_take_out_trash
     state: 'on'
+  actions:
   - if:
     - condition: state
       entity_id: input_boolean.poubelle_noire_a_sortir
       state: 'on'
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state:
+      - Départ en cours
+      - Arrivée en cours
     then:
     - event: NOTIFIER
       event_data:
@@ -1907,6 +1905,11 @@
     - condition: state
       entity_id: input_boolean.poubelle_verte_a_sortir
       state: 'on'
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state:
+      - Départ en cours
+      - Arrivée en cours
     then:
     - event: NOTIFIER
       event_data:
@@ -2102,18 +2105,13 @@
       entity_id: person.jenova70
       state: home
     then:
-    - action: tts.speak
+    - action: assist_satellite.announce
       metadata: {}
       data:
-        cache: true
-        media_player_entity_id: media_player.bureau_sonos_music_assistant
-        message: La batterie du Quest est actuellement à   {{states("sensor.quest_battery_level")}}%.
+        message: La batterie du Quest est actuellement à       {{states("sensor.quest_battery_level")}}%.
           Pense à le recharger.
-        language: fr-FR
-        options:
-          voice: ClaudeNeural
       target:
-        entity_id: tts.home_assistant_cloud
+        entity_id: assist_satellite.voicekit_bureau_none
   mode: single
 - id: '1708194950863'
   alias: Party Time Marilou
@@ -3080,21 +3078,21 @@
           entity_id: binary_sensor.capteur_ouverture_fenetre_cuisine
           for:
             hours: 0
-            minutes: 0
+            minutes: 5
             seconds: 0
           state: 'on'
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_porte_entree
           for:
             hours: 0
-            minutes: 0
+            minutes: 5
             seconds: 0
           state: 'on'
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
           for:
             hours: 0
-            minutes: 0
+            minutes: 5
             seconds: 0
           state: 'on'
       sequence:
@@ -3165,7 +3163,7 @@
         entity_id: binary_sensor.capteur_ouverture_fenetre_bureau
         for:
           hours: 0
-          minutes: 0
+          minutes: 5
           seconds: 0
         state: 'on'
       sequence:
@@ -3238,7 +3236,7 @@
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
         for:
           hours: 0
-          minutes: 0
+          minutes: 5
           seconds: 0
         state: 'on'
       sequence:
@@ -3315,7 +3313,7 @@
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
         for:
           hours: 0
-          minutes: 0
+          minutes: 5
           seconds: 0
         state: 'on'
       sequence:
@@ -4141,6 +4139,7 @@
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
     to: Départ en cours
+    from: Occupée
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -4153,3 +4152,152 @@
     data: {}
   mode: queued
   max: 10
+- id: '1728137727182'
+  alias: Modes de presence de la maison / Fallback modes temporaires
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    to: Départ en cours
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    to: Arrivée en cours
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Occupée
+        target:
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.home_occupied
+        state: 'off'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Vide
+        target:
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+  mode: single
+- id: '1728146766901'
+  alias: "Boîte aux Lettres Intelligente - \U0001F514 Notifier"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.courrier_a_relever
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_mailbox
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.courrier_a_relever
+    state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  actions:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: "\U0001F4EC  Boite aux lettres"
+      message: Vous avez du courrier !
+      tag: you_got_mail
+      callback:
+      - title: Courrier relevé
+        event: mail_picked_up
+        icon: sfsymbols:checkmark.circle.fill
+      until:
+      - entity_id: input_boolean.courrier_a_relever
+        new_state: 'off'
+  mode: single
+- id: '1728147111105'
+  alias: "Machine a Laver Intelligente - \U0001F514 Notifier"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.machine_a_laver_a_vider
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_washing_machine
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.machine_a_laver_a_vider
+    state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  actions:
+  - event: NOTIFIER
+    event_data:
+      action: send_to_present
+      title: "\U0001FAE7 Machine à laver"
+      message: Cycle de lavage terminé !
+      tag: washing_mashine_over
+      callback:
+      - title: Machine à laver vidée
+        event: washing_machine_empty
+        icon: sfsymbols:checkmark.circle.fill
+      until:
+      - entity_id: input_boolean.machine_a_laver_a_vider
+        new_state: 'off'
+  mode: single
+- id: '1728147370381'
+  alias: "Machine a Laver Intelligente - \U0001F4F2 Fait depuis notification"
+  description: ''
+  triggers:
+  - event_type: mobile_app_notification_action
+    event_data:
+      action: washing_machine_empty
+    trigger: event
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.machine_a_laver_a_vider
+  mode: single
+- id: '1728147483975'
+  alias: "Boîte aux Lettres Intelligente - \U0001F4F2 Courrier relever depuis notification"
+  description: ''
+  triggers:
+  - event_type: mobile_app_notification_action
+    event_data:
+      action: mail_picked_up
+    trigger: event
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - input_boolean.courrier_a_relever
+  mode: single
