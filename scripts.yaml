@@ -555,8 +555,8 @@ preparer_depart_maison:
       event_data:
         action: send_to_nearest
         title: "️\U0001F6AA Fenêtre(s) ouverte(s) !"
-        message: 'Les fenêtres suivantes sont toujours ouvertes alors que personne
-          n''est présent: {{open_windows}}'
+        message: 'Les fenêtres suivantes sont toujours ouvertes alors que vous allez
+          partir:  {{open_windows}}'
         click_url: /lovelace/openings
         tag: home_empty_window_open
         until:
@@ -574,7 +574,7 @@ preparer_depart_maison:
       event_data:
         action: send_to_nearest
         title: "\U0001F958 Four allumé !"
-        message: Le four est en marche alors que personne n'est présent!
+        message: Le four est en marche alors que vous allez partir!
         tag: home_empty_oven_on
         interuption_level: critical
         until:
@@ -592,7 +592,7 @@ preparer_depart_maison:
       event_data:
         action: send_to_nearest
         title: "\U0001F373 Plaques à induction allumé !"
-        message: Les plaques à induction sont en marche alors que personne n'est présent!
+        message: Les plaques à induction sont en marche alors que vous allez partir!
         tag: home_empty_induction_cooktop_on
         interuption_level: critical
         until:
@@ -600,28 +600,43 @@ preparer_depart_maison:
           new_state: Occupée
         - entity_id: binary_sensor.is_induction_cooktop_running
           new_state: 'off'
-  - alias: Notify doors open
+  - alias: Notify french door open
     if:
     - condition: state
-      entity_id: binary_sensor.all_doors
+      entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
       state: 'on'
     then:
-    - variables:
-        open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
     - event: NOTIFIER
       event_data:
         action: send_to_nearest
         title: "️\U0001F6AA Porte(s) ouverte(s) !"
-        message: 'Les portes suivantes sont toujours ouvertes alors que personne n''est
-          présent:  {{open_doors}}'
+        message: La porte fenêtre du salon est toujours ouverte alors que vous allez
+          partir!
         click_url: /lovelace/openings
-        tag: home_empty_door_open
+        tag: home_empty_french_door_open
         until:
         - entity_id: input_select.modes_de_presence_de_la_maison_v2
           new_state: Occupée
-        - entity_id: binary_sensor.all_doors
+        - entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
+          new_state: 'off'
+  - alias: Notify entry door open
+    if:
+    - condition: state
+      entity_id: binary_sensor.capteur_ouverture_porte_entree
+      state: 'on'
+    then:
+    - event: NOTIFIER
+      event_data:
+        action: send_to_nearest
+        title: "️\U0001F6AA Porte(s) ouverte(s) !"
+        message: La porte d'entrée est toujours ouverte alors que vous allez partir!
+        click_url: /lovelace/openings
+        tag: home_empty_entry_door_open
+        interuption_level: critical
+        until:
+        - entity_id: input_select.modes_de_presence_de_la_maison_v2
+          new_state: Occupée
+        - entity_id: binary_sensor.capteur_ouverture_porte_entree
           new_state: 'off'
   mode: queued
   icon: mdi:home-export-outline
