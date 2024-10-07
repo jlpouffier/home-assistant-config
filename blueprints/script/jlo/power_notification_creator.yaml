@@ -111,7 +111,8 @@ variables:
   person_service_mapping:
     person.jenova70:
       service: notify.mobile_app_jean_loics_iphone
-  notification_unique_id: "{{ this.entity_id | md5 }}"
+  #notification_unique_id: "{{ this.entity_id | md5 }}"
+  notification_unique_id: "{{ now() | string | md5 }}"
 
 mode: restart
 max_exceeded: silent
@@ -152,23 +153,24 @@ sequence:
 
       # Overrides from fields
       title: |
-        {% if user_title %}
+        {% if user_title is defined %}
           {{user_title}}
         {% else %}
           {{default_title}}
         {% endif %}
       message: |
-        {% if user_message %}
+        {% if user_message is defined %}
           {{user_message}}
         {% else %}
           {{default_message}}
         {% endif %}
       importance: |
-        {% if user_importance %}
+        {% if user_importance is defined %}
           {{user_importance}}
         {% else %}
           {{default_importance}}
         {% endif %}
+
       # Notification data parts
       notification_data_tag:
         tag: "{{notification_unique_id}}"
@@ -306,6 +308,9 @@ sequence:
                                 data:
                                   tag: "{{notification_unique_id}}"
                           for_each: "{{iterable_persons}}"
+                  - action: script.turn_off
+                    target:
+                      entity_id: "{{this.entity_id}}"
           # Notification Discarding
           - sequence:
               - if:
@@ -323,11 +328,6 @@ sequence:
                                 data:
                                   tag: "{{notification_unique_id}}"
                           for_each: "{{iterable_persons}}"
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - action: script.turn_off
-        target:
-          entity_id: "{{this.entity_id}}"
+                  - action: script.turn_off
+                    target:
+                      entity_id: "{{this.entity_id}}"
