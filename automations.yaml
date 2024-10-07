@@ -980,13 +980,15 @@
     trigger: webhook
   conditions: []
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: '{{title}}'
-      message: '{{message}}'
-      icon: mdi:television-shimmer
-      tag: '{{tag}}'
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_title: '{{title}}'
+        user_message: '{{message}}'
+        user_tag: '{{tag}}'
+    target:
+      entity_id: script.power_notification_servaar
   mode: single
 - id: '1689253436663'
   alias: Lumières Extérieures - Synchroniser Hue et SONOFF

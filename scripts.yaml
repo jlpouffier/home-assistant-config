@@ -810,3 +810,15 @@ power_notification_batteries_faibles:
       default_message: Certaines battery sont faibles
   description: ''
   icon: mdi:battery-10
+power_notification_servaar:
+  alias: Power Notification - Servaar
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons
+      persons:
+      - person.jenova70
+      default_title: "\U0001F4FA Servaar"
+      default_message: Film ou épisode téléchargé
+  description: ''
+  icon: mdi:movie
