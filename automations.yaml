@@ -881,16 +881,13 @@
   - condition: template
     value_template: '{{trigger.to_state.state | int(0) > 0}}'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "\U0001F389 Mise a jour disponible"
-      message: '{{trigger.to_state.attributes.entities | join('', '')}}'
-      click_url: /config/dashboard
-      tag: update-available
-      until:
-      - entity_id: sensor.pending_updates
-        new_state: '0'
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: '{{trigger.to_state.attributes.entities | join('', '')}}'
+    target:
+      entity_id: script.power_notification_mise_a_jour_dispo
   mode: queued
   max: 10
 - id: '1688387237599'

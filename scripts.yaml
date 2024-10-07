@@ -783,3 +783,19 @@ power_notification_pluie_et_fenetres_ouvertes:
         to: 'off'
   description: ''
   icon: mdi:water
+power_notification_mise_a_jour_dispo:
+  alias: Power Notification - Mise a jour dispo
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: "\U0001F4E6 Mise a jour disponible"
+      default_message: Des mises à jours sont disponibles
+      discard_when:
+      - trigger: state
+        entity_id:
+        - sensor.pending_updates
+        to: '0'
+  description: ''
+  icon: mdi:cellphone-arrow-down
