@@ -1230,35 +1230,11 @@
     entity_id: input_boolean.automation_presence_simulator
     state: 'off'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_nearest
-      title: "\U0001F30D Vous etes loin"
-      message: Vous vous trouvez loin du domicile activer la simulation de présence?
-      callback:
-      - title: Simuler une présence
-        event: start_presence_simulation
-        icon: gamecontroller.fill
-      click_url: /dashboard-automatisations/automatisations
-      tag: far_away
-      until:
-      - entity_id: binary_sensor.far_away
-        new_state: 'on'
-  mode: single
-- id: '1691566452704'
-  alias: "Simulation de Présence - \U0001F4F2 Activer Simulation de Présence"
-  description: ''
-  triggers:
-  - event_type: mobile_app_notification_action
-    event_data:
-      action: start_presence_simulation
-    trigger: event
-  conditions: []
-  actions:
-  - action: input_boolean.turn_on
+  - action: script.turn_on
+    metadata: {}
     data: {}
     target:
-      entity_id: input_boolean.automation_presence_simulator
+      entity_id: script.power_notification_simulation_de_presence_et_eloignement_du_domicile
   mode: single
 - id: '1691758172267'
   alias: "Pont Chaban Delmas - \U0001F6CE️ Notifier fermeture demain"

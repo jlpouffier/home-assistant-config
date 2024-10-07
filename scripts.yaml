@@ -822,3 +822,31 @@ power_notification_servaar:
       default_message: Film ou épisode téléchargé
   description: ''
   icon: mdi:movie
+power_notification_simulation_de_presence_et_eloignement_du_domicile:
+  alias: Power Notification - Simulation de presence et éloignement du domicile
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_nearest
+      default_title: "\U0001F6F8 Vous êtes loin"
+      default_message: Vous vous trouvez loin du domicile, activer la simulation de
+        présence?
+      button: true
+      button_title: D'accord!
+      button_action:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.automation_presence_simulator
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.far_away
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_boolean.automation_presence_simulator
+        to: 'on'
+  description: ''
+  icon: mdi:controller-classic
