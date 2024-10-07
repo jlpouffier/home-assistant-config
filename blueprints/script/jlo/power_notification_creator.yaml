@@ -111,8 +111,7 @@ variables:
   person_service_mapping:
     person.jenova70:
       service: notify.mobile_app_jean_loics_iphone
-  #notification_unique_id: "{{ this.entity_id | md5 }}"
-  notification_unique_id: "{{ now() | string | md5 }}"
+  notification_unique_id: "{{ this.entity_id }}"
 
 mode: restart
 max_exceeded: silent
