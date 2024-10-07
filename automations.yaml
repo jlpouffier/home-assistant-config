@@ -923,12 +923,14 @@
     entity_id: sensor.low_batteries
     above: 0
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "\U0001FAAB Batteries faibles !"
-      message: '{{state_attr(''sensor.low_batteries'',''entities'') | join('', '')}}'
-      tag: low-battery
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: '{{state_attr(''sensor.low_batteries'',''entities'') | join('',
+          '')}}'
+    target:
+      entity_id: script.power_notification_batteries_faibles
   mode: single
 - id: '1688537182551'
   alias: "Servarr - \U0001F514 Notification "

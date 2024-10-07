@@ -799,3 +799,14 @@ power_notification_mise_a_jour_dispo:
         to: '0'
   description: ''
   icon: mdi:cellphone-arrow-down
+power_notification_batteries_faibles:
+  alias: Power Notification - Batteries Faibles
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: "\U0001FAAB Batteries faibles !"
+      default_message: Certaines battery sont faibles
+  description: ''
+  icon: mdi:battery-10
