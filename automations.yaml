@@ -77,7 +77,7 @@
       entity_id: input_boolean.poubelle_verte_a_sortir
   mode: single
 - id: '1688114732811'
-  alias: "Poubelles Intelligentes - \U0001F514 Poubelle noir non sortie à temps"
+  alias: "Poubelles Intelligentes - \U0001F514 Poubelle noire non sortie à temps"
   description: ''
   triggers:
   - entity_id:
@@ -93,12 +93,11 @@
     entity_id: input_boolean.poubelle_noire_a_sortir
     state: 'on'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_present
-      title: "\U0001F5D1 Poubelle Noire"
-      message: N'oublie pas de sortir la poubelle noire
-      tag: black_trash
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_poubelle_noire_non_sortie_a_temps
   - action: input_boolean.turn_off
     data: {}
     target:
@@ -121,12 +120,11 @@
     entity_id: input_boolean.poubelle_verte_a_sortir
     state: 'on'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_present
-      title: ♻️ Poubelle Verte
-      message: N'oublie pas de sortir la poubelle verte
-      tag: green_trash
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_poubelle_verte_non_sortie_a_temps
   - action: input_boolean.turn_off
     data: {}
     target:
@@ -1863,19 +1861,11 @@
       - Départ en cours
       - Arrivée en cours
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_present
-        title: "\U0001F5D1 Poubelle Noire"
-        message: N'oublie pas de sortir la poubelle noire
-        tag: black_trash
-        callback:
-        - title: Poubelle Noire Sortie
-          event: black_trash_taken_out
-          icon: checkmark.circle
-        until:
-        - entity_id: input_boolean.poubelle_noire_a_sortir
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_poubelle_noire_a_sortir
   - if:
     - condition: state
       entity_id: input_boolean.poubelle_verte_a_sortir
@@ -1886,19 +1876,11 @@
       - Départ en cours
       - Arrivée en cours
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_present
-        title: ♻️ Poubelle Verte
-        message: N'oublie pas de sortir la poubelle verte
-        tag: green_trash
-        callback:
-        - title: Poubelle Verte Sortie
-          event: green_trash_taken_out
-          icon: checkmark.circle
-        until:
-        - entity_id: input_boolean.poubelle_verte_a_sortir
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_poubelle_verte_a_sortir
   mode: single
 - id: '1702835659800'
   alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle verte sortie depuis notification"
