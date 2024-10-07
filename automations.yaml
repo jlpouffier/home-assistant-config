@@ -38,36 +38,11 @@
     entity_id: binary_sensor.is_litter_full
     state: 'on'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_present
-      title: "\U0001F408  Litière"
-      message: Penser a nettoyer la litière !
-      callback:
-      - title: Litière Nettoyée
-        event: reset_litter_tracking
-        icon: sfsymbols:checkmark.circle.fill
-      tag: litter_full
-      until:
-      - entity_id: binary_sensor.is_litter_full
-        new_state: 'off'
-  mode: single
-- id: '1688112671844'
-  alias: "Litière Intelligente - \U0001F4F2 Remettre à zero passages litière depuis
-    notification"
-  description: ''
-  triggers:
-  - event_type: mobile_app_notification_action
-    event_data:
-      action: reset_litter_tracking
-    trigger: event
-  conditions: []
-  actions:
-  - action: input_number.set_value
-    data:
-      value: 0
+  - action: script.turn_on
+    metadata: {}
+    data: {}
     target:
-      entity_id: input_number.litter_tracking
+      entity_id: script.power_notification_litiere_pleine
   mode: single
 - id: '1688114260897'
   alias: Poubelles Intelligentes - Poubelle noire à sortir

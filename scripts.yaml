@@ -642,3 +642,28 @@ preparer_depart_maison:
   icon: mdi:home-export-outline
   fields: {}
   description: ''
+power_notification_litiere_pleine:
+  alias: Power Notification - Litière pleine
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F408  Litière"
+      default_message: Pensez à nettoyer la litière !
+      button: true
+      button_title: Litière Nettoyée
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.is_litter_full
+        to: 'off'
+      button_action:
+      - action: input_number.set_value
+        data:
+          value: 0
+        target:
+          entity_id: input_number.litter_tracking
+  description: ''
+  icon: mdi:bell
