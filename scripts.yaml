@@ -741,3 +741,45 @@ power_notification_poubelle_verte_a_sortir:
       button: true
   description: ''
   icon: mdi:bell
+power_notification_pluie_et_portes_ouvertes:
+  alias: Power Notification - Pluie et portes ouvertes
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F302 In pleut!"
+      default_message: Certaines portes sont ouvertes et il commence a pleuvoir
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.all_doors
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - binary_sensor.is_raining_now
+        to: 'off'
+  description: ''
+  icon: mdi:water
+power_notification_pluie_et_fenetres_ouvertes:
+  alias: Power Notification - Pluie et fenêtres ouvertes
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F302 In pleut!"
+      default_message: Certaines fenêtres sont ouvertes et il commence a pleuvoir
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.all_windows
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - binary_sensor.is_raining_now
+        to: 'off'
+  description: ''
+  icon: mdi:water

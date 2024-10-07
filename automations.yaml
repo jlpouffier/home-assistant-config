@@ -842,18 +842,13 @@
         open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
           \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
           \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_present
-        title: "️\U0001F302 Il pleut!"
-        message: 'Les portes suivantes sont ouvertes et il commence a pleuvoir: {{open_doors}}'
-        click_url: /lovelace/openings
-        tag: raining_door_open
-        until:
-        - entity_id: binary_sensor.is_raining_now
-          new_state: 'off'
-        - entity_id: binary_sensor.all_doors
-          new_state: 'off'
+    - action: script.turn_on
+      data:
+        variables:
+          user_message: 'Les portes suivantes sont ouvertes et il commence a pleuvoir:
+            {{open_doors}}'
+      target:
+        entity_id: script.power_notification_pluie_et_portes_ouvertes
   - if:
     - condition: state
       entity_id: binary_sensor.all_windows
@@ -863,19 +858,13 @@
         open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
           \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
           \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_present
-        title: "️\U0001F302 Il pleut!"
-        message: 'Les fenêtres suivantes sont ouvertes et il commence a pleuvoir:
-          {{open_windows}}'
-        click_url: /lovelace/openings
-        tag: raining_window_open
-        until:
-        - entity_id: binary_sensor.is_raining_now
-          new_state: 'off'
-        - entity_id: binary_sensor.all_windows
-          new_state: 'off'
+    - action: script.turn_on
+      data:
+        variables:
+          user_message: 'Les fenêtres suivantes sont ouvertes et il commence a pleuvoir:
+            {{open_windows}}'
+      target:
+        entity_id: script.power_notification_pluie_et_fenetres_ouvertes
   mode: single
 - id: '1688386134462'
   alias: "Surveillance du système - \U0001F514 Notifier mise a jour dispo"
