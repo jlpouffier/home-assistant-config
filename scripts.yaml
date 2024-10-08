@@ -930,3 +930,27 @@ power_notification_porte_d_entree_restee_ouverte:
       default_importance: true
   description: ''
   icon: mdi:door-open
+power_notification_courrier_a_relever:
+  alias: Power Notification - Courrier à relever
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F4EB Boite aux lettres"
+      default_message: Vous avez du courrier !
+      button_title: Courrier relevé!
+      button_action:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.courrier_a_relever
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_boolean.courrier_a_relever
+        to: 'off'
+  description: ''
+  icon: mdi:mailbox-up
