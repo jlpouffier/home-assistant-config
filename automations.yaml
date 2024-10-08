@@ -1326,18 +1326,13 @@
     entity_id: schedule.heures_pleines
     state: 'off'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "️\U0001F697 Tesla"
-      message: 'Pense à charger la voiture. Niveau de charge actuelle {{states(''sensor.meme_niveau_de_la_batterie'')}}%
-
-        '
-      click_url: /lovelace/tesla
-      tag: tesla_charge_reminder
-      until:
-      - entity_id: binary_sensor.meme_cable_de_charge
-        new_state: 'on'
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: Pense à charger la voiture. Niveau de charge actuelle {{states('sensor.meme_niveau_de_la_batterie')}}%
+    target:
+      entity_id: script.power_notification_rappel_charge_tesla
   mode: single
 - id: '1695458967964'
   alias: Tesla - Attacher Tesla à JL en début de conduite

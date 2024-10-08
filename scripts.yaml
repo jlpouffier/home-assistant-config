@@ -860,3 +860,19 @@ power_notification_pont_chaban_delmas:
       default_message: Le pont Chaban Delmas fermera demain
   description: ''
   icon: mdi:bridge
+power_notification_rappel_charge_tesla:
+  alias: Power Notification - Rappel charge Tesla
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: "\U0001F3CE️ Tesla"
+      default_message: Pensez à charger la voiture.
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.meme_cable_de_charge
+        to: 'on'
+  description: ''
+  icon: phu:tesla-icon
