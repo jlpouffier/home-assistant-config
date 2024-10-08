@@ -912,3 +912,21 @@ power_notification_desactiver_mode_invite_lors_de_l_arrivee:
         to: 'off'
   description: ''
   icon: mdi:creation
+power_notification_porte_d_entree_restee_ouverte:
+  alias: Power Notification - Porte d'entrée restée ouverte
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F6AA Porte d'entrée"
+      default_message: La porte d'entrée est restée ouverte!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.capteur_ouverture_porte_entree
+        to: 'off'
+      default_importance: true
+  description: ''
+  icon: mdi:door-open
