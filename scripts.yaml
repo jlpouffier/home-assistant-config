@@ -887,3 +887,28 @@ power_notification_charger_meta_quest:
       default_message: Pensez à le recharger le Meta Quest
   description: ''
   icon: mdi:virtual-reality
+power_notification_desactiver_mode_invite_lors_de_l_arrivee:
+  alias: Power Notification - Désactiver Mode Invité lors de l'arrivée
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      persons: []
+      zones:
+      - zone.home
+      default_title: ✨ Monde Invité
+      default_message: Bienvenue à la maison, désactiver le mode invité?
+      button_title: Ok!
+      button_action:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.guest_mode
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_boolean.guest_mode
+        to: 'off'
+  description: ''
+  icon: mdi:creation

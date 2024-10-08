@@ -3645,35 +3645,11 @@
     entity_id: input_boolean.guest_mode
     state: 'on'
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_present
-      title: ✨ Monde Invité
-      message: Bienvenue à la maison, désactiver le mode invité?
-      tag: guest_mode_on_on_arrival
-      callback:
-      - title: Désactiver le mode invité
-        event: deactivate_guest_mode
-        icon: checkmark.circle
-      until:
-      - entity_id: input_boolean.guest_mode
-        new_state: 'off'
-  mode: single
-- id: '1727025092626'
-  alias: "Mode Invité - \U0001F4F2 Désactiver mode invité depuis notification"
-  description: ''
-  triggers:
-  - event_type: mobile_app_notification_action
-    event_data:
-      action: deactivate_guest_mode
-    trigger: event
-  conditions: []
-  actions:
-  - action: input_boolean.turn_off
+  - action: script.turn_on
     metadata: {}
     data: {}
     target:
-      entity_id: input_boolean.guest_mode
+      entity_id: script.power_notification_desactiver_mode_invite_lors_de_l_arrivee
   mode: single
 - id: '1727807421914'
   alias: "\U0001F514 Notifier porte d'entrée ouverte"
