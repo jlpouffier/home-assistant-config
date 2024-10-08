@@ -3543,6 +3543,7 @@
       - binary_sensor.capteur_ouverture_porte_fenetre_salon
       room_openings_duration: 00:05:00
       outside_temperature: sensor.floirac_temperature
+      power_notification_script: script.power_notification_temperature_anormale_dans_le_salon
 - id: '1726663270597'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre"
   description: ''
@@ -3555,6 +3556,7 @@
       - binary_sensor.capteur_ouverture_fenetre_chambre
       room_openings_duration: 00:05:00
       outside_temperature: sensor.floirac_temperature
+      power_notification_script: script.power_notification_temperature_anormale_dans_la_chambre
 - id: '1726663301942'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Chambre
     Marilou"
@@ -3568,6 +3570,7 @@
       - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
       room_openings_duration: 00:05:00
       outside_temperature: sensor.floirac_temperature
+      power_notification_script: script.power_notification_temperature_anormale_dans_la_chambre_de_marilou
 - id: '1726663330892'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Bureau"
   description: ''
@@ -3580,6 +3583,7 @@
       - binary_sensor.capteur_ouverture_fenetre_bureau
       room_openings_duration: 00:05:00
       outside_temperature: sensor.floirac_temperature
+      power_notification_script: script.power_notification_temperature_anormale_dans_le_bureau
 - id: '1726666291089'
   alias: Pulse - Allumer / Éteindre
   description: ''

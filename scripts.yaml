@@ -1058,3 +1058,51 @@ power_notification_porte_d_entree_ouverte:
       default_importance: true
   description: ''
   icon: mdi:door-open
+power_notification_temperature_anormale_dans_le_bureau:
+  alias: Power Notification - Température anormale dans le bureau
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F321️ Température anormale"
+      default_message: Température anormale dans le bureau
+  description: ''
+  icon: mdi:home-thermometer
+power_notification_temperature_anormale_dans_le_salon:
+  alias: Power Notification - Température anormale dans le salon
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F321️ Température anormale"
+      default_message: Température anormale dans le salon
+  description: ''
+  icon: mdi:home-thermometer
+power_notification_temperature_anormale_dans_la_chambre:
+  alias: Power Notification - Température anormale dans la chambre
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F321️ Température anormale"
+      default_message: Température anormale dans la chambre
+  description: ''
+  icon: mdi:home-thermometer
+power_notification_temperature_anormale_dans_la_chambre_de_marilou:
+  alias: Power Notification - Température anormale dans la chambre de Marilou
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F321️ Température anormale"
+      default_message: Température anormale dans la chambre de Marilou
+  description: ''
+  icon: mdi:home-thermometer
