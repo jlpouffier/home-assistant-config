@@ -76,12 +76,6 @@ blueprint:
       icon: mdi:button-pointer
       collapsed: true
       input:
-        button:
-          name: Button
-          description: Include a Button in the notification
-          default: false
-          selector:
-            boolean:
         button_title:
           name: Button title
           description: A short name that will be displayed on the button of the notification
@@ -151,7 +145,6 @@ sequence:
       default_title: !input default_title
       default_message: !input default_message
       default_importance: !input default_importance
-      button: !input button
       button_title: !input button_title
       button_action: !input button_action
       discard_when: !input discard_when
@@ -197,7 +190,7 @@ sequence:
           {}
         {% endif %}
       notification_data_callback: |
-        {% if button %}
+        {% if button_title | length > 0 %}
           {
             "actions":
               [
@@ -296,49 +289,28 @@ sequence:
                 data: "{{ dict(dict(notification_data_tag, **notification_data_importance), **notification_data_callback) }}"
           for_each: "{{iterable_persons}}"
 
-      - parallel:
-          # Button Clicked ....
-          - sequence:
-              - if:
-                  - condition: template
-                    value_template: "{{button}}"
-                then:
-                  - wait_for_trigger:
-                      - event_type: mobile_app_notification_action
-                        event_data:
-                          action: "{{tag}}"
-                        trigger: event
-                    continue_on_timeout: false
-                  - sequence:
-                      - sequence: !input button_action
-                      - repeat:
-                          sequence:
-                            - action: "{{person_service_mapping[repeat.item]['service']}}"
-                              data:
-                                message: "clear_notification"
-                                data:
-                                  tag: "{{tag}}"
-                          for_each: "{{iterable_persons}}"
-                  - action: script.turn_off
-                    target:
-                      entity_id: "{{this.entity_id}}"
-          # Notification Discarding
-          - sequence:
-              - if:
-                  - condition: template
-                    value_template: "{{discard_when | length > 0}}"
-                then:
-                  - wait_for_trigger: !input discard_when
-                    continue_on_timeout: false
-                  - sequence:
-                      - repeat:
-                          sequence:
-                            - action: "{{person_service_mapping[repeat.item]['service']}}"
-                              data:
-                                message: "clear_notification"
-                                data:
-                                  tag: "{{tag}}"
-                          for_each: "{{iterable_persons}}"
-                  - action: script.turn_off
-                    target:
-                      entity_id: "{{this.entity_id}}"
+      - if:
+          - condition: template
+            value_template: "{{button_action | length > 0 or discard_when | length > 0}}"
+        then:
+          - wait_for_trigger:
+              - event_type: mobile_app_notification_action
+                event_data:
+                  action: "{{tag}}"
+                trigger: event
+                id: button_pressed
+              - triggers: !input discard_when
+            continue_on_timeout: false
+          - if:
+              - condition: template
+                value_template: "{{wait.trigger.id == 'button_pressed'}}"
+            then:
+              - sequence: !input button_action
+          - repeat:
+              sequence:
+                - action: "{{person_service_mapping[repeat.item]['service']}}"
+                  data:
+                    message: "clear_notification"
+                    data:
+                      tag: "{{tag}}"
+              for_each: "{{iterable_persons}}"

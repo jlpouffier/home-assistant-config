@@ -652,8 +652,7 @@ power_notification_litiere_pleine:
       - zone.home
       default_title: "\U0001F408  Litière"
       default_message: Pensez à nettoyer la litière !
-      button: true
-      button_title: Litière Nettoyée
+      button_title: C'est fait!
       discard_when:
       - trigger: state
         entity_id:
@@ -831,7 +830,6 @@ power_notification_simulation_de_presence_et_eloignement_du_domicile:
       default_title: "\U0001F6F8 Vous êtes loin"
       default_message: Vous vous trouvez loin du domicile, activer la simulation de
         présence?
-      button: true
       button_title: D'accord!
       button_action:
       - action: input_boolean.turn_on
