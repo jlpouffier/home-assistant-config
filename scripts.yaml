@@ -954,3 +954,28 @@ power_notification_courrier_a_relever:
         to: 'off'
   description: ''
   icon: mdi:mailbox-up
+power_notification_machine_a_laver_terminee:
+  alias: Power Notification - Machine à laver terminée
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001FAE7 Machine à laver"
+      default_message: Cycle de lavage terminé !
+      button_title: Machine vidée!
+      button_action:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.machine_a_laver_a_vider
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_boolean.machine_a_laver_a_vider
+        to: 'off'
+  description: ''
+  icon: mdi:washing-machine-alert
