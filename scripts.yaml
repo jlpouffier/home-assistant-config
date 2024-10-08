@@ -848,3 +848,15 @@ power_notification_simulation_de_presence_et_eloignement_du_domicile:
         to: 'on'
   description: ''
   icon: mdi:controller-classic
+power_notification_pont_chaban_delmas:
+  alias: Power Notification - Pont Chaban Delmas
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons
+      persons:
+      - person.jenova70
+      default_title: "\U0001F309  Pont Chaban Delmas"
+      default_message: Le pont Chaban Delmas fermera demain
+  description: ''
+  icon: mdi:bridge

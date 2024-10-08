@@ -1263,12 +1263,13 @@
       entity_id: sensor.distance_jl_home
       below: 20000
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_jl
-        title: "\U0001F309 Pont Chaban Delmas"
-        message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
-        tag: chaban_delmas_closing_tomorrow
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_message: Le pont Chaban Delmas fermera demain à {{human_redeable_closing_time}}
+      target:
+        entity_id: script.power_notification_pont_chaban_delmas
   mode: single
 - id: '1692118004694'
   alias: Simulation de présence - Arrêter lors du retour
