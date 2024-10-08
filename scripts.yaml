@@ -551,93 +551,59 @@ preparer_depart_maison:
         open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
           \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
           \n    | list\n    | join(\", \")\n}}"
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Fenêtre(s) ouverte(s) !"
-        message: 'Les fenêtres suivantes sont toujours ouvertes alors que vous allez
-          partir:  {{open_windows}}'
-        click_url: /lovelace/openings
-        tag: home_empty_window_open
-        until:
-        - entity_id: input_select.modes_de_presence_de_la_maison_v2
-          new_state: Occupée
-        - entity_id: binary_sensor.all_windows
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_message: 'Les fenêtres suivantes sont toujours ouvertes alors que vous
+            allez partir:  {{open_windows}}'
+      target:
+        entity_id: script.power_notification_fenetres_ouvertes
   - alias: Notify oven running
     if:
     - condition: state
       entity_id: binary_sensor.is_oven_running
       state: 'on'
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "\U0001F958 Four allumé !"
-        message: Le four est en marche alors que vous allez partir!
-        tag: home_empty_oven_on
-        interuption_level: critical
-        until:
-        - entity_id: input_select.modes_de_presence_de_la_maison_v2
-          new_state: Occupée
-        - entity_id: binary_sensor.is_oven_running
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_four_allume
   - alias: Notify cooktop running
     if:
     - condition: state
       entity_id: binary_sensor.is_induction_cooktop_running
       state: 'on'
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "\U0001F373 Plaques à induction allumé !"
-        message: Les plaques à induction sont en marche alors que vous allez partir!
-        tag: home_empty_induction_cooktop_on
-        interuption_level: critical
-        until:
-        - entity_id: input_select.modes_de_presence_de_la_maison_v2
-          new_state: Occupée
-        - entity_id: binary_sensor.is_induction_cooktop_running
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - script.power_notification_plaques_a_induction_allumees
   - alias: Notify french door open
     if:
     - condition: state
       entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
       state: 'on'
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Porte(s) ouverte(s) !"
-        message: La porte fenêtre du salon est toujours ouverte alors que vous allez
-          partir!
-        click_url: /lovelace/openings
-        tag: home_empty_french_door_open
-        until:
-        - entity_id: input_select.modes_de_presence_de_la_maison_v2
-          new_state: Occupée
-        - entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_porte_fenetre_du_salon_ouverte
   - alias: Notify entry door open
     if:
     - condition: state
       entity_id: binary_sensor.capteur_ouverture_porte_entree
       state: 'on'
     then:
-    - event: NOTIFIER
-      event_data:
-        action: send_to_nearest
-        title: "️\U0001F6AA Porte(s) ouverte(s) !"
-        message: La porte d'entrée est toujours ouverte alors que vous allez partir!
-        click_url: /lovelace/openings
-        tag: home_empty_entry_door_open
-        interuption_level: critical
-        until:
-        - entity_id: input_select.modes_de_presence_de_la_maison_v2
-          new_state: Occupée
-        - entity_id: binary_sensor.capteur_ouverture_porte_entree
-          new_state: 'off'
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_porte_d_entree_ouverte
   mode: queued
   icon: mdi:home-export-outline
   fields: {}
@@ -979,3 +945,116 @@ power_notification_machine_a_laver_terminee:
         to: 'off'
   description: ''
   icon: mdi:washing-machine-alert
+power_notification_fenetres_ouvertes:
+  alias: Power Notification - Fenêtres ouvertes
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001FA9F Fenêtres ouvertes !"
+      default_message: Les fenêtres suivantes sont toujours ouvertes alors que vous
+        allez partir!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.all_windows
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_select.modes_de_presence_de_la_maison_v2
+        to: Occupée
+  description: ''
+  icon: mdi:window-open
+power_notification_four_allume:
+  alias: Power Notification - Four allumé
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001F958 Four allumé"
+      default_message: Le four est en marche alors que vous allez partir!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.is_oven_running
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_select.modes_de_presence_de_la_maison_v2
+        to: Occupée
+      default_importance: true
+  description: ''
+  icon: mdi:stove
+power_notification_plaques_a_induction_allumees:
+  alias: Power Notification - Plaques à induction allumées
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001F373 Plaques à induction allumées"
+      default_message: Les plaques à induction sont en marche alors que vous allez
+        partir!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.is_induction_cooktop_running
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_select.modes_de_presence_de_la_maison_v2
+        to: Occupée
+      default_importance: true
+  description: ''
+  icon: mdi:gas-burner
+power_notification_porte_fenetre_du_salon_ouverte:
+  alias: Power Notification - Porte fenêtre du salon ouverte
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001F6AAPorte fenêtre du salon"
+      default_message: La porte fenêtre du salon est toujours ouverte alors que vous
+        allez partir!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.capteur_ouverture_porte_fenetre_salon
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_select.modes_de_presence_de_la_maison_v2
+        to: Occupée
+      default_importance: false
+  description: ''
+  icon: mdi:door-open
+power_notification_porte_d_entree_ouverte:
+  alias: Power Notification - Porte d'entrée ouverte
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001F6AAPorte d'entrée"
+      default_message: La porte d'entrée est toujours ouverte alors que vous allez
+        partir!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.capteur_ouverture_porte_entree
+        to: 'off'
+      - trigger: state
+        entity_id:
+        - input_select.modes_de_presence_de_la_maison_v2
+        to: Occupée
+      default_importance: true
+  description: ''
+  icon: mdi:door-open
