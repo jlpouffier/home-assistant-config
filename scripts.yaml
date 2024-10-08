@@ -876,3 +876,14 @@ power_notification_rappel_charge_tesla:
         to: 'on'
   description: ''
   icon: phu:tesla-icon
+power_notification_charger_meta_quest:
+  alias: Power Notification - Charger Meta Quest
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: "\U0001F576️ Meta Quest"
+      default_message: Pensez à le recharger le Meta Quest
+  description: ''
+  icon: mdi:virtual-reality

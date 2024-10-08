@@ -2009,13 +2009,14 @@
     entity_id: sensor.quest_battery_level
     below: 60
   actions:
-  - event: NOTIFIER
-    event_data:
-      action: send_to_jl
-      title: "️\U0001F576️ Quest"
-      message: "La batterie du Quest est actuellement à {{states(\"sensor.quest_battery_level\")}}%.
-        Pense à le recharger. \n"
-      tag: charge_quest
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: "La batterie du Quest est actuellement à {{states(\"sensor.quest_battery_level\")}}%.
+          Pense à le recharger. \n"
+    target:
+      entity_id: script.power_notification_charger_meta_quest
   - if:
     - condition: state
       entity_id: binary_sensor.capteur_presence_bureau_occupancy
