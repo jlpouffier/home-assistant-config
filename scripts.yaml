@@ -630,6 +630,7 @@ power_notification_litiere_pleine:
           value: 0
         target:
           entity_id: input_number.litter_tracking
+      default_tag: litter_box_full
   description: ''
   icon: mdi:bell
 power_notification_poubelle_noire_non_sortie_a_temps:
@@ -642,6 +643,7 @@ power_notification_poubelle_noire_non_sortie_a_temps:
       - zone.home
       default_title: "\U0001F5D1️ Poubelle Noire"
       default_message: Vous devez sortir la poubelle noire!
+      default_tag: take_out_black_trash_late
   description: ''
 power_notification_poubelle_verte_non_sortie_a_temps:
   alias: 'Power Notification - Poubelle Verte non sortie a temps '
@@ -653,6 +655,7 @@ power_notification_poubelle_verte_non_sortie_a_temps:
       - zone.home
       default_title: ♻️ Poubelle Noire
       default_message: Vous devez sortir la poubelle verte!
+      default_tag: take_out_green_trash_late
   description: ''
   icon: mdi:bell
 power_notification_poubelle_noire_a_sortir:
@@ -678,6 +681,7 @@ power_notification_poubelle_noire_a_sortir:
         - input_boolean.poubelle_noire_a_sortir
         to: 'off'
       button: true
+      default_tag: take_out_black_trash
   description: ''
   icon: mdi:bell
 power_notification_poubelle_verte_a_sortir:
@@ -704,6 +708,7 @@ power_notification_poubelle_verte_a_sortir:
         - input_boolean.poubelle_verte_a_sortir
         to: 'off'
       button: true
+      default_tag: take_out_green_trash
   description: ''
   icon: mdi:bell
 power_notification_pluie_et_portes_ouvertes:
@@ -725,6 +730,7 @@ power_notification_pluie_et_portes_ouvertes:
         entity_id:
         - binary_sensor.is_raining_now
         to: 'off'
+      default_tag: rain_doors_open
   description: ''
   icon: mdi:water
 power_notification_pluie_et_fenetres_ouvertes:
@@ -746,6 +752,7 @@ power_notification_pluie_et_fenetres_ouvertes:
         entity_id:
         - binary_sensor.is_raining_now
         to: 'off'
+      default_tag: rain_windows_open
   description: ''
   icon: mdi:water
 power_notification_mise_a_jour_dispo:
@@ -762,6 +769,7 @@ power_notification_mise_a_jour_dispo:
         entity_id:
         - sensor.pending_updates
         to: '0'
+      default_tag: updates_available
   description: ''
   icon: mdi:cellphone-arrow-down
 power_notification_batteries_faibles:
@@ -773,6 +781,7 @@ power_notification_batteries_faibles:
       - person.jenova70
       default_title: "\U0001FAAB Batteries faibles !"
       default_message: Certaines battery sont faibles
+      default_tag: low_batteries
   description: ''
   icon: mdi:battery-10
 power_notification_servaar:
@@ -785,6 +794,7 @@ power_notification_servaar:
       - person.jenova70
       default_title: "\U0001F4FA Servaar"
       default_message: Film ou épisode téléchargé
+      default_tag: servaar
   description: ''
   icon: mdi:movie
 power_notification_simulation_de_presence_et_eloignement_du_domicile:
@@ -812,6 +822,7 @@ power_notification_simulation_de_presence_et_eloignement_du_domicile:
         entity_id:
         - input_boolean.automation_presence_simulator
         to: 'on'
+      default_tag: far_away_presence_simulation
   description: ''
   icon: mdi:controller-classic
 power_notification_pont_chaban_delmas:
@@ -824,6 +835,7 @@ power_notification_pont_chaban_delmas:
       - person.jenova70
       default_title: "\U0001F309  Pont Chaban Delmas"
       default_message: Le pont Chaban Delmas fermera demain
+      default_tag: chaban_delmas_bridge
   description: ''
   icon: mdi:bridge
 power_notification_rappel_charge_tesla:
@@ -840,6 +852,7 @@ power_notification_rappel_charge_tesla:
         entity_id:
         - binary_sensor.meme_cable_de_charge
         to: 'on'
+      default_tag: charge_tesla_reminder
   description: ''
   icon: phu:tesla-icon
 power_notification_charger_meta_quest:
@@ -851,6 +864,7 @@ power_notification_charger_meta_quest:
       - person.jenova70
       default_title: "\U0001F576️ Meta Quest"
       default_message: Pensez à le recharger le Meta Quest
+      default_tag: charge_quest_reminder
   description: ''
   icon: mdi:virtual-reality
 power_notification_desactiver_mode_invite_lors_de_l_arrivee:
@@ -876,6 +890,7 @@ power_notification_desactiver_mode_invite_lors_de_l_arrivee:
         entity_id:
         - input_boolean.guest_mode
         to: 'off'
+      default_tag: guest_mode_on_arrival
   description: ''
   icon: mdi:creation
 power_notification_porte_d_entree_restee_ouverte:
@@ -894,6 +909,7 @@ power_notification_porte_d_entree_restee_ouverte:
         - binary_sensor.capteur_ouverture_porte_entree
         to: 'off'
       default_importance: true
+      default_tag: entry_door_open_for_some_time
   description: ''
   icon: mdi:door-open
 power_notification_courrier_a_relever:
@@ -918,6 +934,7 @@ power_notification_courrier_a_relever:
         entity_id:
         - input_boolean.courrier_a_relever
         to: 'off'
+      default_tag: you_got_mail
   description: ''
   icon: mdi:mailbox-up
 power_notification_machine_a_laver_terminee:
@@ -943,6 +960,7 @@ power_notification_machine_a_laver_terminee:
         entity_id:
         - input_boolean.machine_a_laver_a_vider
         to: 'off'
+      default_tag: washing_machine_over
   description: ''
   icon: mdi:washing-machine-alert
 power_notification_fenetres_ouvertes:
@@ -965,6 +983,7 @@ power_notification_fenetres_ouvertes:
         entity_id:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
+      default_tag: windows_open
   description: ''
   icon: mdi:window-open
 power_notification_four_allume:
@@ -987,6 +1006,7 @@ power_notification_four_allume:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      default_tag: oven_on
   description: ''
   icon: mdi:stove
 power_notification_plaques_a_induction_allumees:
@@ -1010,6 +1030,7 @@ power_notification_plaques_a_induction_allumees:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      default_tag: induction_on
   description: ''
   icon: mdi:gas-burner
 power_notification_porte_fenetre_du_salon_ouverte:
@@ -1033,6 +1054,7 @@ power_notification_porte_fenetre_du_salon_ouverte:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: false
+      default_tag: living_room_door_open
   description: ''
   icon: mdi:door-open
 power_notification_porte_d_entree_ouverte:
@@ -1056,6 +1078,7 @@ power_notification_porte_d_entree_ouverte:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      default_tag: entry_door_open
   description: ''
   icon: mdi:door-open
 power_notification_temperature_anormale_dans_le_bureau:
@@ -1068,6 +1091,7 @@ power_notification_temperature_anormale_dans_le_bureau:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans le bureau
+      default_tag: office_temp_trend
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_le_salon:
@@ -1080,6 +1104,7 @@ power_notification_temperature_anormale_dans_le_salon:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans le salon
+      default_tag: livingroom_temp_trend
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_la_chambre:
@@ -1092,6 +1117,7 @@ power_notification_temperature_anormale_dans_la_chambre:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans la chambre
+      default_tag: bedroom_temp_trend
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_la_chambre_de_marilou:
@@ -1104,5 +1130,6 @@ power_notification_temperature_anormale_dans_la_chambre_de_marilou:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans la chambre de Marilou
+      default_tag: marilou_bedroom_temp_trend
   description: ''
   icon: mdi:home-thermometer
