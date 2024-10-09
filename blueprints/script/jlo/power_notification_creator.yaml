@@ -115,6 +115,17 @@ blueprint:
           default: []
           selector:
             trigger:
+    advanced_section:
+      name: Advanced Notification Data
+      icon: mdi:cog
+      collapsed: true
+      input:
+        notification_data_advanced:
+          name: Advanced Notification Data
+          description: You are missing something and you know your way around the notificaiton data of the companion app? Great! Add everything here.
+          default: {}
+          selector:
+            object:
 
 ####################################### WARNING #######################################
 #                        THIS PART IS DEPENDANT ON YOUR SYSTEM.                       #
@@ -168,6 +179,7 @@ sequence:
       button_title: !input button_title
       button_action: !input button_action
       discard_when: !input discard_when
+      notification_data_advanced: !input notification_data_advanced
 
       # Overrides from fields
       title: |
@@ -224,6 +236,10 @@ sequence:
         {% else %}
           {}
         {% endif %}
+      notification_data: |
+        {{ 
+          dict(dict(dict(notification_data_tag, **notification_data_importance), **notification_data_callback), **notification_data_advanced)
+        }}
 
       # Iterable persons
       initial_iterable_list: |
@@ -292,7 +308,7 @@ sequence:
               data:
                 title: "{{title}}"
                 message: "{{message}}"
-                data: "{{ dict(dict(notification_data_tag, **notification_data_importance), **notification_data_callback) }}"
+                data: "{{ notification_data }}"
           for_each: "{{iterable_persons}}"
 
       - if:
