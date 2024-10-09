@@ -24,15 +24,15 @@ blueprint:
           selector:
             select:
               options:
-                - label: Specific persons (Use the person selector below)
+                - label: Specific persons (Use the person input below)
                   value: send_to_persons
                 - label: Everyone
                   value: send_to_all
-                - label: Everyone inside (a) zone(s) (Use the zone selector below)
+                - label: Everyone inside (a) zone(s) (Use the zone input below)
                   value: send_to_persons_in_zones
-                - label: Everyone outside (a) zone(s) (Use the zone selector below)
+                - label: Everyone outside (a) zone(s) (Use the zone input below)
                   value: send_to_persons_not_in_zones
-                - label: Closest to home
+                - label: Closest to a thing (Use the thing input below)
                   value: send_to_nearest
         persons:
           name: Persons (Optional)
@@ -52,6 +52,17 @@ blueprint:
               multiple: true
               filter:
                 - domain: zone
+        thing:
+          name: Thing (Optional)
+          description: Only usefull if the Target of the notification was set to "Closest to a thing".
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain:
+                    - person
+                    - device_tracker
+                    - zone
     content:
       name: Default notification content
       description: Define the content of the notification. Everything can be overridden at runtime with script fields.
@@ -151,6 +162,7 @@ sequence:
       target: !input target
       persons: !input persons
       zones: !input zones
+      thing: !input thing
       default_title: !input default_title
       default_message: !input default_message
       default_importance: !input default_importance
@@ -262,13 +274,13 @@ sequence:
           ]
         {% elif target == 'send_to_nearest' %}
           {% set min_distance = namespace(value = 21000000) %}
-          {% set proximity_band = (state_attr('zone.home', 'radius') | round( 3 , default = 0)) * 3 %}
+          {% set proximity_band = (state_attr('zone.home', 'radius') | round( 3 , default = 300)) * 3 %}
           {% for
             person in
               expand(states.person)
               | map(attribute='entity_id')
               | list %}
-            {% set person_distance = (distance(person) | round( 3 , default = 0)) * 1000 %}
+            {% set person_distance = (distance(person,thing) | round( 3 , default = 0)) * 1000 %}
             {% if person_distance <= min_distance.value %}
               {% set min_distance.value = person_distance %}
             {% endif %}
@@ -279,7 +291,7 @@ sequence:
                 expand(states.person)
                 | map(attribute='entity_id')
                 | list %}
-              {% set person_distance = (distance(person) | round( 3 , default = 0)) * 1000 %}
+              {% set person_distance = (distance(person,thing) | round( 3 , default = 0)) * 1000 %}
               {% if person_distance <= min_distance.value + proximity_band %}
                 "{{ person }}",
               {% endif %}
