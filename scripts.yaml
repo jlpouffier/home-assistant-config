@@ -770,6 +770,7 @@ power_notification_mise_a_jour_dispo:
         - sensor.pending_updates
         to: '0'
       default_tag: updates_available
+      target: send_to_all
   description: ''
   icon: mdi:cellphone-arrow-down
 power_notification_batteries_faibles:
@@ -782,6 +783,7 @@ power_notification_batteries_faibles:
       default_title: "\U0001FAAB Batteries faibles !"
       default_message: Certaines battery sont faibles
       default_tag: low_batteries
+      target: send_to_all
   description: ''
   icon: mdi:battery-10
 power_notification_servaar:
@@ -789,7 +791,7 @@ power_notification_servaar:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
-      target: send_to_persons
+      target: send_to_all
       persons:
       - person.jenova70
       default_title: "\U0001F4FA Servaar"
@@ -823,6 +825,7 @@ power_notification_simulation_de_presence_et_eloignement_du_domicile:
         - input_boolean.automation_presence_simulator
         to: 'on'
       default_tag: far_away_presence_simulation
+      thing: zone.home
   description: ''
   icon: mdi:controller-classic
 power_notification_pont_chaban_delmas:
@@ -830,7 +833,7 @@ power_notification_pont_chaban_delmas:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
-      target: send_to_persons
+      target: send_to_all
       persons:
       - person.jenova70
       default_title: "\U0001F309  Pont Chaban Delmas"
@@ -853,6 +856,7 @@ power_notification_rappel_charge_tesla:
         - binary_sensor.meme_cable_de_charge
         to: 'on'
       default_tag: charge_tesla_reminder
+      target: send_to_all
   description: ''
   icon: phu:tesla-icon
 power_notification_charger_meta_quest:
@@ -865,6 +869,7 @@ power_notification_charger_meta_quest:
       default_title: "\U0001F576️ Meta Quest"
       default_message: Pensez à le recharger le Meta Quest
       default_tag: charge_quest_reminder
+      target: send_to_all
   description: ''
   icon: mdi:virtual-reality
 power_notification_desactiver_mode_invite_lors_de_l_arrivee:

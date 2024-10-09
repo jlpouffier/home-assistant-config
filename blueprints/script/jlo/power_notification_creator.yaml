@@ -17,15 +17,22 @@ blueprint:
       icon: mdi:bullseye-arrow
       description: Control who will receive the notification.
       input:
+        persons:
+          name: Among these people ...
+          description: Leave empty if you do not want to filter the initial list.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: person
         target:
-          name: Target of the notification
+          name: ... Send the notification to
           description: Target of the notification. It can target specific person with "Send to person(s)", or a more user friendly target.
-          default: send_to_persons
+          default: send_to_all
           selector:
             select:
               options:
-                - label: Specific persons (Use the person input below)
-                  value: send_to_persons
                 - label: Everyone
                   value: send_to_all
                 - label: Everyone inside (a) zone(s) (Use the zone input below)
@@ -34,15 +41,7 @@ blueprint:
                   value: send_to_persons_not_in_zones
                 - label: Closest to a thing (Use the thing input below)
                   value: send_to_nearest
-        persons:
-          name: Persons (Optional)
-          description: Only usefull if the Target of the notification was set to "Specific persons".
-          default: []
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - domain: person
+
         zones:
           name: Zones (Optional)
           description: Only usefull if the Target of the notification was set to "Everyone inside (a) zone(s)" or "Everyone outside (a) zone(s)".
@@ -227,22 +226,20 @@ sequence:
         {% endif %}
 
       # Iterable persons
-      iterable_persons: |
-        {% if target == 'send_to_persons' %}
+      initial_iterable_list: |
+        {% if persons | length > 0 %}
           {{persons}}
-        {% elif target == 'send_to_all' %}
-          {{
-            expand(states.person)
+        {% else %}
+          {{expand(states.person)
             | map(attribute='entity_id')
-            | list
-          }}
+            | list}}
+        {% endif %}
+      iterable_persons: |
+        {% if target == 'send_to_all' %}
+          {{initial_iterable_list}}
         {% elif target == 'send_to_persons_in_zones' %}
           [
-            {% for
-              person in
-                expand(states.person)
-                | map(attribute='entity_id')
-                | list %}
+            {% for person in initial_iterable_list %}
               {% set return_value = namespace(value = false) %}
               {% for zone in zones %}
                 {% if distance(person , zone) | float(0) * 1000 <= state_attr(zone,'radius') %}
@@ -256,11 +253,7 @@ sequence:
           ]
         {% elif target == 'send_to_persons_not_in_zones' %}
           [
-            {% for
-              person in
-                expand(states.person)
-                | map(attribute='entity_id')
-                | list %}
+            {% for person in initial_iterable_list %}
               {% set return_value = namespace(value = false) %}
               {% for zone in zones %}
                 {% if distance(person , zone) | float(0) * 1000 <= state_attr(zone,'radius') %}
@@ -275,22 +268,14 @@ sequence:
         {% elif target == 'send_to_nearest' %}
           {% set min_distance = namespace(value = 21000000) %}
           {% set proximity_band = (state_attr('zone.home', 'radius') | round( 3 , default = 300)) * 3 %}
-          {% for
-            person in
-              expand(states.person)
-              | map(attribute='entity_id')
-              | list %}
+          {% for person in initial_iterable_list %}
             {% set person_distance = (distance(person,thing) | round( 3 , default = 0)) * 1000 %}
             {% if person_distance <= min_distance.value %}
               {% set min_distance.value = person_distance %}
             {% endif %}
           {% endfor %} 
           [
-            {% for
-              person in
-                expand(states.person)
-                | map(attribute='entity_id')
-                | list %}
+            {% for person in initial_iterable_list %}
               {% set person_distance = (distance(person,thing) | round( 3 , default = 0)) * 1000 %}
               {% if person_distance <= min_distance.value + proximity_band %}
                 "{{ person }}",
