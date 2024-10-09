@@ -106,10 +106,14 @@ blueprint:
           selector:
             trigger:
 
+####################################### WARNING #######################################
+#                        THIS PART IS DEPENDANT ON YOUR SYSTEM.                       #
+#   IF YOU WANT TO USE IT, CREATE YOUR OWN MAPPING BETWEEN PERSON AND NOTIFY SERVICE  #
 variables:
   person_service_mapping:
     person.jenova70:
       service: notify.mobile_app_jean_loics_iphone
+#######################################################################################
 
 mode: restart
 max_exceeded: silent
