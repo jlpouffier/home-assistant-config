@@ -151,7 +151,7 @@
       entity_id: input_boolean.courrier_a_relever
   mode: single
 - id: '1688116301973'
-  alias: Boîte aux Lettres Intelligente - Courrier relever
+  alias: Boîte aux Lettres Intelligente - Courrier relevé
   description: ''
   triggers:
   - entity_id:
@@ -795,8 +795,7 @@
     data: {}
     target:
       entity_id:
-      - switch.alexa
-      - switch.voicekit_salon_microphone
+      - switch.micros_rez_de_chaussee
   - action: cover.open_cover
     data: {}
     target:
@@ -1346,6 +1345,11 @@
   - condition: state
     entity_id: input_boolean.automation_tesla
     state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: device_tracker.meme_emplacement
+      state: unavailable
   actions:
   - action: person.add_device_tracker
     data:
@@ -1437,7 +1441,7 @@
         data: {}
         target:
           entity_id:
-          - switch.voicekit_salon_microphone
+          - switch.micros_rez_de_chaussee
     - conditions:
       - condition: trigger
         id:
@@ -1448,7 +1452,7 @@
         data: {}
         target:
           entity_id:
-          - switch.voicekit_salon_microphone
+          - switch.micros_rez_de_chaussee
   mode: queued
   max: 50
 - id: '1699131143084'
@@ -2031,7 +2035,7 @@
         message: La batterie du Quest est actuellement à       {{states("sensor.quest_battery_level")}}%.
           Pense à le recharger.
       target:
-        entity_id: assist_satellite.voicekit_bureau_none
+        entity_id: assist_satellite.voicekit_bureau_satellite_assist
   mode: single
 - id: '1708194950863'
   alias: Party Time Marilou
@@ -2149,59 +2153,6 @@
   - set_conversation_response: '{{response_1.response.speech.plain.speech}} and {{response_2.response.speech.plain.speech}}'
   mode: parallel
   max: 100
-- id: '1712660364204'
-  alias: 'Box Chambre - Gérer Luminosité '
-  description: ''
-  triggers:
-  - event: start
-    trigger: homeassistant
-  - entity_id:
-    - light.esp32_s3_box_3_5a9f28_screen
-    attribute: brightness
-    trigger: state
-  - entity_id:
-    - binary_sensor.s3box_chambre_assist_en_cours
-    trigger: state
-  - entity_id:
-    - binary_sensor.chambre_lumineuse
-    trigger: state
-  - entity_id:
-    - binary_sensor.capteur_presence_chambre_occupancy
-    trigger: state
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.s3box_chambre_assist_en_cours
-          state: 'on'
-        - condition: and
-          conditions:
-          - condition: state
-            entity_id: binary_sensor.chambre_lumineuse
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.capteur_presence_chambre_occupancy
-            state: 'on'
-      sequence:
-      - metadata: {}
-        data:
-          brightness_pct: 100
-        action: light.turn_on
-        target:
-          entity_id: light.esp32_s3_box_3_5a9f28_screen
-    default:
-    - metadata: {}
-      data:
-        brightness_pct: 20
-      target:
-        entity_id:
-        - light.esp32_s3_box_3_5a9f28_screen
-      action: light.turn_on
-  mode: queued
-  max: 10
 - id: '1713855798081'
   alias: "Assist - \U0001F4E3 Éteindre temporairement un assistant vocal"
   description: ''
@@ -2292,18 +2243,6 @@
     metadata: {}
     data: {}
     enabled: true
-  - wait_for_trigger:
-    - entity_id:
-      - light.chambre
-      to: 'off'
-      trigger: state
-    continue_on_timeout: false
-  - action: media_player.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_chambre_music_assistant
   mode: single
 - id: '1718020295304'
   alias: Éteindre Bureau si plus de présence
@@ -2408,7 +2347,7 @@
     data: {}
     target:
       entity_id:
-      - switch.s3box_chambre_microphone
+      - switch.voicekit_chambre_microphone
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -2477,8 +2416,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - switch.s3box_chambre_microphone
+      entity_id: switch.voicekit_chambre_microphone
   mode: single
 - id: '1718020743731'
   alias: Allumer Assistant vocal quand présence - Chambre Marilou
@@ -2632,7 +2570,6 @@
         data:
           media_type: track
           enqueue: replace
-          radio_mode: true
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
@@ -2684,7 +2621,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.voicekit_bureau_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.voicekit_bureau_assist_en_cours_2
       media_player: media_player.sonos_bureau_music_assistant
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -2704,7 +2641,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.s3box_chambre_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.voicekit_chambre_assist_en_cours
       media_player: media_player.sonos_chambre
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -3604,6 +3541,9 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
   conditions: []
   actions:
   - if:
@@ -3619,6 +3559,9 @@
     - condition: state
       entity_id: input_select.modes_de_presence_de_la_maison_v2
       state: Occupée
+    - condition: state
+      entity_id: input_boolean.mode_sommeil
+      state: 'off'
     then:
     - action: light.turn_on
       metadata: {}
@@ -4057,7 +4000,7 @@
     - input_select.modes_de_presence_de_la_maison_v2
     for:
       hours: 0
-      minutes: 5
+      minutes: 15
       seconds: 0
     to: Départ en cours
   - trigger: state
@@ -4065,7 +4008,7 @@
     - input_select.modes_de_presence_de_la_maison_v2
     for:
       hours: 0
-      minutes: 5
+      minutes: 15
       seconds: 0
     to: Arrivée en cours
   conditions: []
@@ -4177,4 +4120,572 @@
     data: {}
     target:
       entity_id: script.power_notification_machine_a_laver_terminee
+  mode: single
+- id: '1728584203675'
+  alias: Chauffage intelligent - Arrêter Boost Salle de Bains
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.chauffage_salle_de_bains_boost
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.chauffage_salle_de_bains_boost
+  mode: single
+- id: '1728584273169'
+  alias: Chauffage intelligent - Arrêter Boost Salle de Douche
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.chauffage_salle_de_douche_boost
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.chauffage_salle_de_douche_boost
+  mode: single
+- id: '1728584405832'
+  alias: Chauffage Intelligent - Choisir Mode Salle De Douche
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - event: start
+    trigger: homeassistant
+  - entity_id:
+    - input_boolean.guest_mode
+    trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.chauffage_salle_de_douche_boost
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_salle_de_douche_boost
+        state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Occupée
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Boost
+        target:
+          entity_id: input_select.mode_chauffage_salle_de_douche
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Normal
+      target:
+        entity_id: input_select.mode_chauffage_salle_de_douche
+  mode: single
+- id: '1728584599375'
+  alias: Chauffage Intelligent - Choisir Mode Salle De Bains
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - entity_id:
+    - binary_sensor.capteur_ouverture_fenetre_salle_de_bain
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  - entity_id:
+    - input_boolean.guest_mode
+    trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.chauffage_salle_de_bains_boost
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_ouverture_fenetre_salle_de_bain
+        state: 'on'
+        for:
+          hours: 0
+          minutes: 5
+          seconds: 0
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Frost Guard
+        target:
+          entity_id: input_select.mode_chauffage_salle_de_bains
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_salle_de_bains_boost
+        state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Occupée
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Boost
+        target:
+          entity_id: input_select.mode_chauffage_salle_de_bains
+    default:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Normal
+      target:
+        entity_id: input_select.mode_chauffage_salle_de_bains
+  mode: single
+- id: '1728584808902'
+  alias: Chauffage Intelligent - Régler Température Salle De Bains
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.temperature_cible_chauffage_salle_de_bains
+    id: target_changed
+    trigger: state
+  - entity_id:
+    - climate.radiateur_salle_de_bains
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+    trigger: state
+  - minutes: '0'
+    seconds: '0'
+    id: tick
+    trigger: time_pattern
+  - event: start
+    id: restart
+    trigger: homeassistant
+  - entity_id:
+    - input_boolean.automation_heat_home
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')}}'
+        target:
+          entity_id: climate.radiateur_salle_de_bains
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')|float(0)
+            == state_attr(''climate.radiateur_salle_de_bains'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')}}'
+          target:
+            entity_id: climate.radiateur_salle_de_bains
+  mode: single
+- id: '1728584851841'
+  alias: Chauffage Intelligent - Régler Température Salle De Douche
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.temperature_cible_chauffage_salle_de_douche
+    id: target_changed
+    trigger: state
+  - entity_id:
+    - climate.radiateur_salle_de_douche
+    attribute: temperature
+    id: device_changed_1_hour_ago
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+    trigger: state
+  - minutes: '0'
+    seconds: '0'
+    id: tick
+    trigger: time_pattern
+  - event: start
+    id: restart
+    trigger: homeassistant
+  - entity_id:
+    - input_boolean.automation_heat_home
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_heat_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - target_changed
+        - device_changed_1_hour_ago
+        - restart
+      sequence:
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')}}'
+        target:
+          entity_id: climate.radiateur_salle_de_douche
+    - conditions:
+      - condition: trigger
+        id:
+        - tick
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')|float(0)
+            == state_attr(''climate.radiateur_salle_de_douche'',''temperature'') }}'
+        then:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')}}'
+          target:
+            entity_id: climate.radiateur_salle_de_douche
+  mode: single
+- id: '1729016436406'
+  alias: 'Voicekit Salon - Afficher corvées '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.corvees
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.corvees
+      state: 'on'
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state: Occupée
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.voicekit_salon_dvt_led_ring
+    else:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.voicekit_salon_dvt_led_ring
+  mode: single
+- id: '1729028729486'
+  alias: 'Assist - Poubelles sorties par la voix '
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - '[La] Poubelle [est] sortie'
+    - '[Les] Poubelles [sont] sorties'
+    - J'ai sorti la poubelle
+    - J'ai sorti les poubelles
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.poubelle_noire_a_sortir
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.poubelle_noire_a_sortir
+      - set_conversation_response: C'est noté!
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.poubelle_verte_a_sortir
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.poubelle_verte_a_sortir
+      - set_conversation_response: C'est noté!
+    default:
+    - set_conversation_response: 'Aucune poubelle n''est actuellement à sortir. '
+  mode: single
+- id: '1729029546444'
+  alias: Assist - Litière nettoyée par la voix
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - '[La] litière [est] nettoyée'
+    - J'ai nettoyé la litière
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: input_number.litter_tracking
+        above: 0
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: 0
+        target:
+          entity_id: input_number.litter_tracking
+      - set_conversation_response: C'est noté!
+    default:
+    - set_conversation_response: La litière est déja propre
+  mode: single
+- id: '1729029743503'
+  alias: Assist - Machine à laver vidée par la voix
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - '[La] machine à laver [est] vidée'
+    - J'ai vidé la machine à laver
+    - La machine à laver a été vidée
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.machine_a_laver_a_vider
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.machine_a_laver_a_vider
+      - set_conversation_response: C'est noté!
+    default:
+    - set_conversation_response: La machine à laver est déjà vide
+  mode: single
+- id: '1729029879020'
+  alias: Assist - Courrier relevé par la voix
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - '[Le] courrier [est] récupéré'
+    - Le courrier a été récupéré
+    - J'ai récupéré le courrier
+    - J'ai été récupérer le courrier
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.courrier_a_relever
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.courrier_a_relever
+      - set_conversation_response: C'est noté!
+    default:
+    - set_conversation_response: La boite aux lettres était déjà vide
+  mode: single
+- id: '1729586042273'
+  alias: Mode Sommeil - Bascule par VoiceKit Chambre
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.voicekit_chambre_button_press
+  conditions:
+  - condition: state
+    entity_id: event.voicekit_chambre_button_press
+    attribute: event_type
+    state: long_press
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'off'
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.mode_sommeil
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Mode Sommeil Activé. {% if is_state('binary_sensor.reveil_demain','on')
+            -%} Réveil prévu pour {{states('input_datetime.wake_up_time')}} {% else
+            -%} Pas de réveil prévu pour demain {%- endif -%}
+        target:
+          entity_id: assist_satellite.voicekit_chambre_none
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id:
+          - input_boolean.mode_sommeil
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Mode Sommeil désactivé. Bonne journée
+        target:
+          entity_id: assist_satellite.voicekit_chambre_none
+  mode: single
+- id: '1729586824286'
+  alias: Mode Sommeil - Actions
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'off'
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 10
+        target:
+          area_id:
+          - couloir
+          - bd4ba6262e7a4e72b2fd740a22c70403
+          - 71e221f94f4a4e929747570179d52280
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.living_room_cover
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.doorbell
+          - switch.micros_rez_de_chaussee
+      - action: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.sonos_chambre_music_assistant
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'on'
+      sequence:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          floor_id:
+          - rez_de_chaussee
+          - premier_etage
+          area_id: exterieur
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.doorbell
+          - switch.micros_rez_de_chaussee
+      - action: cover.close_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.living_room_cover
+      - action: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.all_media_players
   mode: single
