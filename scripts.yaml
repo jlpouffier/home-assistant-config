@@ -241,7 +241,6 @@ start_marilou_bedtime_routine:
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
-      radio_mode: true
       media_type: playlist
   - action: media_player.shuffle_set
     data:
@@ -333,20 +332,20 @@ controler_le_standing_desk:
               - button.standing_desk_move_desk_to_position_1
             data: {}
           - wait_for_trigger:
-            - platform: state
-              entity_id:
+            - entity_id:
               - binary_sensor.standing_desk_moving
               to: 'on'
+              trigger: state
             timeout:
               hours: 0
               minutes: 0
               seconds: 3
               milliseconds: 0
           - wait_for_trigger:
-            - platform: state
-              entity_id:
+            - entity_id:
               - binary_sensor.standing_desk_moving
               to: 'off'
+              trigger: state
             timeout:
               hours: 0
               minutes: 0
@@ -374,20 +373,20 @@ controler_le_standing_desk:
               entity_id: button.standing_desk_move_desk_to_position_2
             data: {}
           - wait_for_trigger:
-            - platform: state
-              entity_id:
+            - entity_id:
               - binary_sensor.standing_desk_moving
               to: 'on'
+              trigger: state
             timeout:
               hours: 0
               minutes: 0
               seconds: 3
               milliseconds: 0
           - wait_for_trigger:
-            - platform: state
-              entity_id:
+            - entity_id:
               - binary_sensor.standing_desk_moving
               to: 'off'
+              trigger: state
             timeout:
               hours: 0
               minutes: 0
