@@ -6,7 +6,7 @@ template:
         state: "{{this.attributes.entities | length}}"
         attributes:
           entities: |
-            {% for
+            [{% for
               entity in
                 expand(states.binary_sensor)
                 | selectattr('attributes.device_class', 'defined')
@@ -14,4 +14,4 @@ template:
               {% if entity.state == "on" %}
                   "{{ entity.attributes.friendly_name }}",
               {% endif %}
-            {% endfor %}
+            {% endfor %}]
