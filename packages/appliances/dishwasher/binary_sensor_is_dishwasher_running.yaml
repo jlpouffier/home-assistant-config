@@ -7,4 +7,4 @@ template:
         state: "{{ states('sensor.prise_lave_vaisselle_power') | float(default = 0) > 60 }}"
         device_class: running
         delay_on: "0:00:00"
-        delay_off: "0:01:00"
+        delay_off: "0:10:00"
