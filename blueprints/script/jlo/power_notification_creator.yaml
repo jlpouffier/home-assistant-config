@@ -215,7 +215,7 @@ sequence:
           {
             "push":
                 {
-                  "interruption-leve": "critical"
+                  "interruption-level": "critical"
                 }
           }
         {% else %}
