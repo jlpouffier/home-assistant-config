@@ -2,44 +2,19 @@ intent_script:
   PlayMusic:
     description: "Play any music query in any area in the home. query can be any artists, albums, or tracks in a human-readable format. Args: query, area"
     action:
-      - service: conversation.process
+      - action: conversation.process
         data:
           agent_id: conversation.music_assistant_search_bot
           text: "{{query}}"
         response_variable: response_from_ai
       - variables:
           media_data: "{{response_from_ai.response.speech.plain.speech|from_json}}"
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: '{{media_data.media_type in ["artist","album"]}}'
-            sequence:
-              - variables:
-                  decorate_data:
-                    enqueue: replace
-              - service: mass.play_media
-                data: "{{ dict(media_data, **decorate_data) }}"
-                target:
-                  area_id: "{{area_id(area)}}"
-              - variables:
-                  decorate_data:
-                    enqueue: add
-                    radio_mode: true
-              - service: mass.play_media
-                data: "{{ dict(media_data, **decorate_data) }}"
-                target:
-                  area_id: "{{area_id(area)}}"
-          - conditions:
-              - condition: template
-                value_template: '{{media_data.media_type in ["track"]}}'
-            sequence:
-              - variables:
-                  decorate_data:
-                    enqueue: replace
-                    radio_mode: true
-              - service: mass.play_media
-                data: "{{ dict(media_data, **decorate_data) }}"
-                target:
-                  area_id: "{{area_id(area)}}"
+      - variables:
+          decorate_data:
+            enqueue: replace
+      - action: mass.play_media
+        data: "{{ dict(media_data, **decorate_data) }}"
+        target:
+          area_id: "{{area_id(area)}}"
     speech:
       text: "Lecture lancée"
