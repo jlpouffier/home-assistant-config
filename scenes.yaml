@@ -1,1 +1,245 @@
-[]
+- id: '1730196425776'
+  name: 'VoiceKit Defaults '
+  entities:
+    light.voicekit_bureau_led_ring:
+      supported_color_modes:
+      - rgb
+      color_mode: rgb
+      brightness: 255
+      hs_color:
+      - 0
+      - 100
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      xy_color:
+      - 0.701
+      - 0.299
+      icon: mdi:circle-outline
+      friendly_name: VoiceKit Bureau LED Ring
+      supported_features: 40
+      state: 'on'
+    light.voicekit_salon_dvt_led_ring:
+      supported_color_modes:
+      - rgb
+      color_mode: rgb
+      brightness: 168
+      hs_color:
+      - 27.13
+      - 45.098
+      rgb_color:
+      - 255
+      - 192
+      - 140
+      xy_color:
+      - 0.455
+      - 0.374
+      icon: mdi:circle-outline
+      friendly_name: VoiceKit Salon LED Ring
+      supported_features: 40
+      state: 'on'
+    light.voicekit_chambre_led_ring:
+      supported_color_modes:
+      - rgb
+      color_mode: rgb
+      brightness: 168
+      hs_color:
+      - 111.913
+      - 90.196
+      rgb_color:
+      - 56
+      - 255
+      - 25
+      xy_color:
+      - 0.193
+      - 0.72
+      icon: mdi:circle-outline
+      friendly_name: VoiceKit Chambre LED Ring
+      supported_features: 40
+      state: 'on'
+    light.voicekit_chambre_marilou_led_ring:
+      supported_color_modes:
+      - rgb
+      color_mode: rgb
+      brightness: 168
+      hs_color:
+      - 331.043
+      - 90.196
+      rgb_color:
+      - 255
+      - 25
+      - 136
+      xy_color:
+      - 0.564
+      - 0.241
+      icon: mdi:circle-outline
+      friendly_name: VoiceKit Chambre Marilou LED Ring
+      supported_features: 40
+      state: 'on'
+    media_player.voicekit_salon_dvt_media_player:
+      volume_level: 0.8
+      is_volume_muted: false
+      device_class: speaker
+      friendly_name: VoiceKit Salon Media Player
+      supported_features: 1200653
+      state: idle
+    media_player.voicekit_bureau_media_player:
+      volume_level: 0.8000001
+      is_volume_muted: false
+      device_class: speaker
+      friendly_name: VoiceKit Bureau Media Player
+      supported_features: 1200653
+      state: idle
+    media_player.voicekit_chambre_media_player:
+      volume_level: 0.8000001
+      is_volume_muted: false
+      device_class: speaker
+      friendly_name: VoiceKit Chambre Media Player
+      supported_features: 1200653
+      state: idle
+    media_player.voicekit_chambre_marilou_media_player:
+      volume_level: 0.8
+      is_volume_muted: false
+      device_class: speaker
+      friendly_name: VoiceKit Chambre Marilou Media Player
+      supported_features: 1200653
+      state: idle
+    select.voicekit_salon_pipeline_d_assist:
+      options:
+      - preferred
+      - Cave Johnson
+      - GLaDOS
+      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EC\U0001F1E7"
+      - Wheatley
+      icon: mdi:square-circle
+      friendly_name: VoiceKit Salon Assistant
+      state: preferred
+    select.voicekit_bureau_assistant:
+      options:
+      - preferred
+      - Cave Johnson
+      - GLaDOS
+      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EC\U0001F1E7"
+      - Wheatley
+      icon: mdi:square-circle
+      friendly_name: VoiceKit Bureau Assistant
+      state: preferred
+    select.voicekit_chambre_pipeline_d_assist:
+      options:
+      - preferred
+      - Cave Johnson
+      - GLaDOS
+      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EC\U0001F1E7"
+      - Wheatley
+      icon: mdi:square-circle
+      friendly_name: VoiceKit Chambre Assistant
+      state: preferred
+    select.voicekit_chambre_marilou_pipeline_d_assist:
+      options:
+      - preferred
+      - Cave Johnson
+      - GLaDOS
+      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EC\U0001F1E7"
+      - Wheatley
+      icon: mdi:square-circle
+      friendly_name: VoiceKit Chambre Marilou Assistant
+      state: preferred
+    switch.voicekit_salon_dvt_wake_sound:
+      icon: mdi:bullhorn
+      friendly_name: VoiceKit Salon Wake sound
+      state: 'on'
+    switch.voicekit_bureau_wake_sound:
+      icon: mdi:bullhorn
+      friendly_name: VoiceKit Bureau Wake sound
+      state: 'on'
+    switch.voicekit_chambre_wake_sound:
+      icon: mdi:bullhorn
+      friendly_name: VoiceKit Chambre Wake sound
+      state: 'on'
+    switch.voicekit_chambre_marilou_wake_sound:
+      icon: mdi:bullhorn
+      friendly_name: VoiceKit Chambre Marilou Wake sound
+      state: 'on'
+    select.voicekit_salon_detection_de_fin_de_la_parole:
+      options:
+      - default
+      - relaxed
+      - aggressive
+      friendly_name: VoiceKit Salon Détection de fin de la parole
+      state: aggressive
+    select.voicekit_bureau_detection_de_fin_de_la_parole:
+      options:
+      - default
+      - relaxed
+      - aggressive
+      friendly_name: VoiceKit Bureau Détection de fin de la parole
+      state: aggressive
+    select.voicekit_chambre_detection_de_fin_de_la_parole:
+      options:
+      - default
+      - relaxed
+      - aggressive
+      friendly_name: VoiceKit Chambre Détection de fin de la parole
+      state: aggressive
+    select.voicekit_chambre_marilou_detection_de_fin_de_la_parole:
+      options:
+      - default
+      - relaxed
+      - aggressive
+      friendly_name: VoiceKit Chambre Marilou Détection de fin de la parole
+      state: aggressive
+  icon: mdi:square-circle
+  metadata:
+    light.voicekit_bureau_led_ring:
+      entity_only: true
+    light.voicekit_salon_dvt_led_ring:
+      entity_only: true
+    light.voicekit_chambre_led_ring:
+      entity_only: true
+    light.voicekit_chambre_marilou_led_ring:
+      entity_only: true
+    media_player.voicekit_salon_dvt_media_player:
+      entity_only: true
+    media_player.voicekit_bureau_media_player:
+      entity_only: true
+    media_player.voicekit_chambre_media_player:
+      entity_only: true
+    media_player.voicekit_chambre_marilou_media_player:
+      entity_only: true
+    select.voicekit_salon_pipeline_d_assist:
+      entity_only: true
+    select.voicekit_bureau_assistant:
+      entity_only: true
+    select.voicekit_chambre_pipeline_d_assist:
+      entity_only: true
+    select.voicekit_chambre_marilou_pipeline_d_assist:
+      entity_only: true
+    switch.voicekit_salon_dvt_wake_sound:
+      entity_only: true
+    switch.voicekit_bureau_wake_sound:
+      entity_only: true
+    switch.voicekit_chambre_wake_sound:
+      entity_only: true
+    switch.voicekit_chambre_marilou_wake_sound:
+      entity_only: true
+    select.voicekit_salon_detection_de_fin_de_la_parole:
+      entity_only: true
+    select.voicekit_bureau_detection_de_fin_de_la_parole:
+      entity_only: true
+    select.voicekit_chambre_detection_de_fin_de_la_parole:
+      entity_only: true
+    select.voicekit_chambre_marilou_detection_de_fin_de_la_parole:
+      entity_only: true
