@@ -14,7 +14,8 @@ leave_home:
     data: {}
     target:
       entity_id: switch.microphones
-  - if:
+  - alias: Close shutters
+    if:
     - condition: state
       entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
       state: 'on'
@@ -23,8 +24,8 @@ leave_home:
       metadata: {}
       data: {}
       target:
-        entity_id: cover.living_room_cover
-    alias: Close shutters
+        entity_id:
+        - cover.volets_salon
   icon: mdi:home-export-outline
   fields: {}
 welcome_home:
@@ -1137,3 +1138,21 @@ power_notification_temperature_anormale_dans_la_chambre_de_marilou:
       default_tag: marilou_bedroom_temp_trend
   description: ''
   icon: mdi:home-thermometer
+voicekit_reset:
+  alias: 'VoiceKit: Reset'
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.voicekit_defaults
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.voicekit_bureau_led_ring
+      - light.voicekit_chambre_led_ring
+      - light.voicekit_chambre_marilou_led_ring
+      - light.voicekit_salon_dvt_led_ring
+  description: ''
+  icon: mdi:square-circle
