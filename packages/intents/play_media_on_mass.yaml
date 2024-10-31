@@ -1,6 +1,5 @@
 intent_script:
   PlayMusic:
-    description: "Play any music query in any area in the home. query can be any artists, albums, or tracks in a human-readable format. Args: query, area"
     action:
       - action: conversation.process
         data:
@@ -17,4 +16,4 @@ intent_script:
         target:
           area_id: "{{area_id(area)}}"
     speech:
-      text: "Lecture lancée"
+      text: "D'accord"
