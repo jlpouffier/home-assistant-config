@@ -1,0 +1,58 @@
+language: fr
+responses:
+  intents:
+    # Position
+    HassSetPosition:
+      default: "D'accord"
+
+    # Turn on and off
+    HassTurnOn:
+      default: "D'accord"
+      fans: "D'accord"
+      cover: "D'accord"
+      lock: "D'accord"
+      scene: "D'accord"
+      script: "D'accord"
+      valve: "D'accord"
+    HassTurnOff:
+      default: "D'accord"
+      fans: "D'accord"
+      cover: "D'accord"
+      lock: "D'accord"
+      valve: "D'accord"
+
+    # Brightness and Color
+    HassLightSet:
+      brightness: "D'accord"
+      color: "D'accord"
+
+    # Vacuum
+    HassVacuumStart:
+      default: "D'accord"
+    HassVacuumReturnToBase:
+      default: "D'accord"
+
+    # Media
+    HassMediaPause:
+      default: "D'accord"
+    HassMediaUnpause:
+      default: "D'accord"
+    HassMediaNext:
+      default: "D'accord"
+    HassSetVolume:
+      default: "D'accord"
+
+    # Timer
+    HassStartTimer:
+      default: "D'accord"
+      command: "D'accord"
+    HassCancelTimer:
+      default: "D'accord"
+    HassDecreaseTimer:
+      default: "D'accord"
+    HassIncreaseTimer:
+      default: "D'accord"
+    HassPauseTimer:
+      default: "D'accord"
+    HassUnpauseTimer:
+      default: "D'accord"
