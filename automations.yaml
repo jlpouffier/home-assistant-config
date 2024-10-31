@@ -1907,7 +1907,7 @@
             target_position: standing
         target:
           entity_id: script.controler_le_standing_desk
-      - set_conversation_response: Bureau en montée
+      - set_conversation_response: D'accord
     - conditions:
       - condition: trigger
         id:
@@ -1920,7 +1920,7 @@
             target_position: sitting
         target:
           entity_id: script.controler_le_standing_desk
-      - set_conversation_response: Bureau en descente
+      - set_conversation_response: D'accord
   mode: single
 - id: '1707424061311'
   alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
@@ -1935,7 +1935,7 @@
   - action: script.start_marilou_bedtime_routine
     metadata: {}
     data: {}
-  - set_conversation_response: Bonne nuit
+  - set_conversation_response: D'accord
   mode: single
 - id: '1707728356919'
   alias: "Meta Quest - \U0001F6CE️ Notification batterie faible."
@@ -2118,7 +2118,7 @@
           device: '{{trigger.device_id}}'
       target:
         entity_id: script.eteindre_temporairement_un_assistant_vocal
-    - set_conversation_response: A bientôt
+    - set_conversation_response: D'accord
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
   mode: single
@@ -2149,7 +2149,7 @@
         metadata: {}
         target:
           entity_id: '{{target_scene_list}}'
-      - set_conversation_response: Lumière réinitialisée
+      - set_conversation_response: D'accord
       else:
       - set_conversation_response: Aucune scene par defaut trouvée
     else:
@@ -3161,7 +3161,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_rez_de_chassee
+    - input_number.temperature_cible_chauffage_rez_de_chaussee
     id: target_changed
     trigger: state
   - entity_id:
@@ -3199,7 +3199,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
         target:
           entity_id: climate.netatmo
     - conditions:
@@ -3209,13 +3209,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')|float(0)
             == state_attr(''climate.netatmo'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_rez_de_chassee'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
           target:
             entity_id: climate.netatmo
   mode: single
@@ -3224,7 +3224,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_bureau
+    - input_number.temperature_cible_chauffage_bureau
     id: target_changed
     trigger: state
   - entity_id:
@@ -3262,7 +3262,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_bureau'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
         target:
           entity_id: climate.radiateur_bureau
     - conditions:
@@ -3272,13 +3272,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_bureau'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_bureau'')|float(0)
             == state_attr(''climate.radiateur_bureau'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_bureau'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
           target:
             entity_id: climate.radiateur_bureau
   mode: single
@@ -3287,7 +3287,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_chambre
+    - input_number.temperature_cible_chauffage_chambre
     id: target_changed
     trigger: state
   - entity_id:
@@ -3325,7 +3325,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_chambre'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
         target:
           entity_id: climate.radiateur_chambre
     - conditions:
@@ -3335,13 +3335,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_chambre'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_chambre'')|float(0)
             == state_attr(''climate.radiateur_chambre'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_chambre'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
           target:
             entity_id: climate.radiateur_chambre
   mode: single
@@ -3350,7 +3350,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_chambre_marilou
+    - input_number.temperature_cible_chauffage_chambre_marilou
     id: target_changed
     trigger: state
   - entity_id:
@@ -3388,7 +3388,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
         target:
           entity_id: climate.radiateur_chambre_marilou
     - conditions:
@@ -3398,13 +3398,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')|float(0)
             == state_attr(''climate.radiateur_chambre_marilou'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_chambre_marilou'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
           target:
             entity_id: climate.radiateur_chambre_marilou
   mode: single
@@ -4223,7 +4223,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_salle_de_bains
+    - input_number.temperature_cible_chauffage_salle_de_bains
     id: target_changed
     trigger: state
   - entity_id:
@@ -4261,7 +4261,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains'')}}'
         target:
           entity_id: climate.radiateur_salle_de_bains
     - conditions:
@@ -4271,13 +4271,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains'')|float(0)
             == state_attr(''climate.radiateur_salle_de_bains'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_bains'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains'')}}'
           target:
             entity_id: climate.radiateur_salle_de_bains
   mode: single
@@ -4286,7 +4286,7 @@
   description: ''
   triggers:
   - entity_id:
-    - sensor.temperature_cible_chauffage_salle_de_douche
+    - input_number.temperature_cible_chauffage_salle_de_douche
     id: target_changed
     trigger: state
   - entity_id:
@@ -4324,7 +4324,7 @@
       - action: climate.set_temperature
         metadata: {}
         data:
-          temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')}}'
+          temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche'')}}'
         target:
           entity_id: climate.radiateur_salle_de_douche
     - conditions:
@@ -4334,13 +4334,13 @@
       sequence:
       - if:
         - condition: template
-          value_template: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')|float(0)
+          value_template: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche'')|float(0)
             == state_attr(''climate.radiateur_salle_de_douche'',''temperature'') }}'
         then:
         - action: climate.set_temperature
           metadata: {}
           data:
-            temperature: '{{states(''sensor.temperature_cible_chauffage_salle_de_douche'')}}'
+            temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche'')}}'
           target:
             entity_id: climate.radiateur_salle_de_douche
   mode: single
@@ -4404,7 +4404,7 @@
         data: {}
         target:
           entity_id: input_boolean.poubelle_noire_a_sortir
-      - set_conversation_response: C'est noté!
+      - set_conversation_response: D'accord
     - conditions:
       - condition: state
         entity_id: input_boolean.poubelle_verte_a_sortir
@@ -4415,7 +4415,7 @@
         data: {}
         target:
           entity_id: input_boolean.poubelle_verte_a_sortir
-      - set_conversation_response: C'est noté!
+      - set_conversation_response: D'accord
     default:
     - set_conversation_response: 'Aucune poubelle n''est actuellement à sortir. '
   mode: single
@@ -4441,7 +4441,7 @@
           value: 0
         target:
           entity_id: input_number.litter_tracking
-      - set_conversation_response: C'est noté!
+      - set_conversation_response: D'accord
     default:
     - set_conversation_response: La litière est déja propre
   mode: single
@@ -4467,7 +4467,7 @@
         data: {}
         target:
           entity_id: input_boolean.machine_a_laver_a_vider
-      - set_conversation_response: C'est noté!
+      - set_conversation_response: D'accord
     default:
     - set_conversation_response: La machine à laver est déjà vide
   mode: single
@@ -4495,7 +4495,7 @@
         target:
           entity_id:
           - input_boolean.courrier_a_relever
-      - set_conversation_response: C'est noté!
+      - set_conversation_response: D'accord
     default:
     - set_conversation_response: La boite aux lettres était déjà vide
   mode: single
@@ -4632,4 +4632,320 @@
         data: {}
         target:
           entity_id: media_player.all_media_players
+  mode: single
+- id: '1730275787349'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Bureau
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_bureau
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_bureau_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_bureau_present
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_fenetres_ouvertes
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_bureau_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_bureau
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_bureau_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_bureau
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_bureau
+  mode: single
+- id: '1730275937269'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Chambre Marilou
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_chambre_marilou
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre_marilou_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre_marilou_present
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_fenetres_ouvertes
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre_marilou
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre_marilou
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre_marilou
+  mode: single
+- id: '1730275992160'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Chambre
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_chambre
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre_present
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_fenetres_ouvertes
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_chambre_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_chambre_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_chambre
+  mode: single
+- id: '1730276011770'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Rez-De-Chaussée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_rez_de_chaussee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_rez_de_chaussee_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_rez_de_chaussee_present
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_fenetres_ouvertes
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_rez_de_chaussee
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_rez_de_chaussee
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_rez_de_chaussee
+  mode: single
+- id: '1730276096280'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Salle De Bains
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_salle_de_bains
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_salle_de_bains_boost
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_salle_de_bains_normal
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_fenetres_ouvertes
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_salle_de_bains
+        state: Normal
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains_normal'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_salle_de_bains
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_salle_de_bains
+        state: Boost
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains_boost'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_salle_de_bains
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_salle_de_bains
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_salle_de_bains
+  mode: single
+- id: '1730276134273'
+  alias: Chauffage Intelligent - Choisir Temperature Cible Salle De Douche
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_salle_de_douche
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_salle_de_douche_boost
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_salle_de_douche_normal
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_salle_de_douche
+        state: Normal
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche_normal'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_salle_de_douche
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_salle_de_douche
+        state: Boost
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche_boost'')}}'
+        target:
+          entity_id: input_number.temperature_cible_chauffage_salle_de_douche
   mode: single
