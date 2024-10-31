@@ -1,6 +1,5 @@
 .storage/
 .cloud/
-appdaemon/dashboards/
 /tts
 *.db
 *.log
@@ -10,10 +9,7 @@ ip_bans.yaml
 *.db-wal
 *.db-shm
 .vscode/settings.json
-zigbee2mqtt/
-appdaemon/apps/sandbox.py
 custom_components/
 www/
 image/
-.shopping_list.json
 themes/
