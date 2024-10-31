@@ -1,6 +1,6 @@
 .storage/
 .cloud/
-/tts
+tts/
 *.db
 *.log
 *.log.*
@@ -8,8 +8,9 @@ secrets.yaml
 ip_bans.yaml
 *.db-wal
 *.db-shm
-.vscode/settings.json
+.vscode/
 custom_components/
 www/
 image/
 themes/
+.HA_VERSION
