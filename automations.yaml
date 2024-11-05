@@ -732,11 +732,6 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   actions:
-  - action: switch.turn_on
-    data: {}
-    target:
-      entity_id:
-      - switch.micros_rez_de_chaussee
   - action: cover.open_cover
     data: {}
     target:
@@ -2222,12 +2217,6 @@
     data: {}
     target:
       entity_id: media_player.sonos_bureau
-  - action: media_player.unjoin
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_bureau_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
@@ -2266,23 +2255,12 @@
     data: {}
     target:
       entity_id: light.chambre
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id: media_player.sonos_chambre
-  - action: media_player.unjoin
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_chambre_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
-      - media_player.sonos_chambre_music_assistant
+      - media_player.voicekit_chambre_music_assistant
   - action: switch.turn_off
     metadata: {}
     data: {}
@@ -2299,7 +2277,7 @@
     to: 'off'
     for:
       hours: 0
-      minutes: 5
+      minutes: 10
       seconds: 0
     trigger: state
   conditions:
@@ -2321,11 +2299,6 @@
     target:
       entity_id:
       - media_player.sonos_chambre_marilou
-  - action: media_player.unjoin
-    metadata: {}
-    data: {}
-    target:
-      entity_id: media_player.sonos_chambre_marilou_music_assistant
   - action: media_player.turn_off
     metadata: {}
     data: {}
@@ -2574,16 +2547,6 @@
     input:
       assist_in_progress_binary_sensor: binary_sensor.voicekit_chambre_marilou_assist_en_cours_2
       media_player: media_player.sonos_chambre_marilou
-      threshold_volume: 0.2
-      listening_volume: 0.1
-- id: '1719820631777'
-  alias: Réduire volume lorsque assistant vocal en écoute (Chambre)
-  description: ''
-  use_blueprint:
-    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
-    input:
-      assist_in_progress_binary_sensor: binary_sensor.voicekit_chambre_assist_en_cours
-      media_player: media_player.sonos_chambre
       threshold_volume: 0.2
       listening_volume: 0.1
 - id: '1719820718219'
@@ -2850,9 +2813,13 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
-  - entity_id:
-    - schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
-    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_cuisine
     - binary_sensor.capteur_ouverture_porte_entree
@@ -2903,7 +2870,7 @@
           entity_id: input_select.mode_chauffage_rez_de_chaussee
     - conditions:
       - condition: state
-        entity_id: schedule.planning_presence_rez_de_chaussee_chauffage_inteligent
+        entity_id: binary_sensor.presence_rez_de_chaussee
         state: 'on'
       - condition: or
         conditions:
@@ -4507,6 +4474,16 @@
     entity_id:
     - event.voicekit_chambre_button_press
   conditions:
+  - condition: not
+    conditions:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: event.voicekit_chambre_button_press
+        state: unavailable
+      - condition: state
+        entity_id: event.voicekit_chambre_button_press
+        state: unknown
   - condition: state
     entity_id: event.voicekit_chambre_button_press
     attribute: event_type
@@ -4596,12 +4573,12 @@
         target:
           entity_id:
           - switch.doorbell
-          - switch.micros_rez_de_chaussee
       - action: media_player.turn_off
         metadata: {}
         data: {}
         target:
-          entity_id: media_player.sonos_chambre_music_assistant
+          entity_id:
+          - media_player.voicekit_chambre_music_assistant
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -4615,23 +4592,20 @@
           - rez_de_chaussee
           - premier_etage
           area_id: exterieur
+      - action: cover.close_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.volets_salon
       - action: switch.turn_off
         metadata: {}
         data: {}
         target:
           entity_id:
           - switch.doorbell
-          - switch.micros_rez_de_chaussee
-      - action: cover.close_cover
+      - action: script.eteindre_tous_les_lecteur_multimedia
         metadata: {}
         data: {}
-        target:
-          entity_id: cover.volets_salon
-      - action: media_player.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: media_player.all_media_players
   mode: single
 - id: '1730275787349'
   alias: Chauffage Intelligent - Choisir Temperature Cible Bureau
@@ -4948,4 +4922,103 @@
           value: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche_boost'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_salle_de_douche
+  mode: single
+- id: '1730752664557'
+  alias: Allumer Assistant vocal quand présence - Salon
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.voicekit_salon_microphone
+  mode: single
+- id: '1730752787206'
+  alias: Éteindre Assistant vocal salon si plus de présence
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.voicekit_salon_microphone
+  mode: single
+- id: '1730753017143'
+  alias: VoiceKit Chambre - Controller Volume
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'on'
+      sequence:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.2
+        target:
+          entity_id: media_player.voicekit_chambre_media_player
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        state: 'on'
+      sequence:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.4
+        target:
+          entity_id: media_player.voicekit_chambre_media_player
+    default:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.8
+      target:
+        entity_id: media_player.voicekit_chambre_media_player
   mode: single

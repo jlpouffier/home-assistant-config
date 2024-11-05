@@ -294,17 +294,17 @@ lancer_playlist_de_reveil:
     data: {}
     target:
       entity_id:
-      - media_player.sonos_chambre_music_assistant
+      - media_player.voicekit_chambre_music_assistant
   - action: media_player.volume_set
     data:
-      volume_level: 0.1
+      volume_level: 0.2
     target:
       entity_id:
-      - media_player.sonos_chambre_music_assistant
+      - media_player.voicekit_chambre_music_assistant
   - action: mass.play_media
     target:
       entity_id:
-      - media_player.sonos_chambre_music_assistant
+      - media_player.voicekit_chambre_music_assistant
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -314,7 +314,7 @@ lancer_playlist_de_reveil:
       shuffle: true
     target:
       entity_id:
-      - media_player.sonos_chambre_music_assistant
+      - media_player.voicekit_chambre_music_assistant
   mode: single
   icon: mdi:alarm
 controler_le_standing_desk:
@@ -427,20 +427,20 @@ eteindre_tous_les_lecteur_multimedia:
     metadata: {}
     data: {}
     target:
+      entity_id: media_player.tous_les_lecteurs_multimedia_ne_supportant_pas_on_off
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
       entity_id:
-      - media_player.sonos_bureau
-      - media_player.sonos_chambre
-      - media_player.sonos_chambre_marilou
+      - media_player.tous_les_lecteurs_multimedia_supportant_on_off
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.all_media_players
-  - action: media_player.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: media_player.apple_tv_salon
+      entity_id:
+      - media_player.apple_tv_salon
+      - media_player.voicekit_chambre_music_assistant
   description: ''
   icon: mdi:television-speaker-off
 test_2:
@@ -448,12 +448,12 @@ test_2:
   sequence:
   - action: media_player.volume_set
     target:
-      entity_id: media_player.sonos_chambre
+      entity_id: media_player.voicekit_chambre_media_player
     data:
-      volume_level: 0.7
+      volume_level: 0.8
   - action: media_player.play_media
     target:
-      entity_id: media_player.sonos_chambre
+      entity_id: media_player.voicekit_chambre_media_player
     data:
       media_content_id: media-source://media_source/local/wake_up.mp3
       media_content_type: audio/mpeg
@@ -467,10 +467,10 @@ test_2:
       - media_content_type: app
         media_content_id: media-source://media_source
   - wait_for_trigger:
-    - platform: state
-      entity_id:
-      - media_player.sonos_chambre
+    - entity_id:
+      - media_player.voicekit_chambre_media_player
       to: playing
+      trigger: state
   - action: light.turn_on
     metadata: {}
     data:
@@ -507,7 +507,7 @@ test_2:
           milliseconds: 0
       while:
       - condition: state
-        entity_id: media_player.sonos_chambre
+        entity_id: media_player.voicekit_chambre_media_player
         state: playing
   description: ''
 transfer_music_music_assistant:
