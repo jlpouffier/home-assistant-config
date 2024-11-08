@@ -236,13 +236,12 @@ start_marilou_bedtime_routine:
       entity_id:
       - media_player.sonos_chambre_marilou_music_assistant
   - action: mass.play_media
-    target:
-      entity_id:
-      - media_player.sonos_chambre_marilou_music_assistant
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
       media_type: playlist
+    target:
+      entity_id: media_player.sonos_chambre_marilou_music_assistant
   - action: media_player.shuffle_set
     data:
       shuffle: true
@@ -294,17 +293,17 @@ lancer_playlist_de_reveil:
     data: {}
     target:
       entity_id:
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
   - action: media_player.volume_set
     data:
       volume_level: 0.2
     target:
       entity_id:
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
   - action: mass.play_media
     target:
       entity_id:
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
     data:
       media_id: ⏰ Réveil
       enqueue: replace
@@ -314,7 +313,7 @@ lancer_playlist_de_reveil:
       shuffle: true
     target:
       entity_id:
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
   mode: single
   icon: mdi:alarm
 controler_le_standing_desk:
@@ -440,7 +439,7 @@ eteindre_tous_les_lecteur_multimedia:
     target:
       entity_id:
       - media_player.apple_tv_salon
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
   description: ''
   icon: mdi:television-speaker-off
 test_2:
@@ -448,12 +447,12 @@ test_2:
   sequence:
   - action: media_player.volume_set
     target:
-      entity_id: media_player.voicekit_chambre_media_player
+      entity_id: media_player.vpe_chambre_media_player
     data:
       volume_level: 0.8
   - action: media_player.play_media
     target:
-      entity_id: media_player.voicekit_chambre_media_player
+      entity_id: media_player.vpe_chambre_media_player
     data:
       media_content_id: media-source://media_source/local/wake_up.mp3
       media_content_type: audio/mpeg
@@ -468,7 +467,7 @@ test_2:
         media_content_id: media-source://media_source
   - wait_for_trigger:
     - entity_id:
-      - media_player.voicekit_chambre_media_player
+      - media_player.vpe_chambre_media_player
       to: playing
       trigger: state
   - action: light.turn_on
@@ -507,7 +506,7 @@ test_2:
           milliseconds: 0
       while:
       - condition: state
-        entity_id: media_player.voicekit_chambre_media_player
+        entity_id: media_player.vpe_chambre_media_player
         state: playing
   description: ''
 transfer_music_music_assistant:
@@ -1150,9 +1149,58 @@ voicekit_reset:
     data: {}
     target:
       entity_id:
-      - light.voicekit_bureau_led_ring
-      - light.voicekit_chambre_led_ring
-      - light.voicekit_chambre_marilou_led_ring
-      - light.voicekit_salon_dvt_led_ring
+      - light.vpe_bureau_led_ring
+      - light.vpe_chambre_led_ring
+      - light.vpe_chambre_marilou_led_ring
+      - light.vpe_cuisine_led_ring
+      - light.vpe_salon_led_ring
   description: ''
   icon: mdi:square-circle
+easter_egg:
+  alias: Easter Egg
+  sequence:
+  - action: media_player.join
+    metadata: {}
+    data:
+      group_members:
+      - media_player.sonos_chambre_marilou
+    target:
+      entity_id: media_player.sonos_bureau
+  - action: media_player.play_media
+    target:
+      entity_id: media_player.sonos_bureau
+    data:
+      media_content_id: media-source://media_source/local/wake_up.mp3
+      media_content_type: audio/mpeg
+    metadata:
+      title: wake_up.mp3
+      thumbnail:
+      media_class: music
+      children_media_class:
+      navigateIds:
+      - {}
+      - media_content_type: app
+        media_content_id: media-source://media_source
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 14
+      milliseconds: 0
+  - repeat:
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          flash: short
+        target:
+          floor_id: premier_etage
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      while:
+      - condition: state
+        entity_id: media_player.sonos_bureau
+        state: playing
+  description: ''

@@ -268,56 +268,6 @@
     target:
       entity_id: input_boolean.machine_a_laver_a_vider
   mode: single
-- id: '1688129246113'
-  alias: Irrigation intelligente - Calculer fin arrosage
-  description: ''
-  triggers:
-  - entity_id:
-    - valve.irrigation
-    to: open
-    from: closed
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.irrigation_automation
-    state: 'on'
-  actions:
-  - action: input_datetime.set_datetime
-    data:
-      datetime: '{{ now() + timedelta (minutes = states(''input_number.irrigation_time'')
-        | int) }}'
-    target:
-      entity_id: input_datetime.end_of_irrigation
-  mode: single
-- id: '1688129871554'
-  alias: Irrigation intelligente - Arrêter arrosage
-  description: ''
-  triggers:
-  - at: input_datetime.end_of_irrigation
-    id: end
-    trigger: time
-  - event: start
-    id: restart
-    trigger: homeassistant
-  - entity_id:
-    - input_boolean.irrigation_automation
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.irrigation_automation
-    state: 'on'
-  - condition: state
-    entity_id: valve.irrigation
-    state: open
-  - condition: template
-    value_template: '{{now() >= as_local(as_datetime(states("input_datetime.end_of_irrigation")))}}'
-  actions:
-  - action: valve.close_valve
-    target:
-      entity_id: valve.irrigation
-    data: {}
-  mode: queued
-  max: 10
 - id: '1688139412657'
   alias: Réveil intelligent - Régler heures de déclenchement
   description: ''
@@ -595,7 +545,7 @@
   - action: switch.turn_off
     data: {}
     target:
-      entity_id: switch.voicekit_bureau_microphone
+      entity_id: switch.vpe_bureau_microphone
   - wait_for_trigger:
     - entity_id:
       - binary_sensor.quest_in_use
@@ -614,7 +564,7 @@
   - action: switch.turn_on
     data: {}
     target:
-      entity_id: switch.voicekit_bureau_microphone
+      entity_id: switch.vpe_bureau_microphone
   mode: queued
   max: 10
 - id: '1688368387161'
@@ -673,7 +623,7 @@
     action: light.turn_on
   - data: {}
     target:
-      entity_id: switch.voicekit_bureau_microphone
+      entity_id: switch.vpe_bureau_microphone
     action: switch.turn_off
   - wait_for_trigger:
     - entity_id:
@@ -692,7 +642,7 @@
     action: scene.turn_on
   - data: {}
     target:
-      entity_id: switch.voicekit_bureau_microphone
+      entity_id: switch.vpe_bureau_microphone
     action: switch.turn_on
   mode: single
 - id: '1688371620889'
@@ -1971,7 +1921,7 @@
         message: La batterie du Quest est actuellement à       {{states("sensor.quest_battery_level")}}%.
           Pense à le recharger.
       target:
-        entity_id: assist_satellite.voicekit_bureau_satellite_assist
+        entity_id: assist_satellite.vpe_bureau_satellite_assist
   mode: single
 - id: '1708194950863'
   alias: Party Time Marilou
@@ -2228,7 +2178,7 @@
     data: {}
     target:
       entity_id:
-      - switch.voicekit_bureau_microphone
+      - switch.vpe_bureau_microphone
   mode: single
 - id: '1718020351848'
   alias: Éteindre Chambre si plus de présence
@@ -2260,13 +2210,13 @@
     data: {}
     target:
       entity_id:
-      - media_player.voicekit_chambre_music_assistant
+      - media_player.vpe_chambre_music_assistant
   - action: switch.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
-      - switch.voicekit_chambre_microphone
+      - switch.vpe_chambre_microphone
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -2308,7 +2258,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.voicekit_chambre_marilou_microphone
+      entity_id:
+      - switch.vpe_chambre_marilou_microphone
   mode: single
 - id: '1718020708014'
   alias: Allumer Assistant vocal quand présence - Chambre
@@ -2330,7 +2281,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.voicekit_chambre_microphone
+      entity_id:
+      - switch.vpe_chambre_microphone
   mode: single
 - id: '1718020743731'
   alias: Allumer Assistant vocal quand présence - Chambre Marilou
@@ -2353,7 +2305,7 @@
     data: {}
     target:
       entity_id:
-      - switch.voicekit_chambre_marilou_microphone
+      - switch.vpe_chambre_marilou_microphone
   mode: single
 - id: '1718020763612'
   alias: Allumer Assistant vocal quand présence - Bureau
@@ -2376,7 +2328,7 @@
     data: {}
     target:
       entity_id:
-      - switch.voicekit_bureau_microphone
+      - switch.vpe_bureau_microphone
   mode: single
 - id: '1718706928319'
   alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
@@ -2535,7 +2487,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.voicekit_bureau_assist_en_cours_2
+      assist_in_progress_binary_sensor: binary_sensor.vpe_bureau_assist_en_cours_2
       media_player: media_player.sonos_bureau_music_assistant
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -2545,7 +2497,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.voicekit_chambre_marilou_assist_en_cours_2
+      assist_in_progress_binary_sensor: binary_sensor.vpe_chambre_marilou_assist_en_cours_2
       media_player: media_player.sonos_chambre_marilou
       threshold_volume: 0.2
       listening_volume: 0.1
@@ -2555,7 +2507,7 @@
   use_blueprint:
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
     input:
-      assist_in_progress_binary_sensor: binary_sensor.voicekit_salon_assist_en_cours
+      assist_in_progress_binary_sensor: binary_sensor.vpe_salon_assist_en_cours_2
       media_player: media_player.kef_salon_music_assistant
       listening_volume: 0.3
       threshold_volume: 0.4
@@ -3534,7 +3486,8 @@
     data:
       message: La porte d'entrée est restée ouverte!
     target:
-      entity_id: assist_satellite.voicekit_salon_none
+      entity_id:
+      - assist_satellite.vpe_salon_satellite_assist
   mode: single
 - id: '1727807641536'
   alias: Éteindre Couloir automatiquement
@@ -4312,7 +4265,7 @@
             entity_id: climate.radiateur_salle_de_douche
   mode: single
 - id: '1729016436406'
-  alias: 'Voicekit Salon - Afficher corvées '
+  alias: 'Voicekit Rez-de-Chaussée - Afficher corvées '
   description: ''
   triggers:
   - trigger: state
@@ -4325,7 +4278,10 @@
     event: start
   - trigger: state
     entity_id:
-    - light.voicekit_salon_dvt_led_ring
+    - light.vpe_cuisine_led_ring
+  - trigger: state
+    entity_id:
+    - light.vpe_salon_led_ring
   conditions: []
   actions:
   - if:
@@ -4340,13 +4296,17 @@
       metadata: {}
       data: {}
       target:
-        entity_id: light.voicekit_salon_dvt_led_ring
+        entity_id:
+        - light.vpe_cuisine_led_ring
+        - light.vpe_salon_led_ring
     else:
     - action: light.turn_off
       metadata: {}
       data: {}
       target:
-        entity_id: light.voicekit_salon_dvt_led_ring
+        entity_id:
+        - light.vpe_cuisine_led_ring
+        - light.vpe_salon_led_ring
   mode: single
 - id: '1729028729486'
   alias: 'Assist - Poubelles sorties par la voix '
@@ -4472,20 +4432,20 @@
   triggers:
   - trigger: state
     entity_id:
-    - event.voicekit_chambre_button_press
+    - event.vpe_chambre_button_press
   conditions:
   - condition: not
     conditions:
     - condition: or
       conditions:
       - condition: state
-        entity_id: event.voicekit_chambre_button_press
+        entity_id: event.vpe_chambre_button_press
         state: unavailable
       - condition: state
-        entity_id: event.voicekit_chambre_button_press
+        entity_id: event.vpe_chambre_button_press
         state: unknown
   - condition: state
-    entity_id: event.voicekit_chambre_button_press
+    entity_id: event.vpe_chambre_button_press
     attribute: event_type
     state: long_press
   actions:
@@ -4512,7 +4472,7 @@
             -%} Réveil prévu pour {{states('input_datetime.wake_up_time')}} {% else
             -%} Pas de réveil prévu pour demain {%- endif -%}
         target:
-          entity_id: assist_satellite.voicekit_chambre_none
+          entity_id: assist_satellite.vpe_chambre_satellite_assist
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -4533,7 +4493,8 @@
         data:
           message: Mode Sommeil désactivé. Bonne journée
         target:
-          entity_id: assist_satellite.voicekit_chambre_none
+          entity_id:
+          - assist_satellite.vpe_chambre_satellite_assist
   mode: single
 - id: '1729586824286'
   alias: Mode Sommeil - Actions
@@ -4578,7 +4539,7 @@
         data: {}
         target:
           entity_id:
-          - media_player.voicekit_chambre_music_assistant
+          - media_player.vpe_chambre_music_assistant
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -4944,7 +4905,7 @@
     data: {}
     target:
       entity_id:
-      - switch.voicekit_salon_microphone
+      - switch.micros_rez_de_chaussee
   mode: single
 - id: '1730752787206'
   alias: Éteindre Assistant vocal salon si plus de présence
@@ -4970,8 +4931,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - switch.voicekit_salon_microphone
+      entity_id: switch.micros_rez_de_chaussee
   mode: single
 - id: '1730753017143'
   alias: VoiceKit Chambre - Controller Volume
@@ -5002,7 +4962,7 @@
         data:
           volume_level: 0.2
         target:
-          entity_id: media_player.voicekit_chambre_media_player
+          entity_id: media_player.vpe_chambre_media_player
     - conditions:
       - condition: state
         entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
@@ -5013,12 +4973,22 @@
         data:
           volume_level: 0.4
         target:
-          entity_id: media_player.voicekit_chambre_media_player
+          entity_id: media_player.vpe_chambre_media_player
     default:
     - action: media_player.volume_set
       metadata: {}
       data:
         volume_level: 0.8
       target:
-        entity_id: media_player.voicekit_chambre_media_player
+        entity_id: media_player.vpe_chambre_media_player
   mode: single
+- id: '1730928352543'
+  alias: Réduire volume lorsque assistant vocal en écoute (Cuisine)
+  description: ''
+  use_blueprint:
+    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening.yaml
+    input:
+      assist_in_progress_binary_sensor: binary_sensor.vpe_cuisine_assist_en_cours_2
+      media_player: media_player.kef_salon_music_assistant
+      listening_volume: 0.3
+      threshold_volume: 0.4
