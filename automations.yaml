@@ -385,9 +385,8 @@
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
   - condition: state
-    entity_id: sun.sun
-    state: below_horizon
-    enabled: true
+    entity_id: binary_sensor.exterieur_lumineux
+    state: 'off'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
@@ -406,10 +405,10 @@
         metadata: {}
         data: {}
         target:
-          area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
-          entity_id: light.couloir_applique_escalier
+          entity_id:
+          - light.couloir_applique_escalier
+          - light.cuisine
+          - light.entree
     - conditions:
       - condition: template
         value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
@@ -460,9 +459,8 @@
     entity_id: input_boolean.automation_watch_tv
     state: 'on'
   - condition: state
-    entity_id: sun.sun
-    state: below_horizon
-    enabled: true
+    entity_id: binary_sensor.exterieur_lumineux
+    state: 'off'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
@@ -480,10 +478,10 @@
         metadata: {}
         data: {}
         target:
-          area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
-          entity_id: light.couloir_applique_escalier
+          entity_id:
+          - light.couloir_applique_escalier
+          - light.cuisine
+          - light.entree
     - conditions:
       - condition: trigger
         id: 'off'
@@ -688,8 +686,8 @@
       entity_id: cover.volets_salon
   - if:
     - condition: state
-      entity_id: sun.sun
-      state: below_horizon
+      entity_id: binary_sensor.exterieur_lumineux
+      state: 'off'
     then:
     - action: script.turn_on
       data: {}
@@ -2173,12 +2171,6 @@
     target:
       entity_id:
       - media_player.sonos_bureau_music_assistant
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_bureau_microphone
   mode: single
 - id: '1718020351848'
   alias: Éteindre Chambre si plus de présence
@@ -2211,12 +2203,6 @@
     target:
       entity_id:
       - media_player.vpe_chambre_music_assistant
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_chambre_microphone
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -2254,81 +2240,6 @@
     data: {}
     target:
       entity_id: media_player.sonos_chambre_marilou_music_assistant
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_chambre_marilou_microphone
-  mode: single
-- id: '1718020708014'
-  alias: Allumer Assistant vocal quand présence - Chambre
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.capteur_presence_chambre_occupancy
-    to: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_chambre_microphone
-  mode: single
-- id: '1718020743731'
-  alias: Allumer Assistant vocal quand présence - Chambre Marilou
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
-    to: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_chambre_marilou_microphone
-  mode: single
-- id: '1718020763612'
-  alias: Allumer Assistant vocal quand présence - Bureau
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.capteur_presence_bureau_occupancy
-    to: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.vpe_bureau_microphone
   mode: single
 - id: '1718706928319'
   alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
@@ -2631,8 +2542,6 @@
           data: {}
           target:
             area_id:
-            - 71e221f94f4a4e929747570179d52280
-            - entree
             - bd4ba6262e7a4e72b2fd740a22c70403
         else:
         - action: hue.activate_scene
@@ -2671,8 +2580,6 @@
         data: {}
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
     - conditions:
       - condition: trigger
         id:
@@ -2684,8 +2591,6 @@
           brightness_step_pct: -10
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: trigger
@@ -2698,8 +2603,6 @@
           brightness_step_pct: -20
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: trigger
@@ -2712,8 +2615,6 @@
           brightness_step_pct: -50
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: trigger
@@ -2726,8 +2627,6 @@
           brightness_step_pct: 10
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: trigger
@@ -2740,8 +2639,6 @@
           brightness_step_pct: 20
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: trigger
@@ -2754,8 +2651,6 @@
           brightness_step_pct: 50
         target:
           area_id:
-          - 71e221f94f4a4e929747570179d52280
-          - entree
           - bd4ba6262e7a4e72b2fd740a22c70403
   mode: single
 - id: '1726171964785'
@@ -3665,6 +3560,16 @@
     entity_id: binary_sensor.capteur_ouverture_porte_entree
     state: 'on'
   actions:
+  - wait_for_trigger:
+    - trigger: state
+      entity_id:
+      - binary_sensor.capteur_ouverture_porte_entree
+      to: 'off'
+    timeout:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
   - action: input_select.select_option
     metadata: {}
     data:
@@ -4521,8 +4426,6 @@
         target:
           area_id:
           - couloir
-          - bd4ba6262e7a4e72b2fd740a22c70403
-          - 71e221f94f4a4e929747570179d52280
       - action: cover.open_cover
         metadata: {}
         data: {}
@@ -4540,6 +4443,18 @@
         target:
           entity_id:
           - media_player.vpe_chambre_music_assistant
+      - if:
+        - condition: state
+          entity_id: binary_sensor.exterieur_lumineux
+          state: 'off'
+        then:
+        - action: light.turn_on
+          metadata: {}
+          data:
+            brightness_pct: 10
+          target:
+            area_id:
+            - bd4ba6262e7a4e72b2fd740a22c70403
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -4885,53 +4800,55 @@
           entity_id: input_number.temperature_cible_chauffage_salle_de_douche
   mode: single
 - id: '1730752664557'
-  alias: Allumer Assistant vocal quand présence - Salon
+  alias: VPE Salon - Allumer / Éteindre automatiquement
   description: ''
   triggers:
   - entity_id:
     - binary_sensor.presence_rez_de_chaussee
     to: 'on'
     trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
-  - condition: state
-    entity_id: input_boolean.automation_monitor_home
-    state: 'on'
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.micros_rez_de_chaussee
-  mode: single
-- id: '1730752787206'
-  alias: Éteindre Assistant vocal salon si plus de présence
-  description: ''
-  triggers:
-  - entity_id:
+  - trigger: state
+    entity_id:
     - binary_sensor.presence_rez_de_chaussee
     to: 'off'
     for:
       hours: 0
       minutes: 5
       seconds: 0
-    trigger: state
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: homeassistant
+    event: start
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
     state: 'on'
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
   actions:
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: switch.micros_rez_de_chaussee
+  - choose:
+    - conditions:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
+      - condition: state
+        entity_id: binary_sensor.presence_rez_de_chaussee
+        state: 'on'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.micros_rez_de_chaussee
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.micros_rez_de_chaussee
   mode: single
 - id: '1730753017143'
   alias: VoiceKit Chambre - Controller Volume
@@ -4992,3 +4909,156 @@
       media_player: media_player.kef_salon_music_assistant
       listening_volume: 0.3
       threshold_volume: 0.4
+- id: '1731176393383'
+  alias: VPE Chambre - Allumer / Éteindre automatiquement
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_chambre_occupancy
+        state: 'on'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.vpe_chambre_microphone
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.vpe_chambre_microphone
+  mode: single
+- id: '1731176431172'
+  alias: VPE Chambre Marilou - Allumer / Éteindre automatiquement
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    to: 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        state: 'on'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.vpe_chambre_marilou_microphone
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.vpe_chambre_marilou_microphone
+  mode: single
+- id: '1731176473847'
+  alias: VPE Salon - Allumer / Éteindre automatiquement
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to: 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_bureau_occupancy
+        state: 'on'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.vpe_bureau_microphone
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.vpe_bureau_microphone
+  mode: single
