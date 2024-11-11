@@ -1,0 +1,106 @@
+blueprint:
+  name: Reduce volume of a media player when a voice assistant is listening (v2)
+  description: |
+    Reduce the volume of a media player based on the state of a voice assistant
+  domain: automation
+  author: JLo
+  input:
+    assist_satellite_entity:
+      name: Assist Sattelite
+      description: Assist Sattelite entity representing your voice assistant
+      selector:
+        entity:
+          filter:
+            domain: "assist_satellite"
+    advanced:
+      name: Advanced Settings
+      icon: mdi:cog
+      description: Advanced settings of the blueprint
+      collapsed: true
+      input:
+        target_all_playing_players:
+          name: Target all playing players
+          description: By default, the blueprint targets all `media_player` in the `playing` state in the same area of the input `assist_satellite` entity, you can turn off this behaviour here.
+          default: true
+          selector:
+            boolean:
+        additional_target:
+          name: Additional target
+          description: Additional target (for exmaple if you want to also target nearby areas). The automation will automatically skips `media_player` that are off.
+          default: {}
+          selector:
+            target:
+              entity:
+                domain: media_player
+
+triggers:
+  - trigger: state
+    entity_id: !input assist_satellite_entity
+    to: "listening"
+
+actions:
+  - variables:
+      assist_satellite_entity: !input assist_satellite_entity
+      target_all_playing_players: !input target_all_playing_players
+      additional_target: !input additional_target
+      default_target_media_players: |
+        {% set playing_media_players = expand(area_entities(area_id(assist_satellite_entity)) ) | selectattr('domain', 'eq', 'media_player') | selectattr('state', 'eq', 'playing') | map(attribute='entity_id') | unique | list %}
+        {{ playing_media_players if target_all_playing_players else [] }}
+      additional_target_media_players: |
+        {% set area_ids = [additional_target.area_id] if additional_target.area_id is string else additional_target.area_id | default([]) %}
+        {% set device_ids = [additional_target.device_id] if additional_target.device_id is string else additional_target.device_id | default([]) %}
+        {% set entity_ids = [additional_target.entity_id] if additional_target.entity_id is string else additional_target.entity_id | default([]) %}
+
+        {% set area_entities = expand(area_ids | map('area_entities') | list | sum(start=[])) %}
+        {% set device_entities = expand(device_ids | map('device_entities') | list | sum(start=[])) %}
+        {% set entity_entities = expand(entity_ids) %}
+
+        {% set all_entities = area_entities + device_entities + entity_entities %}
+        {% set additional_players = all_entities | selectattr('domain', 'eq', 'media_player') | rejectattr('state', 'eq', 'off')  | map(attribute='entity_id') | unique | list %}
+
+        {{additional_players}}
+      final_target: |
+        {{default_target_media_players + additional_target_media_players }}
+      scene_previous_volume: |
+        [
+          {% for player in final_target %}
+            {
+              "entity_id": "{{player}}",
+              "volume_level": "{{ state_attr(player,'volume_level') }}"
+            },
+          {% endfor %}
+        ]
+      scene_ducked_volume: |
+        [
+          {% for player in final_target %}
+            {
+              "entity_id": "{{player}}",
+              "volume_level": "{{ (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
+            },
+          {% endfor %}
+        ]
+  - repeat:
+      for_each: "{{scene_ducked_volume}}"
+      sequence:
+        action: media_player.volume_set
+        data:
+          volume_level: "{{repeat.item.volume_level}}"
+          entity_id: "{{repeat.item.entity_id}}"
+  - wait_for_trigger:
+      - trigger: state
+        entity_id: !input assist_satellite_entity
+        to: idle
+    timeout:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - repeat:
+      for_each: "{{scene_previous_volume}}"
+      sequence:
+        action: media_player.volume_set
+        data:
+          volume_level: "{{repeat.item.volume_level}}"
+          entity_id: "{{repeat.item.entity_id}}"
+
+mode: single
