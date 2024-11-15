@@ -26,6 +26,17 @@ leave_home:
       target:
         entity_id:
         - cover.volets_salon
+  - alias: Notify entry door open
+    if:
+    - condition: state
+      entity_id: binary_sensor.capteur_ouverture_porte_entree
+      state: 'on'
+    then:
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_porte_d_entree_ouverte
   icon: mdi:home-export-outline
   fields: {}
 welcome_home:
@@ -592,17 +603,6 @@ preparer_depart_maison:
       data: {}
       target:
         entity_id: script.power_notification_porte_fenetre_du_salon_ouverte
-  - alias: Notify entry door open
-    if:
-    - condition: state
-      entity_id: binary_sensor.capteur_ouverture_porte_entree
-      state: 'on'
-    then:
-    - action: script.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: script.power_notification_porte_d_entree_ouverte
   mode: queued
   icon: mdi:home-export-outline
   fields: {}
