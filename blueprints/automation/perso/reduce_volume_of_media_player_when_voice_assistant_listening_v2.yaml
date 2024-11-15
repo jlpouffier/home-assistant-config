@@ -89,30 +89,22 @@ actions:
         {{ additional_players }}
       final_target: |
         {{ (default_target_media_players + additional_target_media_players) | unique | list }}
-      scene_previous_volume: |
+      volumes: |
         [
           {% for player in final_target %}
             {
               "entity_id": "{{player}}",
-              "volume_level": "{{ state_attr(player,'volume_level') }}"
-            },
-          {% endfor %}
-        ]
-      scene_ducked_volume: |
-        [
-          {% for player in final_target %}
-            {
-              "entity_id": "{{player}}",
-              "volume_level": "{{ (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
+              "original_volume_level": "{{ state_attr(player,'volume_level') | float }}",
+              "ducked_volume_level": "{{ (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
             },
           {% endfor %}
         ]
   - repeat:
-      for_each: "{{scene_ducked_volume}}"
+      for_each: "{{volumes}}"
       sequence:
         action: media_player.volume_set
         data:
-          volume_level: "{{repeat.item.volume_level}}"
+          volume_level: "{{repeat.item.ducked_volume_level}}"
           entity_id: "{{repeat.item.entity_id}}"
   - wait_for_trigger:
       - trigger: state
@@ -124,11 +116,15 @@ actions:
       seconds: 0
       milliseconds: 0
   - repeat:
-      for_each: "{{scene_previous_volume}}"
+      for_each: "{{volumes}}"
       sequence:
-        action: media_player.volume_set
-        data:
-          volume_level: "{{repeat.item.volume_level}}"
-          entity_id: "{{repeat.item.entity_id}}"
+        - if:
+            - condition: template
+              value_template: "{{state_attr(repeat.item.entity_id, 'volume_level') | float == repeat.item.ducked_volume_level | float }}"
+          then:
+            action: media_player.volume_set
+            data:
+              volume_level: "{{repeat.item.original_volume_level}}"
+              entity_id: "{{repeat.item.entity_id}}"
 
 mode: single
