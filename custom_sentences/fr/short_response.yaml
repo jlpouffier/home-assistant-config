@@ -39,6 +39,8 @@ responses:
       default: "D'accord"
     HassMediaNext:
       default: "D'accord"
+    HassMediaPrevious:
+      default: "D'accord"
     HassSetVolume:
       default: "D'accord"
 
