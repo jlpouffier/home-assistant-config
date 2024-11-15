@@ -55,7 +55,7 @@ actions:
           list
         %}
 
-        {{playing_media_players}}
+        {{ playing_media_players }}
       additional_target_media_players: |
         {% set area_ids = [additional_target.area_id] if additional_target.area_id is string else additional_target.area_id | default([]) %}
         {% set device_ids = [additional_target.device_id] if additional_target.device_id is string else additional_target.device_id | default([]) %}
@@ -86,7 +86,7 @@ actions:
           list 
         %}
 
-        {{ additional_players}}
+        {{ additional_players }}
       final_target: |
         {{ (default_target_media_players + additional_target_media_players) | unique | list }}
       scene_previous_volume: |
