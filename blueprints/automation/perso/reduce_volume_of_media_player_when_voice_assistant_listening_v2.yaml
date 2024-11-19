@@ -106,7 +106,7 @@ actions:
             {
               "entity_id": "{{player}}",
               "original_volume_level": "{{ state_attr(player,'volume_level') | float }}",
-              "ducked_volume_level": "{{ custom_ducking_volume if custom_ducking_volume is number else (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
+              "ducked_volume_level": "{{ min(custom_ducking_volume,state_attr(player,'volume_level') | float ) if custom_ducking_volume is number else (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
             },
           {% endfor %}
         ]
