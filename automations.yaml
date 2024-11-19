@@ -409,6 +409,7 @@
           - light.couloir_applique_escalier
           - light.cuisine
           - light.entree
+          - light.exterieur
     - conditions:
       - condition: template
         value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
@@ -482,6 +483,7 @@
           - light.couloir_applique_escalier
           - light.cuisine
           - light.entree
+          - light.exterieur
     - conditions:
       - condition: trigger
         id: 'off'
@@ -955,7 +957,8 @@
         data:
           brightness_pct: 100
         target:
-          entity_id: light.exterieur
+          entity_id:
+          - light.exterieur_sphere
     - conditions:
       - condition: trigger
         id:
@@ -967,7 +970,8 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id: light.exterieur
+          entity_id:
+          - light.exterieur_sphere
   mode: parallel
   max: 10
 - id: '1690826979664'
@@ -2233,6 +2237,11 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: device_tracker.meme_emplacement
+      state: unavailable
   actions:
   - choose:
     - conditions:
@@ -5012,6 +5021,9 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_bureau_satellite_assist
+      custom_ducking_volume: 0.1
+      custom_target:
+        entity_id: media_player.sonos_bureau
 - id: '1731706831270'
   alias: Réduire volume lorsque assistant vocal en écoute (Chambre Marilou)
   description: ''
@@ -5040,3 +5052,52 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_salon_satellite_assist
+- id: '1731762231230'
+  alias: VPE - Transfer Music
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.vpe_salon_button_press
+    - event.vpe_bureau_button_press
+    - event.vpe_chambre_button_press
+    - event.vpe_cuisine_button_press
+    - event.vpe_chambre_marilou_button_press
+    not_to: unavailable
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.lecteurs_music_assistant_en_lecture
+    state: 'on'
+  - condition: template
+    value_template: '{{trigger.to_state.attributes.event_type == ''double_press''}}'
+  actions:
+  - variables:
+      area_id: '{{area_id(trigger.entity_id)}}'
+  - action: mass.transfer_queue
+    metadata: {}
+    data: {}
+    target:
+      area_id: '{{area_id}}'
+  mode: single
+- id: '1731941056494'
+  alias: Vacances - Générer texte de bonne fête
+  description: ''
+  triggers:
+  - trigger: calendar
+    entity_id: calendar.vacances_france
+    event: start
+    offset: '-2:0:0'
+  conditions: []
+  actions:
+  - action: conversation.process
+    data:
+      agent_id: conversation.holiday_greeting
+      text: '{{trigger.calendar_event.summary}}'
+    response_variable: ai_greeting_response
+  - action: input_text.set_value
+    metadata: {}
+    data:
+      value: '{{ai_greeting_response.response.speech.plain.speech}}'
+    target:
+      entity_id: input_text.holiday_greeting
+  mode: single
