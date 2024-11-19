@@ -18,14 +18,24 @@ blueprint:
       description: Advanced settings of the blueprint
       collapsed: true
       input:
-        additional_target:
-          name: Additional target
-          description: Additional target (for exmaple if you want to also target nearby areas). The automation will automatically skips `media_player` that are `off` or in `standby`.
+        custom_target:
+          name: Custom target
+          description: By default, this blueprint targets every `media_player in the same area as the voice assistant. Use this target to override this behavior. The automation will automatically skips `media_player` that are `off` or in `standby`.
           default: {}
           selector:
             target:
               entity:
                 domain: media_player
+        custom_ducking_volume:
+          name: Custom ducking volume
+          description: By default, the blueprint ducks all `media_player` of the target by 50%. If this is too loud, you can use this field to set an absolute volume level. All `media_player` will be ducked to this volume.
+          default: ""
+          selector:
+            number:
+              min: 0
+              max: 1
+              step: 0.05
+              mode: slider
 
 triggers:
   - trigger: state
@@ -35,7 +45,8 @@ triggers:
 actions:
   - variables:
       assist_satellite_entity: !input assist_satellite_entity
-      additional_target: !input additional_target
+      custom_target: !input custom_target
+      custom_ducking_volume: !input custom_ducking_volume
       voice_assistant_players: |
         {{ expand(device_entities(device_id(assist_satellite_entity))) |
             selectattr('domain', 'eq', 'media_player') | 
@@ -44,7 +55,7 @@ actions:
             list
         }}
       default_target_media_players: |
-        {% set playing_media_players = expand(
+        {% set players = expand(
           area_entities(area_id(assist_satellite_entity)) ) | 
           selectattr('domain', 'eq', 'media_player') | 
           rejectattr('state', 'eq', 'off') | 
@@ -55,11 +66,11 @@ actions:
           list
         %}
 
-        {{ playing_media_players }}
-      additional_target_media_players: |
-        {% set area_ids = [additional_target.area_id] if additional_target.area_id is string else additional_target.area_id | default([]) %}
-        {% set device_ids = [additional_target.device_id] if additional_target.device_id is string else additional_target.device_id | default([]) %}
-        {% set entity_ids = [additional_target.entity_id] if additional_target.entity_id is string else additional_target.entity_id | default([]) %}
+        {{ players }}
+      custom_target_media_players: |
+        {% set area_ids = [custom_target.area_id] if custom_target.area_id is string else custom_target.area_id | default([]) %}
+        {% set device_ids = [custom_target.device_id] if custom_target.device_id is string else custom_target.device_id | default([]) %}
+        {% set entity_ids = [custom_target.entity_id] if custom_target.entity_id is string else custom_target.entity_id | default([]) %}
 
         {% set area_entities = expand(
           area_ids | 
@@ -75,7 +86,7 @@ actions:
 
         {% set all_entities = area_entities + device_entities + entity_entities %}
 
-        {% set additional_players = 
+        {% set players = 
           all_entities | 
           selectattr('domain', 'eq', 'media_player') | 
           rejectattr('state', 'eq', 'off')  | 
@@ -86,16 +97,16 @@ actions:
           list 
         %}
 
-        {{ additional_players }}
+        {{ players }}
       final_target: |
-        {{ (default_target_media_players + additional_target_media_players) | unique | list }}
+        {{ custom_target_media_players if custom_target_media_players | length > 0 else default_target_media_players }}
       volumes: |
         [
           {% for player in final_target %}
             {
               "entity_id": "{{player}}",
               "original_volume_level": "{{ state_attr(player,'volume_level') | float }}",
-              "ducked_volume_level": "{{ (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
+              "ducked_volume_level": "{{ custom_ducking_volume if custom_ducking_volume is number else (state_attr(player,'volume_level') | float (0) * 0.5) | round (2)}}"
             },
           {% endfor %}
         ]
