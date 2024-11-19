@@ -5021,7 +5021,6 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_bureau_satellite_assist
-      custom_ducking_volume: 0.1
       custom_target:
         entity_id: media_player.sonos_bureau
 - id: '1731706831270'
@@ -5031,13 +5030,8 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_chambre_marilou_satellite_assist
-- id: '1731706869047'
-  alias: Réduire volume lorsque assistant vocal en écoute (Chambre)
-  description: ''
-  use_blueprint:
-    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
-    input:
-      assist_satellite_entity: assist_satellite.vpe_chambre_satellite_assist
+      custom_target:
+        entity_id: media_player.sonos_chambre_marilou
 - id: '1731706885951'
   alias: Réduire volume lorsque assistant vocal en écoute (Cuisine)
   description: ''
@@ -5045,6 +5039,8 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_cuisine_satellite_assist
+      custom_target:
+        entity_id: media_player.kef
 - id: '1731706904863'
   alias: Réduire volume lorsque assistant vocal en écoute (Salon)
   description: ''
@@ -5052,6 +5048,8 @@
     path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
     input:
       assist_satellite_entity: assist_satellite.vpe_salon_satellite_assist
+      custom_target:
+        entity_id: media_player.kef
 - id: '1731762231230'
   alias: VPE - Transfer Music
   description: ''
