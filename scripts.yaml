@@ -727,8 +727,8 @@ power_notification_pluie_et_portes_ouvertes:
         to: 'off'
       - trigger: state
         entity_id:
-        - binary_sensor.is_raining_now
-        to: 'off'
+        - sensor.wittboy_rain_rate_piezo
+        to: '0.0'
       default_tag: rain_doors_open
   description: ''
   icon: mdi:water
@@ -749,8 +749,8 @@ power_notification_pluie_et_fenetres_ouvertes:
         to: 'off'
       - trigger: state
         entity_id:
-        - binary_sensor.is_raining_now
-        to: 'off'
+        - sensor.wittboy_rain_rate_piezo
+        to: '0.0'
       default_tag: rain_windows_open
   description: ''
   icon: mdi:water
