@@ -170,87 +170,6 @@
     target:
       entity_id: input_boolean.courrier_a_relever
   mode: single
-- id: '1688117431729'
-  alias: Boutons Hue - Bouton Salon Couloir
-  description: ''
-  triggers:
-  - entity_id:
-    - event.hue_tap_dial_switch_7_bouton_1
-    attribute: event_type
-    to: repeat
-    id: on_no_cover
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_7_bouton_2
-    attribute: event_type
-    to: repeat
-    id: on_cover
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_7_bouton_3
-    attribute: event_type
-    to: repeat
-    id: off_no_cover
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_7_bouton_4
-    attribute: event_type
-    to: repeat
-    id: off_cover
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - on_no_cover
-        - on_cover
-      sequence:
-      - action: hue.activate_scene
-        target:
-          entity_id:
-          - scene.salon_salon_100
-          - scene.entree_entree_100
-          - scene.cuisine_cuisine_100
-        data:
-          transition: 1
-    - conditions:
-      - condition: trigger
-        id:
-        - off_no_cover
-        - off_cover
-      sequence:
-      - action: light.turn_off
-        data: {}
-        target:
-          floor_id: rez_de_chaussee
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - on_cover
-      sequence:
-      - action: cover.open_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - cover.volets_salon
-    - conditions:
-      - condition: trigger
-        id:
-        - off_cover
-      sequence:
-      - action: cover.close_cover
-        target:
-          entity_id:
-          - cover.volets_salon
-        data: {}
-  mode: single
 - id: '1688118075093'
   alias: Machine a Laver Intelligente - Machine à laver a vider
   description: ''
@@ -362,141 +281,6 @@
         data: {}
         target:
           entity_id: media_player.kef
-  mode: single
-- id: '1688303443168'
-  alias: 'TV intelligente - Controller Lumières '
-  description: ''
-  triggers:
-  - entity_id:
-    - media_player.media_center
-    from:
-    to:
-    variables:
-      from_state: '{{trigger.from_state.state}}'
-      to_state: '{{trigger.to_state.state}}'
-      from_app: "{% if 'app_name' in trigger.from_state.attributes -%}\n  {{trigger.from_state.attributes.app_name}}\n{%-
-        else -%}\n  no_app\n{%- endif %}"
-      to_app: "{% if 'app_name' in trigger.to_state.attributes -%}\n  {{trigger.to_state.attributes.app_name}}\n{%-
-        else -%}\n  no_app\n{%- endif %}"
-      supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.exterieur_lumineux
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: "{{\n  from_state in [\"off\", \"paused\", \"idle\", \"on\",
-          \"buffering\"] and \n  to_state == \"playing\" and \n  to_app in supported_apps\n}}"
-      sequence:
-      - action: hue.activate_scene
-        target:
-          entity_id: scene.salon_salon_tv_playing
-        data: {}
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - light.couloir_applique_escalier
-          - light.cuisine
-          - light.entree
-          - light.exterieur
-    - conditions:
-      - condition: template
-        value_template: "{{\n  from_state == \"playing\" and \n  to_state in [\"paused\",
-          \"buffering\"] and \n  to_app in supported_apps\n}}"
-      sequence:
-      - action: hue.activate_scene
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - scene.salon_salon_tv_paused
-          - scene.entree_entree_tv_paused
-          - scene.cuisine_cuisine_tv_paused
-    - conditions:
-      - condition: template
-        value_template: "{{\n  from_state in [\"playing\", \"paused\", \"buffering\"]
-          and \n  to_state in [\"off\", \"on\", \"idle\"] and \n  from_app in supported_apps\n}}"
-      sequence:
-      - action: hue.activate_scene
-        metadata: {}
-        data:
-          transition: 10
-        target:
-          entity_id:
-          - scene.salon_salon_100
-          - scene.entree_entree_100
-          - scene.cuisine_cuisine_100
-  mode: queued
-  max: 10
-- id: '1688305917710'
-  alias: TV intelligente - Controller Lumières (PS5)
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.is_ps5_used
-    from: 'off'
-    to: 'on'
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - binary_sensor.is_ps5_used
-    from: 'on'
-    to: 'off'
-    id: 'off'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.exterieur_lumineux
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: 'on'
-      sequence:
-      - action: hue.activate_scene
-        target:
-          entity_id: scene.salon_salon_tv_playing
-        data: {}
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - light.couloir_applique_escalier
-          - light.cuisine
-          - light.entree
-          - light.exterieur
-    - conditions:
-      - condition: trigger
-        id: 'off'
-      sequence:
-      - action: hue.activate_scene
-        metadata: {}
-        data:
-          transition: 10
-        target:
-          entity_id:
-          - scene.salon_salon_100
-          - scene.entree_entree_100
-          - scene.cuisine_cuisine_100
   mode: single
 - id: '1688364991944'
   alias: Bureau - Meetings VR
@@ -1286,62 +1070,6 @@
       - device_tracker.meme_emplacement
   mode: queued
   max: 10
-- id: '1698182832051'
-  alias: TV intelligente - Activer / Désactiver Micros
-  description: ''
-  triggers:
-  - entity_id:
-    - media_player.media_center
-    to: playing
-    id: playing
-    trigger: state
-  - entity_id:
-    - media_player.media_center
-    from: playing
-    id: not_playing
-    trigger: state
-  - entity_id:
-    - binary_sensor.is_ps5_used
-    from: 'off'
-    to: 'on'
-    id: on_ps5
-    trigger: state
-  - entity_id:
-    - binary_sensor.is_ps5_used
-    from: 'on'
-    to: 'off'
-    id: off_ps5
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - playing
-        - on_ps5
-      sequence:
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id:
-          - switch.micros_rez_de_chaussee
-    - conditions:
-      - condition: trigger
-        id:
-        - not_playing
-        - off_ps5
-      sequence:
-      - action: switch.turn_on
-        data: {}
-        target:
-          entity_id:
-          - switch.micros_rez_de_chaussee
-  mode: queued
-  max: 50
 - id: '1699131143084'
   alias: 'Music Assistant - Éteindre MASS lorsque KEF éteint '
   description: ''
@@ -3181,7 +2909,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Salon
-      room_temperature: sensor.capteur_thp_salon_temperature
+      room_temperature: sensor.thermostat_netatmo_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_cuisine
       - binary_sensor.capteur_ouverture_porte_entree
@@ -3196,7 +2924,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Chambre
-      room_temperature: sensor.capteur_thp_chambre_temperature
+      room_temperature: sensor.radiateur_chambre_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre
       room_openings_duration: 00:05:00
@@ -3210,7 +2938,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Chambre Marilou
-      room_temperature: sensor.capteur_thp_chambre_bebe_temperature
+      room_temperature: sensor.radiateur_chambre_marilou_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
       room_openings_duration: 00:05:00
@@ -3223,7 +2951,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Bureau
-      room_temperature: sensor.capteur_thp_bureau_temperature
+      room_temperature: sensor.radiateur_bureau_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_bureau
       room_openings_duration: 00:05:00
@@ -4174,7 +3902,8 @@
         entity_id:
         - light.vpe_cuisine_led_ring
         - light.vpe_salon_led_ring
-  mode: single
+  mode: queued
+  max: 10
 - id: '1729028729486'
   alias: 'Assist - Poubelles sorties par la voix '
   description: ''
@@ -4782,6 +4511,9 @@
     - input_select.modes_de_presence_de_la_maison_v2
   - trigger: homeassistant
     event: start
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_cinema
   conditions:
   - condition: state
     entity_id: input_boolean.automation_monitor_home
@@ -4797,6 +4529,9 @@
       - condition: state
         entity_id: binary_sensor.presence_rez_de_chaussee
         state: 'on'
+      - condition: state
+        entity_id: input_boolean.mode_cinema
+        state: 'off'
       sequence:
       - action: switch.turn_on
         metadata: {}
@@ -4964,7 +4699,7 @@
         - switch.vpe_chambre_marilou_microphone
   mode: single
 - id: '1731176473847'
-  alias: VPE Salon - Allumer / Éteindre automatiquement
+  alias: VPE Bureau - Allumer / Éteindre automatiquement
   description: ''
   triggers:
   - entity_id:
@@ -5040,7 +4775,8 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_cuisine_satellite_assist
       custom_target:
-        entity_id: media_player.kef
+        entity_id:
+        - media_player.kef_salon_music_assistant
 - id: '1731706904863'
   alias: Réduire volume lorsque assistant vocal en écoute (Salon)
   description: ''
@@ -5049,9 +4785,9 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_salon_satellite_assist
       custom_target:
-        entity_id: media_player.kef
+        entity_id: media_player.kef_salon_music_assistant
 - id: '1731762231230'
-  alias: VPE - Transfer Music
+  alias: VPE - Transferer la musique
   description: ''
   triggers:
   - trigger: state
@@ -5063,19 +4799,30 @@
     - event.vpe_chambre_marilou_button_press
     not_to: unavailable
   conditions:
-  - condition: state
-    entity_id: binary_sensor.lecteurs_music_assistant_en_lecture
-    state: 'on'
   - condition: template
     value_template: '{{trigger.to_state.attributes.event_type == ''double_press''}}'
   actions:
   - variables:
       area_id: '{{area_id(trigger.entity_id)}}'
-  - action: mass.transfer_queue
-    metadata: {}
-    data: {}
-    target:
-      area_id: '{{area_id}}'
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.lecteurs_music_assistant_en_lecture
+        state: 'on'
+      sequence:
+      - action: mass.transfer_queue
+        metadata: {}
+        data: {}
+        target:
+          area_id: '{{area_id}}'
+    default:
+    - action: mass.play_media
+      target:
+        area_id: '{{area_id}}'
+      data:
+        media_id: All Favorited Tracks
+        media_type: playlist
+        enqueue: replace
   mode: single
 - id: '1731941056494'
   alias: Vacances - Générer texte de bonne fête
@@ -5098,4 +4845,218 @@
       value: '{{ai_greeting_response.response.speech.plain.speech}}'
     target:
       entity_id: input_text.holiday_greeting
+  mode: single
+- id: '1732054434382'
+  alias: Mode Cinéma - Activer
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.media_center
+    to:
+    - playing
+    id: tv
+  - trigger: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    to: 'on'
+    id: ps5
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - tv
+    then:
+    - variables:
+        supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
+    - condition: template
+      value_template: '{{ trigger.to_state.attributes.app_name in supported_apps }}'
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mode_cinema
+  mode: queued
+  max: 10
+- id: '1732054630408'
+  alias: Mode Cinéma - Désactiver
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.media_center
+    to:
+    - 'off'
+    - 'on'
+    - idle
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+    - media_player.media_center
+    attribute: app_name
+    from:
+    - Netflix
+    - Plex
+    - Prime Video
+  - trigger: state
+    entity_id:
+    - binary_sensor.is_ps5_used
+    to: 'off'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mode_cinema
+  mode: queued
+  max: 10
+- id: '1732055799796'
+  alias: Mode Cinéma - Controller Lumières et Volets
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_cinema
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: binary_sensor.presence_rez_de_chaussee
+    state: 'on'
+  actions:
+  - action: scene.create
+    metadata: {}
+    data:
+      scene_id: cinema_previous_light_state
+      snapshot_entities:
+      - light.cuisine_suspension
+      - light.cuisine_comptoir
+      - light.salon_trepied
+      - light.hue_aurelle_panel_1
+      - light.salon_suspension_tv
+      - light.salon_buffet_droit
+      - light.salon_buffet_gauche
+      - light.entree_suspension
+      - light.exterieur_sphere
+      - light.exterieur_guinguette
+      - light.plafonnier_exterieur
+      - light.couloir_applique_escalier
+      - cover.volets_salon
+  - action: hue.activate_scene
+    target:
+      entity_id: scene.salon_salon_tv_playing
+    data: {}
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.couloir_applique_escalier
+      - light.cuisine
+      - light.entree
+      - light.exterieur
+  - if:
+    - condition: state
+      entity_id: binary_sensor.exterieur_lumineux
+      state: 'on'
+    then:
+    - action: cover.close_cover
+      metadata: {}
+      data: {}
+      target:
+        entity_id: cover.volets_salon
+  - wait_for_trigger:
+    - trigger: state
+      entity_id:
+      - input_boolean.mode_cinema
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 1
+    continue_on_timeout: false
+  - action: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.cinema_previous_light_state
+  mode: queued
+  max: 10
+- id: '1732056960522'
+  alias: Mode Cinéma - Play / Pause
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.media_center
+    to: paused
+    id: paused
+  - trigger: state
+    entity_id:
+    - media_player.media_center
+    to: playing
+    id: playing
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_watch_tv
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.mode_cinema
+    state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: binary_sensor.presence_rez_de_chaussee
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - paused
+      sequence:
+      - action: hue.activate_scene
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.salon_salon_tv_paused
+          - scene.entree_entree_tv_paused
+          - scene.cuisine_cuisine_tv_paused
+    - conditions:
+      - condition: trigger
+        id:
+        - playing
+      sequence:
+      - action: hue.activate_scene
+        target:
+          entity_id: scene.salon_salon_tv_playing
+        data: {}
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - light.couloir_applique_escalier
+          - light.cuisine
+          - light.entree
+          - light.exterieur
   mode: single
