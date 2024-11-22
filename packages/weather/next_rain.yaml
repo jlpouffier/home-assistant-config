@@ -1,0 +1,248 @@
+# https://www.home-assistant.io/integrations/template/
+
+template:
+  - binary_sensor:
+      - name: next_rain_in_0_min
+        unique_id: next_rain_in_0_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('0 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('0 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('0 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_5_min
+        unique_id: next_rain_in_5_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('5 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('5 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('5 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_10_min
+        unique_id: next_rain_in_10_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('10 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('10 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('10 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_15_min
+        unique_id: next_rain_in_15_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('15 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('15 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('15 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_20_min
+        unique_id: next_rain_in_20_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('20 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('20 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('20 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_25_min
+        unique_id: next_rain_in_25_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('25 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('25 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('25 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_35_min
+        unique_id: next_rain_in_35_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('35 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('35 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('35 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+      - name: next_rain_in_45_min
+        unique_id: next_rain_in_45_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('45 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('45 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('45 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
+
+      - name: next_rain_in_55_min
+        unique_id: next_rain_in_55_min
+        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('55 min') }}"
+        device_class: problem
+        icon: >-
+          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('55 min') %} 
+          {% if forcast == "Pluie faible"%}
+          mdi:water-outline
+          {% elif forcast == "Pluie modérée"%}
+          mdi:water-opacity
+          {% elif forcast == "Pluie forte"%}
+          mdi:water 
+          {% else %}
+          mdi:weather-sunny 
+          {% endif %}
+        attributes:
+          intensity: |
+            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('55 min') %} 
+            {% if forcast == "Pluie faible"%}
+              1
+            {% elif forcast == "Pluie modérée"%}
+              2
+            {% elif forcast == "Pluie forte"%}
+              3
+            {% else %}
+              0
+            {% endif %}
