@@ -312,7 +312,7 @@
     data:
       scene_id: office_previous_light_state
       snapshot_entities:
-      - light.bureau
+      - light.bureau_suspension
   - delay:
       hours: 0
       minutes: 0
@@ -323,9 +323,7 @@
       brightness_pct: 100
       kelvin: 3521
     target:
-      entity_id:
-      - light.bureau
-      - light.hue_play_bars
+      area_id: bureau
   - action: switch.turn_off
     data: {}
     target:
@@ -384,7 +382,7 @@
   - data:
       scene_id: office_previous_light_state
       snapshot_entities:
-      - light.bureau
+      - light.bureau_suspension
     action: scene.create
   - delay:
       hours: 0
@@ -396,7 +394,7 @@
       kelvin: 3521
     target:
       entity_id:
-      - light.bureau
+      - light.bureau_suspension
     action: light.turn_on
   - data:
       brightness_pct: 60
@@ -1236,10 +1234,12 @@
         state: out
       sequence:
       - action: light.turn_off
-        target:
-          entity_id:
-          - light.all_lights
         data: {}
+        target:
+          floor_id:
+          - rez_de_chaussee
+          - premier_etage
+          area_id: exterieur
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1257,18 +1257,18 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id:
-          - light.lumieres_rez_de_chaussee
-          - light.couloir
-          - light.exterieur
+          floor_id: rez_de_chaussee
+          area_id:
+          - exterieur
+          - couloir
       - action: light.turn_on
         data:
-          brightness_pct: 100
+          brightness_pct: 50
         target:
-          entity_id:
-          - light.chambre
-          - light.chambre_bebe
-          - light.bureau
+          area_id:
+          - bureau
+          - chambre
+          - chambre_bebe
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1286,17 +1286,13 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id:
-          - light.chambre
-          - light.chambre_bebe
-          - light.bureau
-          - light.couloir
-          - light.exterieur
+          floor_id: premier_etage
+          area_id: exterieur
       - action: light.turn_on
         data:
-          brightness_pct: 100
+          brightness_pct: 60
         target:
-          entity_id: light.lumieres_rez_de_chaussee
+          floor_id: rez_de_chaussee
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1314,18 +1310,13 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id:
-          - light.chambre
-          - light.chambre_bebe
-          - light.bureau
-          - light.couloir
+          floor_id: premier_etage
       - action: light.turn_on
         data:
-          brightness_pct: 100
+          brightness_pct: 40
         target:
-          entity_id:
-          - light.lumieres_rez_de_chaussee
-          - light.exterieur
+          floor_id: rez_de_chaussee
+          entity_id: light.exterieur_guinguette
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1343,18 +1334,13 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id:
-          - light.chambre
-          - light.chambre_bebe
-          - light.bureau
-          - light.couloir
+          floor_id: premier_etage
       - action: light.turn_on
         data:
-          brightness_pct: 100
+          brightness_pct: 60
         target:
-          entity_id:
-          - light.lumieres_rez_de_chaussee
-          - light.exterieur
+          floor_id: rez_de_chaussee
+          entity_id: light.exterieur_guinguette
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1372,18 +1358,18 @@
       - action: light.turn_off
         data: {}
         target:
-          entity_id:
-          - light.lumieres_rez_de_chaussee
-          - light.couloir
-          - light.exterieur
+          floor_id: rez_de_chaussee
+          area_id:
+          - couloir
+          - exterieur
       - action: light.turn_on
         data:
-          brightness_pct: 100
+          brightness_pct: 40
         target:
-          entity_id:
-          - light.chambre
-          - light.chambre_bebe
-          - light.bureau
+          area_id:
+          - bureau
+          - chambre
+          - chambre_bebe
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1857,9 +1843,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - light.hue_play_bars
-      - light.bureau
+      area_id: bureau
   - action: button.press
     metadata: {}
     data: {}
@@ -1901,7 +1885,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: light.chambre
+      area_id: chambre
   - action: media_player.turn_off
     metadata: {}
     data: {}
@@ -1933,7 +1917,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: light.chambre_bebe
+      area_id: chambre_bebe
   - action: media_player.media_pause
     metadata: {}
     data: {}
@@ -2102,237 +2086,6 @@
       entity_id: input_boolean.jl_connected_to_tesla
   mode: queued
   max: 10
-- id: '1721160666723'
-  alias: Télécommande Table Basse
-  description: ''
-  triggers:
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_short_press
-    subtype: turn_on
-    id: 'off'
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_short_press
-    subtype: turn_off
-    id: hue_single_click
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_double_press
-    subtype: turn_off
-    id: hue_double_click
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_short_press
-    subtype: dim_down
-    id: dim_down
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_long_press
-    subtype: dim_down
-    id: dim_down
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_double_press
-    subtype: dim_down
-    id: dim_down_fast
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_triple_press
-    subtype: dim_down
-    id: dim_down_fast
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_quadruple_press
-    subtype: dim_down
-    id: dim_down_fast_af
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_quintuple_press
-    subtype: dim_down
-    id: dim_down_fast_af
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_short_press
-    subtype: dim_up
-    id: dim_up
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_long_press
-    subtype: dim_up
-    id: dim_up
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_double_press
-    subtype: dim_up
-    id: dim_up_fast
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_triple_press
-    subtype: dim_up
-    id: dim_up_fast
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_quadruple_press
-    subtype: dim_up
-    id: dim_up_fast_af
-    trigger: device
-  - device_id: ae76e6c6103a236589c774e616d441a1
-    domain: zha
-    type: remote_button_quintuple_press
-    subtype: dim_up
-    id: dim_up_fast_af
-    trigger: device
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - 'off'
-      sequence:
-      - if:
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: light.salon
-            state: 'on'
-          - condition: state
-            entity_id: light.cuisine
-            state: 'on'
-          - condition: state
-            entity_id: light.entree
-            state: 'on'
-        then:
-        - action: light.turn_off
-          metadata: {}
-          data: {}
-          target:
-            area_id:
-            - bd4ba6262e7a4e72b2fd740a22c70403
-        else:
-        - action: hue.activate_scene
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - scene.salon_salon_100
-            - scene.cuisine_cuisine_100
-            - scene.entree_entree_100
-    - conditions:
-      - condition: trigger
-        id:
-        - hue_single_click
-      sequence:
-      - action: hue.activate_scene
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - scene.salon_salon_100
-          - scene.cuisine_cuisine_100
-          - scene.entree_entree_100
-    - conditions:
-      - condition: trigger
-        id:
-        - hue_double_click
-      sequence:
-      - action: hue.activate_scene
-        metadata: {}
-        data: {}
-        target:
-          entity_id: scene.salon_salon_tv_playing
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          area_id:
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_down
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: -10
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_down_fast
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: -20
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_down_fast_af
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: -50
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_up
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: 10
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_up_fast
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: 20
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-    - conditions:
-      - condition: trigger
-        id:
-        - dim_up_fast_af
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_step_pct: 50
-        target:
-          area_id:
-          - bd4ba6262e7a4e72b2fd740a22c70403
-  mode: single
 - id: '1726171964785'
   alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
   description: ''
@@ -3227,7 +2980,7 @@
       to: 'off'
     timeout:
       hours: 0
-      minutes: 1
+      minutes: 2
       seconds: 0
       milliseconds: 0
   - action: input_select.select_option
@@ -3422,8 +3175,6 @@
       option: Arrivée en cours
     target:
       entity_id: input_select.modes_de_presence_de_la_maison_v2
-  - action: script.welcome_home
-    data: {}
   mode: parallel
   max: 10
 - id: '1727989830960'
@@ -4957,19 +4708,18 @@
       - light.plafonnier_exterieur
       - light.couloir_applique_escalier
       - cover.volets_salon
-  - action: hue.activate_scene
-    target:
-      entity_id: scene.salon_salon_tv_playing
-    data: {}
   - action: light.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
       - light.couloir_applique_escalier
-      - light.cuisine
-      - light.entree
-      - light.exterieur
+      area_id: exterieur
+      floor_id: rez_de_chaussee
+  - action: hue.activate_scene
+    target:
+      entity_id: scene.salon_salon_tv_playing
+    data: {}
   - if:
     - condition: state
       entity_id: binary_sensor.exterieur_lumineux
@@ -5046,17 +4796,16 @@
         id:
         - playing
       sequence:
-      - action: hue.activate_scene
-        target:
-          entity_id: scene.salon_salon_tv_playing
-        data: {}
       - action: light.turn_off
         metadata: {}
         data: {}
         target:
           entity_id:
           - light.couloir_applique_escalier
-          - light.cuisine
-          - light.entree
-          - light.exterieur
+          area_id: exterieur
+          floor_id: rez_de_chaussee
+      - action: hue.activate_scene
+        target:
+          entity_id: scene.salon_salon_tv_playing
+        data: {}
   mode: single
