@@ -1,5 +1,5 @@
 leave_home:
-  alias: Quitter la maison
+  alias: Éteindre et Sécuriser la maison
   mode: queued
   sequence:
   - action: light.turn_off
@@ -39,6 +39,7 @@ leave_home:
         entity_id: script.power_notification_porte_d_entree_ouverte
   icon: mdi:home-export-outline
   fields: {}
+  description: ''
 welcome_home:
   alias: Bienvenue a la maison
   mode: queued
@@ -132,6 +133,18 @@ welcome_home:
   - action: light.turn_on
     target:
       entity_id:
+      - light.hotte_asipirante
+    data:
+      transition: 2
+      brightness_pct: 100
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: light.turn_on
+    target:
+      entity_id:
       - light.cuisine_suspension
     data:
       transition: 2
@@ -190,7 +203,7 @@ wake_up:
   - action: light.turn_off
     data: {}
     target:
-      entity_id: light.chambre
+      area_id: chambre
   - action: light.turn_on
     data:
       transition: 300
@@ -261,6 +274,8 @@ start_marilou_bedtime_routine:
       - media_player.sonos_chambre_marilou_music_assistant
   mode: single
   icon: mdi:bell-sleep
+  description: Démarrer la routine du sommeil de Marilou. A utiliser lorsque je suis
+    en train d'endormir ma fille
 eteindre_temporairement_un_assistant_vocal:
   alias: Éteindre temporairement un assistant vocal
   sequence:
@@ -1204,3 +1219,15 @@ easter_egg:
         entity_id: media_player.sonos_bureau
         state: playing
   description: ''
+quitter_la_maison:
+  alias: Départ en cours
+  sequence:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Départ en cours
+    target:
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+    enabled: true
+  description: ''
+  icon: mdi:home-export-outline
