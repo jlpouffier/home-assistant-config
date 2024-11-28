@@ -619,7 +619,7 @@
     webhook_id: sonarr-download--KqTQ4vReuFd_as1xTR_hPqk2
     id: sonarr-download
     variables:
-      title: "\U0001F4FA Épisode téléchargé !"
+      title: ✅ Épisode téléchargé !
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
@@ -640,7 +640,7 @@
     webhook_id: radarr-download-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
     id: radarr-download
     variables:
-      title: "\U0001F3A5 Film téléchargé !"
+      title: ✅ Film téléchargé !
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
     trigger: webhook
@@ -928,7 +928,7 @@
         '
   - if:
     - condition: numeric_state
-      entity_id: sensor.distance_jl_home
+      entity_id: sensor.distance_jlo_maison
       below: 20000
     then:
     - action: script.turn_on
@@ -2036,11 +2036,12 @@
           entity_id: media_player.kef
           state: 'off'
       sequence:
-      - action: mass.play_media
+      - action: music_assistant.play_media
         metadata: {}
         data:
           media_type: track
           enqueue: replace
+          radio_mode: true
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
@@ -4561,13 +4562,13 @@
         entity_id: binary_sensor.lecteurs_music_assistant_en_lecture
         state: 'on'
       sequence:
-      - action: mass.transfer_queue
+      - action: music_assistant.transfer_queue
         metadata: {}
         data: {}
         target:
           area_id: '{{area_id}}'
     default:
-    - action: mass.play_media
+    - action: music_assistant.play_media
       target:
         area_id: '{{area_id}}'
       data:
@@ -4808,4 +4809,20 @@
         target:
           entity_id: scene.salon_salon_tv_playing
         data: {}
+  mode: single
+- id: '1732718242168'
+  alias: '[TMP] Location Permission Not determined'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.jean_loics_iphone_location_permission
+    to: Not determined
+  conditions: []
+  actions:
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: ⁉️ Location Permission failed
+      message: Not Determined
   mode: single

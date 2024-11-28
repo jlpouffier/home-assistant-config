@@ -48,7 +48,7 @@ welcome_home:
     metadata: {}
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 60
     target:
       entity_id: light.entree_suspension
   - delay:
@@ -56,6 +56,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     metadata: {}
     data:
@@ -69,6 +70,7 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     metadata: {}
     data:
@@ -82,11 +84,12 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     metadata: {}
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 70
     target:
       entity_id: light.salon_suspension_tv
   - delay:
@@ -94,10 +97,11 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     metadata: {}
     data:
-      brightness_pct: 60
+      brightness_pct: 40
       transition: 2
     target:
       entity_id:
@@ -107,21 +111,36 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     target:
       entity_id: light.salon_trepied
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 70
   - delay:
       hours: 0
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_comptoir
+    data:
+      transition: 2
+      brightness_pct: 40
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+    enabled: true
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.hue_white_candle_2
     data:
       transition: 2
       brightness_pct: 60
@@ -130,25 +149,26 @@ welcome_home:
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
-    target:
-      entity_id:
-      - light.hotte_asipirante
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 60
+    target:
+      entity_id: light.hue_white_candle_1
   - delay:
       hours: 0
       minutes: 0
       seconds: 1
       milliseconds: 0
+    enabled: true
   - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_suspension
     data:
       transition: 2
-      brightness_pct: 100
+      brightness_pct: 60
   icon: mdi:home-import-outline
   description: ''
 turn_off_media_center:
@@ -248,6 +268,7 @@ start_marilou_bedtime_routine:
     metadata: {}
     target:
       entity_id: scene.chambre_bebe_initial
+    data: {}
   - action: media_player.turn_on
     data: {}
     target:
@@ -259,7 +280,7 @@ start_marilou_bedtime_routine:
     target:
       entity_id:
       - media_player.sonos_chambre_marilou_music_assistant
-  - action: mass.play_media
+  - action: music_assistant.play_media
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
@@ -326,7 +347,7 @@ lancer_playlist_de_reveil:
     target:
       entity_id:
       - media_player.vpe_chambre_music_assistant
-  - action: mass.play_media
+  - action: music_assistant.play_media
     target:
       entity_id:
       - media_player.vpe_chambre_music_assistant
@@ -538,7 +559,7 @@ test_2:
 transfer_music_music_assistant:
   alias: Transférer Musique (Music Assistant)
   sequence:
-  - action: mass.transfer_queue
+  - action: music_assistant.transfer_queue
     metadata: {}
     target: '{{target}}'
     data:
