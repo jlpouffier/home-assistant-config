@@ -2175,7 +2175,8 @@
         option: Absent
       target:
         entity_id: input_select.mode_chauffage_rez_de_chaussee
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726172240853'
   alias: Chauffage Intelligent - Choisir Mode Bureau
   description: ''
@@ -2248,7 +2249,8 @@
       target:
         entity_id:
         - input_select.mode_chauffage_bureau
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726172527832'
   alias: Chauffage Intelligent - Choisir Mode Chambre
   description: ''
@@ -2325,7 +2327,8 @@
       target:
         entity_id:
         - input_select.mode_chauffage_chambre
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726172622795'
   alias: Chauffage Intelligent - Choisir Mode Chambre Marilou
   description: ''
@@ -2403,7 +2406,8 @@
       target:
         entity_id:
         - input_select.mode_chauffage_chambre_marilou
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726173163311'
   alias: Chauffage Intelligent - Régler Température Rez-De-Chaussée
   description: ''
@@ -2466,7 +2470,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
           target:
             entity_id: climate.netatmo
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726173315597'
   alias: Chauffage Intelligent - Régler Température Bureau
   description: ''
@@ -2529,7 +2534,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
           target:
             entity_id: climate.radiateur_bureau
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726173501857'
   alias: Chauffage Intelligent - Régler Température Chambre
   description: ''
@@ -2592,7 +2598,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
           target:
             entity_id: climate.radiateur_chambre
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726173575899'
   alias: Chauffage Intelligent - Régler Température Chambre Marilou
   description: ''
@@ -2655,7 +2662,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
           target:
             entity_id: climate.radiateur_chambre_marilou
-  mode: single
+  mode: queued
+  max: 10
 - id: '1726663233965'
   alias: "Chauffage intelligent - \U0001F6CE️ Notifier Température anormale Salon"
   description: ''
@@ -2733,6 +2741,9 @@
   - trigger: state
     entity_id:
     - input_boolean.mode_sommeil
+  - trigger: state
+    entity_id:
+    - input_boolean.guest_mode
   conditions: []
   actions:
   - if:
@@ -2750,6 +2761,9 @@
       state: Occupée
     - condition: state
       entity_id: input_boolean.mode_sommeil
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.guest_mode
       state: 'off'
     then:
     - action: light.turn_on
@@ -3068,6 +3082,14 @@
       option: Départ en cours
     target:
       entity_id: input_select.modes_de_presence_de_la_maison_v2
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      message: '{% set time = now().hour %} {% if (time >= 18) %} Bonne soirée {%
+        elif (time >= 12) %} Bonne après-midi {% elif (time >= 5) %} Bonne journée
+        {% else %} Bonne nuit {% endif %}'
+    target:
+      entity_id: assist_satellite.vpe_salon_satellite_assist
   mode: parallel
   max: 10
 - id: '1727986956298'
@@ -3350,7 +3372,8 @@
     data: {}
     target:
       entity_id: input_boolean.chauffage_salle_de_bains_boost
-  mode: single
+  mode: queued
+  max: 10
 - id: '1728584273169'
   alias: Chauffage intelligent - Arrêter Boost Salle de Douche
   description: ''
@@ -3372,7 +3395,8 @@
     data: {}
     target:
       entity_id: input_boolean.chauffage_salle_de_douche_boost
-  mode: single
+  mode: queued
+  max: 10
 - id: '1728584405832'
   alias: Chauffage Intelligent - Choisir Mode Salle De Douche
   description: ''
@@ -3417,7 +3441,8 @@
         option: Normal
       target:
         entity_id: input_select.mode_chauffage_salle_de_douche
-  mode: single
+  mode: queued
+  max: 10
 - id: '1728584599375'
   alias: Chauffage Intelligent - Choisir Mode Salle De Bains
   description: ''
@@ -3484,7 +3509,8 @@
         option: Normal
       target:
         entity_id: input_select.mode_chauffage_salle_de_bains
-  mode: single
+  mode: queued
+  max: 10
 - id: '1728584808902'
   alias: Chauffage Intelligent - Régler Température Salle De Bains
   description: ''
@@ -3547,7 +3573,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_bains'')}}'
           target:
             entity_id: climate.radiateur_salle_de_bains
-  mode: single
+  mode: queued
+  max: 10
 - id: '1728584851841'
   alias: Chauffage Intelligent - Régler Température Salle De Douche
   description: ''
@@ -3610,7 +3637,8 @@
             temperature: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche'')}}'
           target:
             entity_id: climate.radiateur_salle_de_douche
-  mode: single
+  mode: queued
+  max: 10
 - id: '1729016436406'
   alias: 'Voicekit Rez-de-Chaussée - Afficher corvées '
   description: ''
@@ -3980,7 +4008,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_bureau
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730275937269'
   alias: Chauffage Intelligent - Choisir Temperature Cible Chambre Marilou
   description: ''
@@ -4035,7 +4064,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_chambre_marilou
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730275992160'
   alias: Chauffage Intelligent - Choisir Temperature Cible Chambre
   description: ''
@@ -4090,7 +4120,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_chambre
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730276011770'
   alias: Chauffage Intelligent - Choisir Temperature Cible Rez-De-Chaussée
   description: ''
@@ -4145,7 +4176,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_rez_de_chaussee
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730276096280'
   alias: Chauffage Intelligent - Choisir Temperature Cible Salle De Bains
   description: ''
@@ -4200,7 +4232,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_fenetres_ouvertes'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_salle_de_bains
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730276134273'
   alias: Chauffage Intelligent - Choisir Temperature Cible Salle De Douche
   description: ''
@@ -4241,7 +4274,8 @@
           value: '{{states(''input_number.temperature_cible_chauffage_salle_de_douche_boost'')}}'
         target:
           entity_id: input_number.temperature_cible_chauffage_salle_de_douche
-  mode: single
+  mode: queued
+  max: 10
 - id: '1730752664557'
   alias: VPE Salon - Allumer / Éteindre automatiquement
   description: ''
@@ -4709,6 +4743,8 @@
       - light.plafonnier_exterieur
       - light.couloir_applique_escalier
       - cover.volets_salon
+      - light.hue_white_candle_2
+      - light.hue_white_candle_1
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -4826,3 +4862,34 @@
       title: ⁉️ Location Permission failed
       message: Not Determined
   mode: single
+- id: '1733415050561'
+  alias: Advent Of Code
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.jlo_stars_advent_of_code_2024
+    - sensor.agners_stars_advent_of_code_2024
+    - sensor.klejejs_stars_advent_of_code_2024
+    - sensor.piitaya_stars_advent_of_code_2024
+    - sensor.abmantis_stars_advent_of_code_2024
+    - sensor.alcalzone_stars_advent_of_code_2024
+    - sensor.ben_bangert_stars_advent_of_code_2024
+    - sensor.robert_resch_stars_advent_of_code_2024
+    - sensor.joost_lekkerkerker_stars_advent_of_code_2024
+    not_from:
+    - unavailable
+    - unknown
+    not_to:
+    - unavailable
+    - unknown
+  conditions: []
+  actions:
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: "\U0001F384 Advent of Code"
+      message: '{{trigger.to_state.attributes.friendly_name}} just won his {{trigger.to_state.state}}th
+        star! ✨'
+  mode: queued
+  max: 9
