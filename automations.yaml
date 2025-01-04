@@ -4937,3 +4937,26 @@
       assist_satellite_entity: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
       custom_target:
         entity_id: media_player.sonos_salle_de_douche
+- id: '1736027398142'
+  alias: Jouer de la musique par la voix (Musique Assistant)
+  description: ''
+  triggers:
+  - command:
+    - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query}
+    trigger: conversation
+  conditions: []
+  actions:
+  - if:
+    - condition: template
+      value_template: '{{ trigger.device_id != None}}'
+    then:
+    - action: script.jouer_de_la_musique_music_assistant
+      metadata: {}
+      data:
+        query: '{{trigger.slots.query}}'
+        target:
+          area_id: '{{area_id(trigger.device_id)}}'
+    - set_conversation_response: D'accord
+    else:
+    - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
+  mode: single

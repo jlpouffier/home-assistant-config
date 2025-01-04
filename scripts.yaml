@@ -1324,3 +1324,62 @@ recuperer_liste_de_course:
     response_variable: result
   description: Récupérer les éléments de ma liste de course
   icon: mdi:basket
+jouer_de_la_musique_music_assistant:
+  sequence:
+  - action: conversation.process
+    data:
+      agent_id: conversation.music_assistant_search_bot
+      text: '{{query}}'
+    response_variable: response_from_ai
+  - variables:
+      media_data: '{{response_from_ai.response.speech.plain.speech|from_json}}'
+  - variables:
+      decorate_data:
+        enqueue: replace
+        radio_mode: true
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{media_data.media_type in ["artist","album"]}}'
+      sequence:
+      - variables:
+          decorate_data:
+            enqueue: replace
+      - action: music_assistant.play_media
+        data: '{{ dict(media_data, **decorate_data) }}'
+        target: '{{target}}'
+      - variables:
+          decorate_data:
+            enqueue: add
+            radio_mode: true
+      - action: music_assistant.play_media
+        data: '{{ dict(media_data, **decorate_data) }}'
+        target: '{{target}}'
+    - conditions:
+      - condition: template
+        value_template: '{{media_data.media_type in ["track"]}}'
+      sequence:
+      - variables:
+          decorate_data:
+            enqueue: replace
+            radio_mode: true
+      - action: music_assistant.play_media
+        data: '{{ dict(media_data, **decorate_data) }}'
+        target: area_id:"{{target}}"
+  fields:
+    query:
+      selector:
+        text:
+      name: Requête
+      description: Requête a jouer (Un artiste, un album, une chanson, quelque chose
+        de plus complexe)
+      required: true
+    target:
+      selector:
+        target:
+          entity:
+          - integration: music_assistant
+      name: Cible
+  alias: Jouer de la musique (Music Assistant)
+  description: Jouer n'importe quoi dans n'importe quelle piece de la maison
+  icon: mdi:music
