@@ -211,19 +211,21 @@
     trigger: time
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
-  - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
   - condition: or
     conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_select.reveil_intelligent
+        state: Automatique
+      - condition: state
+        entity_id: binary_sensor.workday_today
+        state: 'on'
     - condition: state
-      entity_id: binary_sensor.workday_today
-      state: 'on'
-    - condition: state
-      entity_id: input_boolean.forcer_le_reveil
-      state: 'on'
+      entity_id: input_select.reveil_intelligent
+      state: Activé
   actions:
   - action: script.wake_up
     data: {}
@@ -291,6 +293,10 @@
     to: 'on'
     from: 'off'
     trigger: state
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
   conditions:
   - condition: state
     entity_id: input_boolean.automation_meetings
@@ -347,8 +353,7 @@
     data: {}
     target:
       entity_id: switch.vpe_bureau_microphone
-  mode: queued
-  max: 10
+  mode: restart
 - id: '1688368387161'
   alias: Bureau - Meetings
   description: ''
@@ -426,7 +431,7 @@
     target:
       entity_id: switch.vpe_bureau_microphone
     action: switch.turn_on
-  mode: single
+  mode: restart
 - id: '1688371620889'
   alias: Surveillance de la maison - Éteindre appareils lors du départ
   description: ''
@@ -1797,22 +1802,24 @@
     trigger: time
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_wake_up
-    state: 'on'
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
   - condition: state
     entity_id: input_boolean.reveil_intelligent_musical
     state: 'on'
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
   - condition: or
     conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_select.reveil_intelligent
+        state: Automatique
+      - condition: state
+        entity_id: binary_sensor.workday_today
+        state: 'on'
     - condition: state
-      entity_id: binary_sensor.workday_today
-      state: 'on'
-    - condition: state
-      entity_id: input_boolean.forcer_le_reveil
-      state: 'on'
+      entity_id: input_select.reveil_intelligent
+      state: Activé
   actions:
   - action: script.lancer_playlist_de_reveil
     metadata: {}
@@ -1898,7 +1905,7 @@
   description: ''
   triggers:
   - entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
     to: 'off'
     for:
       hours: 0
@@ -2094,6 +2101,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - trigger: state
     entity_id:
     - binary_sensor.presence_rez_de_chaussee
@@ -2115,6 +2127,9 @@
   - entity_id:
     - input_boolean.guest_mode
     trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
   conditions: []
   actions:
   - choose:
@@ -2123,24 +2138,12 @@
         conditions:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_cuisine
-          for:
-            hours: 0
-            minutes: 5
-            seconds: 0
           state: 'on'
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_porte_entree
-          for:
-            hours: 0
-            minutes: 5
-            seconds: 0
           state: 'on'
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
-          for:
-            hours: 0
-            minutes: 5
-            seconds: 0
           state: 'on'
       sequence:
       - action: input_select.select_option
@@ -2161,6 +2164,9 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'off'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -2184,6 +2190,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_bureau
     for:
@@ -2203,16 +2214,15 @@
   - entity_id:
     - input_boolean.guest_mode
     trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_bureau
-        for:
-          hours: 0
-          minutes: 5
-          seconds: 0
         state: 'on'
       sequence:
       - action: input_select.select_option
@@ -2234,6 +2244,9 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'off'
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -2258,6 +2271,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre
     for:
@@ -2283,10 +2301,6 @@
     - conditions:
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
-        for:
-          hours: 0
-          minutes: 5
-          seconds: 0
         state: 'on'
       sequence:
       - action: input_select.select_option
@@ -2336,6 +2350,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
     for:
@@ -2344,7 +2363,7 @@
       seconds: 0
     trigger: state
   - entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
     for:
       hours: 0
       minutes: 5
@@ -2361,10 +2380,6 @@
     - conditions:
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
-        for:
-          hours: 0
-          minutes: 5
-          seconds: 0
         state: 'on'
       sequence:
       - action: input_select.select_option
@@ -2376,7 +2391,7 @@
           - input_select.mode_chauffage_chambre_marilou
     - conditions:
       - condition: state
-        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
         state: 'on'
         for:
           hours: 0
@@ -2782,7 +2797,7 @@
       data: {}
       target:
         entity_id: light.2d_matrix
-  mode: single
+  mode: restart
 - id: '1727025004524'
   alias: "Mode Invité - \U0001F514 Notifier mode invité lors de l'arrivée"
   description: ''
@@ -3090,8 +3105,7 @@
         {% else %} Bonne nuit {% endif %}'
     target:
       entity_id: assist_satellite.vpe_salon_satellite_assist
-  mode: parallel
-  max: 10
+  mode: single
 - id: '1727986956298'
   alias: Modes de presence de la maison - Départ en cours via la voix
   description: ''
@@ -3198,8 +3212,7 @@
       option: Arrivée en cours
     target:
       entity_id: input_select.modes_de_presence_de_la_maison_v2
-  mode: parallel
-  max: 10
+  mode: single
 - id: '1727989830960'
   alias: Surveillance de la maison - Notifier appareils allumé lors du départ
   description: ''
@@ -3404,6 +3417,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - event: start
     trigger: homeassistant
   - entity_id:
@@ -3450,6 +3468,11 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    from: Vide
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_salle_de_bain
     for:
@@ -3472,10 +3495,6 @@
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_salle_de_bain
         state: 'on'
-        for:
-          hours: 0
-          minutes: 5
-          seconds: 0
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -3651,12 +3670,6 @@
     - input_select.modes_de_presence_de_la_maison_v2
   - trigger: homeassistant
     event: start
-  - trigger: state
-    entity_id:
-    - light.vpe_cuisine_led_ring
-  - trigger: state
-    entity_id:
-    - light.vpe_salon_led_ring
   conditions: []
   actions:
   - if:
@@ -4277,7 +4290,7 @@
   mode: queued
   max: 10
 - id: '1730752664557'
-  alias: VPE Salon - Allumer / Éteindre automatiquement
+  alias: VPE RdC - Allumer / Éteindre automatiquement
   description: ''
   triggers:
   - entity_id:
@@ -4290,7 +4303,7 @@
     to: 'off'
     for:
       hours: 0
-      minutes: 5
+      minutes: 15
       seconds: 0
   - trigger: state
     entity_id:
@@ -4346,7 +4359,7 @@
       seconds: 30
   - trigger: state
     entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
   - trigger: homeassistant
     event: start
   conditions: []
@@ -4365,7 +4378,7 @@
           entity_id: media_player.vpe_chambre_media_player
     - conditions:
       - condition: state
-        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
         state: 'on'
       sequence:
       - action: media_player.volume_set
@@ -4438,12 +4451,12 @@
   description: ''
   triggers:
   - entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
     to: 'on'
     trigger: state
   - trigger: state
     entity_id:
-    - binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
     to: 'off'
     for:
       hours: 0
@@ -4467,7 +4480,7 @@
           entity_id: input_select.modes_de_presence_de_la_maison_v2
           state: Vide
       - condition: state
-        entity_id: binary_sensor.capteur_presence_marilou_fp2_presence_sensor_1
+        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
         state: 'on'
       sequence:
       - action: switch.turn_on
@@ -4583,6 +4596,7 @@
     - event.vpe_chambre_button_press
     - event.vpe_cuisine_button_press
     - event.vpe_chambre_marilou_button_press
+    - event.vpe_dvt_salle_de_douche_button_press
     not_to: unavailable
   conditions:
   - condition: template
@@ -4590,6 +4604,7 @@
   actions:
   - variables:
       area_id: '{{area_id(trigger.entity_id)}}'
+    enabled: true
   - choose:
     - conditions:
       - condition: state
@@ -4609,6 +4624,7 @@
         media_id: All Favorited Tracks
         media_type: playlist
         enqueue: replace
+    enabled: true
   mode: single
 - id: '1731941056494'
   alias: Vacances - Générer texte de bonne fête
@@ -4642,29 +4658,46 @@
     to:
     - playing
     id: tv
+    for:
+      seconds: 1
   - trigger: state
     entity_id:
     - binary_sensor.is_ps5_used
     to: 'on'
     id: ps5
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
   conditions: []
   actions:
-  - if:
-    - condition: trigger
-      id:
-      - tv
-    then:
-    - variables:
-        supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
-    - condition: template
-      value_template: '{{ trigger.to_state.attributes.app_name in supported_apps }}'
-  - action: input_boolean.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: input_boolean.mode_cinema
-  mode: queued
-  max: 10
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - tv
+      sequence:
+      - variables:
+          supported_apps: '{{["Netflix", "Plex", "Prime Video"]}}'
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.app_name in supported_apps
+          }}'
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.mode_cinema
+    - conditions:
+      - condition: trigger
+        id:
+        - ps5
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.mode_cinema
+  mode: restart
 - id: '1732054630408'
   alias: Mode Cinéma - Désactiver
   description: ''
@@ -4707,10 +4740,6 @@
     entity_id:
     - input_boolean.mode_cinema
     to: 'on'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
   conditions:
   - condition: state
     entity_id: input_boolean.automation_watch_tv
@@ -4772,17 +4801,12 @@
       entity_id:
       - input_boolean.mode_cinema
       to: 'off'
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 1
     continue_on_timeout: false
   - action: scene.turn_on
     data: {}
     target:
       entity_id: scene.cinema_previous_light_state
-  mode: queued
-  max: 10
+  mode: restart
 - id: '1732056960522'
   alias: Mode Cinéma - Play / Pause
   description: ''
@@ -4845,7 +4869,7 @@
         target:
           entity_id: scene.salon_salon_tv_playing
         data: {}
-  mode: single
+  mode: restart
 - id: '1732718242168'
   alias: '[TMP] Location Permission Not determined'
   description: ''
@@ -4874,7 +4898,6 @@
     - sensor.piitaya_stars_advent_of_code_2024
     - sensor.abmantis_stars_advent_of_code_2024
     - sensor.alcalzone_stars_advent_of_code_2024
-    - sensor.ben_bangert_stars_advent_of_code_2024
     - sensor.robert_resch_stars_advent_of_code_2024
     - sensor.joost_lekkerkerker_stars_advent_of_code_2024
     not_from:
@@ -4893,3 +4916,12 @@
         star! ✨'
   mode: queued
   max: 9
+- id: '1734703658294'
+  alias: Réduire volume lorsque assistant vocal en écoute (Salle de Douche)
+  description: ''
+  use_blueprint:
+    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
+    input:
+      assist_satellite_entity: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
+      custom_target:
+        entity_id: media_player.sonos_salle_de_douche
