@@ -4,61 +4,61 @@
     select.vpe_salon_assistant:
       options:
       - preferred
-      - Cave Johnson
-      - GlaDOS
-      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - Glados
       - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EC\U0001F1E7"
-      - Weatley
       friendly_name: VPE Salon Assistant
       state: preferred
     select.vpe_bureau_assistant:
       options:
       - preferred
-      - Cave Johnson
-      - GlaDOS
-      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - Glados
       - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EC\U0001F1E7"
-      - Weatley
       friendly_name: VPE Bureau Assistant
       state: preferred
     select.vpe_chambre_assistant:
       options:
       - preferred
-      - Cave Johnson
-      - GlaDOS
-      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - Glados
       - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EC\U0001F1E7"
-      - Weatley
       friendly_name: VPE Chambre Assistant
       state: preferred
     select.vpe_cuisine_assistant:
       options:
       - preferred
-      - Cave Johnson
-      - GlaDOS
-      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - Glados
       - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EC\U0001F1E7"
-      - Weatley
       friendly_name: VPE Cuisine Assistant
       state: preferred
     select.vpe_chambre_marilou_assistant:
       options:
       - preferred
-      - Cave Johnson
-      - GlaDOS
-      - "Local Nabu  \U0001F1EB\U0001F1F7"
+      - Glados
       - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EB\U0001F1F7"
       - "Nabu \U0001F1EC\U0001F1E7"
-      - Weatley
       friendly_name: VPE Chambre Marilou Assistant
       state: preferred
     light.vpe_salon_led_ring:
@@ -67,15 +67,15 @@
       color_mode: rgb
       brightness: 168
       hs_color:
-      - 27.13
-      - 45.098
+      - 35.87
+      - 36.078
       rgb_color:
       - 255
-      - 192
-      - 140
+      - 218
+      - 163
       xy_color:
-      - 0.455
-      - 0.374
+      - 0.413
+      - 0.382
       icon: mdi:circle-outline
       friendly_name: VPE Salon LED Ring
       supported_features: 40
@@ -86,15 +86,15 @@
       color_mode: rgb
       brightness: 168
       hs_color:
-      - 276.941
-      - 100
+      - 48
+      - 1.961
       rgb_color:
-      - 157
-      - 0
       - 255
+      - 254
+      - 250
       xy_color:
-      - 0.255
-      - 0.095
+      - 0.326
+      - 0.333
       icon: mdi:circle-outline
       friendly_name: VPE Bureau LED Ring
       supported_features: 40
@@ -105,15 +105,15 @@
       color_mode: rgb
       brightness: 168
       hs_color:
-      - 124
-      - 100
+      - 263.226
+      - 12.157
       rgb_color:
-      - 0
+      - 236
+      - 224
       - 255
-      - 17
       xy_color:
-      - 0.172
-      - 0.742
+      - 0.314
+      - 0.295
       icon: mdi:circle-outline
       friendly_name: VPE Chambre LED Ring
       supported_features: 40
@@ -124,15 +124,15 @@
       color_mode: rgb
       brightness: 168
       hs_color:
-      - 195.059
-      - 100
+      - 102.391
+      - 36.078
       rgb_color:
-      - 0
-      - 191
+      - 190
       - 255
+      - 163
       xy_color:
-      - 0.146
-      - 0.238
+      - 0.305
+      - 0.457
       icon: mdi:circle-outline
       friendly_name: VPE Cuisine LED Ring
       supported_features: 40
@@ -143,15 +143,15 @@
       color_mode: rgb
       brightness: 168
       hs_color:
-      - 298.824
-      - 100
+      - 51.959
+      - 38.039
       rgb_color:
-      - 250
-      - 0
       - 255
+      - 242
+      - 158
       xy_color:
-      - 0.379
-      - 0.152
+      - 0.398
+      - 0.415
       icon: mdi:circle-outline
       friendly_name: VPE Chambre Marilou LED Ring
       supported_features: 40
@@ -246,6 +246,55 @@
       - aggressive
       friendly_name: VPE Chambre Marilou Détection de fin de la parole
       state: aggressive
+    select.vpe_dvt_salle_de_douche_assistant:
+      options:
+      - preferred
+      - Glados
+      - "Nabu GPT \U0001F1EB\U0001F1F7"
+      - "Nabu GPT \U0001F1EC\U0001F1E7"
+      - "Nabu Rhasspy (HA) \U0001F1EB\U0001F1F7"
+      - "Nabu Whisper (NUC) \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EB\U0001F1F7"
+      - "Nabu \U0001F1EC\U0001F1E7"
+      friendly_name: VPE (DVT) Salle de Douche Assistant
+      state: preferred
+    select.vpe_dvt_salle_de_douche_detection_de_fin_de_la_parole:
+      options:
+      - default
+      - relaxed
+      - aggressive
+      friendly_name: VPE (DVT) Salle de Douche Détection de fin de la parole
+      state: aggressive
+    light.vpe_dvt_salle_de_douche_led_ring:
+      supported_color_modes:
+      - rgb
+      color_mode: rgb
+      brightness: 168
+      hs_color:
+      - 271.364
+      - 17.255
+      rgb_color:
+      - 234
+      - 211
+      - 255
+      xy_color:
+      - 0.316
+      - 0.28
+      icon: mdi:circle-outline
+      friendly_name: VPE (DVT) Salle de Douche LED Ring
+      supported_features: 40
+      state: 'on'
+    media_player.vpe_dvt_salle_de_douche_media_player:
+      volume_level: 0.8
+      is_volume_muted: false
+      device_class: speaker
+      friendly_name: VPE (DVT) Salle de Douche Media Player
+      supported_features: 1200653
+      state: idle
+    switch.vpe_dvt_salle_de_douche_wake_sound:
+      icon: mdi:bullhorn
+      friendly_name: VPE (DVT) Salle de Douche Wake sound
+      state: 'on'
   icon: mdi:square-circle
   metadata:
     select.vpe_salon_assistant:
@@ -297,4 +346,14 @@
     select.vpe_cuisine_detection_de_fin_de_la_parole:
       entity_only: true
     select.vpe_chambre_marilou_detection_de_fin_de_la_parole:
+      entity_only: true
+    select.vpe_dvt_salle_de_douche_assistant:
+      entity_only: true
+    select.vpe_dvt_salle_de_douche_detection_de_fin_de_la_parole:
+      entity_only: true
+    light.vpe_dvt_salle_de_douche_led_ring:
+      entity_only: true
+    media_player.vpe_dvt_salle_de_douche_media_player:
+      entity_only: true
+    switch.vpe_dvt_salle_de_douche_wake_sound:
       entity_only: true

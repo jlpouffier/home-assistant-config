@@ -1180,6 +1180,7 @@ voicekit_reset:
     metadata: {}
     target:
       entity_id: scene.voicekit_defaults
+    data: {}
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -1190,6 +1191,7 @@ voicekit_reset:
       - light.vpe_chambre_marilou_led_ring
       - light.vpe_cuisine_led_ring
       - light.vpe_salon_led_ring
+      - light.vpe_dvt_salle_de_douche_led_ring
   description: ''
   icon: mdi:square-circle
 easter_egg:
