@@ -1,0 +1,7 @@
+logger:
+  default: info
+  filters:
+    aioecowitt.server:
+      - "Unhandled sensor type srain_piezo value .*"
+    homeassistant.components.group.sensor:
+      - "Unable to use state. Only numerical states are supported, entity .* with value unavailable excluded from calculation in .*"
