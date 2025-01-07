@@ -221,7 +221,7 @@
         entity_id: input_select.reveil_intelligent
         state: Automatique
       - condition: state
-        entity_id: binary_sensor.workday_today
+        entity_id: binary_sensor.jour_de_travail_aujourdhui
         state: 'on'
     - condition: state
       entity_id: input_select.reveil_intelligent
@@ -1519,11 +1519,11 @@
         entity_id: binary_sensor.capteur_presence_bureau_occupancy
         state: 'on'
       - condition: state
-        entity_id: binary_sensor.workday_today
+        entity_id: binary_sensor.jour_de_travail_aujourdhui
         state: 'on'
-      - condition: time
-        before: '18:00:00'
-        after: 08:00:00
+      - condition: state
+        entity_id: schedule.working_hours
+        state: 'on'
       - condition: numeric_state
         entity_id: sensor.next_meeting_in
         above: 2100
@@ -1815,7 +1815,7 @@
         entity_id: input_select.reveil_intelligent
         state: Automatique
       - condition: state
-        entity_id: binary_sensor.workday_today
+        entity_id: binary_sensor.jour_de_travail_aujourdhui
         state: 'on'
     - condition: state
       entity_id: input_select.reveil_intelligent
