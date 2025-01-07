@@ -1333,10 +1333,6 @@ jouer_de_la_musique_music_assistant:
     response_variable: response_from_ai
   - variables:
       media_data: '{{response_from_ai.response.speech.plain.speech|from_json}}'
-  - variables:
-      decorate_data:
-        enqueue: replace
-        radio_mode: true
   - choose:
     - conditions:
       - condition: template
@@ -1365,7 +1361,7 @@ jouer_de_la_musique_music_assistant:
             radio_mode: true
       - action: music_assistant.play_media
         data: '{{ dict(media_data, **decorate_data) }}'
-        target: area_id:"{{target}}"
+        target: '{{target}}'
   fields:
     query:
       selector:
@@ -1383,3 +1379,53 @@ jouer_de_la_musique_music_assistant:
   alias: Jouer de la musique (Music Assistant)
   description: Jouer n'importe quoi dans n'importe quelle piece de la maison
   icon: mdi:music
+alarm:
+  sequence:
+  - action: media_player.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - media_player.kef
+      - media_player.kef_salon_music_assistant
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.7
+    target:
+      entity_id:
+      - media_player.sonos_bureau
+      - media_player.sonos_chambre_marilou
+      - media_player.sonos_salle_de_douche
+      - media_player.kef
+      - media_player.kef_salon_music_assistant
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.9
+    target:
+      entity_id:
+      - media_player.vpe_dvt_salle_de_douche_media_player
+      - media_player.vpe_bureau_media_player
+      - media_player.vpe_chambre_music_assistant
+      - media_player.vpe_chambre_marilou_media_player
+      - media_player.vpe_cuisine_media_player
+      - media_player.vpe_salon_media_player
+  - action: media_player.play_media
+    data:
+      media_content_id: media-source://media_source/local/alarm_1hour.mp3
+      media_content_type: audio/x-wav
+    target:
+      entity_id:
+      - media_player.kef_salon_music_assistant
+      - media_player.sonos_bureau
+      - media_player.sonos_bureau_music_assistant
+      - media_player.sonos_salle_de_douche
+      - media_player.vpe_dvt_salle_de_douche_media_player
+      - media_player.vpe_bureau_media_player
+      - media_player.vpe_chambre_marilou_media_player
+      - media_player.vpe_chambre_media_player
+      - media_player.vpe_cuisine_media_player
+      - media_player.vpe_salon_media_player
+  alias: Alarm
+  description: ''
