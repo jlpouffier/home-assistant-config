@@ -4898,36 +4898,6 @@
       title: ⁉️ Location Permission failed
       message: Not Determined
   mode: single
-- id: '1733415050561'
-  alias: Advent Of Code
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.jlo_stars_advent_of_code_2024
-    - sensor.agners_stars_advent_of_code_2024
-    - sensor.klejejs_stars_advent_of_code_2024
-    - sensor.piitaya_stars_advent_of_code_2024
-    - sensor.abmantis_stars_advent_of_code_2024
-    - sensor.alcalzone_stars_advent_of_code_2024
-    - sensor.robert_resch_stars_advent_of_code_2024
-    - sensor.joost_lekkerkerker_stars_advent_of_code_2024
-    not_from:
-    - unavailable
-    - unknown
-    not_to:
-    - unavailable
-    - unknown
-  conditions: []
-  actions:
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: "\U0001F384 Advent of Code"
-      message: '{{trigger.to_state.attributes.friendly_name}} just won his {{trigger.to_state.state}}th
-        star! ✨'
-  mode: queued
-  max: 9
 - id: '1734703658294'
   alias: Réduire volume lorsque assistant vocal en écoute (Salle de Douche)
   description: ''
@@ -4959,4 +4929,20 @@
     - set_conversation_response: D'accord
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
+  mode: single
+- id: '1736352269100'
+  alias: End of the World
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sun.sun
+    to: unavailable
+  conditions: []
+  actions:
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: Well.
+      message: Fuck.
   mode: single
