@@ -334,13 +334,18 @@
     data: {}
     target:
       entity_id: switch.vpe_bureau_microphone
-  - wait_for_trigger:
-    - entity_id:
-      - binary_sensor.quest_in_use
-      to: 'off'
-      from: 'on'
-      trigger: state
-    continue_on_timeout: false
+  - if:
+    - condition: state
+      entity_id: binary_sensor.quest_in_use
+      state: 'on'
+    then:
+    - wait_for_trigger:
+      - entity_id:
+        - binary_sensor.quest_in_use
+        to: 'off'
+        from: 'on'
+        trigger: state
+      continue_on_timeout: false
   - action: light.turn_off
     data: {}
     target:
@@ -412,13 +417,18 @@
     target:
       entity_id: switch.vpe_bureau_microphone
     action: switch.turn_off
-  - wait_for_trigger:
-    - entity_id:
-      - binary_sensor.jean_loics_macbook_pro_camera_in_use
-      to: 'off'
-      from: 'on'
-      trigger: state
-    continue_on_timeout: false
+  - if:
+    - condition: state
+      entity_id: binary_sensor.jean_loics_macbook_pro_camera_in_use
+      state: 'on'
+    then:
+    - wait_for_trigger:
+      - entity_id:
+        - binary_sensor.jean_loics_macbook_pro_camera_in_use
+        to: 'off'
+        from: 'on'
+        trigger: state
+      continue_on_timeout: false
   - data: {}
     target:
       entity_id: light.hue_play_bars
@@ -1943,9 +1953,8 @@
   triggers:
   - entity_id:
     - device_tracker.meme_emplacement
-    from:
-    to:
     trigger: state
+    not_from: unavailable
   conditions:
   - condition: state
     entity_id: input_boolean.automation_tesla
@@ -4808,12 +4817,17 @@
       data: {}
       target:
         entity_id: cover.volets_salon
-  - wait_for_trigger:
-    - trigger: state
-      entity_id:
-      - input_boolean.mode_cinema
-      to: 'off'
-    continue_on_timeout: false
+  - if:
+    - condition: state
+      entity_id: input_boolean.mode_cinema
+      state: 'on'
+    then:
+    - wait_for_trigger:
+      - trigger: state
+        entity_id:
+        - input_boolean.mode_cinema
+        to: 'off'
+      continue_on_timeout: false
   - action: scene.turn_on
     data: {}
     target:
