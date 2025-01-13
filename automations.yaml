@@ -4960,3 +4960,19 @@
       title: Well.
       message: Fuck.
   mode: single
+- id: '1736612446471'
+  alias: Test suppression radiateur TV
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: '0'
+    seconds: '0'
+  conditions: []
+  actions:
+  - action: climate.set_temperature
+    metadata: {}
+    data:
+      temperature: 7
+    target:
+      entity_id: climate.radiateur_coin_tv
+  mode: single
