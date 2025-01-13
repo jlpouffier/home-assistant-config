@@ -23,8 +23,8 @@ trigger:
   - platform: state
     entity_id:
       - !input zone_home
-    to: "0"
-    from: null
+    from: "0"
+    to: null
 
 condition: []
 
