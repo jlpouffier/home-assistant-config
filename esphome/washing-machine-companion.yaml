@@ -1,0 +1,235 @@
+substitutions:
+  allowed_characters: "!#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůű"
+
+esphome:
+  name: washing-machine-companion
+  friendly_name: Washing Machine Companion
+  on_boot: 
+    priority: 600
+    then:
+      - script.execute: draw_display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework: 
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  on_client_connected:
+    - delay: 5s
+    - lambda: id(init_in_progress) = false;
+    - script.execute: draw_display
+
+globals:
+  - id: init_in_progress
+    type: bool
+    restore_value: false
+    initial_value: "true"
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+sensor:
+  - platform: homeassistant
+    id: washing_machine_time
+    entity_id: sensor.fin_differee_machine_a_laver
+    on_value: 
+      then:
+        - script.execute: draw_display
+
+binary_sensor:
+  - platform: homeassistant
+    entity_id: binary_sensor.is_washing_machine_running
+    id: is_washing_machine_running
+    on_state: 
+      then:
+        - script.execute: draw_display
+
+  - platform: gt911
+    id: home_button
+    index: 0
+    on_press:
+      then:
+        script.execute: reset_washing_machine_state
+
+
+switch:
+  - platform: homeassistant
+    entity_id: input_boolean.machine_a_laver_a_vider
+    id: is_washing_to_be_emptied
+    on_turn_on: 
+      then:
+        - script.execute: draw_display
+    on_turn_off: 
+      then:
+        - script.execute: draw_display
+
+
+script:
+  - id: draw_display
+    then:
+      - lambda: |
+          if (id(init_in_progress)) {
+            id(draw_boot_page).execute();
+          } else if (id(is_washing_to_be_emptied).state) {
+            id(draw_complete_page).execute();
+          } else if (id(is_washing_machine_running).state) {
+            id(draw_in_progress_page).execute();
+          } else {
+            id(draw_idle_page).execute();
+          }
+
+  - id: draw_boot_page
+    then:
+      - lambda: |
+          id(s3_box_lcd).show_page(boot_page);
+          id(s3_box_lcd).update();
+
+  - id: draw_idle_page
+    then:
+      - lambda: |
+          id(s3_box_lcd).show_page(idle_page);
+          id(s3_box_lcd).update();
+
+  - id: draw_in_progress_page
+    then:
+      - lambda: |
+          id(s3_box_lcd).show_page(in_progress_page);
+          id(s3_box_lcd).update();
+
+  - id: draw_complete_page
+    then:
+      - lambda: |
+          id(s3_box_lcd).show_page(complete_page);
+          id(s3_box_lcd).update();
+  
+  - id: reset_washing_machine_state
+    then:
+      - if:
+          condition:
+            switch.is_on: is_washing_to_be_emptied
+          then:
+            switch.turn_off: is_washing_to_be_emptied
+
+spi:
+  - id: spi_bus
+    clk_pin: 7
+    mosi_pin: 6
+    
+display:
+  - platform: ili9xxx
+    id: s3_box_lcd
+    model: S3BOX
+    invert_colors: false
+    data_rate: 40MHz
+    cs_pin: 5
+    dc_pin: 4
+    reset_pin:
+      number: 48
+      inverted: true
+    update_interval: never
+    pages:
+          - id: idle_page
+            lambda: |-
+              it.fill(id(idle_color));
+              std::string title_string = "Réglage fin différée";
+              it.printf(70, 60, id(title_font), Color::WHITE, "%s", title_string.c_str());
+              int hours = floor(id(washing_machine_time).state);
+              int minutes = floor( (id(washing_machine_time).state - hours) * 60);
+              int truncated_minutes = floor( minutes / 10 ) * 10;
+              auto display_hours = (hours < 10 ? "0" : "") + std::to_string(hours);
+              auto display_minutes = (truncated_minutes < 10 ? "0" : "") + std::to_string(truncated_minutes);
+              std::string timer_string = display_hours + ":" + display_minutes;
+              it.printf(70, 80, id(time_font), Color::WHITE, "%s", timer_string.c_str());
+          - id: in_progress_page
+            lambda: |-
+              it.fill(id(in_progress_color));
+              std::string title_string = "Lavage en cours ...";
+              it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine), ImageAlign::CENTER);
+          - id: complete_page
+            lambda: |-
+              it.fill(id(complete_color));
+              std::string title_string = "Lavage terminé !";
+              it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine_alert), ImageAlign::CENTER);
+          - id: boot_page
+            lambda: |-
+              it.fill(id(idle_color));
+
+i2c:
+  - id: bus_a
+    sda: GPIO08
+    scl: GPIO18
+    scan: false
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
+    frequency: 100kHz
+
+touchscreen:
+  - platform: gt911
+    i2c_id: bus_a
+    id: gt911_touchscreen
+    interrupt_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    on_touch:
+      then:
+        script.execute: reset_washing_machine_state
+
+output:
+  - platform: ledc
+    pin: GPIO47
+    id: backlight_output
+
+light:
+  - platform: monochromatic
+    id: led
+    name: Screen
+    icon: "mdi:television"
+    entity_category: config
+    output: backlight_output
+    restore_mode: RESTORE_DEFAULT_ON
+    default_transition_length: 250ms
+
+font:
+  - file:
+      type: gfonts
+      family: Figtree
+      weight: 300
+    id: time_font
+    size: 78
+    glyphsets:
+      - GF_Latin_Core
+  - file:
+      type: gfonts
+      family: Figtree
+      weight: 300
+    id: title_font
+    size: 20
+    glyphsets:
+      - GF_Latin_Core
+
+image:
+  - file: mdi:washing-machine
+    id: washing_machine
+    resize: 150x150
+  - file: mdi:washing-machine-alert
+    id: washing_machine_alert
+    resize: 150x150
+
+color:
+  - id: idle_color
+    hex: "000000"
+  - id: in_progress_color
+    hex: "4caf50"
+  - id: complete_color
+    hex: "ff6f22"
