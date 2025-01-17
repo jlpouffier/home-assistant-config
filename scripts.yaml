@@ -1194,54 +1194,6 @@ voicekit_reset:
       - light.vpe_dvt_salle_de_douche_led_ring
   description: ''
   icon: mdi:square-circle
-easter_egg:
-  alias: Easter Egg
-  sequence:
-  - action: media_player.join
-    metadata: {}
-    data:
-      group_members:
-      - media_player.sonos_chambre_marilou
-    target:
-      entity_id: media_player.sonos_bureau
-  - action: media_player.play_media
-    target:
-      entity_id: media_player.sonos_bureau
-    data:
-      media_content_id: media-source://media_source/local/wake_up.mp3
-      media_content_type: audio/mpeg
-    metadata:
-      title: wake_up.mp3
-      thumbnail:
-      media_class: music
-      children_media_class:
-      navigateIds:
-      - {}
-      - media_content_type: app
-        media_content_id: media-source://media_source
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 14
-      milliseconds: 0
-  - repeat:
-      sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          flash: short
-        target:
-          floor_id: premier_etage
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      while:
-      - condition: state
-        entity_id: media_player.sonos_bureau
-        state: playing
-  description: ''
 quitter_la_maison:
   alias: Départ en cours
   sequence:
@@ -1322,7 +1274,7 @@ recuperer_liste_de_course:
       status: needs_action
   - stop: ''
     response_variable: result
-  description: Récupérer les éléments de ma liste de course
+  description: A utiliser lorsqu'un utilisateur veux connaitre la liste de course
   icon: mdi:basket
 jouer_de_la_musique_music_assistant:
   sequence:
@@ -1343,14 +1295,16 @@ jouer_de_la_musique_music_assistant:
             enqueue: replace
       - action: music_assistant.play_media
         data: '{{ dict(media_data, **decorate_data) }}'
-        target: '{{target}}'
+        target:
+          area_id: '{{area}}'
       - variables:
           decorate_data:
             enqueue: add
             radio_mode: true
       - action: music_assistant.play_media
         data: '{{ dict(media_data, **decorate_data) }}'
-        target: '{{target}}'
+        target:
+          area_id: '{{area}}'
     - conditions:
       - condition: template
         value_template: '{{media_data.media_type in ["track"]}}'
@@ -1361,7 +1315,8 @@ jouer_de_la_musique_music_assistant:
             radio_mode: true
       - action: music_assistant.play_media
         data: '{{ dict(media_data, **decorate_data) }}'
-        target: '{{target}}'
+        target:
+          area_id: '{{area}}'
   fields:
     query:
       selector:
@@ -1370,62 +1325,15 @@ jouer_de_la_musique_music_assistant:
       description: Requête a jouer (Un artiste, un album, une chanson, quelque chose
         de plus complexe)
       required: true
-    target:
+    area:
       selector:
-        target:
+        area:
           entity:
-          - integration: music_assistant
-      name: Cible
+            integration: music_assistant
+          multiple: false
+      name: Piece
+      description: Pièce dans laquelle jouer la requete
+      required: true
   alias: Jouer de la musique (Music Assistant)
   description: Jouer n'importe quoi dans n'importe quelle piece de la maison
   icon: mdi:music
-alarm:
-  sequence:
-  - action: media_player.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.kef
-      - media_player.kef_salon_music_assistant
-  - action: media_player.volume_set
-    metadata: {}
-    data:
-      volume_level: 0.7
-    target:
-      entity_id:
-      - media_player.sonos_bureau
-      - media_player.sonos_chambre_marilou
-      - media_player.sonos_salle_de_douche
-      - media_player.kef
-      - media_player.kef_salon_music_assistant
-  - action: media_player.volume_set
-    metadata: {}
-    data:
-      volume_level: 0.9
-    target:
-      entity_id:
-      - media_player.vpe_dvt_salle_de_douche_media_player
-      - media_player.vpe_bureau_media_player
-      - media_player.vpe_chambre_music_assistant
-      - media_player.vpe_chambre_marilou_media_player
-      - media_player.vpe_cuisine_media_player
-      - media_player.vpe_salon_media_player
-  - action: media_player.play_media
-    data:
-      media_content_id: media-source://media_source/local/alarm_1hour.mp3
-      media_content_type: audio/x-wav
-    target:
-      entity_id:
-      - media_player.kef_salon_music_assistant
-      - media_player.sonos_bureau
-      - media_player.sonos_bureau_music_assistant
-      - media_player.sonos_salle_de_douche
-      - media_player.vpe_dvt_salle_de_douche_media_player
-      - media_player.vpe_bureau_media_player
-      - media_player.vpe_chambre_marilou_media_player
-      - media_player.vpe_chambre_media_player
-      - media_player.vpe_cuisine_media_player
-      - media_player.vpe_salon_media_player
-  alias: Alarm
-  description: ''
