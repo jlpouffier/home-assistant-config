@@ -571,22 +571,6 @@
       entity_id: script.power_notification_mise_a_jour_dispo
   mode: queued
   max: 10
-- id: '1688387237599'
-  alias: Surveillance du système - Backup
-  description: ''
-  triggers:
-  - at: 01:00:00
-    trigger: time
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_monitor_system
-    state: 'on'
-  actions:
-  - action: hassio.backup_full
-    data:
-      compressed: true
-      name: Home Assistant Backup {{now()}}
-  mode: single
 - id: '1688390987276'
   alias: "Surveillance du système - \U0001F514 Notifier batteries faibles"
   description: ''
@@ -4960,19 +4944,36 @@
       title: Well.
       message: Fuck.
   mode: single
-- id: '1736612446471'
-  alias: Test suppression radiateur TV
+- id: '1736868943182'
+  alias: Éteindre Rez-de-Chaussée si plus de présence
   description: ''
   triggers:
-  - trigger: time_pattern
-    minutes: '0'
-    seconds: '0'
-  conditions: []
+  - entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automation_monitor_home
+    state: 'on'
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
   actions:
-  - action: climate.set_temperature
+  - action: light.turn_off
     metadata: {}
-    data:
-      temperature: 7
+    data: {}
     target:
-      entity_id: climate.radiateur_coin_tv
+      floor_id: rez_de_chaussee
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - media_player.media_center
+      - media_player.kef_salon_music_assistant
   mode: single
