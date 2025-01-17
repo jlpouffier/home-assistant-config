@@ -1,0 +1,18 @@
+homeassistant:
+  customize:
+    sensor.radiateur_bureau_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_chambre_marilou_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_chambre_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_coin_tv_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_cuisine_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_salle_de_bains_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_salle_de_douche_temps_de_chauffe:
+      state_class: total_increasing
+    sensor.radiateur_table_a_manger_temps_de_chauffe:
+      state_class: total_increasing
