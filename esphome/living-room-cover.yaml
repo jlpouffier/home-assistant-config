@@ -1,0 +1,94 @@
+esphome:
+  name: "living-room-cover"
+  friendly_name: Volets Salon
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret living-room-cover-api-encryption-key
+
+
+ota:
+  platform: esphome
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+
+switch:
+  - platform: gpio
+    id: living_room_cover_up
+    name: "Volet Salon - Bouton UP (Fallback)"
+    icon: "mdi:arrow-up-bold"
+    entity_category: diagnostic
+    pin: 
+      number: 13
+      inverted: true
+      mode:
+        output: true
+    interlock: [living_room_cover_stop, living_room_cover_down]
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: living_room_cover_up
+    
+  - platform: gpio
+    id: living_room_cover_stop
+    name: "Volet Salon - Bouton STOP (Fallback)"
+    icon: "mdi:square"
+    entity_category: diagnostic
+    pin: 
+      number: 12
+      inverted: true
+      mode:
+        output: true
+    interlock: [living_room_cover_up, living_room_cover_down]
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: living_room_cover_stop
+    
+  - platform: gpio
+    id: living_room_cover_down
+    name: "Volet Salon - Bouton DOWN (Fallback)"
+    icon: "mdi:arrow-down-bold"
+    entity_category: diagnostic
+    pin: 
+      number: 27
+      inverted: true
+      mode:
+        output: true
+    interlock: [living_room_cover_stop, living_room_cover_up]
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: living_room_cover_down
+
+cover:
+  - platform: time_based
+    id: living_room_cover
+    name: "Volets Salon"
+    assumed_state: true
+    open_action:
+      - switch.turn_on: living_room_cover_up
+    open_duration: 29s
+    close_action:
+      - switch.turn_on: living_room_cover_down
+    close_duration: 28s
+    stop_action:
+      - switch.turn_on: living_room_cover_stop
+    on_open:
+      then:
+        - delay: 1s
+        - switch.turn_on: living_room_cover_up
+    on_closed:
+      then:
+        - delay: 1s
+        - switch.turn_on: living_room_cover_down
