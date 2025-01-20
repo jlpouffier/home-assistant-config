@@ -1126,7 +1126,7 @@
     trigger: time
   conditions:
   - condition: state
-    entity_id: media_player.sonos_chambre_marilou_music_assistant
+    entity_id: media_player.vpe_chambre_marilou_music_assistant
     state: playing
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
@@ -1135,7 +1135,7 @@
     data: {}
     target:
       entity_id:
-      - media_player.sonos_chambre_marilou_music_assistant
+      - media_player.vpe_chambre_marilou_music_assistant
   - action: light.turn_off
     data: {}
     target:
@@ -1188,7 +1188,7 @@
         data: {}
         target:
           entity_id:
-          - media_player.sonos_chambre_marilou_music_assistant
+          - media_player.vpe_chambre_marilou_music_assistant
       - action: input_datetime.set_datetime
         data:
           datetime: '{{ now() }}'
@@ -1919,17 +1919,11 @@
     data: {}
     target:
       area_id: chambre_bebe
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_chambre_marilou
   - action: media_player.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.sonos_chambre_marilou_music_assistant
+      entity_id: media_player.vpe_chambre_marilou_music_assistant
   mode: single
 - id: '1718706928319'
   alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
@@ -4562,15 +4556,6 @@
       assist_satellite_entity: assist_satellite.vpe_bureau_satellite_assist
       custom_target:
         entity_id: media_player.sonos_bureau
-- id: '1731706831270'
-  alias: Réduire volume lorsque assistant vocal en écoute (Chambre Marilou)
-  description: ''
-  use_blueprint:
-    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
-    input:
-      assist_satellite_entity: assist_satellite.vpe_chambre_marilou_satellite_assist
-      custom_target:
-        entity_id: media_player.sonos_chambre_marilou
 - id: '1731706885951'
   alias: Réduire volume lorsque assistant vocal en écoute (Cuisine)
   description: ''
@@ -4922,8 +4907,7 @@
       metadata: {}
       data:
         query: '{{trigger.slots.query}}'
-        target:
-          area_id: '{{area_id(trigger.device_id)}}'
+        area: '{{area_id(trigger.device_id)}}'
     - set_conversation_response: D'accord
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
@@ -4976,4 +4960,69 @@
       entity_id:
       - media_player.media_center
       - media_player.kef_salon_music_assistant
+  mode: single
+- id: '1737233418257'
+  alias: Boost Salle de Bain - Activer par le VPE
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.vpe_dvt_salle_de_douche_button_press
+  conditions:
+  - condition: not
+    conditions:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: event.vpe_dvt_salle_de_douche_button_press
+        state: unavailable
+      - condition: state
+        entity_id: event.vpe_dvt_salle_de_douche_button_press
+        state: unknown
+  - condition: state
+    entity_id: event.vpe_dvt_salle_de_douche_button_press
+    attribute: event_type
+    state: long_press
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        state: 'off'
+        entity_id: input_boolean.chauffage_salle_de_douche_boost
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.chauffage_salle_de_douche_boost
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Boost Chauffage Activé
+        target:
+          entity_id: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
+    - conditions:
+      - condition: state
+        state: 'on'
+        entity_id: input_boolean.chauffage_salle_de_douche_boost
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.chauffage_salle_de_douche_boost
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Boost Chauffage Désactivé
+        target:
+          entity_id: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
   mode: single

@@ -273,26 +273,26 @@ start_marilou_bedtime_routine:
     data: {}
     target:
       entity_id:
-      - media_player.sonos_chambre_marilou_music_assistant
+      - media_player.vpe_chambre_marilou_music_assistant
   - action: media_player.volume_set
     data:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.sonos_chambre_marilou_music_assistant
+      - media_player.vpe_chambre_marilou_music_assistant
   - action: music_assistant.play_media
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
       media_type: playlist
     target:
-      entity_id: media_player.sonos_chambre_marilou_music_assistant
+      entity_id: media_player.vpe_chambre_marilou_music_assistant
   - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
-      - media_player.sonos_chambre_marilou_music_assistant
+      - media_player.vpe_chambre_marilou_music_assistant
   mode: single
   icon: mdi:bell-sleep
   description: Démarrer la routine du sommeil de Marilou. A utiliser lorsque je suis
