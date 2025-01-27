@@ -5082,7 +5082,7 @@
       for_each: '{{reminder_list}}'
   mode: single
 - id: '1737976815103'
-  alias: Rappels - Notifier rappel maison occupée 
+  alias: Rappels - Notifier rappel maison occupée
   description: ''
   triggers:
   - trigger: state
