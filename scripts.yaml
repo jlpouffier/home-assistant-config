@@ -806,6 +806,8 @@ power_notification_mise_a_jour_dispo:
         to: '0'
       default_tag: updates_available
       target: send_to_all
+      notification_data_advanced:
+        url: /config/dashboard
   description: ''
   icon: mdi:cellphone-arrow-down
 power_notification_batteries_faibles:
@@ -819,6 +821,8 @@ power_notification_batteries_faibles:
       default_message: Certaines battery sont faibles
       default_tag: low_batteries
       target: send_to_all
+      notification_data_advanced:
+        url: /lovelace-system/batteries
   description: ''
   icon: mdi:battery-10
 power_notification_servaar:
@@ -1337,3 +1341,121 @@ jouer_de_la_musique_music_assistant:
   alias: Jouer de la musique (Music Assistant)
   description: Jouer n'importe quoi dans n'importe quelle piece de la maison
   icon: mdi:music
+create_date_time_reminder:
+  sequence:
+  - action: calendar.create_event
+    metadata: {}
+    data:
+      summary: '{{reminder}}'
+      start_date_time: '{{as_datetime(date)}}'
+      end_date_time: '{{as_datetime(date) + timedelta(minutes=5)}}'
+    target:
+      entity_id: calendar.rappels
+  fields:
+    reminder:
+      selector:
+        text:
+      name: reminder
+      description: Reminder, String, Mandatory, Example "Take out the trash"
+      required: true
+    date:
+      selector:
+        datetime: {}
+      name: date
+      description: Reminder Date, date, mandatory. Guess time for fuzzy request such
+        as "Evening" or "Morning". Default to 8am for requests with no clear time.
+      required: true
+  alias: Create Date Time Reminder
+  description: Create a date time reminder.
+  icon: mdi:reminder
+create_location_based_reminder:
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ reminder_trigger == ''empty''}}'
+      sequence:
+      - action: todo.add_item
+        metadata: {}
+        data:
+          item: '{{reminder}}'
+        target:
+          entity_id: todo.rappels_maison_vide
+    - conditions:
+      - condition: template
+        value_template: '{{ reminder_trigger == ''occupied''}}'
+      sequence:
+      - action: todo.add_item
+        metadata: {}
+        data:
+          item: '{{reminder}}'
+        target:
+          entity_id: todo.rappels_maison_occupee
+  fields:
+    reminder:
+      selector:
+        text:
+      name: reminder
+      description: Reminder, String, Mandatory, Example "Take out the trash"
+      required: true
+    reminder_trigger:
+      selector:
+        select:
+          options:
+          - value: empty
+            label: When the house becomes empty
+          - value: occupied
+            label: When the house becomes occupied
+      name: Reminder Trigger
+      description: Trigger of the reminder, either when the house becomes empty or
+        when it becomes occupied, mandatory
+      required: true
+  alias: 'Create Location Based Reminder '
+  description: Create a location based reminder (When I leave or arrive home)
+  icon: mdi:reminder
+power_notification_rappel:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_tag: reminders_calendar
+      persons: []
+      default_title: "\U0001F514 Rappel"
+      default_message: Vous avez un rappel
+      notification_data_advanced:
+        url: /lovelace-system/reminders
+      target: send_to_all
+  alias: Power Notification - Rappel Calendrier
+  description: ''
+  icon: mdi:calendar
+power_notification_rappel_maison_occupee:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_tag: reminders_home_occupied
+      persons: []
+      default_title: "\U0001F514 Rappel"
+      default_message: Vous avez un rappel
+      notification_data_advanced:
+        url: /lovelace-system/reminders
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+  alias: Power Notification - Rappel Maison Occupée
+  description: ''
+  icon: mdi:home-import-outline
+power_notification_rappel_maison_vide:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_tag: reminders_home_empty
+      persons: []
+      default_title: "\U0001F514 Rappel"
+      default_message: Vous avez un rappel
+      notification_data_advanced:
+        url: /lovelace-system/reminders
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+  alias: Power Notification - Rappel Maison Vide
+  description: ''
+  icon: mdi:home-export-outline

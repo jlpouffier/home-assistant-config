@@ -1521,8 +1521,9 @@
       - condition: numeric_state
         entity_id: sensor.next_meeting_in
         above: 2100
-      - condition: template
-        value_template: '{{ range(1, 4) | random == 1 }}'
+      - condition: state
+        entity_id: sensor.de_4_standing_desk_autonome
+        state: '1'
       sequence:
       - action: script.controler_le_standing_desk
         metadata: {}
@@ -4591,6 +4592,9 @@
   conditions:
   - condition: template
     value_template: '{{trigger.to_state.attributes.event_type == ''double_press''}}'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   actions:
   - variables:
       area_id: '{{area_id(trigger.entity_id)}}'
@@ -4983,6 +4987,9 @@
     entity_id: event.vpe_dvt_salle_de_douche_button_press
     attribute: event_type
     state: long_press
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   actions:
   - choose:
     - conditions:
@@ -5025,4 +5032,85 @@
           message: Boost Chauffage Désactivé
         target:
           entity_id: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
+  mode: single
+- id: '1737975480794'
+  alias: Rappels - Notifier rappel calendrier
+  description: ''
+  triggers:
+  - trigger: calendar
+    entity_id: calendar.rappels
+    event: start
+    offset: 0:0:0
+  conditions: []
+  actions:
+  - action: script.power_notification_rappel
+    metadata: {}
+    data:
+      user_message: '{{trigger.calendar_event.summary}}'
+      user_tag: '{{as_timestamp(now())}}'
+  mode: single
+- id: '1737976480635'
+  alias: Rappels - Notifier rappel maison vide
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
+  conditions:
+  - condition: numeric_state
+    entity_id: todo.rappels_maison_vide
+    above: 0
+  actions:
+  - action: todo.get_items
+    target:
+      entity_id: todo.rappels_maison_vide
+    data:
+      status: needs_action
+    metadata: {}
+    response_variable: reminders
+  - variables:
+      reminder_list: "[\n{% for item in reminders['todo.rappels_maison_vide'][\"items\"]
+        %}\n  \"{{item.summary}}\",\n{% endfor %}\n]\n"
+  - repeat:
+      sequence:
+      - action: script.power_notification_rappel_maison_vide
+        metadata: {}
+        data:
+          user_message: '{{repeat.item}}'
+          user_tag: '{{repeat.item[:64]}}'
+      for_each: '{{reminder_list}}'
+  mode: single
+- id: '1737976815103'
+  alias: Rappels - Notifier rappel maison occupée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Arrivée en cours
+  conditions:
+  - condition: numeric_state
+    entity_id: todo.rappels_maison_occupee
+    above: 0
+  actions:
+  - action: todo.get_items
+    target:
+      entity_id:
+      - todo.rappels_maison_occupee
+    data:
+      status: needs_action
+    metadata: {}
+    response_variable: reminders
+  - variables:
+      reminder_list: "[\n{% for item in reminders['todo.rappels_maison_occupee'][\"items\"]
+        %}\n  \"{{item.summary}}\",\n{% endfor %}\n]\n"
+  - repeat:
+      sequence:
+      - action: script.power_notification_rappel_maison_occupee
+        metadata: {}
+        data:
+          user_message: '{{repeat.item}}'
+          user_tag: '{{repeat.item[:64]}}'
+      for_each: '{{reminder_list}}'
   mode: single
