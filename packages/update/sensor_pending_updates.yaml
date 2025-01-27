@@ -9,6 +9,7 @@ template:
               | list
               | count
           }}
+        state_class: measurement
         attributes:
           entities: |
             {{ 
