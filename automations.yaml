@@ -1567,7 +1567,7 @@
             target_position: standing
         target:
           entity_id: script.controler_le_standing_desk
-      - set_conversation_response: D'accord
+      - set_conversation_response: Bureau en montée
     - conditions:
       - condition: trigger
         id:
@@ -1580,7 +1580,7 @@
             target_position: sitting
         target:
           entity_id: script.controler_le_standing_desk
-      - set_conversation_response: D'accord
+      - set_conversation_response: Bureau en descente
   mode: single
 - id: '1707424061311'
   alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
@@ -1597,7 +1597,7 @@
     data: {}
     target:
       entity_id: script.start_marilou_bedtime_routine
-  - set_conversation_response: D'accord
+  - set_conversation_response: Bonne nuit Marilou
   mode: single
 - id: '1707728356919'
   alias: "Meta Quest - \U0001F6CE️ Notification batterie faible."
@@ -1783,7 +1783,7 @@
         metadata: {}
         target:
           entity_id: '{{target_scene_list}}'
-      - set_conversation_response: D'accord
+      - set_conversation_response: Lumière réinitialisée
       else:
       - set_conversation_response: Aucune scene par defaut trouvée
     else:
@@ -3720,7 +3720,7 @@
         data: {}
         target:
           entity_id: input_boolean.poubelle_noire_a_sortir
-      - set_conversation_response: D'accord
+      - set_conversation_response: C'est noté
     - conditions:
       - condition: state
         entity_id: input_boolean.poubelle_verte_a_sortir
@@ -3731,7 +3731,7 @@
         data: {}
         target:
           entity_id: input_boolean.poubelle_verte_a_sortir
-      - set_conversation_response: D'accord
+      - set_conversation_response: C'est noté
     default:
     - set_conversation_response: 'Aucune poubelle n''est actuellement à sortir. '
   mode: single
@@ -3757,7 +3757,7 @@
           value: 0
         target:
           entity_id: input_number.litter_tracking
-      - set_conversation_response: D'accord
+      - set_conversation_response: C'est noté
     default:
     - set_conversation_response: La litière est déja propre
   mode: single
@@ -3783,7 +3783,7 @@
         data: {}
         target:
           entity_id: input_boolean.machine_a_laver_a_vider
-      - set_conversation_response: D'accord
+      - set_conversation_response: C'est noté
     default:
     - set_conversation_response: La machine à laver est déjà vide
   mode: single
@@ -3811,7 +3811,7 @@
         target:
           entity_id:
           - input_boolean.courrier_a_relever
-      - set_conversation_response: D'accord
+      - set_conversation_response: C'est noté
     default:
     - set_conversation_response: La boite aux lettres était déjà vide
   mode: single
@@ -4912,7 +4912,22 @@
       data:
         query: '{{trigger.slots.query}}'
         area: '{{area_id(trigger.device_id)}}'
-    - set_conversation_response: D'accord
+      response_variable: media_data
+    - set_conversation_response: '{% if media_data.media_type == ''artist'' %}
+
+        Lecture de l''artiste {{media_data.media_id}}
+
+        {% elif media_data.media_type == ''album'' %}
+
+        Lecture de l''album {{media_data.media_id}} {% if ''artist'' in media_data
+        %} par {{media_data.artist}} {% endif %}
+
+        {% elif media_data.media_type == ''track'' %}
+
+        Lecture de {{media_data.media_id}} {% if ''artist'' in media_data %} par {{media_data.artist}}
+        {% endif %}
+
+        {% endif %}'
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
   mode: single
@@ -5113,4 +5128,56 @@
           user_message: '{{repeat.item}}'
           user_tag: '{{repeat.item[:64]}}'
       for_each: '{{reminder_list}}'
+  mode: single
+- id: '1738676615343'
+  alias: Bureau - Notification Lumineuse Qualité de l'air
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.qualite_de_l_air_bureau
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: binary_sensor.capteur_presence_bureau_occupancy
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.mode_sommeil
+    state: 'off'
+  actions:
+  - action: scene.create
+    data:
+      scene_id: office_webcam_previous_light_state
+      snapshot_entities:
+      - light.hue_play_bars
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: light.turn_on
+    metadata: {}
+    data:
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      brightness_pct: 100
+    target:
+      entity_id: light.hue_play_bars
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.office_webcam_previous_light_state
   mode: single
