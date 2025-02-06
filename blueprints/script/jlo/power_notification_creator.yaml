@@ -304,11 +304,46 @@ sequence:
   - sequence:
       - repeat:
           sequence:
-            - action: "{{person_service_mapping[repeat.item]['service']}}"
-              data:
-                title: "{{title}}"
-                message: "{{message}}"
-                data: "{{ notification_data }}"
+            - if:
+                - condition: template
+                  value_template: |
+                    {% set has_funny_notifications_master_switch = 
+                      "input_boolean.funny_notifications" in 
+                      expand(states.input_boolean)
+                      | map(attribute='entity_id')
+                      | list
+                    %}
+                    {% set has_funny_notifications_conversation_agent =
+                      "conversation.funny_notifications_conversation_agent" in 
+                      expand(states.conversation)
+                      | map(attribute='entity_id')
+                      | list
+                    %}
+                    {% set are_funny_notifications_on = 
+                      states("input_boolean.funny_notifications") == "on"
+                    %}
+                    {{ has_funny_notifications_master_switch and has_funny_notifications_conversation_agent and are_funny_notifications_on}}
+              then:
+                - action: conversation.process
+                  metadata: {}
+                  data:
+                    agent_id: conversation.funny_notifications_conversation_agent
+                    text: |
+                      {"title":"{{title}}","message":"{{message}}"}
+                  response_variable: ai_output
+                - variables:
+                    ai_output_json: "{{ai_output.response.speech.plain.speech|from_json}}"
+                - action: "{{person_service_mapping[repeat.item]['service']}}"
+                  data:
+                    title: "{{ai_output_json.title}}"
+                    message: "{{ai_output_json.message}}"
+                    data: "{{ notification_data }}"
+              else:
+                - action: "{{person_service_mapping[repeat.item]['service']}}"
+                  data:
+                    title: "{{title}}"
+                    message: "{{message}}"
+                    data: "{{ notification_data }}"
           for_each: "{{iterable_persons}}"
 
       - if:
