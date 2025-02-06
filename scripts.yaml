@@ -1238,34 +1238,6 @@ recuperer_previsions_meteorologiques:
       name: Fréquence
       required: true
       description: Fréquence des prévisions. Une par heure ou une par jour.
-recuperer_reunions_professionnelles:
-  alias: 'Récupérer Réunions Professionnelles '
-  sequence:
-  - action: calendar.get_events
-    target:
-      entity_id:
-      - calendar.nabucasa_calendar_personal
-    response_variable: result
-    data:
-      start_date_time: '{{start_date}}'
-      end_date_time: '{{end_date}}'
-  - stop: ''
-    response_variable: result
-  description: Récupérer les réunions depuis mon calendrier professionnel
-  icon: mdi:laptop-account
-  fields:
-    start_date:
-      selector:
-        datetime: {}
-      name: Date de début
-      description: Date et heure de début
-      required: true
-    end_date:
-      selector:
-        datetime: {}
-      name: Date de fin
-      required: true
-      description: Date et heure de fin
 recuperer_liste_de_course:
   alias: Récupérer liste de course
   sequence:
@@ -1321,6 +1293,8 @@ jouer_de_la_musique_music_assistant:
         data: '{{ dict(media_data, **decorate_data) }}'
         target:
           area_id: '{{area}}'
+  - stop: ''
+    response_variable: media_data
   fields:
     query:
       selector:
