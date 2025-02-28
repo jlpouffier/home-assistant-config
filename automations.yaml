@@ -260,7 +260,7 @@
         id:
         - 'on'
       sequence:
-      - action: media_player.turn_off
+      - action: media_player.media_pause
         metadata: {}
         data: {}
         target:
@@ -755,28 +755,6 @@
           - light.exterieur_sphere
   mode: parallel
   max: 10
-- id: '1690826979664'
-  alias: "Assist - \U0001F4E3 Commandes Multiple "
-  description: ''
-  triggers:
-  - command:
-    - '{command1} et {command2}'
-    trigger: conversation
-  conditions: []
-  actions:
-  - action: conversation.process
-    data:
-      agent_id: conversation.home_assistant
-      text: '{{trigger.slots.command1}}'
-    response_variable: response_1
-  - action: conversation.process
-    data:
-      agent_id: conversation.home_assistant
-      text: '{{trigger.slots.command2}}'
-    response_variable: response_2
-  - set_conversation_response: '{{response_1.response.speech.plain.speech}} et {{response_2.response.speech.plain.speech}}'
-  mode: parallel
-  max: 100
 - id: '1691413517615'
   alias: Bureau - Notification Lumineuse Meetings
   description: ''
@@ -1083,11 +1061,11 @@
       state: 'off'
       entity_id: media_player.kef_salon_music_assistant
   actions:
-  - action: media_player.turn_off
+  - action: media_player.media_pause
+    metadata: {}
     data: {}
     target:
-      entity_id:
-      - media_player.kef_salon_music_assistant
+      entity_id: media_player.kef_salon_music_assistant
   mode: single
 - id: '1699131464359'
   alias: TV intelligente - Changer Source quand Lecture en cours sur TV
@@ -1131,7 +1109,7 @@
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
   actions:
-  - action: media_player.turn_off
+  - action: media_player.media_pause
     data: {}
     target:
       entity_id:
@@ -1140,65 +1118,6 @@
     data: {}
     target:
       area_id: chambre_bebe
-  mode: single
-- id: '1699869463559'
-  alias: Routine du sommeil Marilou - Button Hue
-  description: ''
-  triggers:
-  - entity_id:
-    - event.hue_tap_dial_switch_13_bouton_1
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_13_bouton_2
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_13_bouton_3
-    attribute: event_type
-    to: repeat
-    id: 'off'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_13_bouton_4
-    attribute: event_type
-    to: repeat
-    id: 'off'
-    trigger: state
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - 'on'
-      sequence:
-      - action: script.start_marilou_bedtime_routine
-        data: {}
-    - conditions:
-      - condition: trigger
-        id:
-        - 'off'
-      sequence:
-      - action: media_player.turn_off
-        data: {}
-        target:
-          entity_id:
-          - media_player.vpe_chambre_marilou_music_assistant
-      - action: input_datetime.set_datetime
-        data:
-          datetime: '{{ now() }}'
-        target:
-          entity_id: input_datetime.marilou_bedtime_routine_end
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          area_id: chambre_bebe
   mode: single
 - id: '1700410464307'
   alias: Simulation de présence
@@ -1583,7 +1502,7 @@
       - set_conversation_response: Bureau en descente
   mode: single
 - id: '1707424061311'
-  alias: "Routine du sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
+  alias: "Mode Sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
   description: ''
   triggers:
   - command:
@@ -1592,12 +1511,12 @@
     trigger: conversation
   conditions: []
   actions:
-  - action: script.turn_on
+  - action: input_boolean.turn_on
     metadata: {}
     data: {}
     target:
-      entity_id: script.start_marilou_bedtime_routine
-  - set_conversation_response: Bonne nuit Marilou
+      entity_id: input_boolean.mode_sommeil_marilou
+  - set_conversation_response: Bonne nuit Marilou !
   mode: single
 - id: '1707728356919'
   alias: "Meta Quest - \U0001F6CE️ Notification batterie faible."
@@ -1732,30 +1651,6 @@
         target:
           area_id: chambre_bebe
   mode: single
-- id: '1710949489035'
-  alias: "Assist - \U0001F4E3 Multiple Commands (EN)"
-  description: ''
-  triggers:
-  - command:
-    - '{command1} and {command2}'
-    trigger: conversation
-  conditions: []
-  actions:
-  - action: conversation.process
-    data:
-      agent_id: conversation.home_assistant
-      text: '{{trigger.slots.command1}}'
-      language: en
-    response_variable: response_1
-  - action: conversation.process
-    data:
-      agent_id: conversation.home_assistant
-      text: '{{trigger.slots.command2}}'
-      language: en
-    response_variable: response_2
-  - set_conversation_response: '{{response_1.response.speech.plain.speech}} and {{response_2.response.speech.plain.speech}}'
-  mode: parallel
-  max: 100
 - id: '1714134719761'
   alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
   description: ''
@@ -1856,7 +1751,7 @@
     data: {}
     target:
       entity_id: media_player.sonos_bureau
-  - action: media_player.turn_off
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
@@ -1888,7 +1783,7 @@
     data: {}
     target:
       area_id: chambre
-  - action: media_player.turn_off
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
@@ -1920,7 +1815,7 @@
     data: {}
     target:
       area_id: chambre_bebe
-  - action: media_player.turn_off
+  - action: media_player.media_pause
     metadata: {}
     data: {}
     target:
@@ -1965,7 +1860,6 @@
         target:
           entity_id:
           - media_player.kef
-          - media_player.kef_salon_music_assistant
       - action: media_player.select_source
         metadata: {}
         data:
@@ -1987,7 +1881,6 @@
       target:
         entity_id:
         - media_player.kef
-        - media_player.kef_salon_music_assistant
   mode: single
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
@@ -2056,7 +1949,6 @@
       target:
         entity_id:
         - media_player.kef
-        - media_player.kef_salon_music_assistant
   mode: queued
   max: 10
 - id: '1719771128107'
@@ -3301,18 +3193,22 @@
   - condition: state
     entity_id: input_boolean.courrier_a_relever
     state: 'on'
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state: Vide
   actions:
   - choose:
     - conditions:
       - condition: trigger
         id:
         - mail
-      - condition: state
-        entity_id: input_select.modes_de_presence_de_la_maison_v2
-        state: Occupée
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
       sequence:
       - action: script.turn_on
         metadata: {}
@@ -3903,33 +3799,9 @@
         entity_id: input_boolean.mode_sommeil
         state: 'off'
       sequence:
-      - action: light.turn_on
-        metadata: {}
-        data:
-          brightness_pct: 10
-        target:
-          area_id:
-          - couloir
-      - action: cover.open_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.volets_salon
-      - action: switch.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - switch.doorbell
-      - action: media_player.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - media_player.vpe_chambre_music_assistant
       - if:
         - condition: state
-          entity_id: binary_sensor.exterieur_lumineux
+          entity_id: input_boolean.guest_mode
           state: 'off'
         then:
         - action: light.turn_on
@@ -3938,34 +3810,98 @@
             brightness_pct: 10
           target:
             area_id:
-            - bd4ba6262e7a4e72b2fd740a22c70403
+            - couloir
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.volets_salon
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - switch.doorbell
+        - if:
+          - condition: state
+            entity_id: binary_sensor.exterieur_lumineux
+            state: 'off'
+          then:
+          - action: light.turn_on
+            metadata: {}
+            data:
+              brightness_pct: 10
+            target:
+              area_id:
+              - bd4ba6262e7a4e72b2fd740a22c70403
+      - action: media_player.media_pause
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - media_player.vpe_chambre_music_assistant
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideau_chambre
+      - if:
+        - condition: state
+          entity_id: binary_sensor.exterieur_lumineux
+          state: 'on'
+        then:
+        - action: light.turn_off
+          metadata: {}
+          data: {}
+          target:
+            area_id: chambre
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
         state: 'on'
       sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'off'
+        then:
+        - action: cover.close_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.volets_salon
+        - action: switch.turn_off
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - switch.doorbell
+        - action: script.eteindre_tous_les_lecteur_multimedia
+          metadata: {}
+          data: {}
+        - action: light.turn_off
+          metadata: {}
+          data: {}
+          target:
+            floor_id:
+            - rez_de_chaussee
+            - premier_etage
+            area_id: exterieur
       - action: light.turn_off
         metadata: {}
         data: {}
         target:
-          floor_id:
-          - rez_de_chaussee
-          - premier_etage
-          area_id: exterieur
+          area_id: chambre
+      - action: media_player.media_pause
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.vpe_chambre_music_assistant
       - action: cover.close_cover
         metadata: {}
         data: {}
         target:
-          entity_id: cover.volets_salon
-      - action: switch.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - switch.doorbell
-      - action: script.eteindre_tous_les_lecteur_multimedia
-        metadata: {}
-        data: {}
+          entity_id: cover.rideau_chambre
   mode: single
 - id: '1730275787349'
   alias: Chauffage Intelligent - Choisir Temperature Cible Bureau
@@ -4978,7 +4914,11 @@
     target:
       entity_id:
       - media_player.media_center
-      - media_player.kef_salon_music_assistant
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.kef_salon_music_assistant
   mode: single
 - id: '1737233418257'
   alias: Boost Salle de Bain - Activer par le VPE
@@ -5180,4 +5120,214 @@
     data: {}
     target:
       entity_id: scene.office_webcam_previous_light_state
+  mode: single
+- id: '1739568563693'
+  alias: Assist - Fallback Assistant lors d'une panne d'internet
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.internet
+    from: 'on'
+    to: 'off'
+    id: no_internet
+  - trigger: state
+    entity_id:
+    - binary_sensor.internet
+    from: 'off'
+    to: 'on'
+    id: internet
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - no_internet
+      sequence:
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: Local
+        target:
+          entity_id:
+          - select.vpe_salon_assistant
+          - select.vpe_bureau_assistant
+          - select.vpe_chambre_assistant
+          - select.vpe_cuisine_assistant
+          - select.vpe_chambre_marilou_assistant
+          - select.vpe_dvt_salle_de_douche_assistant
+    - conditions:
+      - condition: trigger
+        id:
+        - internet
+      sequence:
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: preferred
+        target:
+          entity_id:
+          - select.vpe_salon_assistant
+          - select.vpe_bureau_assistant
+          - select.vpe_chambre_assistant
+          - select.vpe_cuisine_assistant
+          - select.vpe_chambre_marilou_assistant
+          - select.vpe_dvt_salle_de_douche_assistant
+  mode: single
+- id: '1740752651459'
+  alias: Mode Sommeil Marilou - Activer par VPE
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.vpe_chambre_marilou_button_press
+  conditions:
+  - condition: not
+    conditions:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: event.vpe_chambre_marilou_button_press
+        state: unavailable
+      - condition: state
+        entity_id: event.vpe_chambre_marilou_button_press
+        state: unknown
+  - condition: state
+    entity_id: event.vpe_chambre_marilou_button_press
+    state: long_press
+    attribute: event_type
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'off'
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.mode_sommeil_marilou
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Bonne nuit Marilou!
+        target:
+          entity_id: assist_satellite.vpe_chambre_marilou_satellite_assist
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id:
+          - input_boolean.mode_sommeil_marilou
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - action: assist_satellite.announce
+        metadata: {}
+        data:
+          message: Bonjour Marilou!
+        target:
+          entity_id:
+          - assist_satellite.vpe_chambre_marilou_satellite_assist
+  mode: single
+- id: '1740752921943'
+  alias: Mode Sommeil Marilou - Actions
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'on'
+      sequence:
+      - action: script.start_marilou_bedtime_routine
+        metadata: {}
+        data: {}
+      - action: cover.close_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideau_chambre_marilou
+        enabled: true
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'off'
+      sequence:
+      - action: automation.trigger
+        metadata: {}
+        data:
+          skip_condition: true
+        target:
+          entity_id: automation.end_marilou_bedtime_routine
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideau_chambre_marilou
+        enabled: true
+      - if:
+        - condition: state
+          entity_id: binary_sensor.exterieur_lumineux
+          state: 'off'
+        then:
+        - action: light.turn_on
+          metadata: {}
+          data:
+            brightness_pct: 10
+          target:
+            area_id: chambre_bebe
+  mode: single
+- id: '1740753985952'
+  alias: VoiceKit Chambre Marilou - Controller Volume
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'on'
+      sequence:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.1
+        target:
+          entity_id: media_player.vpe_chambre_marilou_media_player
+    default:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.6
+      target:
+        entity_id: media_player.vpe_chambre_marilou_media_player
   mode: single
