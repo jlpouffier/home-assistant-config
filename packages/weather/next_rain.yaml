@@ -15,7 +15,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -42,7 +42,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -69,7 +69,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -96,7 +96,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -123,7 +123,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -150,7 +150,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -177,7 +177,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -204,7 +204,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
@@ -232,7 +232,7 @@ template:
           {% elif forcast == "Pluie forte"%}
           mdi:water 
           {% else %}
-          mdi:weather-sunny 
+          mdi:circle-small 
           {% endif %}
         attributes:
           intensity: |
