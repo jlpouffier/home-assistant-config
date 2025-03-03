@@ -12,6 +12,6 @@ ip_bans.yaml
 custom_components/
 www/
 image/
-themes/
+themes/mushroom
 .HA_VERSION
 packages/untracked_packages/
