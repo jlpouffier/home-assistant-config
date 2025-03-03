@@ -292,42 +292,6 @@ start_marilou_bedtime_routine:
   icon: mdi:bell-sleep
   description: Démarrer la routine du sommeil de Marilou. A utiliser lorsque je suis
     en train d'endormir ma fille
-eteindre_temporairement_un_assistant_vocal:
-  alias: Éteindre temporairement un assistant vocal
-  sequence:
-  - variables:
-      target_entities: "{% set microphones = label_entities(\"Micro Assistant Vocal\")
-        %}\n[\n  {%- for entity in device_entities(device) -%}\n    {%- if entity
-        in microphones -%}\n      \"{{entity}}\",\n    {%- endif -%}\n  {%- endfor
-        -%}\n]\n"
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: '{{target_entities}}'
-  - delay:
-      hours: 0
-      minutes: 30
-      seconds: 0
-      milliseconds: 0
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: '{{target_entities}}'
-  fields:
-    device:
-      selector:
-        device: {}
-      name: Appareil
-      description: Assistant Vocal à désactiver temporairement.
-  mode: parallel
-  icon: mdi:microphone-message-off
 lancer_playlist_de_reveil:
   alias: Réveil Lumineux - Musique
   sequence:
@@ -337,20 +301,20 @@ lancer_playlist_de_reveil:
     target:
       entity_id:
       - media_player.vpe_chambre_music_assistant
-  - action: music_assistant.play_media
-    target:
-      entity_id:
-      - media_player.vpe_chambre_music_assistant
-    data:
-      media_id: ⏰ Réveil
-      enqueue: replace
-      media_type: playlist
   - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
       - media_player.vpe_chambre_music_assistant
+  - action: music_assistant.play_media
+    target:
+      entity_id:
+      - media_player.vpe_chambre_music_assistant
+    data:
+      media_id: Chillhop Master Playlist
+      enqueue: replace
+      media_type: playlist
   mode: single
   icon: mdi:alarm
 controler_le_standing_desk:
@@ -1161,27 +1125,6 @@ power_notification_temperature_anormale_dans_la_chambre_de_marilou:
       default_tag: marilou_bedroom_temp_trend
   description: ''
   icon: mdi:home-thermometer
-voicekit_reset:
-  alias: 'VoiceKit: Reset'
-  sequence:
-  - action: scene.turn_on
-    metadata: {}
-    target:
-      entity_id: scene.voicekit_defaults
-    data: {}
-  - action: light.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - light.vpe_bureau_led_ring
-      - light.vpe_chambre_led_ring
-      - light.vpe_chambre_marilou_led_ring
-      - light.vpe_cuisine_led_ring
-      - light.vpe_salon_led_ring
-      - light.vpe_dvt_salle_de_douche_led_ring
-  description: ''
-  icon: mdi:square-circle
 quitter_la_maison:
   alias: Départ en cours
   sequence:
