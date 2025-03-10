@@ -457,6 +457,12 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.mode_chien
+    state: 'off'
   actions:
   - action: script.leave_home
     data: {}
@@ -483,6 +489,14 @@
     data: {}
     target:
       entity_id: cover.volets_salon
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      floor_id:
+      - rez_de_chaussee
+      - premier_etage
+      area_id: exterieur
   - if:
     - condition: state
       entity_id: binary_sensor.exterieur_lumineux
@@ -1147,6 +1161,9 @@
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Vide
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
   actions:
   - choose:
     - conditions:
@@ -3727,12 +3744,6 @@
           data: {}
           target:
             entity_id: cover.volets_salon
-        - action: switch.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - switch.doorbell
         - if:
           - condition: state
             entity_id: binary_sensor.exterieur_lumineux
@@ -3781,12 +3792,6 @@
           data: {}
           target:
             entity_id: cover.volets_salon
-        - action: switch.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - switch.doorbell
         - action: script.eteindre_tous_les_lecteur_multimedia
           metadata: {}
           data: {}
@@ -5245,4 +5250,144 @@
         volume_level: 0.6
       target:
         entity_id: media_player.vpe_chambre_marilou_media_player
+  mode: single
+- id: '1741603027915'
+  alias: Mode Chien - Actions
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_chien
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: state
+    entity_id:
+    - input_boolean.guest_mode
+  - trigger: state
+    entity_id:
+    - input_boolean.automation_presence_simulator
+  - trigger: state
+    entity_id:
+    - binary_sensor.exterieur_lumineux
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_chien
+        state: 'on'
+      sequence:
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideau_bureau
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          floor_id:
+          - rez_de_chaussee
+          - premier_etage
+          area_id: exterieur
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.exterieur_lumineux
+            state: 'on'
+          sequence:
+          - action: cover.set_cover_position
+            metadata: {}
+            data:
+              position: 30
+            target:
+              entity_id: cover.volets_salon
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.exterieur_lumineux
+            state: 'off'
+          sequence:
+          - action: light.turn_on
+            metadata: {}
+            data:
+              brightness_pct: 5
+            target:
+              area_id:
+              - bd4ba6262e7a4e72b2fd740a22c70403
+              entity_id: light.bureau
+          - action: cover.close_cover
+            metadata: {}
+            data: {}
+            target:
+              entity_id: cover.volets_salon
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.mode_chien
+        state: 'off'
+      sequence:
+      - action: script.leave_home
+        metadata: {}
+        data: {}
+  mode: single
+- id: '1741603540670'
+  alias: Mode chien - Désactiver lors du retour a la maison
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Occupée
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mode_chien
+  mode: single
+- id: '1741604729527'
+  alias: Contrôler la sonnette avec les modes sommeil
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - if:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state: 'on'
+    then:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.doorbell
+    else:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.doorbell
   mode: single

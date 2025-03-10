@@ -2,30 +2,38 @@ leave_home:
   alias: Éteindre et Sécuriser la maison
   mode: queued
   sequence:
-  - action: light.turn_off
-    target:
-      entity_id:
-      - light.all_lights
-    data: {}
-  - action: script.eteindre_tous_les_lecteur_multimedia
-    metadata: {}
-    data: {}
   - action: switch.turn_off
     data: {}
     target:
       entity_id: switch.microphones
-  - alias: Close shutters
-    if:
+  - action: script.eteindre_tous_les_lecteur_multimedia
+    metadata: {}
+    data: {}
+  - if:
     - condition: state
-      entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
-      state: 'on'
+      entity_id: input_boolean.mode_chien
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.automation_presence_simulator
+      state: 'off'
     then:
-    - action: cover.close_cover
-      metadata: {}
-      data: {}
+    - action: light.turn_off
       target:
         entity_id:
-        - cover.volets_salon
+        - light.all_lights
+      data: {}
+    - alias: Close shutters
+      if:
+      - condition: state
+        entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
+        state: 'on'
+      then:
+      - action: cover.close_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - cover.volets_salon
   - alias: Notify entry door open
     if:
     - condition: state
@@ -1360,3 +1368,13 @@ power_notification_rappel_maison_vide:
   alias: Power Notification - Rappel Maison Vide
   description: ''
   icon: mdi:home-export-outline
+activer_le_mode_sommeil_de_marilou:
+  sequence:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.mode_sommeil_marilou
+  alias: 'Activer le mode sommeil de Marilou '
+  description: 'Active le mode sommeil de ma fille Marilou lorsque je la couche. '
+  icon: mdi:sleep
