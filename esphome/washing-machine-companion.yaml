@@ -222,14 +222,18 @@ image:
   - file: mdi:washing-machine
     id: washing_machine
     resize: 150x150
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:washing-machine-alert
     id: washing_machine_alert
     resize: 150x150
+    type: grayscale
+    transparency: alpha_channel
 
 color:
   - id: idle_color
     hex: "000000"
   - id: in_progress_color
-    hex: "4caf50"
+    hex: "000000"
   - id: complete_color
-    hex: "ff6f22"
+    hex: "000000"
