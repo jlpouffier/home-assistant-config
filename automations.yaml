@@ -5178,6 +5178,16 @@
         entity_id: input_boolean.mode_sommeil_marilou
         state: 'on'
       sequence:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          area_id: couloir
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.scenes_hue_chambre_marilou_lecture
       - action: script.start_marilou_bedtime_routine
         metadata: {}
         data: {}
@@ -5192,12 +5202,16 @@
         entity_id: input_boolean.mode_sommeil_marilou
         state: 'off'
       sequence:
-      - action: automation.trigger
+      - action: light.turn_off
         metadata: {}
-        data:
-          skip_condition: true
+        data: {}
         target:
-          entity_id: automation.end_marilou_bedtime_routine
+          area_id: chambre_bebe
+      - action: media_player.media_pause
+        data: {}
+        target:
+          entity_id:
+          - media_player.vpe_chambre_marilou_music_assistant
       - action: cover.open_cover
         metadata: {}
         data: {}
@@ -5209,12 +5223,11 @@
           entity_id: binary_sensor.exterieur_lumineux
           state: 'off'
         then:
-        - action: light.turn_on
+        - action: scene.turn_on
           metadata: {}
-          data:
-            brightness_pct: 10
+          data: {}
           target:
-            area_id: chambre_bebe
+            entity_id: scene.scenes_hue_chambre_marilou_lecture
   mode: single
 - id: '1740753985952'
   alias: VoiceKit Chambre Marilou - Controller Volume
@@ -5390,4 +5403,35 @@
       data: {}
       target:
         entity_id: switch.doorbell
+  mode: single
+- id: '1742072094434'
+  alias: VPE Douche - Affichage Boost Chauffage
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.chauffage_salle_de_douche_boost
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_salle_de_douche_boost
+        state: 'on'
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.vpe_dvt_salle_de_douche_led_ring
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_salle_de_douche_boost
+        state: 'off'
+      sequence:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.vpe_dvt_salle_de_douche_led_ring
   mode: single
