@@ -19,15 +19,15 @@ blueprint:
       selector:
         action:
 
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id:
       - !input zone_home
     from: "0"
     to: null
 
-condition: []
+conditions: []
 
-action: !input actions
+actions: !input actions
 
 mode: single
