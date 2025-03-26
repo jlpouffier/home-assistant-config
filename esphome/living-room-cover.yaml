@@ -78,10 +78,10 @@ cover:
     assumed_state: true
     open_action:
       - switch.turn_on: living_room_cover_up
-    open_duration: 29s
+    open_duration: 30s
     close_action:
       - switch.turn_on: living_room_cover_down
-    close_duration: 28s
+    close_duration: 29s
     stop_action:
       - switch.turn_on: living_room_cover_stop
     on_open:
