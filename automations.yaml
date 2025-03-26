@@ -5476,3 +5476,22 @@
         target:
           entity_id: light.vpe_dvt_salle_de_douche_led_ring
   mode: single
+- id: '1742996542028'
+  alias: Serrure - Notifier si porte ouverte et serrure vérouillée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - lock.serrure_porte_d_entree
+    to: locked
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.capteur_ouverture_porte_entree
+    state: 'on'
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_serrure_verouillee_sur_porte_ouverte
+  mode: single

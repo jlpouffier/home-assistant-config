@@ -1398,3 +1398,26 @@ power_notification_porte_d_entree_ouverte_lors_du_coucher:
       default_tag: entry_door_open_sleep_mode
   description: ''
   icon: mdi:door-open
+power_notification_serrure_verouillee_sur_porte_ouverte:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_tag: front_door_locked_but_still_open
+      target: send_to_persons_in_zones
+      zones:
+      - zone.proche_de_la_maison
+      default_title: "\U0001F512 Serrure"
+      default_message: 'La serrure est fermée alors que la porte est toujours ouverte
+        ! '
+      default_importance: true
+      discard_when:
+      - trigger: state
+        entity_id:
+        - lock.serrure_porte_d_entree
+        to: unlocked
+      - trigger: state
+        entity_id:
+        - binary_sensor.capteur_ouverture_porte_entree
+        to: 'off'
+  alias: Power notification - Serrure vérouillée sur porte ouverte
+  description: ''
