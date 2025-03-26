@@ -4,6 +4,8 @@ Main Theme:
   app-header-background-color: rgba(var(--rgb-card-background-color), 0.5)
   app-header-text-color: var(--primary-text-color)
   app-header-backdrop-filter: blur(5px)
+  energy-grid-consumption-color-0: var(--green-color)
+  energy-grid-consumption-color-1: var(--red-color)
   modes:
     light: {}
     dark: {}
