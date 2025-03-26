@@ -3828,6 +3828,22 @@
           data: {}
           target:
             entity_id: cover.rideau_chambre
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_porte_entree
+          state: 'off'
+        then:
+        - action: lock.lock
+          metadata: {}
+          data: {}
+          target:
+            entity_id: lock.serrure_porte_d_entree
+        else:
+        - action: script.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: script.power_notification_porte_d_entree_ouverte_lors_du_coucher
   mode: single
 - id: '1730275787349'
   alias: Chauffage Intelligent - Choisir Temperature Cible Bureau

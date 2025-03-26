@@ -34,12 +34,23 @@ leave_home:
         target:
           entity_id:
           - cover.volets_salon
-  - alias: Notify entry door open
+  - alias: Lock door
     if:
     - condition: state
       entity_id: binary_sensor.capteur_ouverture_porte_entree
-      state: 'on'
+      state: 'off'
     then:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        milliseconds: 0
+    - action: lock.lock
+      metadata: {}
+      data: {}
+      target:
+        entity_id: lock.serrure_porte_d_entree
+    else:
     - action: script.turn_on
       metadata: {}
       data: {}
@@ -1047,7 +1058,7 @@ power_notification_porte_fenetre_du_salon_ouverte:
   description: ''
   icon: mdi:door-open
 power_notification_porte_d_entree_ouverte:
-  alias: Power Notification - Porte d'entrée ouverte
+  alias: Power Notification - Porte d'entrée ouverte lors du départ
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
@@ -1367,3 +1378,23 @@ activer_le_mode_sommeil_de_marilou:
   alias: 'Activer le mode sommeil de Marilou '
   description: 'Active le mode sommeil de ma fille Marilou lorsque je la couche. '
   icon: mdi:sleep
+power_notification_porte_d_entree_ouverte_lors_du_coucher:
+  alias: Power Notification - Porte d'entrée ouverte lors du coucher
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F6AAPorte d'entrée"
+      default_message: La porte d'entrée est toujours ouverte alors que vous vous
+        coucher!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.capteur_ouverture_porte_entree
+        to: 'off'
+      default_importance: true
+      default_tag: entry_door_open_sleep_mode
+  description: ''
+  icon: mdi:door-open
