@@ -457,12 +457,6 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
-  - condition: state
-    entity_id: input_boolean.automation_presence_simulator
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.mode_chien
-    state: 'off'
   actions:
   - action: script.leave_home
     data: {}
