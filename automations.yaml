@@ -487,10 +487,10 @@
     metadata: {}
     data: {}
     target:
-      floor_id:
-      - rez_de_chaussee
-      - premier_etage
       area_id: exterieur
+      floor_id:
+      - premier_etage
+      - rez_de_chaussee
   - if:
     - condition: state
       entity_id: binary_sensor.exterieur_lumineux
