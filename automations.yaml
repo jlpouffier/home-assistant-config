@@ -3762,11 +3762,16 @@
         target:
           entity_id:
           - media_player.vpe_chambre_music_assistant
-      - action: cover.open_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.rideau_chambre
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
+          state: 'off'
+        then:
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideau_chambre
       - if:
         - condition: state
           entity_id: binary_sensor.exterieur_lumineux
@@ -3813,11 +3818,16 @@
         data: {}
         target:
           entity_id: media_player.vpe_chambre_music_assistant
-      - action: cover.close_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.rideau_chambre
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
+          state: 'off'
+        then:
+        - action: cover.close_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideau_chambre
   mode: single
 - id: '1730275787349'
   alias: Chauffage Intelligent - Choisir Temperature Cible Bureau
@@ -5191,12 +5201,17 @@
       - action: script.start_marilou_bedtime_routine
         metadata: {}
         data: {}
-      - action: cover.close_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.rideau_chambre_marilou
-        enabled: true
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
+          state: 'off'
+        then:
+        - action: cover.close_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideau_chambre_marilou
+          enabled: true
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil_marilou
@@ -5212,12 +5227,17 @@
         target:
           entity_id:
           - media_player.vpe_chambre_marilou_music_assistant
-      - action: cover.open_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.rideau_chambre_marilou
-        enabled: true
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
+          state: 'off'
+        then:
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideau_chambre_marilou
+          enabled: true
       - if:
         - condition: state
           entity_id: binary_sensor.exterieur_lumineux
@@ -5300,11 +5320,16 @@
         entity_id: input_boolean.mode_chien
         state: 'on'
       sequence:
-      - action: cover.open_cover
-        metadata: {}
-        data: {}
-        target:
-          entity_id: cover.rideau_bureau
+      - if:
+        - condition: state
+          entity_id: binary_sensor.capteur_ouverture_fenetre_bureau
+          state: 'off'
+        then:
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideau_bureau
       - action: light.turn_off
         metadata: {}
         data: {}
