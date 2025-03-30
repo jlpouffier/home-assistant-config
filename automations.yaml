@@ -284,81 +284,6 @@
         target:
           entity_id: media_player.kef
   mode: single
-- id: '1688364991944'
-  alias: Bureau - Meetings VR
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.quest_in_use
-    to: 'on'
-    from: 'off'
-    trigger: state
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 5
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_meetings
-    state: 'on'
-  - condition: state
-    entity_id: person.jenova70
-    state: home
-  - condition: state
-    state: 'on'
-    entity_id: binary_sensor.capteur_presence_bureau_occupancy
-  - condition: state
-    entity_id: binary_sensor.jean_loics_macbook_pro_active
-    state: 'on'
-  - condition: state
-    entity_id: device_tracker.jean_loics_macbook_pro
-    state: home
-  actions:
-  - action: scene.create
-    data:
-      scene_id: office_previous_light_state
-      snapshot_entities:
-      - light.bureau_suspension
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
-  - action: light.turn_on
-    data:
-      brightness_pct: 100
-      kelvin: 3521
-    target:
-      area_id: bureau
-  - action: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.vpe_bureau_microphone
-  - if:
-    - condition: state
-      entity_id: binary_sensor.quest_in_use
-      state: 'on'
-    then:
-    - wait_for_trigger:
-      - entity_id:
-        - binary_sensor.quest_in_use
-        to: 'off'
-        from: 'on'
-        trigger: state
-      continue_on_timeout: false
-  - action: light.turn_off
-    data: {}
-    target:
-      entity_id: light.hue_play_bars
-  - action: scene.turn_on
-    data: {}
-    target:
-      entity_id: scene.office_previous_light_state
-  - action: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.vpe_bureau_microphone
-  mode: restart
 - id: '1688368387161'
   alias: Bureau - Meetings
   description: ''
@@ -1427,9 +1352,6 @@
   - condition: state
     entity_id: binary_sensor.jean_loics_macbook_pro_camera_in_use
     state: 'off'
-  - condition: state
-    entity_id: binary_sensor.quest_in_use
-    state: 'off'
   actions:
   - choose:
     - conditions:
@@ -1531,47 +1453,6 @@
     target:
       entity_id: input_boolean.mode_sommeil_marilou
   - set_conversation_response: Bonne nuit Marilou !
-  mode: single
-- id: '1707728356919'
-  alias: "Meta Quest - \U0001F6CE️ Notification batterie faible."
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.quest_in_use
-    to: 'off'
-    from: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.recevoir_notification_batterie_meta_quest
-    state: 'on'
-  - condition: numeric_state
-    entity_id: sensor.quest_battery_level
-    below: 60
-  actions:
-  - action: script.turn_on
-    metadata: {}
-    data:
-      variables:
-        user_message: "La batterie du Quest est actuellement à {{states(\"sensor.quest_battery_level\")}}%.
-          Pense à le recharger. \n"
-    target:
-      entity_id: script.power_notification_charger_meta_quest
-  - if:
-    - condition: state
-      entity_id: binary_sensor.capteur_presence_bureau_occupancy
-      state: 'on'
-    - condition: state
-      entity_id: person.jenova70
-      state: home
-    then:
-    - action: assist_satellite.announce
-      metadata: {}
-      data:
-        message: La batterie du Quest est actuellement à       {{states("sensor.quest_battery_level")}}%.
-          Pense à le recharger.
-      target:
-        entity_id: assist_satellite.vpe_bureau_satellite_assist
   mode: single
 - id: '1714134719761'
   alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
@@ -3640,21 +3521,18 @@
   - trigger: state
     entity_id:
     - event.vpe_chambre_button_press
+    not_to:
+    - unavailable
+    - unknown
   conditions:
-  - condition: not
-    conditions:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: event.vpe_chambre_button_press
-        state: unavailable
-      - condition: state
-        entity_id: event.vpe_chambre_button_press
-        state: unknown
   - condition: state
     entity_id: event.vpe_chambre_button_press
     attribute: event_type
     state: long_press
+  - alias: It's a recent event
+    condition: template
+    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
+      = 1 )}}'
   actions:
   - choose:
     - conditions:
@@ -4464,10 +4342,17 @@
     - event.vpe_cuisine_button_press
     - event.vpe_chambre_marilou_button_press
     - event.vpe_dvt_salle_de_douche_button_press
-    not_to: unavailable
+    not_to:
+    - unavailable
+    - unknown
   conditions:
   - condition: template
     value_template: '{{trigger.to_state.attributes.event_type == ''double_press''}}'
+    alias: It's a double press
+  - alias: It's a recent event
+    condition: template
+    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
+      = 1 )}}'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
@@ -4745,22 +4630,6 @@
           entity_id: scene.salon_salon_tv_playing
         data: {}
   mode: restart
-- id: '1732718242168'
-  alias: '[TMP] Location Permission Not determined'
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.jean_loics_iphone_location_permission
-    to: Not determined
-  conditions: []
-  actions:
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: ⁉️ Location Permission failed
-      message: Not Determined
-  mode: single
 - id: '1734703658294'
   alias: Réduire volume lorsque assistant vocal en écoute (Salle de Douche)
   description: ''
@@ -4867,17 +4736,12 @@
   - trigger: state
     entity_id:
     - event.vpe_dvt_salle_de_douche_button_press
+    not_from:
+    - unavailable
+    not_to:
+    - unavailable
+    - unknown
   conditions:
-  - condition: not
-    conditions:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: event.vpe_dvt_salle_de_douche_button_press
-        state: unavailable
-      - condition: state
-        entity_id: event.vpe_dvt_salle_de_douche_button_press
-        state: unknown
   - condition: state
     entity_id: event.vpe_dvt_salle_de_douche_button_press
     attribute: event_type
@@ -5122,21 +4986,18 @@
   - trigger: state
     entity_id:
     - event.vpe_chambre_marilou_button_press
+    not_to:
+    - unavailable
+    - unknown
   conditions:
-  - condition: not
-    conditions:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: event.vpe_chambre_marilou_button_press
-        state: unavailable
-      - condition: state
-        entity_id: event.vpe_chambre_marilou_button_press
-        state: unknown
   - condition: state
     entity_id: event.vpe_chambre_marilou_button_press
     state: long_press
     attribute: event_type
+  - alias: It's a recent event
+    condition: template
+    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
+      = 1 )}}'
   actions:
   - choose:
     - conditions:

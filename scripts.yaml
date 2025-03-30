@@ -854,19 +854,6 @@ power_notification_rappel_charge_tesla:
       target: send_to_all
   description: ''
   icon: phu:tesla-icon
-power_notification_charger_meta_quest:
-  alias: Power Notification - Charger Meta Quest
-  use_blueprint:
-    path: jlo/power_notification_creator.yaml
-    input:
-      persons:
-      - person.jenova70
-      default_title: "\U0001F576️ Meta Quest"
-      default_message: Pensez à le recharger le Meta Quest
-      default_tag: charge_quest_reminder
-      target: send_to_all
-  description: ''
-  icon: mdi:virtual-reality
 power_notification_desactiver_mode_invite_lors_de_l_arrivee:
   alias: Power Notification - Désactiver Mode Invité lors de l'arrivée
   use_blueprint:
