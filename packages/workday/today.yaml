@@ -8,9 +8,9 @@ template:
     action:
       - action: calendar.get_events
         data:
-          start_date_time: "{{today_at('00:00')}}"
+          start_date_time: "{{today_at('12:00')}}"
           duration:
-            hours: 24
+            hours: 1
             minutes: 0
             seconds: 0
         target:
