@@ -6,6 +6,12 @@ Main Theme:
   app-header-backdrop-filter: blur(5px)
   energy-grid-consumption-color-0: var(--green-color)
   energy-grid-consumption-color-1: var(--red-color)
+  state-lock-locked-color: var(--grey-color)
+  state-lock-unlocked-color: var(--purple-color)
+  state-binary_sensor-window-on-color: var(--purple-color)
+  state-binary_sensor-door-on-color: var(--purple-color)
+  state-binary_sensor-opening-on-color: var(--purple-color)
+
   modes:
     light: {}
     dark: {}
