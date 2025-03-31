@@ -3611,11 +3611,13 @@
           target:
             area_id:
             - couloir
+          enabled: true
         - action: cover.open_cover
           metadata: {}
           data: {}
           target:
             entity_id: cover.volets_salon
+          enabled: true
         - if:
           - condition: state
             entity_id: binary_sensor.exterieur_lumineux
@@ -3628,6 +3630,8 @@
             target:
               area_id:
               - bd4ba6262e7a4e72b2fd740a22c70403
+            enabled: false
+          enabled: true
       - action: media_player.media_pause
         metadata: {}
         data: {}
@@ -3644,6 +3648,7 @@
           data: {}
           target:
             entity_id: cover.rideau_chambre
+          enabled: true
       - if:
         - condition: state
           entity_id: binary_sensor.exterieur_lumineux
@@ -3654,6 +3659,7 @@
           data: {}
           target:
             area_id: chambre
+          enabled: true
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -3669,9 +3675,11 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+          enabled: true
         - action: script.eteindre_tous_les_lecteur_multimedia
           metadata: {}
           data: {}
+          enabled: true
         - action: light.turn_off
           metadata: {}
           data: {}
@@ -3680,11 +3688,30 @@
             - rez_de_chaussee
             - premier_etage
             area_id: exterieur
+          enabled: true
+        - if:
+          - condition: state
+            entity_id: binary_sensor.capteur_ouverture_porte_entree
+            state: 'off'
+          then:
+          - action: lock.lock
+            metadata: {}
+            data: {}
+            target:
+              entity_id: lock.serrure_porte_d_entree
+            enabled: false
+          else:
+          - action: script.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: script.power_notification_porte_d_entree_ouverte_lors_du_coucher
       - action: light.turn_off
         metadata: {}
         data: {}
         target:
           area_id: chambre
+        enabled: true
       - action: media_player.media_pause
         metadata: {}
         data: {}
@@ -3700,22 +3727,7 @@
           data: {}
           target:
             entity_id: cover.rideau_chambre
-      - if:
-        - condition: state
-          entity_id: binary_sensor.capteur_ouverture_porte_entree
-          state: 'off'
-        then:
-        - action: lock.lock
-          metadata: {}
-          data: {}
-          target:
-            entity_id: lock.serrure_porte_d_entree
-        else:
-        - action: script.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id: script.power_notification_porte_d_entree_ouverte_lors_du_coucher
+          enabled: true
   mode: single
 - id: '1730275787349'
   alias: Chauffage Intelligent - Choisir Temperature Cible Bureau
@@ -4675,6 +4687,7 @@
         {% endif %}'
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
+      enabled: true
   mode: single
 - id: '1736352269100'
   alias: End of the World
