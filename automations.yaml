@@ -230,60 +230,6 @@
   - action: script.wake_up
     data: {}
   mode: single
-- id: '1688301259694'
-  alias: TV intelligente - Allumer / Éteindre KEF
-  description: ''
-  triggers:
-  - entity_id:
-    - remote.jl_s_tv
-    to: 'on'
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - remote.jl_s_tv
-    to: 'off'
-    id: 'off'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: media_player.kef_salon_music_assistant
-      state: playing
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - 'on'
-      sequence:
-      - action: media_player.media_pause
-        metadata: {}
-        data: {}
-        target:
-          entity_id: media_player.kef_salon_music_assistant
-      - action: media_player.turn_on
-        data: {}
-        target:
-          entity_id: media_player.kef
-      - action: media_player.select_source
-        data:
-          source: Opt
-        target:
-          entity_id: media_player.kef
-    - conditions:
-      - condition: trigger
-        id:
-        - 'off'
-      sequence:
-      - action: media_player.turn_off
-        data: {}
-        target:
-          entity_id: media_player.kef
-  mode: single
 - id: '1688368387161'
   alias: Bureau - Meetings
   description: ''
@@ -315,7 +261,7 @@
     state: home
   actions:
   - data:
-      scene_id: office_previous_light_state
+      scene_id: dynamic_scene_before_meeting
       snapshot_entities:
       - light.bureau_suspension
     action: scene.create
@@ -360,12 +306,17 @@
     action: light.turn_off
   - data: {}
     target:
-      entity_id: scene.office_previous_light_state
+      entity_id: scene.dynamic_scene_before_meeting
     action: scene.turn_on
   - data: {}
     target:
       entity_id: switch.vpe_bureau_microphone
     action: switch.turn_on
+  - action: scene.delete
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.dynamic_scene_before_meeting
   mode: restart
 - id: '1688371620889'
   alias: Surveillance de la maison - Éteindre appareils lors du départ
@@ -697,22 +648,22 @@
   triggers:
   - event: start
     offset: -0:5:0
-    entity_id: calendar.nabucasa_calendar_personal
+    entity_id: calendar.jeanloic_pouffier_openhomefoundation_org
     id: personal
     trigger: calendar
   - event: start
     offset: -0:5:0
-    entity_id: calendar.nabucasa_calendar_social_time
+    entity_id: calendar.ohf_events
     id: social_time
     trigger: calendar
   - event: start
     offset: -0:1:0
-    entity_id: calendar.nabucasa_calendar_personal
+    entity_id: calendar.jeanloic_pouffier_openhomefoundation_org
     id: personal
     trigger: calendar
   - event: start
     offset: -0:1:0
-    entity_id: calendar.nabucasa_calendar_social_time
+    entity_id: calendar.ohf_events
     id: social_time
     trigger: calendar
   conditions:
@@ -734,7 +685,7 @@
   actions:
   - action: scene.create
     data:
-      scene_id: office_webcam_previous_light_state
+      scene_id: dynamic_scene_before_meeting_notification
       snapshot_entities:
       - light.hue_play_bars
   - delay:
@@ -795,7 +746,12 @@
   - action: scene.turn_on
     data: {}
     target:
-      entity_id: scene.office_webcam_previous_light_state
+      entity_id: scene.dynamic_scene_before_meeting_notification
+  - action: scene.delete
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.dynamic_scene_before_meeting_notification
   mode: single
 - id: '1691566363432'
   alias: "Simulation de présence - \U0001F6CE️ Notifier Éloignement domicile sans
@@ -943,6 +899,8 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
+      - device_tracker.jlo_s_iphone_bluetooth
+      - device_tracker.jlo_s_apple_watch_bluetooth
   mode: single
 - id: '1695459020679'
   alias: Tesla - Détacher Tesla à JL en fin de conduite
@@ -974,6 +932,8 @@
       entity_id: person.jenova70
       device_tracker:
       - device_tracker.jean_loics_iphone
+      - device_tracker.jlo_s_iphone_bluetooth
+      - device_tracker.jlo_s_apple_watch_bluetooth
   - action: person.remove_device_tracker
     data:
       entity_id: person.jenova70
@@ -981,53 +941,6 @@
       - device_tracker.meme_emplacement
   mode: queued
   max: 10
-- id: '1699131143084'
-  alias: 'Music Assistant - Éteindre MASS lorsque KEF éteint '
-  description: ''
-  triggers:
-  - entity_id:
-    - media_player.kef
-    to: 'off'
-    from: 'on'
-    trigger: state
-  conditions:
-  - condition: not
-    conditions:
-    - condition: state
-      state: 'off'
-      entity_id: media_player.kef_salon_music_assistant
-  actions:
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id: media_player.kef_salon_music_assistant
-  mode: single
-- id: '1699131464359'
-  alias: TV intelligente - Changer Source quand Lecture en cours sur TV
-  description: ''
-  triggers:
-  - entity_id:
-    - media_player.media_center
-    to: playing
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_watch_tv
-    state: 'on'
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: media_player.kef
-      attribute: source
-      state: Opt
-  actions:
-  - action: media_player.select_source
-    data:
-      source: Opt
-    target:
-      entity_id: media_player.kef
-  mode: single
 - id: '1699868538036'
   alias: Routine du sommeil Marilou - Arrêter
   description: ''
@@ -1624,67 +1537,6 @@
     target:
       entity_id: media_player.vpe_chambre_marilou_music_assistant
   mode: single
-- id: '1718706928319'
-  alias: Transfert Musique Tesla vers Maison - Allumer Enceintes
-  description: ''
-  triggers:
-  - entity_id:
-    - device_tracker.meme_emplacement
-    trigger: state
-    not_from: unavailable
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.transfert_musique_tesla_vers_maison
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: device_tracker.meme_emplacement
-      state: unavailable
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: device_tracker.meme_emplacement
-        state: home
-      - condition: state
-        entity_id: media_player.meme_lecteur_multimedia
-        state: playing
-      sequence:
-      - action: media_player.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - media_player.kef
-      - action: media_player.select_source
-        metadata: {}
-        data:
-          source: Wifi
-        target:
-          entity_id: media_player.kef
-      - action: media_player.volume_set
-        metadata: {}
-        data:
-          volume_level: 0.5
-        target:
-          entity_id:
-          - media_player.kef
-          - media_player.kef_salon_music_assistant
-    default:
-    - action: media_player.turn_off
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - media_player.kef
-  mode: single
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
   description: ''
@@ -1716,16 +1568,6 @@
       - condition: template
         value_template: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')
           != None}}'
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.kef_salon_music_assistant
-          state: 'off'
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.kef
-          state: 'off'
       sequence:
       - action: music_assistant.play_media
         metadata: {}
@@ -1736,22 +1578,14 @@
           artist: '{{state_attr(''binary_sensor.tesla_recent_playback'',''artist'')}}'
           media_id: '{{state_attr(''binary_sensor.tesla_recent_playback'',''title'')}}'
         target:
-          entity_id: media_player.kef_salon_music_assistant
+          entity_id: media_player.sonos_amp_music_assistant
       - action: media_player.volume_set
         metadata: {}
         data:
-          volume_level: 0.5
+          volume_level: 0.4
         target:
           entity_id:
-          - media_player.kef
-          - media_player.kef_salon_music_assistant
-    default:
-    - action: media_player.turn_off
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - media_player.kef
+          - media_player.sonos_amp_music_assistant
   mode: queued
   max: 10
 - id: '1719771128107'
@@ -2534,6 +2368,8 @@
     metadata: {}
     data:
       message: La porte d'entrée est restée ouverte!
+      preannounce: true
+      preannounce_media_id: media-source://media_source/local/error.mp3
     target:
       entity_id:
       - assist_satellite.vpe_salon_satellite_assist
@@ -2794,6 +2630,7 @@
       message: '{% set time = now().hour %} {% if (time >= 18) %} Bonne soirée {%
         elif (time >= 12) %} Bonne après-midi {% elif (time >= 5) %} Bonne journée
         {% else %} Bonne nuit {% endif %}'
+      preannounce: false
     target:
       entity_id: assist_satellite.vpe_salon_satellite_assist
   mode: single
@@ -3367,25 +3204,64 @@
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_cinema
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
   - trigger: homeassistant
     event: start
   conditions: []
   actions:
   - if:
     - condition: state
-      entity_id: binary_sensor.corvees
-      state: 'on'
-    - condition: state
       entity_id: input_select.modes_de_presence_de_la_maison_v2
       state: Occupée
+    - condition: state
+      entity_id: input_boolean.mode_cinema
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.mode_sommeil
+      state: 'off'
     then:
-    - action: light.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - light.vpe_cuisine_led_ring
-        - light.vpe_salon_led_ring
+    - if:
+      - condition: state
+        entity_id: binary_sensor.corvees
+        state: 'on'
+      then:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - light.vpe_cuisine_led_ring
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 66
+          rgb_color:
+          - 255
+          - 176
+          - 140
+        target:
+          entity_id: light.vpe_salon_led_ring
+      else:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.vpe_cuisine_led_ring
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 50
+          rgb_color:
+          - 209
+          - 229
+          - 255
+        target:
+          entity_id: light.vpe_salon_led_ring
     else:
     - action: light.turn_off
       metadata: {}
@@ -3521,18 +3397,13 @@
   - trigger: state
     entity_id:
     - event.vpe_chambre_button_press
-    not_to:
+    not_from:
     - unavailable
-    - unknown
   conditions:
   - condition: state
     entity_id: event.vpe_chambre_button_press
     attribute: event_type
     state: long_press
-  - alias: It's a recent event
-    condition: template
-    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
-      = 1 )}}'
   actions:
   - choose:
     - conditions:
@@ -3556,6 +3427,7 @@
           message: Mode Sommeil Activé. {% if is_state('binary_sensor.reveil_demain','on')
             -%} Réveil prévu pour {{states('input_datetime.wake_up_time')}} {% else
             -%} Pas de réveil prévu pour demain {%- endif -%}
+          preannounce: false
         target:
           entity_id: assist_satellite.vpe_chambre_satellite_assist
     - conditions:
@@ -3577,6 +3449,7 @@
         metadata: {}
         data:
           message: Mode Sommeil désactivé. Bonne journée
+          preannounce: false
         target:
           entity_id:
           - assist_satellite.vpe_chambre_satellite_assist
@@ -3630,7 +3503,7 @@
             target:
               area_id:
               - bd4ba6262e7a4e72b2fd740a22c70403
-            enabled: false
+            enabled: true
           enabled: true
       - action: media_player.media_pause
         metadata: {}
@@ -3699,7 +3572,7 @@
             data: {}
             target:
               entity_id: lock.serrure_porte_d_entree
-            enabled: false
+            enabled: true
           else:
           - action: script.turn_on
             metadata: {}
@@ -4331,8 +4204,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_cuisine_satellite_assist
       custom_target:
-        entity_id:
-        - media_player.kef_salon_music_assistant
+        entity_id: media_player.sonos_amp
 - id: '1731706904863'
   alias: Réduire volume lorsque assistant vocal en écoute (Salon)
   description: ''
@@ -4341,7 +4213,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_salon_satellite_assist
       custom_target:
-        entity_id: media_player.kef_salon_music_assistant
+        entity_id: media_player.sonos_amp
 - id: '1731762231230'
   alias: VPE - Transferer la musique
   description: ''
@@ -4354,17 +4226,12 @@
     - event.vpe_cuisine_button_press
     - event.vpe_chambre_marilou_button_press
     - event.vpe_dvt_salle_de_douche_button_press
-    not_to:
+    not_from:
     - unavailable
-    - unknown
   conditions:
   - condition: template
     value_template: '{{trigger.to_state.attributes.event_type == ''double_press''}}'
     alias: It's a double press
-  - alias: It's a recent event
-    condition: template
-    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
-      = 1 )}}'
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
@@ -4524,7 +4391,7 @@
   - action: scene.create
     metadata: {}
     data:
-      scene_id: cinema_previous_light_state
+      scene_id: dynamic_scene_before_movie_mode
       snapshot_entities:
       - light.cuisine_suspension
       - light.cuisine_comptoir
@@ -4577,7 +4444,12 @@
   - action: scene.turn_on
     data: {}
     target:
-      entity_id: scene.cinema_previous_light_state
+      entity_id: scene.dynamic_scene_before_movie_mode
+  - action: scene.delete
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.dynamic_scene_before_movie_mode
   mode: restart
 - id: '1732056960522'
   alias: Mode Cinéma - Play / Pause
@@ -4740,7 +4612,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.kef_salon_music_assistant
+      entity_id:
+      - media_player.sonos_amp_music_assistant
   mode: single
 - id: '1737233418257'
   alias: Boost Salle de Bain - Activer par le VPE
@@ -4782,6 +4655,7 @@
         metadata: {}
         data:
           message: Boost Chauffage Activé
+          preannounce: false
         target:
           entity_id: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
     - conditions:
@@ -4802,6 +4676,7 @@
         metadata: {}
         data:
           message: Boost Chauffage Désactivé
+          preannounce: false
         target:
           entity_id: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
   mode: single
@@ -4910,7 +4785,7 @@
   actions:
   - action: scene.create
     data:
-      scene_id: office_webcam_previous_light_state
+      scene_id: dynamic_scene_before_bad_air_notification
       snapshot_entities:
       - light.hue_play_bars
   - delay:
@@ -4936,7 +4811,12 @@
   - action: scene.turn_on
     data: {}
     target:
-      entity_id: scene.office_webcam_previous_light_state
+      entity_id: scene.dynamic_scene_before_bad_air_notification
+  - action: scene.delete
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.dynamic_scene_before_bad_air_notification
   mode: single
 - id: '1739568563693'
   alias: Assist - Fallback Assistant lors d'une panne d'internet
@@ -4999,18 +4879,13 @@
   - trigger: state
     entity_id:
     - event.vpe_chambre_marilou_button_press
-    not_to:
+    not_from:
     - unavailable
-    - unknown
   conditions:
   - condition: state
     entity_id: event.vpe_chambre_marilou_button_press
     state: long_press
     attribute: event_type
-  - alias: It's a recent event
-    condition: template
-    value_template: '{{now() - as_datetime(trigger.to_state.state) < timedelta( minutes
-      = 1 )}}'
   actions:
   - choose:
     - conditions:
@@ -5032,6 +4907,7 @@
         metadata: {}
         data:
           message: Bonne nuit Marilou!
+          preannounce: false
         target:
           entity_id: assist_satellite.vpe_chambre_marilou_satellite_assist
     - conditions:
@@ -5053,6 +4929,7 @@
         metadata: {}
         data:
           message: Bonjour Marilou!
+          preannounce: false
         target:
           entity_id:
           - assist_satellite.vpe_chambre_marilou_satellite_assist
@@ -5362,4 +5239,16 @@
     data: {}
     target:
       entity_id: script.power_notification_serrure_verouillee_sur_porte_ouverte
+  mode: single
+- id: '1743517722120'
+  alias: New automation
+  description: ''
+  triggers:
+  - type: connected
+    device_id: 3830c0763ffabd7a6ee61d62d21db733
+    entity_id: 7088c7a5969baa9b6a81bb3fbeab3d26
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions: []
   mode: single

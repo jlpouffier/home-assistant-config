@@ -7,7 +7,7 @@ media_player:
       - media_player.apple_tv_salon
       - media_player.tv_cast
       - media_player.philips_android_tv
-      - media_player.kef
+      - media_player.sonos_amp
     active_child_template: |
       {% if is_state_attr('media_player.philips_android_tv', 'hdmi_input', 'HW2') %}
         media_player.apple_tv_salon
@@ -19,30 +19,26 @@ media_player:
         media_player.philips_android_tv
       {% endif %}
     commands:
-      turn_on:
-        action: script.turn_on_media_center
-      turn_off:
-        action: script.turn_off_media_center
       volume_up:
         action: media_player.volume_up
         target:
-          entity_id: media_player.kef
+          entity_id: media_player.sonos_amp
       volume_down:
         action: media_player.volume_down
         target:
-          entity_id: media_player.kef
+          entity_id: media_player.sonos_amp
       volume_set:
         action: media_player.volume_set
         target:
-          entity_id: media_player.kef
+          entity_id: media_player.sonos_amp
         data:
           volume_level: "{{ volume_level }}"
       volume_mute:
         action: media_player.volume_mute
         target:
-          entity_id: media_player.kef
+          entity_id: media_player.sonos_amp
         data:
           is_volume_muted: "{{ is_volume_muted }}"
     attributes:
-      is_volume_muted: media_player.kef|is_volume_muted
-      volume_level: media_player.kef|volume_level
+      is_volume_muted: media_player.sonos_amp|is_volume_muted
+      volume_level: media_player.sonos_amp|volume_level
