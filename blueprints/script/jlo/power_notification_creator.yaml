@@ -7,11 +7,6 @@ blueprint:
   domain: script
   author: JLo
   input:
-    default_tag:
-      name: Unique Identifier
-      description: Unique Identifier of the notificaiton. Please ensure all your power notifications have different unique_id. The ID is limited to 64 characters.
-      selector:
-        text:
     target:
       name: Notification target
       icon: mdi:bullseye-arrow
@@ -168,7 +163,6 @@ fields:
 sequence:
   - variables:
       # Coming from blueprint
-      default_tag: !input default_tag
       target: !input target
       persons: !input persons
       zones: !input zones
@@ -180,6 +174,10 @@ sequence:
       button_action: !input button_action
       discard_when: !input discard_when
       notification_data_advanced: !input notification_data_advanced
+
+      # Coming from the script created by the blueprint
+      default_tag: |
+        {{ this.entity_id | md5}}
 
       # Overrides from fields
       title: |
