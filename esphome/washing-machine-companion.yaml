@@ -234,6 +234,6 @@ color:
   - id: idle_color
     hex: "000000"
   - id: in_progress_color
-    hex: "000000"
+    hex: "4caf50"
   - id: complete_color
-    hex: "000000"
+    hex: "ff6f22"
