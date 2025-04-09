@@ -272,14 +272,14 @@
       milliseconds: 0
   - data:
       brightness_pct: 100
-      kelvin: 3521
+      color_temp_kelvin: 3521
     target:
       entity_id:
       - light.bureau_suspension
     action: light.turn_on
   - data:
       brightness_pct: 60
-      kelvin: 3521
+      color_temp_kelvin: 3521
     target:
       entity_id:
       - light.hue_play_bars
@@ -1396,7 +1396,7 @@
           entity_id: '{{target_scene_list}}'
       - set_conversation_response: Lumière réinitialisée
       else:
-      - set_conversation_response: Aucune scene par defaut trouvée
+      - set_conversation_response: Aucune scène par défaut trouvée
     else:
     - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
   mode: single
@@ -5239,16 +5239,4 @@
     data: {}
     target:
       entity_id: script.power_notification_serrure_verouillee_sur_porte_ouverte
-  mode: single
-- id: '1743517722120'
-  alias: New automation
-  description: ''
-  triggers:
-  - type: connected
-    device_id: 3830c0763ffabd7a6ee61d62d21db733
-    entity_id: 7088c7a5969baa9b6a81bb3fbeab3d26
-    domain: binary_sensor
-    trigger: device
-  conditions: []
-  actions: []
   mode: single
