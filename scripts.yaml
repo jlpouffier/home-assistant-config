@@ -201,7 +201,7 @@ wake_up:
     data:
       transition: 300
       brightness_pct: 100
-      color_temp: 490
+      color_temp_kelvin: 2074
     target:
       entity_id: light.chambre_bloom
   - delay:
