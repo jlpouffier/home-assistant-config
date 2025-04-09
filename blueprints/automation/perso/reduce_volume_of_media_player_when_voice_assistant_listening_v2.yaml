@@ -40,7 +40,9 @@ blueprint:
 triggers:
   - trigger: state
     entity_id: !input assist_satellite_entity
-    to: "listening"
+    to:
+      - "listening"
+      - "responding"
 
 actions:
   - variables:
@@ -121,6 +123,7 @@ actions:
       - trigger: state
         entity_id: !input assist_satellite_entity
         to: idle
+        for: 1
     timeout:
       hours: 0
       minutes: 1
@@ -139,3 +142,4 @@ actions:
               entity_id: "{{repeat.item.entity_id}}"
 
 mode: single
+max_exceeded: silent
