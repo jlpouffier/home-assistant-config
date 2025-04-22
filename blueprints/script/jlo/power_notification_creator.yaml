@@ -142,13 +142,13 @@ fields:
     selector:
       text:
   user_message:
-    name: Default message
+    name: Message
     description: Message of the notification. (Overrides the message set in the blueprint).
     required: false
     selector:
       text:
   user_importance:
-    name: Default Importance
+    name: Importance
     description: Importance of the notification. (Overrides the importance set in the blueprint).
     required: false
     selector:
