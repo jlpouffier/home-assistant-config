@@ -251,6 +251,42 @@ start_marilou_bedtime_routine:
     target:
       entity_id:
       - media_player.vpe_chambre_marilou_music_assistant
+  - sequence:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.vpe_chambre_marilou_music_assistant
+          state: playing
+      then:
+      - action: media_player.media_play
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.vpe_chambre_marilou_music_assistant
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: media_player.vpe_chambre_marilou_music_assistant
+            state: playing
+        then:
+        - action: media_player.media_next_track
+          metadata: {}
+          data: {}
+          target:
+            entity_id: media_player.vpe_chambre_marilou_music_assistant
+    alias: Fallback in case audio does not start
   mode: single
   icon: mdi:bell-sleep
   description: ''
@@ -277,6 +313,42 @@ lancer_playlist_de_reveil:
       media_id: Chillhop Master Playlist
       enqueue: replace
       media_type: playlist
+  - sequence:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.vpe_chambre_music_assistant
+          state: playing
+      then:
+      - action: media_player.media_play
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.vpe_chambre_music_assistant
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: media_player.vpe_chambre_music_assistant
+            state: playing
+        then:
+        - action: media_player.media_next_track
+          metadata: {}
+          data: {}
+          target:
+            entity_id: media_player.vpe_chambre_music_assistant
+    alias: Fallback in case audio does not start
   mode: single
   icon: mdi:alarm
 controler_le_standing_desk:
@@ -1317,8 +1389,8 @@ power_notification_serrure_verouillee_sur_porte_ouverte:
       zones:
       - zone.proche_de_la_maison
       default_title: "\U0001F512 Serrure"
-      default_message: 'La serrure est fermée alors que la porte est toujours ouverte
-        ! '
+      default_message: 'La serrure est verrouillée alors que la porte est toujours
+        ouverte ! '
       default_importance: true
       discard_when:
       - trigger: state
@@ -1330,4 +1402,17 @@ power_notification_serrure_verouillee_sur_porte_ouverte:
         - binary_sensor.capteur_ouverture_porte_entree
         to: 'off'
   alias: Power notification - Serrure vérouillée sur porte ouverte
+  description: ''
+power_notification_serrure_deverrouillee:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      target: send_to_all
+      zones: []
+      default_title: "\U0001F513 Serrure"
+      default_message: 'La serrure vient d''être déverrouillée '
+      default_importance: true
+  alias: Power notification - Serrure deverrouillée
   description: ''
