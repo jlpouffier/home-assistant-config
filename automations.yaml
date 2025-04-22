@@ -2624,6 +2624,23 @@
       option: Départ en cours
     target:
       entity_id: input_select.modes_de_presence_de_la_maison_v2
+  - if:
+    - condition: state
+      entity_id: binary_sensor.presence_rez_de_chaussee
+      state: 'on'
+    - condition: state
+      entity_id: lock.serrure_porte_d_entree
+      state: locked
+    then:
+    - action: lock.unlock
+      metadata: {}
+      data: {}
+      target:
+        entity_id: lock.serrure_porte_d_entree
+    - action: script.power_notification_serrure_deverrouillee
+      metadata: {}
+      data:
+        user_importance: false
   - action: assist_satellite.announce
     metadata: {}
     data:
@@ -2674,6 +2691,27 @@
       Bonne nuit
 
       {% endif %}'
+  - if:
+    - condition: state
+      entity_id: binary_sensor.presence_rez_de_chaussee
+      state: 'on'
+    - condition: template
+      value_template: '{{ trigger.device_id != None}}'
+    - condition: template
+      value_template: '{{area_id(trigger.device_id) == "bd4ba6262e7a4e72b2fd740a22c70403"}}'
+    - condition: state
+      entity_id: lock.serrure_porte_d_entree
+      state: locked
+    then:
+    - action: lock.unlock
+      metadata: {}
+      data: {}
+      target:
+        entity_id: lock.serrure_porte_d_entree
+    - action: script.power_notification_serrure_deverrouillee
+      metadata: {}
+      data:
+        user_importance: false
   mode: single
 - id: '1727987133642'
   alias: Modes de presence de la maison - Vide au démarrage
@@ -4237,7 +4275,9 @@
     state: 'off'
   actions:
   - variables:
-      area_id: '{{area_id(trigger.entity_id)}}'
+      player: "{% set room_audio_players = label_entities('Lecteur audio de la pièce')
+        %}\n{% for player in room_audio_players %}\n  {% if area_id(player) == area_id(trigger.entity_id)
+        %}\n    {{player}}\n  {% endif %}\n{% endfor %}\n"
     enabled: true
   - choose:
     - conditions:
@@ -4249,16 +4289,46 @@
         metadata: {}
         data: {}
         target:
-          area_id: '{{area_id}}'
+          entity_id: '{{player}}'
     default:
     - action: music_assistant.play_media
       target:
-        area_id: '{{area_id}}'
+        entity_id: '{{player}}'
       data:
         media_id: All Favorited Tracks
         media_type: playlist
         enqueue: replace
     enabled: true
+  - alias: Fallback in case audio does not start
+    sequence:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
+    - if:
+      - condition: template
+        value_template: '{{ states(player) != ''playing'' }}'
+      then:
+      - action: media_player.media_play
+        metadata: {}
+        data: {}
+        target:
+          entity_id: '{{player}}'
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - if:
+        - condition: template
+          value_template: '{{ states(player) != ''playing'' }}'
+        then:
+        - action: media_player.media_next_track
+          metadata: {}
+          data: {}
+          target:
+            entity_id: '{{player}}'
   mode: single
 - id: '1731941056494'
   alias: Vacances - Générer texte de bonne fête
@@ -5239,4 +5309,233 @@
     data: {}
     target:
       entity_id: script.power_notification_serrure_verouillee_sur_porte_ouverte
+  mode: single
+- id: '1744746499776'
+  alias: Slack Status
+  description: ''
+  triggers:
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_1
+    trigger: device
+    id: eating
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_2
+    trigger: device
+    id: away
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_3
+    trigger: device
+    id: dnd
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_4
+    trigger: device
+    id: meeting
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_5
+    trigger: device
+    id: available
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_flipped
+    subtype: face_6
+    trigger: device
+    id: coffee
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_1
+    trigger: device
+    id: eating
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_2
+    trigger: device
+    id: away
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_3
+    trigger: device
+    id: dnd
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_4
+    trigger: device
+    id: meeting
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_5
+    trigger: device
+    id: available
+  - device_id: 842a8a2fd53d642664eda0fc1b756849
+    domain: zha
+    type: device_slid
+    subtype: face_6
+    trigger: device
+    id: coffee
+  conditions: []
+  actions:
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      preannounce: true
+      message: ''
+    target:
+      entity_id: assist_satellite.vpe_bureau_satellite_assist
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - eating
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: Lunch Break
+          status_emoji: ':hamburger:'
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          presence: away
+          entity_id: sensor.jlo_slack
+      - action: slack_user.set_dnd
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          num_minutes: 120
+    - conditions:
+      - condition: trigger
+        id:
+        - away
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: Away
+          status_emoji: ':satellite_antenna:'
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          presence: away
+          entity_id: sensor.jlo_slack
+      - action: slack_user.set_dnd
+        metadata: {}
+        data:
+          num_minutes: 4320
+          entity_id: sensor.jlo_slack
+    - conditions:
+      - condition: trigger
+        id:
+        - dnd
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: Do Not Disturb
+          status_emoji: ':octagonal_sign:'
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          presence: auto
+          entity_id: sensor.jlo_slack
+      - action: slack_user.set_dnd
+        metadata: {}
+        data:
+          num_minutes: 60
+          entity_id: sensor.jlo_slack
+    - conditions:
+      - condition: trigger
+        id:
+        - meeting
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: In a meeting
+          status_emoji: ':calendar:'
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          presence: auto
+          entity_id: sensor.jlo_slack
+      - action: slack_user.set_dnd
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          num_minutes: 60
+    - conditions:
+      - condition: trigger
+        id:
+        - available
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: Available
+          status_emoji: ':ha: '
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          presence: auto
+          entity_id: sensor.jlo_slack
+      - action: slack_user.end_dnd
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+    - conditions:
+      - condition: trigger
+        id:
+        - coffee
+      sequence:
+      - action: slack_user.set_status
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          status_text: Coffee Break
+          status_emoji: ':coffee:'
+      - action: slack_user.set_presence
+        metadata: {}
+        data:
+          entity_id: sensor.jlo_slack
+          presence: auto
+      - action: slack_user.set_dnd
+        metadata: {}
+        data:
+          num_minutes: 15
+          entity_id: sensor.jlo_slack
+  mode: single
+- id: '1745063365367'
+  alias: "Serrure - \U0001F514 Notifier déverrouillage non plannifié"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - lock.serrure_porte_d_entree
+    to: unlocked
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+  actions:
+  - action: script.power_notification_serrure_deverrouillee
+    metadata: {}
+    data: {}
   mode: single
