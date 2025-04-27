@@ -170,23 +170,6 @@
     target:
       entity_id: input_boolean.courrier_a_relever
   mode: single
-- id: '1688118075093'
-  alias: Machine a Laver Intelligente - Machine à laver a vider
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.is_washing_machine_running
-    to: 'off'
-    from: 'on'
-    trigger: state
-  conditions: []
-  actions:
-  - action: input_boolean.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: input_boolean.machine_a_laver_a_vider
-  mode: single
 - id: '1688139412657'
   alias: Réveil intelligent - Régler heures de déclenchement
   description: ''
@@ -1466,11 +1449,6 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.sonos_bureau
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
       entity_id:
       - media_player.sonos_bureau_music_assistant
   mode: single
@@ -2210,7 +2188,7 @@
   use_blueprint:
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
-      room_name: Salon
+      room_name: Le salon
       room_temperature: sensor.thermostat_netatmo_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_cuisine
@@ -2225,7 +2203,7 @@
   use_blueprint:
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
-      room_name: Chambre
+      room_name: La chambre
       room_temperature: sensor.radiateur_chambre_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre
@@ -2239,7 +2217,7 @@
   use_blueprint:
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
-      room_name: Chambre Marilou
+      room_name: La chambre de Marilou
       room_temperature: sensor.radiateur_chambre_marilou_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
@@ -2252,7 +2230,7 @@
   use_blueprint:
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
-      room_name: Bureau
+      room_name: Le bureau
       room_temperature: sensor.radiateur_bureau_current_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_bureau
@@ -2666,52 +2644,57 @@
     trigger: conversation
   conditions: []
   actions:
-  - action: input_select.select_option
-    metadata: {}
-    data:
-      option: Départ en cours
-    target:
-      entity_id: input_select.modes_de_presence_de_la_maison_v2
-  - set_conversation_response: '{% set time = now().hour %}
-
-      {% if (time >= 18) %}
-
-      Bonne soirée
-
-      {% elif (time >= 12) %}
-
-      Bonne après-midi
-
-      {% elif (time >= 5) %}
-
-      Bonne journée
-
-      {% else %}
-
-      Bonne nuit
-
-      {% endif %}'
   - if:
     - condition: state
-      entity_id: binary_sensor.presence_rez_de_chaussee
-      state: 'on'
-    - condition: template
-      value_template: '{{ trigger.device_id != None}}'
-    - condition: template
-      value_template: '{{area_id(trigger.device_id) == "bd4ba6262e7a4e72b2fd740a22c70403"}}'
-    - condition: state
-      entity_id: lock.serrure_porte_d_entree
-      state: locked
+      entity_id: input_select.modes_de_presence_de_la_maison_v2
+      state: Occupée
     then:
-    - action: lock.unlock
-      metadata: {}
-      data: {}
-      target:
-        entity_id: lock.serrure_porte_d_entree
-    - action: script.power_notification_serrure_deverrouillee
+    - action: input_select.select_option
       metadata: {}
       data:
-        user_importance: false
+        option: Départ en cours
+      target:
+        entity_id: input_select.modes_de_presence_de_la_maison_v2
+    - set_conversation_response: '{% set time = now().hour %}
+
+        {% if (time >= 18) %}
+
+        Bonne soirée
+
+        {% elif (time >= 12) %}
+
+        Bonne après-midi
+
+        {% elif (time >= 5) %}
+
+        Bonne journée
+
+        {% else %}
+
+        Bonne nuit
+
+        {% endif %}'
+    - if:
+      - condition: template
+        value_template: '{{ trigger.device_id != None}}'
+      - condition: template
+        value_template: '{{area_id(trigger.device_id) in ["salon","cuisine"]}}'
+      - condition: state
+        entity_id: lock.serrure_porte_d_entree
+        state: locked
+      then:
+      - action: lock.unlock
+        metadata: {}
+        data: {}
+        target:
+          entity_id: lock.serrure_porte_d_entree
+      - action: script.power_notification_serrure_deverrouillee
+        metadata: {}
+        data:
+          user_importance: false
+    else:
+    - set_conversation_response: La maison n'est pas occupée actuellement. Départ
+        annulé
   mode: single
 - id: '1727987133642'
   alias: Modes de presence de la maison - Vide au démarrage
@@ -2908,12 +2891,12 @@
           entity_id: script.power_notification_courrier_a_relever
   mode: single
 - id: '1728147111105'
-  alias: "Machine a Laver Intelligente - \U0001F514 Notifier"
+  alias: "Machine a Laver - \U0001F514 Notifier cycle terminé"
   description: ''
   triggers:
   - trigger: state
     entity_id:
-    - input_boolean.machine_a_laver_a_vider
+    - input_select.etat_machine_a_laver
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
@@ -2922,8 +2905,8 @@
     entity_id: input_boolean.automation_monitor_washing_machine
     state: 'on'
   - condition: state
-    entity_id: input_boolean.machine_a_laver_a_vider
-    state: 'on'
+    entity_id: input_select.etat_machine_a_laver
+    state: À vider
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
@@ -3374,32 +3357,6 @@
     default:
     - set_conversation_response: La litière est déja propre
   mode: single
-- id: '1729029743503'
-  alias: Assist - Machine à laver vidée par la voix
-  description: ''
-  triggers:
-  - trigger: conversation
-    command:
-    - '[La] machine à laver [est] vidée'
-    - J'ai vidé la machine à laver
-    - La machine à laver a été vidée
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.machine_a_laver_a_vider
-        state: 'on'
-      sequence:
-      - action: input_boolean.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.machine_a_laver_a_vider
-      - set_conversation_response: C'est noté
-    default:
-    - set_conversation_response: La machine à laver est déjà vide
-  mode: single
 - id: '1729029879020'
   alias: Assist - Courrier relevé par la voix
   description: ''
@@ -3540,7 +3497,8 @@
               brightness_pct: 10
             target:
               area_id:
-              - bd4ba6262e7a4e72b2fd740a22c70403
+              - cuisine
+              - salon
             enabled: true
           enabled: true
       - action: media_player.media_pause
@@ -4233,7 +4191,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_bureau_satellite_assist
       custom_target:
-        entity_id: media_player.sonos_bureau
+        entity_id: media_player.sonos_bureau_music_assistant
 - id: '1731706885951'
   alias: Réduire volume lorsque assistant vocal en écoute (Cuisine)
   description: ''
@@ -4242,7 +4200,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_cuisine_satellite_assist
       custom_target:
-        entity_id: media_player.sonos_amp
+        entity_id: media_player.sonos_amp_music_assistant
 - id: '1731706904863'
   alias: Réduire volume lorsque assistant vocal en écoute (Salon)
   description: ''
@@ -4251,7 +4209,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_salon_satellite_assist
       custom_target:
-        entity_id: media_player.sonos_amp
+        entity_id: media_player.sonos_amp_music_assistant
 - id: '1731762231230'
   alias: VPE - Transferer la musique
   description: ''
@@ -4592,7 +4550,7 @@
     input:
       assist_satellite_entity: assist_satellite.vpe_dvt_salle_de_douche_satellite_assist
       custom_target:
-        entity_id: media_player.sonos_salle_de_douche
+        entity_id: media_player.sonos_salle_de_douche_music_assistant
 - id: '1736027398142'
   alias: Jouer de la musique par la voix (Musique Assistant)
   description: ''
@@ -4917,13 +4875,7 @@
         data:
           option: Local
         target:
-          entity_id:
-          - select.vpe_salon_assistant
-          - select.vpe_bureau_assistant
-          - select.vpe_chambre_assistant
-          - select.vpe_cuisine_assistant
-          - select.vpe_chambre_marilou_assistant
-          - select.vpe_dvt_salle_de_douche_assistant
+          label_id: choix_d_assistant
     - conditions:
       - condition: trigger
         id:
@@ -4934,13 +4886,7 @@
         data:
           option: preferred
         target:
-          entity_id:
-          - select.vpe_salon_assistant
-          - select.vpe_bureau_assistant
-          - select.vpe_chambre_assistant
-          - select.vpe_cuisine_assistant
-          - select.vpe_chambre_marilou_assistant
-          - select.vpe_dvt_salle_de_douche_assistant
+          label_id: choix_d_assistant
   mode: single
 - id: '1740752651459'
   alias: Mode Sommeil Marilou - Activer par VPE
@@ -5029,9 +4975,6 @@
         data: {}
         target:
           entity_id: scene.scenes_hue_chambre_marilou_lecture
-      - action: script.start_marilou_bedtime_routine
-        metadata: {}
-        data: {}
       - if:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
@@ -5043,6 +4986,9 @@
           target:
             entity_id: cover.rideau_chambre_marilou
           enabled: true
+      - action: script.start_marilou_bedtime_routine
+        metadata: {}
+        data: {}
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil_marilou
@@ -5192,7 +5138,9 @@
               brightness_pct: 5
             target:
               area_id:
-              - bd4ba6262e7a4e72b2fd740a22c70403
+              - cuisine
+              - salon
+              - entree
               entity_id: light.bureau
           - action: cover.close_cover
             metadata: {}
@@ -5314,6 +5262,208 @@
   alias: Slack Status
   description: ''
   triggers:
+  - trigger: state
+    entity_id:
+    - input_select.face_du_cube
+    id: cube_change
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - cube_change
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Pause repas
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: Lunch Break
+              status_emoji: ':hamburger:'
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              presence: away
+              entity_id: sensor.jlo_slack
+          - action: slack_user.set_dnd
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              num_minutes: 120
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Pause repas
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Absent
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: Away
+              status_emoji: ':satellite_antenna:'
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              presence: away
+              entity_id: sensor.jlo_slack
+          - action: slack_user.set_dnd
+            metadata: {}
+            data:
+              num_minutes: 4320
+              entity_id: sensor.jlo_slack
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Absent
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Ne pas déranger
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: Do Not Disturb
+              status_emoji: ':octagonal_sign:'
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              presence: auto
+              entity_id: sensor.jlo_slack
+          - action: slack_user.set_dnd
+            metadata: {}
+            data:
+              num_minutes: 60
+              entity_id: sensor.jlo_slack
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Ne pas déranger
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Réunion
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: In a meeting
+              status_emoji: ':calendar:'
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              presence: auto
+              entity_id: sensor.jlo_slack
+          - action: slack_user.set_dnd
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              num_minutes: 60
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Réunion
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Disponible
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: Available
+              status_emoji: ':ha: '
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              presence: auto
+              entity_id: sensor.jlo_slack
+          - action: slack_user.end_dnd
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Disponible
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+        - conditions:
+          - condition: state
+            entity_id: input_select.face_du_cube
+            state: Pause café
+          sequence:
+          - action: slack_user.set_status
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              status_text: Coffee Break
+              status_emoji: ':coffee:'
+          - action: slack_user.set_presence
+            metadata: {}
+            data:
+              entity_id: sensor.jlo_slack
+              presence: auto
+          - action: slack_user.set_dnd
+            metadata: {}
+            data:
+              num_minutes: 15
+              entity_id: sensor.jlo_slack
+          - action: assist_satellite.announce
+            metadata: {}
+            data:
+              preannounce: false
+              message: Statut Slack modifié en Pause café
+            target:
+              entity_id: assist_satellite.vpe_bureau_satellite_assist
+  mode: single
+- id: '1745063365367'
+  alias: "Serrure - \U0001F514 Notifier déverrouillage non plannifié"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - lock.serrure_porte_d_entree
+    to: unlocked
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+  actions:
+  - action: script.power_notification_serrure_deverrouillee
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1745416951501'
+  alias: Changer face du cube
+  description: ''
+  triggers:
   - device_id: 842a8a2fd53d642664eda0fc1b756849
     domain: zha
     type: device_flipped
@@ -5388,154 +5538,198 @@
     id: coffee
   conditions: []
   actions:
-  - action: assist_satellite.announce
-    metadata: {}
-    data:
-      preannounce: true
-      message: ''
-    target:
-      entity_id: assist_satellite.vpe_bureau_satellite_assist
   - choose:
     - conditions:
       - condition: trigger
         id:
         - eating
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: Lunch Break
-          status_emoji: ':hamburger:'
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          presence: away
-          entity_id: sensor.jlo_slack
-      - action: slack_user.set_dnd
-        metadata: {}
-        data:
-          entity_id: sensor.jlo_slack
-          num_minutes: 120
+          option: Pause repas
+        target:
+          entity_id: input_select.face_du_cube
     - conditions:
       - condition: trigger
         id:
         - away
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: Away
-          status_emoji: ':satellite_antenna:'
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          presence: away
-          entity_id: sensor.jlo_slack
-      - action: slack_user.set_dnd
-        metadata: {}
-        data:
-          num_minutes: 4320
-          entity_id: sensor.jlo_slack
+          option: Absent
+        target:
+          entity_id: input_select.face_du_cube
     - conditions:
       - condition: trigger
         id:
         - dnd
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: Do Not Disturb
-          status_emoji: ':octagonal_sign:'
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          presence: auto
-          entity_id: sensor.jlo_slack
-      - action: slack_user.set_dnd
-        metadata: {}
-        data:
-          num_minutes: 60
-          entity_id: sensor.jlo_slack
+          option: Ne pas déranger
+        target:
+          entity_id: input_select.face_du_cube
     - conditions:
       - condition: trigger
         id:
         - meeting
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: In a meeting
-          status_emoji: ':calendar:'
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          presence: auto
-          entity_id: sensor.jlo_slack
-      - action: slack_user.set_dnd
-        metadata: {}
-        data:
-          entity_id: sensor.jlo_slack
-          num_minutes: 60
+          option: Réunion
+        target:
+          entity_id: input_select.face_du_cube
     - conditions:
       - condition: trigger
         id:
         - available
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: Available
-          status_emoji: ':ha: '
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          presence: auto
-          entity_id: sensor.jlo_slack
-      - action: slack_user.end_dnd
-        metadata: {}
-        data:
-          entity_id: sensor.jlo_slack
+          option: Disponible
+        target:
+          entity_id: input_select.face_du_cube
     - conditions:
       - condition: trigger
         id:
         - coffee
       sequence:
-      - action: slack_user.set_status
+      - action: input_select.select_option
         metadata: {}
         data:
-          entity_id: sensor.jlo_slack
-          status_text: Coffee Break
-          status_emoji: ':coffee:'
-      - action: slack_user.set_presence
-        metadata: {}
-        data:
-          entity_id: sensor.jlo_slack
-          presence: auto
-      - action: slack_user.set_dnd
-        metadata: {}
-        data:
-          num_minutes: 15
-          entity_id: sensor.jlo_slack
+          option: Pause café
+        target:
+          entity_id: input_select.face_du_cube
   mode: single
-- id: '1745063365367'
-  alias: "Serrure - \U0001F514 Notifier déverrouillage non plannifié"
+- id: '1745693675176'
+  alias: Machine à laver - Lancer à 1:30
+  description: ''
+  triggers:
+  - trigger: time
+    at: 01:30:00
+  conditions:
+  - condition: state
+    entity_id: input_select.etat_machine_a_laver
+    state: Plannifiée
+  - condition: state
+    entity_id: binary_sensor.machine_a_laver_remote_control
+    state: 'on'
+  actions:
+  - action: select.select_option
+    metadata: {}
+    data:
+      option: run
+    target:
+      entity_id: select.machine_a_laver
+  mode: single
+- id: '1745693960031'
+  alias: "Machine à laver - \U0001F514 Notifier démarrage prévu"
   description: ''
   triggers:
   - trigger: state
     entity_id:
-    - lock.serrure_porte_d_entree
-    to: unlocked
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Vide
+    - input_select.etat_machine_a_laver
+    to: Plannifiée
+  conditions: []
   actions:
-  - action: script.power_notification_serrure_deverrouillee
+  - action: script.power_notification_lancement_machine_a_laver_prevu
     metadata: {}
     data: {}
+  mode: single
+- id: '1745780998051'
+  alias: Machine à Laver - State machine
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.machine_a_laver_job_state
+    not_from: unavailable
+    to:
+    - rinse
+    - spin
+    - wash
+    id: job_clean
+  - trigger: state
+    entity_id:
+    - sensor.machine_a_laver_job_state
+    not_from: unavailable
+    to:
+    - finish
+    id: job_done
+  - trigger: state
+    entity_id:
+    - binary_sensor.is_washing_machine_running
+    to: 'on'
+    id: power_on
+  - trigger: state
+    entity_id:
+    - binary_sensor.is_washing_machine_running
+    to: 'off'
+    id: power_off
+  - trigger: state
+    entity_id:
+    - binary_sensor.machine_a_laver_remote_control
+    id: remote_control_off
+    not_from: unavailable
+    to: 'off'
+  - trigger: state
+    entity_id:
+    - binary_sensor.machine_a_laver_remote_control
+    id: remote_control_on
+    not_from: unavailable
+    to: 'on'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - job_clean
+        - power_on
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Lavage en cours
+        target:
+          entity_id: input_select.etat_machine_a_laver
+    - conditions:
+      - condition: trigger
+        id:
+        - job_done
+        - power_off
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: À vider
+        target:
+          entity_id: input_select.etat_machine_a_laver
+    - conditions:
+      - condition: trigger
+        id:
+        - remote_control_off
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Inactive
+        target:
+          entity_id: input_select.etat_machine_a_laver
+    - conditions:
+      - condition: trigger
+        id:
+        - remote_control_on
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Plannifiée
+        target:
+          entity_id: input_select.etat_machine_a_laver
   mode: single

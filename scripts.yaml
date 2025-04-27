@@ -946,17 +946,17 @@ power_notification_machine_a_laver_terminee:
       default_message: Cycle de lavage terminé !
       button_title: Machine vidée!
       button_action:
-      - action: input_boolean.turn_off
+      - action: input_select.select_option
         metadata: {}
-        data: {}
+        data:
+          option: Inactive
         target:
-          entity_id:
-          - input_boolean.machine_a_laver_a_vider
+          entity_id: input_select.etat_machine_a_laver
       discard_when:
       - trigger: state
         entity_id:
-        - input_boolean.machine_a_laver_a_vider
-        to: 'off'
+        - input_select.etat_machine_a_laver
+        from: À vider
   description: ''
   icon: mdi:washing-machine-alert
 power_notification_fenetres_ouvertes:
@@ -1415,4 +1415,15 @@ power_notification_serrure_deverrouillee:
       default_message: 'La serrure vient d''être déverrouillée '
       default_importance: true
   alias: Power notification - Serrure deverrouillée
+  description: ''
+power_notification_lancement_machine_a_laver_prevu:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001FAE7 Machine à laver"
+      default_message: La machine à laver démarrera automatiquement cette nuit
+  alias: Power Notification - Lancement machine à laver prévu
   description: ''

@@ -46,13 +46,6 @@ sensor:
         - script.execute: draw_display
 
 binary_sensor:
-  - platform: homeassistant
-    entity_id: binary_sensor.is_washing_machine_running
-    id: is_washing_machine_running
-    on_state: 
-      then:
-        - script.execute: draw_display
-
   - platform: gt911
     id: home_button
     index: 0
@@ -60,15 +53,11 @@ binary_sensor:
       then:
         script.execute: reset_washing_machine_state
 
-
-switch:
+text_sensor:
   - platform: homeassistant
-    entity_id: input_boolean.machine_a_laver_a_vider
-    id: is_washing_to_be_emptied
-    on_turn_on: 
-      then:
-        - script.execute: draw_display
-    on_turn_off: 
+    id: washing_machine_state_machine
+    entity_id: input_select.etat_machine_a_laver
+    on_value: 
       then:
         - script.execute: draw_display
 
@@ -79,10 +68,12 @@ script:
       - lambda: |
           if (id(init_in_progress)) {
             id(draw_boot_page).execute();
-          } else if (id(is_washing_to_be_emptied).state) {
+          } else if (id(washing_machine_state_machine).state == "À vider") {
             id(draw_complete_page).execute();
-          } else if (id(is_washing_machine_running).state) {
+          } else if (id(washing_machine_state_machine).state == "Lavage en cours") {
             id(draw_in_progress_page).execute();
+          } else if (id(washing_machine_state_machine).state == "Plannifiée") {
+            id(draw_planned_page).execute();
           } else {
             id(draw_idle_page).execute();
           }
@@ -105,6 +96,12 @@ script:
           id(s3_box_lcd).show_page(in_progress_page);
           id(s3_box_lcd).update();
 
+  - id: draw_planned_page
+    then:
+      - lambda: |
+          id(s3_box_lcd).show_page(planned_page);
+          id(s3_box_lcd).update();
+
   - id: draw_complete_page
     then:
       - lambda: |
@@ -115,9 +112,13 @@ script:
     then:
       - if:
           condition:
-            switch.is_on: is_washing_to_be_emptied
+            lambda: return id(washing_machine_state_machine).state == "À vider";
           then:
-            switch.turn_off: is_washing_to_be_emptied
+            homeassistant.action:
+              action: input_select.select_option
+              data:
+                option: Inactive
+                entity_id: input_select.etat_machine_a_laver
 
 spi:
   - id: spi_bus
@@ -154,13 +155,19 @@ display:
               it.fill(id(in_progress_color));
               std::string title_string = "Lavage en cours ...";
               it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
-              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine), ImageAlign::CENTER);
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine), ImageAlign::CENTER, Color::WHITE, id(in_progress_color));
+          - id: planned_page
+            lambda: |-
+              it.fill(id(planned_color));
+              std::string title_string = "Lavage plannifié ...";
+              it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(clock_check), ImageAlign::CENTER, Color::WHITE, id(planned_color));
           - id: complete_page
             lambda: |-
               it.fill(id(complete_color));
               std::string title_string = "Lavage terminé !";
               it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
-              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine_alert), ImageAlign::CENTER);
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(washing_machine_alert), ImageAlign::CENTER, Color::WHITE, id(complete_color));
           - id: boot_page
             lambda: |-
               it.fill(id(idle_color));
@@ -229,11 +236,18 @@ image:
     resize: 150x150
     type: grayscale
     transparency: alpha_channel
+  - file: mdi:clock-check
+    id: clock_check
+    resize: 150x150
+    type: grayscale
+    transparency: alpha_channel
 
 color:
   - id: idle_color
     hex: "000000"
   - id: in_progress_color
     hex: "4caf50"
+  - id: planned_color
+    hex: "2196f3"
   - id: complete_color
     hex: "ff6f22"
