@@ -1425,5 +1425,52 @@ power_notification_lancement_machine_a_laver_prevu:
       - zone.home
       default_title: "\U0001FAE7 Machine à laver"
       default_message: La machine à laver démarrera automatiquement cette nuit
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_select.etat_machine_a_laver
+        from: Plannifiée
   alias: Power Notification - Lancement machine à laver prévu
+  description: ''
+start_escape_game:
+  sequence:
+  - action: select.select_option
+    metadata: {}
+    data:
+      option: Escape Game Master
+    target:
+      entity_id: select.vpe_salon_assistant
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      preannounce: false
+      message: Creation of the story in progress. Please wait.
+    target:
+      entity_id: assist_satellite.vpe_salon_satellite_assist
+  - action: conversation.process
+    metadata: {}
+    data:
+      text: Generate new story
+      agent_id: conversation.chatgpt_4
+    response_variable: response_from_ai
+  - variables:
+      story: '{{response_from_ai.response.speech.plain.speech|from_json}}'
+      description: '{{story.description}}'
+  - action: assist_satellite.start_conversation
+    metadata: {}
+    data:
+      preannounce: true
+      extra_system_prompt: 'BEGINING STORY:
+
+
+        {{story}}
+
+
+        END STORY
+
+        '
+      start_message: '{{description}}'
+    target:
+      entity_id: assist_satellite.vpe_salon_satellite_assist
+  alias: Start Escape Game
   description: ''
