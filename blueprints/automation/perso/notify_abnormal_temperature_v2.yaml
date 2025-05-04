@@ -75,11 +75,14 @@ actions:
       room_name_variable: !input room_name
       room_temp: !input room_temperature
       outside_temp: !input outside_temperature
+      room_openings: !input room_openings
+      room_openings_open: |
+        {{room_openings | select('is_state', 'on') | list}}
   - choose:
       - conditions:
-          - condition: state
-            entity_id: !input room_openings
-            state: "on"
+          - condition: template
+            value_template: |
+              {{room_openings_open | length > 0}}
           - condition: numeric_state
             entity_id: !input room_temperature
             below: input_number.interior_temperature_min_acceptable
@@ -105,9 +108,9 @@ actions:
               seconds: 0
               milliseconds: 0
       - conditions:
-          - condition: state
-            entity_id: !input room_openings
-            state: "on"
+          - condition: template
+            value_template: |
+              {{room_openings_open | length > 0}}
           - condition: numeric_state
             entity_id: !input room_temperature
             above: input_number.interior_temperature_max_acceptable
