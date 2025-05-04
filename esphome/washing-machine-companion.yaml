@@ -51,7 +51,7 @@ binary_sensor:
     index: 0
     on_press:
       then:
-        script.execute: reset_washing_machine_state
+        light.toggle: led
 
 text_sensor:
   - platform: homeassistant
@@ -161,7 +161,7 @@ display:
               it.fill(id(planned_color));
               std::string title_string = "Lavage plannifié ...";
               it.printf(70, 30, id(title_font), Color::WHITE, "%s", title_string.c_str());
-              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(clock_check), ImageAlign::CENTER, Color::WHITE, id(planned_color));
+              it.image((it.get_width() / 2), (it.get_height() / 2 + 20), id(calendar_check), ImageAlign::CENTER, Color::WHITE, id(planned_color));
           - id: complete_page
             lambda: |-
               it.fill(id(complete_color));
@@ -236,8 +236,8 @@ image:
     resize: 150x150
     type: grayscale
     transparency: alpha_channel
-  - file: mdi:clock-check
-    id: clock_check
+  - file: mdi:calendar-check
+    id: calendar_check
     resize: 150x150
     type: grayscale
     transparency: alpha_channel
