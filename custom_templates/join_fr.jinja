@@ -1,0 +1,11 @@
+{%- macro join_fr(items) -%}
+    {%- for item in items -%}
+        {%- if loop.first -%}
+            {{ item }}
+        {%- elif loop.last -%}
+            {{ " et " }}{{ item }}
+        {%- else -%}
+            {{ ", " }}{{ item }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}

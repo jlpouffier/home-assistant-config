@@ -577,14 +577,18 @@ preparer_depart_maison:
     then:
     - variables:
         open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='entity_id')
+          \n    | list\n}}"
     - action: script.turn_on
       metadata: {}
       data:
         variables:
-          user_message: 'Les fenêtres suivantes sont toujours ouvertes alors que vous
-            allez partir:  {{open_windows}}'
+          user_message: '{%- from ''unique_area_names.jinja'' import unique_area_names
+            -%}
+
+            Des fenêtres sont toujours ouvertes alors que vous allez partir ({{unique_area_names(open_windows)}})
+
+            '
       target:
         entity_id: script.power_notification_fenetres_ouvertes
   - alias: Notify oven running
@@ -1434,19 +1438,26 @@ power_notification_lancement_machine_a_laver_prevu:
   description: ''
 start_escape_game:
   sequence:
+  - variables:
+      input_voice_assistant: '{% set input_area_entities = area_entities(area) %}
+        {% set voice_assistant_pipelines = label_entities("Choix d''assistant") %}
+        {% set input_voice_assistant = intersect(input_area_entities,voice_assistant_pipelines)
+        %} {{input_voice_assistant}}
+
+        '
   - action: select.select_option
     metadata: {}
     data:
       option: Escape Game Master
     target:
-      entity_id: select.vpe_salon_assistant
+      entity_id: '{{input_voice_assistant}}'
   - action: assist_satellite.announce
     metadata: {}
     data:
       preannounce: false
       message: Creation of the story in progress. Please wait.
     target:
-      entity_id: assist_satellite.vpe_salon_satellite_assist
+      area_id: '{{area}}'
   - action: conversation.process
     metadata: {}
     data:
@@ -1469,8 +1480,68 @@ start_escape_game:
         END STORY
 
         '
-      start_message: '{{description}}'
+      start_message: '{{description}}
+
+        What do you want to do first?
+
+        '
     target:
-      entity_id: assist_satellite.vpe_salon_satellite_assist
+      area_id: '{{area}}'
   alias: Start Escape Game
+  description: ''
+  fields:
+    area:
+      selector:
+        area:
+          entity:
+            domain: assist_satellite
+      name: Area
+      description: Area in which the escape room audio game will start
+      required: true
+power_notification_montre_oubliee:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: ⌚ Montre oubliée?
+      default_message: La montre est toujours à la maison alors que le telephone ne
+        l'ai plus!
+      button_title: Détacher ma montre
+      button_action:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.montre_portee
+  alias: Power Notification - Montre oubliée
+  description: ''
+power_notification_telephone_oublie:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: ⌚ Téléphone oublié?
+      default_message: Le téléphone est toujours à la maison alors que la montre ne
+        l'ai plus!
+      button_title: Détacher mon téléphone
+      button_action:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.telephone_porte
+  alias: Power Notification - Téléphone oublié
+  description: ''
+power_notification_appareil_reattache_automatiquement:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: 'Appareil personnel '
+      default_message: Appareil réattaché automatiquement
+  alias: Power Notification - Appareil réattaché automatiquement
   description: ''

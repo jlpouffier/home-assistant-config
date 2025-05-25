@@ -1,0 +1,10 @@
+{%- macro unique_area_names(entities) -%}
+    {%- from 'join_fr.jinja' import join_fr -%}
+    {%- set areas = entities 
+                    | map("area_name")
+                    | unique
+                    | sort
+                    | list
+    -%}
+    {{join_fr(areas)}}
+{%- endmacro -%}

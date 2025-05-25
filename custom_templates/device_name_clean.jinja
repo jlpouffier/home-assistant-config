@@ -1,0 +1,5 @@
+{%- macro device_name_clean(lookup_value) -%}
+    {%- set og_device_name = device_name(lookup_value) -%}
+    {%- set clean_device_name = og_device_name | regex_replace('\s*\([^)]*\)', '') -%}
+    {{ clean_device_name }}{{" • " + area_name(lookup_value) if area_name(lookup_value) is not none else "" }}
+{%- endmacro -%}

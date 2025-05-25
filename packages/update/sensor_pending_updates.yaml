@@ -15,7 +15,7 @@ template:
             {{ 
               expand(states.update)
                 | selectattr('state', 'eq', 'on')
-                | map(attribute='attributes.friendly_name') 
+                | map(attribute='entity_id') 
                 | list
                 | sort
             }}

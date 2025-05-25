@@ -1,0 +1,11 @@
+{%- macro device_names_clean(lookup_values) -%}
+    {%- from 'join_fr.jinja' import join_fr -%}
+    {%- from 'device_name_clean.jinja' import device_name_clean -%}
+
+    {%- set ns = namespace(names=[]) -%}
+    {%- for v in lookup_values -%}
+        {%- set ns.names = ns.names + [ device_name_clean(v) ] -%}
+    {%- endfor -%}
+
+    {{ join_fr(ns.names | unique | sort) }}
+{%- endmacro -%}

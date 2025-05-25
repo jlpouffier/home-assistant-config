@@ -388,13 +388,15 @@
     then:
     - variables:
         open_doors: "{{ \n  expand(states.binary_sensor.all_doors.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='entity_id')\n
+          \   | list\n}}"
     - action: script.turn_on
       data:
         variables:
-          user_message: 'Les portes suivantes sont ouvertes et il commence a pleuvoir:
-            {{open_doors}}'
+          user_message: '{%- from ''unique_area_names.jinja'' import unique_area_names
+            -%} Il commence a pleuvoir et des portes sont ouvertes ({{unique_area_names(open_doors)}})
+
+            '
       target:
         entity_id: script.power_notification_pluie_et_portes_ouvertes
   - if:
@@ -404,13 +406,15 @@
     then:
     - variables:
         open_windows: "{{ \n  expand(states.binary_sensor.all_windows.attributes.entity_id)\n
-          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='attributes.friendly_name')
-          \n    | list\n    | join(\", \")\n}}"
+          \   | selectattr('state', 'eq', 'on')\n    | map(attribute='entity_id')\n
+          \   | list\n}}"
     - action: script.turn_on
       data:
         variables:
-          user_message: 'Les fenêtres suivantes sont ouvertes et il commence a pleuvoir:
-            {{open_windows}}'
+          user_message: '{%- from ''unique_area_names.jinja'' import unique_area_names
+            -%} Il commence a pleuvoir et des fenêtres sont ouvertes ({{unique_area_names(open_windows)}})
+
+            '
       target:
         entity_id: script.power_notification_pluie_et_fenetres_ouvertes
   mode: single
@@ -433,7 +437,12 @@
     metadata: {}
     data:
       variables:
-        user_message: '{{trigger.to_state.attributes.entities | join('', '')}}'
+        user_message: '{%- from ''device_names_clean.jinja'' import device_names_clean
+          -%}
+
+          {{device_names_clean(trigger.to_state.attributes.entities)}}
+
+          '
     target:
       entity_id: script.power_notification_mise_a_jour_dispo
   mode: queued
@@ -459,8 +468,12 @@
     metadata: {}
     data:
       variables:
-        user_message: '{{state_attr(''sensor.low_batteries'',''entities'') | join('',
-          '')}}'
+        user_message: '{%- from ''device_names_clean.jinja'' import device_names_clean
+          -%}
+
+          {{device_names_clean(state_attr(''sensor.low_batteries'',''entities''))}}
+
+          '
     target:
       entity_id: script.power_notification_batteries_faibles
   mode: single
@@ -2635,9 +2648,6 @@
     - Je m'en vais [faire un tour]
     - On part [faire un tour]
     - On s'en va [faire un tour]
-    - Au revoir
-    - À bientôt
-    - À plus
     trigger: conversation
   conditions: []
   actions:
@@ -5132,13 +5142,13 @@
           - action: light.turn_on
             metadata: {}
             data:
-              brightness_pct: 5
+              brightness_pct: 15
             target:
               area_id:
               - cuisine
               - salon
               - entree
-              entity_id: light.bureau
+              entity_id: light.bureau_suspension
           - action: cover.close_cover
             metadata: {}
             data: {}
@@ -5847,4 +5857,179 @@
         - action: script.start_marilou_bedtime_routine
           metadata: {}
           data: {}
+  mode: single
+- id: '1746466029976'
+  alias: Appareils personnels - Attacher/Détacher montre
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.montre_portee
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: input_boolean.montre_portee
+      state: 'on'
+    then:
+    - action: person.add_device_tracker
+      metadata: {}
+      data:
+        entity_id: person.jenova70
+        device_tracker:
+        - device_tracker.jlo_s_apple_watch_bluetooth
+    else:
+    - action: person.remove_device_tracker
+      metadata: {}
+      data:
+        entity_id: person.jenova70
+        device_tracker:
+        - device_tracker.jlo_s_apple_watch_bluetooth
+  mode: single
+- id: '1746466094247'
+  alias: Appareils personnels - Attacher/Détacher téléphone
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.telephone_porte
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: input_boolean.telephone_porte
+      state: 'on'
+    then:
+    - action: person.add_device_tracker
+      metadata: {}
+      data:
+        entity_id: person.jenova70
+        device_tracker:
+        - device_tracker.jlo_s_iphone_bluetooth
+        - device_tracker.jean_loics_iphone
+    else:
+    - action: person.remove_device_tracker
+      metadata: {}
+      data:
+        entity_id: person.jenova70
+        device_tracker:
+        - device_tracker.jlo_s_iphone_bluetooth
+        - device_tracker.jean_loics_iphone
+  mode: single
+- id: '1746466554887'
+  alias: Appareils personnels - Détecter anomalie
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - device_tracker.jlo_s_iphone_bluetooth
+    - device_tracker.jlo_s_apple_watch_bluetooth
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    to:
+  conditions:
+  - condition: state
+    entity_id: input_boolean.telephone_porte
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.montre_portee
+    state: 'on'
+  actions:
+  - if:
+    - condition: state
+      entity_id: device_tracker.jlo_s_iphone_bluetooth
+      state: home
+    - condition: state
+      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
+      state: not_home
+    then:
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.power_notification_telephone_oublie
+  - if:
+    - condition: state
+      entity_id: device_tracker.jlo_s_iphone_bluetooth
+      state: not_home
+    - condition: state
+      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
+      state: home
+    then:
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - script.power_notification_montre_oubliee
+  mode: single
+- id: '1746467143497'
+  alias: Appareils personnels - Réparer anomalie
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - device_tracker.jlo_s_iphone_bluetooth
+    to: home
+    id: phone_back_home
+  - trigger: state
+    entity_id:
+    - device_tracker.jlo_s_apple_watch_bluetooth
+    to: home
+    id: watch_back_home
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - phone_back_home
+    - condition: state
+      entity_id: input_boolean.montre_portee
+      state: 'off'
+    - condition: state
+      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
+      state: home
+    then:
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.montre_portee
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_title: ⌚ Montre
+          user_message: Montre réattachée automatiquement
+      target:
+        entity_id:
+        - script.power_notification_appareil_reattache_automatiquement
+  - if:
+    - condition: trigger
+      id:
+      - watch_back_home
+    - condition: state
+      entity_id: input_boolean.telephone_porte
+      state: 'off'
+    - condition: state
+      entity_id: device_tracker.jlo_s_iphone_bluetooth
+      state: home
+    then:
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.telephone_porte
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_title: "\U0001F4F1 Téléphone"
+          user_message: Téléphone réattaché automatiquement
+      target:
+        entity_id:
+        - script.power_notification_appareil_reattache_automatiquement
   mode: single
