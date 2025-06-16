@@ -492,6 +492,7 @@
         - {{trigger.json.episodes[0].title}}'
       tag: '{{trigger.json.downloadId}}'
     trigger: webhook
+    enabled: false
   - allowed_methods:
     - POST
     local_only: true
@@ -513,6 +514,7 @@
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
       tag: '{{trigger.json.downloadId}}'
     trigger: webhook
+    enabled: false
   - allowed_methods:
     - POST
     local_only: true
@@ -867,76 +869,6 @@
     target:
       entity_id: script.power_notification_rappel_charge_tesla
   mode: single
-- id: '1695458967964'
-  alias: Tesla - Attacher Tesla à JL en début de conduite
-  description: ''
-  triggers:
-  - entity_id:
-    - input_boolean.jl_connected_to_tesla
-    to: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: device_tracker.meme_emplacement
-      state: unavailable
-  actions:
-  - action: person.add_device_tracker
-    data:
-      entity_id: person.jenova70
-      device_tracker:
-      - device_tracker.meme_emplacement
-  - action: person.remove_device_tracker
-    data:
-      entity_id: person.jenova70
-      device_tracker:
-      - device_tracker.jean_loics_iphone
-      - device_tracker.jlo_s_iphone_bluetooth
-      - device_tracker.jlo_s_apple_watch_bluetooth
-  mode: single
-- id: '1695459020679'
-  alias: Tesla - Détacher Tesla à JL en fin de conduite
-  description: ''
-  triggers:
-  - entity_id:
-    - input_boolean.jl_connected_to_tesla
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  actions:
-  - action: notify.mobile_app_jean_loics_iphone
-    data:
-      message: request_location_update
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: person.add_device_tracker
-    data:
-      entity_id: person.jenova70
-      device_tracker:
-      - device_tracker.jean_loics_iphone
-      - device_tracker.jlo_s_iphone_bluetooth
-      - device_tracker.jlo_s_apple_watch_bluetooth
-  - action: person.remove_device_tracker
-    data:
-      entity_id: person.jenova70
-      device_tracker:
-      - device_tracker.meme_emplacement
-  mode: queued
-  max: 10
 - id: '1699868538036'
   alias: Routine du sommeil Marilou - Arrêter
   description: ''
@@ -968,9 +900,10 @@
   alias: Simulation de présence
   description: ''
   triggers:
-  - entity_id:
-    - sensor.presence_simulator_current_step
-    trigger: state
+  - trigger: calendar
+    entity_id: calendar.presence_simulation
+    event: start
+    offset: 0:0:0
   - entity_id:
     - input_boolean.automation_presence_simulator
     trigger: state
@@ -993,11 +926,39 @@
     entity_id: input_boolean.guest_mode
     state: 'off'
   actions:
+  - action: calendar.get_events
+    target:
+      entity_id: calendar.presence_simulation
+    data:
+      duration:
+        hours: 0
+        minutes: 1
+        seconds: 0
+      start_date_time: '{{now()}}'
+    response_variable: calendar_data
+  - variables:
+      step: '{{calendar_data["calendar.presence_simulation"].events[0].summary}}
+
+        '
+  - if:
+    - condition: state
+      entity_id: lock.serrure_porte_d_entree
+      state: unlocked
+    then:
+    - wait_for_trigger:
+      - trigger: state
+        entity_id:
+        - lock.serrure_porte_d_entree
+        from: locked
+      timeout:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
   - choose:
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: out
+      - condition: template
+        value_template: '{{step == "out"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1015,10 +976,14 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.close_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: wake_up
+      - condition: template
+        value_template: '{{step == "wake_up"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1044,10 +1009,14 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: breakfast
+      - condition: template
+        value_template: '{{step == "breakfast"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1068,10 +1037,14 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: chill
+      - condition: template
+        value_template: '{{step == "chill"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1092,10 +1065,14 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: eating
+      - condition: template
+        value_template: '{{step == "eating"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1116,10 +1093,14 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
     - conditions:
-      - condition: state
-        entity_id: sensor.presence_simulator_current_step
-        state: bedtime
+      - condition: template
+        value_template: '{{step == "bedtime"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -1145,6 +1126,11 @@
           data: {}
           target:
             entity_id: cover.volets_salon
+        - action: cover.open_cover
+          metadata: {}
+          data: {}
+          target:
+            entity_id: cover.rideaux_premier_etage
   mode: single
 - id: '1702164245946'
   alias: Routine du sommeil Marilou - Changer heure fin de routine
@@ -1579,29 +1565,6 @@
           - media_player.sonos_amp_music_assistant
   mode: queued
   max: 10
-- id: '1719771128107'
-  alias: Tesla - Détacher Tesla à JL en fin de conduite (Backup)
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.meme_conducteur
-    to: 'off'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.automation_tesla
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.jl_connected_to_tesla
-    state: 'on'
-  actions:
-  - action: input_boolean.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: input_boolean.jl_connected_to_tesla
-  mode: queued
-  max: 10
 - id: '1726171964785'
   alias: Chauffage Intelligent - Choisir Mode Rez-De-Chaussée
   description: ''
@@ -1964,11 +1927,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_du_rez_de_chaussee
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_du_rez_de_chaussee
     state: 'on'
   actions:
   - choose:
@@ -2028,11 +1991,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_du_bureau
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_du_bureau
     state: 'on'
   actions:
   - choose:
@@ -2092,11 +2055,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_de_la_chambre
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_de_la_chambre
     state: 'on'
   actions:
   - choose:
@@ -2156,11 +2119,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_de_la_chambre_de_marilou
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_de_la_chambre_de_marilou
     state: 'on'
   actions:
   - choose:
@@ -2608,6 +2571,9 @@
   - condition: state
     entity_id: input_boolean.guest_mode
     state: 'off'
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'off'
   actions:
   - action: input_select.select_option
     metadata: {}
@@ -2760,6 +2726,9 @@
   conditions:
   - condition: state
     entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
     state: 'off'
   actions:
   - action: input_select.select_option
@@ -3119,11 +3088,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_de_la_salle_de_bains
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_de_la_salle_de_bains
     state: 'on'
   actions:
   - choose:
@@ -3183,11 +3152,11 @@
     id: restart
     trigger: homeassistant
   - entity_id:
-    - input_boolean.automation_heat_home
+    - input_boolean.chauffage_intelligent_de_la_salle_de_douche
     trigger: state
   conditions:
   - condition: state
-    entity_id: input_boolean.automation_heat_home
+    entity_id: input_boolean.chauffage_intelligent_de_la_salle_de_douche
     state: 'on'
   actions:
   - choose:
@@ -3260,12 +3229,6 @@
       then:
       - action: light.turn_on
         metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - light.vpe_cuisine_led_ring
-      - action: light.turn_on
-        metadata: {}
         data:
           brightness_pct: 66
           rgb_color:
@@ -3275,11 +3238,6 @@
         target:
           entity_id: light.vpe_salon_led_ring
       else:
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: light.vpe_cuisine_led_ring
       - action: light.turn_on
         metadata: {}
         data:
@@ -3296,7 +3254,6 @@
       data: {}
       target:
         entity_id:
-        - light.vpe_cuisine_led_ring
         - light.vpe_salon_led_ring
   mode: queued
   max: 10
@@ -5451,7 +5408,7 @@
               entity_id: assist_satellite.vpe_bureau_satellite_assist
   mode: single
 - id: '1745063365367'
-  alias: "Serrure - \U0001F514 Notifier déverrouillage non plannifié"
+  alias: "Serrure - \U0001F514 Notifier déverrouillage non planifié"
   description: ''
   triggers:
   - trigger: state
@@ -5673,11 +5630,13 @@
     - binary_sensor.is_washing_machine_running
     to: 'on'
     id: power_on
+    enabled: true
   - trigger: state
     entity_id:
     - binary_sensor.is_washing_machine_running
     to: 'off'
     id: power_off
+    enabled: true
   - trigger: state
     entity_id:
     - binary_sensor.machine_a_laver_remote_control
@@ -5749,29 +5708,35 @@
     - binary_sensor.machine_a_laver_puissance
   - trigger: homeassistant
     event: start
+  - trigger: state
+    entity_id:
+    - input_select.etat_machine_a_laver
   conditions: []
   actions:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: binary_sensor.machine_a_laver_puissance
-        state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.machine_a_laver_puissance
+          state: 'on'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: input_select.etat_machine_a_laver
+            state: Inactive
       sequence:
       - action: light.turn_on
         metadata: {}
         data: {}
         target:
           entity_id: light.ecran_companion_de_la_machine_a_laver_screen
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.machine_a_laver_puissance
-        state: 'off'
-      sequence:
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: light.ecran_companion_de_la_machine_a_laver_screen
+    default:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.ecran_companion_de_la_machine_a_laver_screen
   mode: single
 - id: '1745952054053'
   alias: Mode sommeil Marilou - Bouton
@@ -6033,3 +5998,762 @@
         entity_id:
         - script.power_notification_appareil_reattache_automatiquement
   mode: single
+- id: '1748330056295'
+  alias: 'Machine à laver - Essorage par défaut '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.machine_a_laver_puissance
+    to: 'on'
+  conditions: []
+  actions:
+  - action: select.select_option
+    metadata: {}
+    data:
+      option: '1000'
+    target:
+      entity_id: select.machine_a_laver_spin_level
+  mode: single
+- id: '1748633499979'
+  alias: Guirlande Jardin - Éteindre automatiquement
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.automation_presence_simulator
+    state: 'off'
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.exterieur_guinguette
+  mode: single
+- id: '1748838147046'
+  alias: "Serrure - \U0001F514 Notifier verrouillage non planifié"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - lock.serrure_porte_d_entree
+    to: locked
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  actions:
+  - action: script.power_notification_serrure_verrouillee
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1750076179296'
+  alias: Climatisation Intelligente - Choisir Temperature Cible Bureau
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_bureau
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_bureau_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_bureau_present
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_bureau_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_bureau
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_bureau_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_bureau
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_bureau
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_bureau_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_bureau
+  mode: queued
+  max: 10
+- id: '1750076318127'
+  alias: Climatisation Intelligente - Choisir Temperature Cible Rez-de-Chaussée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_rez_de_chaussee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_rez_de_chaussee_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_rez_de_chaussee_present
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_rez_de_chaussee
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_rez_de_chaussee
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_rez_de_chaussee
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_rez_de_chaussee
+  mode: queued
+  max: 10
+- id: '1750076347458'
+  alias: Climatisation Intelligente - Choisir Temperature Cible Chambre
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_chambre
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre_present
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre
+  mode: queued
+  max: 10
+- id: '1750076377317'
+  alias: Climatisation Intelligente - Choisir Temperature Cible Chambre Marilou
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_chambre_marilou
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre_marilou_absent
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre_marilou_present
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Présent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou_present'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre_marilou
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Absent
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre_marilou
+    - conditions:
+      - condition: state
+        entity_id: input_select.mode_chauffage_chambre_marilou
+        state: Frost Guard
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou_absent'')}}'
+        target:
+          entity_id: input_number.temperature_cible_climatisation_chambre_marilou
+  mode: queued
+  max: 10
+- id: '1750080067995'
+  alias: Climatisation Intelligente - Bureau
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.climatisation_bureau_autorisee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_bureau
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_bureau
+  - trigger: state
+    entity_id:
+    - input_select.mode_climatisation_intelligente
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+    - input_boolean.climatisation_intelligent_du_bureau
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climatisation_intelligent_du_bureau
+    state: 'on'
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.climatisation_bureau_autorisee
+      state: 'on'
+    then:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Froid
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              state: cool
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: cool
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_climatisation_bureau'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_bureau'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_climatisation_bureau'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Chaud
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              state: heat
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: heat
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_chauffage_bureau'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_bureau'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+    else:
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          state: 'off'
+      then:
+      - action: climate.set_hvac_mode
+        metadata: {}
+        data:
+          hvac_mode: 'off'
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+  mode: restart
+- id: '1750081036212'
+  alias: Climatisation Intelligente - Chambre
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.climatisation_chambre_autorisee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre
+  - trigger: state
+    entity_id:
+    - input_select.mode_climatisation_intelligente
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+    - input_boolean.climatisation_intelligent_de_la_chambre
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climatisation_intelligent_de_la_chambre
+    state: 'on'
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.climatisation_chambre_autorisee
+      state: 'on'
+    then:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Froid
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              state: cool
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: cool
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_climatisation_chambre'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_climatisation_chambre'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Chaud
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              state: heat
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: heat
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_chauffage_chambre'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+    else:
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          state: 'off'
+      then:
+      - action: climate.set_hvac_mode
+        metadata: {}
+        data:
+          hvac_mode: 'off'
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+  mode: restart
+- id: '1750081171295'
+  alias: Climatisation Intelligente - Chambre Marilou
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.climatisation_chambre_marilou_autorisee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_chambre_marilou
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_chambre_marilou
+  - trigger: state
+    entity_id:
+    - input_select.mode_climatisation_intelligente
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+    - input_boolean.climatisation_intelligent_de_la_chambre_de_marilou
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climatisation_intelligent_de_la_chambre_de_marilou
+    state: 'on'
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.climatisation_chambre_marilou_autorisee
+      state: 'on'
+    then:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Froid
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              state: cool
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: cool
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre_marilou'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Chaud
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              state: heat
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: heat
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')
+              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre_marilou'',''temperature'')
+              | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
+            target:
+              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+    else:
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          state: 'off'
+      then:
+      - action: climate.set_hvac_mode
+        metadata: {}
+        data:
+          hvac_mode: 'off'
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+  mode: restart
+- id: '1750081335140'
+  alias: Climatisation Intelligente - Rez-de-chaussée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.climatisation_rez_de_chaussee_autorisee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_chauffage_rez_de_chaussee
+  - trigger: state
+    entity_id:
+    - input_number.temperature_cible_climatisation_rez_de_chaussee
+  - trigger: state
+    entity_id:
+    - input_select.mode_climatisation_intelligente
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id:
+    - input_boolean.climatisation_intelligent_du_rez_de_chaussee
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climatisation_intelligent_du_rez_de_chaussee
+    state: 'on'
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: binary_sensor.climatisation_rez_de_chaussee_autorisee
+      state: 'on'
+    then:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Froid
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.floirac
+              state: cool
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: cool
+            target:
+              entity_id: climate.floirac
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')
+              | float(0) != state_attr(''climate.floirac'',''temperature'') | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')}}'
+            target:
+              entity_id: climate.floirac
+      - conditions:
+        - condition: state
+          entity_id: input_select.mode_climatisation_intelligente
+          state: Chaud
+        sequence:
+        - if:
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: climate.floirac
+              state: heat
+          then:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            data:
+              hvac_mode: heat
+            target:
+              entity_id: climate.floirac
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+        - if:
+          - condition: template
+            value_template: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')
+              | float(0) != state_attr(''climate.floirac'',''temperature'') | float(0)}}'
+          then:
+          - action: climate.set_temperature
+            metadata: {}
+            data:
+              temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
+            target:
+              entity_id: climate.floirac
+    else:
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.floirac
+          state: 'off'
+      then:
+      - action: climate.set_hvac_mode
+        metadata: {}
+        data:
+          hvac_mode: 'off'
+        target:
+          entity_id: climate.floirac
+  mode: restart
