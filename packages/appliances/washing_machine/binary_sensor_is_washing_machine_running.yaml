@@ -7,4 +7,4 @@ template:
         state: "{{ states('sensor.machine_a_laver_power') | float(default = 0) > 10 }}"
         device_class: running
         delay_on: "0:03:00"
-        delay_off: "0:01:00"
+        delay_off: "0:05:00"
