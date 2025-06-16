@@ -61,15 +61,9 @@ triggers:
     entity_id: input_number.interior_temperature_max_acceptable
   - trigger: state
     entity_id: input_number.interior_temperature_min_acceptable
-  - trigger: state
-    entity_id: input_boolean.automation_heat_home
   - trigger: homeassistant
     event: start
     id: restart
-conditions:
-  - condition: state
-    entity_id: input_boolean.automation_heat_home
-    state: "on"
 actions:
   - variables:
       room_name_variable: !input room_name
