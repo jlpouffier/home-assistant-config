@@ -5,14 +5,6 @@ blueprint:
   domain: script
   author: JLo
   input:
-    voice_assistant:
-      name: Voice assistant
-      description: The voice assistant that will be used for that conversation.
-      selector:
-        entity:
-          multiple: false
-          filter:
-            - domain: assist_satellite
     question:
       name: Question
       description: The question that will be asked by the voice assistant.
@@ -198,6 +190,16 @@ variables:
     - Let's skip that
     - I'm not comfortable with that
 
+fields:
+  voice_assistant:
+    name: Voice assistant
+    description: The voice assistant that will be used for that conversation.
+    selector:
+      entity:
+        multiple: false
+        filter:
+          - domain: assist_satellite
+
 sequence:
   - variables:
       number_of_retries: !input number_of_retries
@@ -208,7 +210,7 @@ sequence:
           data:
             question: !input question
             preannounce: !input preannounce
-            entity_id: !input voice_assistant
+            entity_id: "{{ voice_assistant }}'
             answers:
               - id: "yes"
                 sentences: "{{yes_sentences}}"
@@ -227,7 +229,7 @@ sequence:
                     message: !input yes_answer
                     preannounce: false
                   target:
-                    entity_id: !input voice_assistant
+                    entity_id: "{{ voice_assistant }}'
             - conditions:
                 - condition: template
                   value_template: "{{response.id == 'no'}}"
@@ -239,7 +241,7 @@ sequence:
                     message: !input no_answer
                     preannounce: false
                   target:
-                    entity_id: !input voice_assistant
+                    entity_id: "{{ voice_assistant }}'
           default:
             - sequence: !input other_actions
             - action: assist_satellite.announce
@@ -248,7 +250,7 @@ sequence:
                 message: !input other_answer
                 preannounce: false
               target:
-                entity_id: !input voice_assistant
+                entity_id: "{{ voice_assistant }}'
       until:
         - condition: template
           value_template: "{{ (response is defined and response.id in ['yes','no']) or repeat.index > number_of_retries}}"
