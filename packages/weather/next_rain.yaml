@@ -4,245 +4,243 @@ template:
   - binary_sensor:
       - name: next_rain_in_0_min
         unique_id: next_rain_in_0_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('0 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('0 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('0 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('0 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('0 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('0 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_5_min
         unique_id: next_rain_in_5_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('5 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('5 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('5 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('5 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('5 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('5 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_10_min
         unique_id: next_rain_in_10_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('10 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('10 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('10 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('10 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('10 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('10 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_15_min
         unique_id: next_rain_in_15_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('15 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('15 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('15 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('15 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('15 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('15 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_20_min
         unique_id: next_rain_in_20_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('20 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('20 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('20 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('20 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('20 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('20 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_25_min
         unique_id: next_rain_in_25_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('25 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('25 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('25 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('25 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('25 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('25 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_35_min
         unique_id: next_rain_in_35_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('35 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('35 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('35 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('35 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('35 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('35 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
+
       - name: next_rain_in_45_min
         unique_id: next_rain_in_45_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('45 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('45 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('45 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('45 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('45 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('45 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
 
       - name: next_rain_in_55_min
         unique_id: next_rain_in_55_min
-        state: "{{ 'Pluie' in state_attr('sensor.floirac_next_rain','1_hour_forecast').get('55 min') }}"
+        state: >
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('55 min', 'Temps sec') %}
+          {{ "Pluie" in forecast }}
         device_class: problem
         icon: >-
-          {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('55 min') %} 
-          {% if forcast == "Pluie faible"%}
-          mdi:water-outline
-          {% elif forcast == "Pluie modérée"%}
-          mdi:water-opacity
-          {% elif forcast == "Pluie forte"%}
-          mdi:water 
-          {% else %}
-          mdi:circle-small 
-          {% endif %}
+          {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+          {% set forecast  = forecasts.get('55 min', 'Temps sec') %}
+          {% set icons = {
+            'Pluie faible'  : 'mdi:water-outline',
+            'Pluie modérée' : 'mdi:water-opacity',
+            'Pluie forte'   : 'mdi:water'
+          } %}
+          {{ icons.get(forecast, 'mdi:circle-small') }}
         attributes:
           intensity: |
-            {% set forcast = state_attr("sensor.floirac_next_rain","1_hour_forecast").get('55 min') %} 
-            {% if forcast == "Pluie faible"%}
-              1
-            {% elif forcast == "Pluie modérée"%}
-              2
-            {% elif forcast == "Pluie forte"%}
-              3
-            {% else %}
-              0
-            {% endif %}
+            {% set forecasts = state_attr('sensor.floirac_next_rain', '1_hour_forecast') | default({}, true) %}
+            {% set forecast  = forecasts.get('55 min', 'Temps sec') %}
+            {% set intensity = {
+              'Pluie faible'  : 1,
+              'Pluie modérée' : 2,
+              'Pluie forte'   : 3
+            } %}
+            {{ intensity.get(forecast, 0) }}
