@@ -88,7 +88,7 @@ blueprint:
       input:
         number_of_retries:
           name: Number of retries
-          description: Number of times the question should be asked if the answer is not understood.
+          description: Number of times the question should be re-asked if the answer is not understood.
           default: 0
           selector:
             number:
