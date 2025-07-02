@@ -12,10 +12,11 @@
     entity_id: input_boolean.automation_clean_cat_litter_box
     state: 'on'
   actions:
-  - action: input_number.increment
+  - action: counter.increment
+    metadata: {}
     data: {}
     target:
-      entity_id: input_number.litter_tracking
+      entity_id: counter.passages_litiere
   mode: single
 - id: '1688112377959'
   alias: "Litière Intelligente - \U0001F514 Notifier litière pleine"
@@ -1601,6 +1602,9 @@
   - trigger: state
     entity_id:
     - input_boolean.mode_sommeil
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_cinema
   conditions: []
   actions:
   - choose:
@@ -1624,9 +1628,6 @@
         target:
           entity_id: input_select.mode_chauffage_rez_de_chaussee
     - conditions:
-      - condition: state
-        entity_id: binary_sensor.presence_rez_de_chaussee
-        state: 'on'
       - condition: or
         conditions:
         - condition: not
@@ -1636,6 +1637,14 @@
             state: Vide
         - condition: state
           entity_id: input_boolean.guest_mode
+          state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_rez_de_chaussee
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.mode_cinema
           state: 'on'
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -1706,9 +1715,6 @@
           entity_id:
           - input_select.mode_chauffage_bureau
     - conditions:
-      - condition: state
-        entity_id: binary_sensor.capteur_presence_bureau_occupancy
-        state: 'on'
       - condition: or
         conditions:
         - condition: not
@@ -1719,6 +1725,9 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_bureau_occupancy
+        state: 'on'
       - condition: state
         entity_id: input_boolean.mode_sommeil
         state: 'off'
@@ -1770,6 +1779,9 @@
   - entity_id:
     - input_boolean.guest_mode
     trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
   conditions: []
   actions:
   - choose:
@@ -1785,13 +1797,6 @@
         target:
           entity_id: input_select.mode_chauffage_chambre
     - conditions:
-      - condition: state
-        entity_id: binary_sensor.capteur_presence_chambre_occupancy
-        state: 'on'
-        for:
-          hours: 0
-          minutes: 0
-          seconds: 0
       - condition: or
         conditions:
         - condition: not
@@ -1801,6 +1806,19 @@
             state: Vide
         - condition: state
           entity_id: input_boolean.guest_mode
+          state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_presence_chambre_occupancy
+          state: 'on'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+          enabled: false
+        - condition: state
+          entity_id: input_boolean.mode_sommeil
           state: 'on'
       sequence:
       - action: input_select.select_option
@@ -1851,6 +1869,9 @@
   - entity_id:
     - input_boolean.guest_mode
     trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
   conditions: []
   actions:
   - choose:
@@ -1867,13 +1888,6 @@
           entity_id:
           - input_select.mode_chauffage_chambre_marilou
     - conditions:
-      - condition: state
-        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
-        state: 'on'
-        for:
-          hours: 0
-          minutes: 0
-          seconds: 0
       - condition: or
         conditions:
         - condition: not
@@ -1883,6 +1897,19 @@
             state: Vide
         - condition: state
           entity_id: input_boolean.guest_mode
+          state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
+          state: 'on'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+          enabled: false
+        - condition: state
+          entity_id: input_boolean.mode_sommeil_marilou
           state: 'on'
       sequence:
       - action: input_select.select_option
@@ -3308,15 +3335,14 @@
   - choose:
     - conditions:
       - condition: numeric_state
-        entity_id: input_number.litter_tracking
+        entity_id: counter.passages_litiere
         above: 0
       sequence:
-      - action: input_number.set_value
+      - action: counter.reset
         metadata: {}
-        data:
-          value: 0
+        data: {}
         target:
-          entity_id: input_number.litter_tracking
+          entity_id: counter.passages_litiere
       - set_conversation_response: C'est noté
     default:
     - set_conversation_response: La litière est déja propre
@@ -3407,7 +3433,9 @@
       - action: assist_satellite.announce
         metadata: {}
         data:
-          message: Mode Sommeil désactivé. Bonne journée
+          message: "Mode Sommeil désactivé. \n{% if is_state('input_select.etat_machine_a_laver','À
+            vider')%}\nN'oublie pas de vider la machine à laver.\n{% endif %}\nBonne
+            journée."
           preannounce: false
         target:
           entity_id:
@@ -3482,17 +3510,18 @@
           target:
             entity_id: cover.rideau_chambre
           enabled: true
-      - if:
-        - condition: state
-          entity_id: binary_sensor.exterieur_lumineux
-          state: 'on'
-        then:
-        - action: light.turn_off
-          metadata: {}
-          data: {}
-          target:
-            area_id: chambre
-          enabled: true
+        - if:
+          - condition: state
+            entity_id: binary_sensor.exterieur_lumineux
+            state: 'on'
+          then:
+          - action: light.turn_off
+            metadata: {}
+            data:
+              transition: 15
+            target:
+              area_id: chambre
+            enabled: true
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_sommeil
@@ -5630,13 +5659,13 @@
     - binary_sensor.is_washing_machine_running
     to: 'on'
     id: power_on
-    enabled: true
+    enabled: false
   - trigger: state
     entity_id:
     - binary_sensor.is_washing_machine_running
     to: 'off'
     id: power_off
-    enabled: true
+    enabled: false
   - trigger: state
     entity_id:
     - binary_sensor.machine_a_laver_remote_control
@@ -6019,8 +6048,11 @@
   alias: Guirlande Jardin - Éteindre automatiquement
   description: ''
   triggers:
-  - trigger: time
-    at: '22:00:00'
+  - trigger: state
+    entity_id:
+    - binary_sensor.exterieur_lumineux
+    from: 'on'
+    to: 'off'
   conditions:
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
@@ -6378,6 +6410,25 @@
               temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
             target:
               entity_id: climate.climatisation_premier_etage_climatisation_bureau
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          attribute: fan_mode
+          state: auto
+      then:
+      - action: climate.set_fan_mode
+        metadata: {}
+        data:
+          fan_mode: auto
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
     else:
     - if:
       - condition: not
@@ -6500,6 +6551,25 @@
               temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
             target:
               entity_id: climate.climatisation_premier_etage_climatisation_chambre
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          attribute: fan_mode
+          state: auto
+      then:
+      - action: climate.set_fan_mode
+        metadata: {}
+        data:
+          fan_mode: auto
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
     else:
     - if:
       - condition: not
@@ -6622,6 +6692,25 @@
               temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
             target:
               entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          attribute: fan_mode
+          state: auto
+      then:
+      - action: climate.set_fan_mode
+        metadata: {}
+        data:
+          fan_mode: auto
+        target:
+          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
     else:
     - if:
       - condition: not
@@ -6708,6 +6797,11 @@
               temperature: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')}}'
             target:
               entity_id: climate.floirac
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
       - conditions:
         - condition: state
           entity_id: input_select.mode_climatisation_intelligente
@@ -6742,6 +6836,68 @@
               temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
             target:
               entity_id: climate.floirac
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 1
+              milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.floirac
+          attribute: fan_mode
+          state: auto
+      then:
+      - action: climate.set_fan_mode
+        metadata: {}
+        data:
+          fan_mode: auto
+        target:
+          entity_id: climate.floirac
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.floirac
+          attribute: swing_horizontal_mode
+          state: '2'
+      then:
+      - action: climate.set_swing_horizontal_mode
+        metadata: {}
+        data:
+          swing_horizontal_mode: '2'
+        target:
+          entity_id: climate.floirac
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: climate.floirac
+          attribute: swing_mode
+          state: 1_up
+      then:
+      - action: climate.set_swing_mode
+        metadata: {}
+        data:
+          swing_mode: 1_up
+        target:
+          entity_id: climate.floirac
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
     else:
     - if:
       - condition: not
@@ -6757,3 +6913,52 @@
         target:
           entity_id: climate.floirac
   mode: restart
+- id: '1750749535386'
+  alias: Guirlande Jardin - Allumer
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.hue_tap_dial_switch_9_bouton_2
+  conditions:
+  - condition: state
+    entity_id: event.hue_tap_dial_switch_9_bouton_2
+    attribute: event_type
+    state: initial_press
+  actions:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.exterieur_lumineux
+      state: 'on'
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.exterieur_guinguette
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 40
+    target:
+      entity_id: light.exterieur_sphere
+  mode: single
+- id: '1751359654016'
+  alias: test
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    to: 'on'
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: script.ask_a_yes_no_question
+    metadata: {}
+    data: {}
+  mode: single

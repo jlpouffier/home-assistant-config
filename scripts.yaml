@@ -646,11 +646,11 @@ power_notification_litiere_pleine:
         - binary_sensor.is_litter_full
         to: 'off'
       button_action:
-      - action: input_number.set_value
-        data:
-          value: 0
+      - action: counter.reset
+        metadata: {}
+        data: {}
         target:
-          entity_id: input_number.litter_tracking
+          entity_id: counter.passages_litiere
   description: ''
   icon: mdi:bell
 power_notification_poubelle_noire_non_sortie_a_temps:
@@ -1557,4 +1557,30 @@ power_notification_serrure_verrouillee:
       default_message: La serrure vient d'être verrouillée
       default_importance: false
   alias: Power notification - Serrure verrouillée
+  description: ''
+ask_a_yes_no_question:
+  alias: Ask a Yes//No question
+  use_blueprint:
+    path: jlo/ask_yes_no_question.yaml
+    input:
+      question: It's pretty hot outside, do you want me to close your shutters?
+      yes_actions:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 60
+        target:
+          entity_id: cover.volets_salon
+      yes_answer: Ok, closing shutters now!
+      no_actions: []
+      no_answer: No problem, not doing anything!
+      other_answer: Sorry, I could not understand that!
+      number_of_retries: 0
+  description: ''
+ask_a_yes_no_question_2:
+  alias: Ask a Yes/No question 2
+  use_blueprint:
+    path: jlo/ask_yes_no_question.yaml
+    input:
+      question: Salut ca va?
   description: ''
