@@ -2192,7 +2192,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Le salon
-      room_temperature: sensor.thermostat_netatmo_current_temperature
+      room_temperature: sensor.capteur_temperature_salon_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_cuisine
       - binary_sensor.capteur_ouverture_porte_entree
@@ -2234,7 +2234,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: Le bureau
-      room_temperature: sensor.radiateur_bureau_current_temperature
+      room_temperature: sensor.capteur_temperature_bureau_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_bureau
       room_openings_duration: 00:05:00
@@ -6942,23 +6942,4 @@
       brightness_pct: 40
     target:
       entity_id: light.exterieur_sphere
-  mode: single
-- id: '1751359654016'
-  alias: test
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.presence_rez_de_chaussee
-    to: 'on'
-  conditions: []
-  actions:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 2
-      milliseconds: 0
-  - action: script.ask_a_yes_no_question
-    metadata: {}
-    data: {}
   mode: single

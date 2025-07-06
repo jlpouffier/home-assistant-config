@@ -1558,29 +1558,3 @@ power_notification_serrure_verrouillee:
       default_importance: false
   alias: Power notification - Serrure verrouillée
   description: ''
-ask_a_yes_no_question:
-  alias: Ask a Yes//No question
-  use_blueprint:
-    path: jlo/ask_yes_no_question.yaml
-    input:
-      question: It's pretty hot outside, do you want me to close your shutters?
-      yes_actions:
-      - action: cover.set_cover_position
-        metadata: {}
-        data:
-          position: 60
-        target:
-          entity_id: cover.volets_salon
-      yes_answer: Ok, closing shutters now!
-      no_actions: []
-      no_answer: No problem, not doing anything!
-      other_answer: Sorry, I could not understand that!
-      number_of_retries: 0
-  description: ''
-ask_a_yes_no_question_2:
-  alias: Ask a Yes/No question 2
-  use_blueprint:
-    path: jlo/ask_yes_no_question.yaml
-    input:
-      question: Salut ca va?
-  description: ''
