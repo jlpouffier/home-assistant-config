@@ -1558,3 +1558,12 @@ power_notification_serrure_verrouillee:
       default_importance: false
   alias: Power notification - Serrure verrouillée
   description: ''
+power_notification_fuite_d_eau:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_title: "\U0001F4A7 Fuite d'eau"
+      default_message: Fuite d'eau détectée!
+      default_importance: true
+  alias: Power Notification - Fuite d'eau
+  description: ''

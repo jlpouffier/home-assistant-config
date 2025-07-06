@@ -6943,3 +6943,32 @@
     target:
       entity_id: light.exterieur_sphere
   mode: single
+- id: '1751811618609'
+  alias: "Fuite d'eau - \U0001F514 Notifier"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_de_fuite_cellier
+    to: 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_de_fuite_cuisine
+    to: 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_de_fuite_salle_de_bains
+    to: 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_de_fuite_salle_de_douche
+    to: 'on'
+  conditions: []
+  actions:
+  - action: script.power_notification_fuite_d_eau
+    metadata: {}
+    data:
+      user_message: "{%- from 'unique_area_names.jinja' import unique_area_names -%}
+        \     \n\nFuite d'eau détectée ! ({{unique_area_names([trigger.entity_id])}})"
+  mode: queued
+  max: 10
