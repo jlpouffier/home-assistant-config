@@ -1565,5 +1565,7 @@ power_notification_fuite_d_eau:
       default_title: "\U0001F4A7 Fuite d'eau"
       default_message: Fuite d'eau détectée!
       default_importance: true
+      notification_data_advanced:
+        url: /lovelace/fuites
   alias: Power Notification - Fuite d'eau
   description: ''
