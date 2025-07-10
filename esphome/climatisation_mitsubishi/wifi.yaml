@@ -1,0 +1,10 @@
+# Defaults for wifi, api and OTA connectivity
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+
+ota:
+  platform: esphome

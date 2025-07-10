@@ -1,0 +1,12 @@
+substitutions:
+  name: climatisation-mitsubishi
+  friendly_name: Climatisation
+  remote_temp_sensor: sensor.capteur_temperature_salon_temperature
+
+
+packages:
+  wifi: !include climatisation_mitsubishi/wifi.yaml
+  sensors: !include climatisation_mitsubishi/sensors.yaml
+  heatpump-d1pro: !include climatisation_mitsubishi/heatpump-xiaoS3.yaml
+  climate: !include climatisation_mitsubishi/heatpump-climate.yaml
+  bt-proxy: !include climatisation_mitsubishi/bt-proxy.yaml

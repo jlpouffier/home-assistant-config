@@ -1585,6 +1585,10 @@
       hours: 0
       minutes: 5
       seconds: 0
+    enabled: false
+  - trigger: state
+    entity_id:
+    - sensor.ratio_de_presence_rez_de_chaussee
   - entity_id:
     - binary_sensor.capteur_ouverture_fenetre_cuisine
     - binary_sensor.capteur_ouverture_porte_entree
@@ -1620,6 +1624,7 @@
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
           state: 'on'
+        alias: Doors / Windows open
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -1638,11 +1643,17 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
-      - condition: or
+        alias: Home occupied
+      - alias: Room occupied
+        condition: or
         conditions:
         - condition: state
           entity_id: binary_sensor.presence_rez_de_chaussee
           state: 'on'
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.ratio_de_presence_rez_de_chaussee
+          above: 50
         - condition: state
           entity_id: input_boolean.mode_cinema
           state: 'on'
@@ -1691,6 +1702,10 @@
       minutes: 5
       seconds: 0
     trigger: state
+    enabled: false
+  - trigger: state
+    entity_id:
+    - sensor.capteur_de_presence_bureau_ratio_de_presence
   - event: start
     trigger: homeassistant
   - entity_id:
@@ -1725,9 +1740,15 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
+        alias: Home is occupied
       - condition: state
         entity_id: binary_sensor.capteur_presence_bureau_occupancy
         state: 'on'
+        enabled: false
+      - alias: Room occupied
+        condition: numeric_state
+        entity_id: sensor.capteur_de_presence_bureau_ratio_de_presence
+        above: 50
       - condition: state
         entity_id: input_boolean.mode_sommeil
         state: 'off'
@@ -1774,6 +1795,11 @@
       minutes: 5
       seconds: 0
     trigger: state
+    enabled: false
+  - trigger: state
+    enabled: false
+    entity_id:
+    - sensor.capteur_de_presence_chambre_ratio_de_presence
   - event: start
     trigger: homeassistant
   - entity_id:
@@ -1807,7 +1833,9 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
-      - condition: or
+        alias: Home occupied
+      - alias: Room occupied
+        condition: or
         conditions:
         - condition: state
           entity_id: binary_sensor.capteur_presence_chambre_occupancy
@@ -1816,6 +1844,10 @@
             hours: 0
             minutes: 0
             seconds: 0
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.capteur_de_presence_chambre_ratio_de_presence
+          above: 50
           enabled: false
         - condition: state
           entity_id: input_boolean.mode_sommeil
@@ -1864,6 +1896,11 @@
       minutes: 5
       seconds: 0
     trigger: state
+    enabled: false
+  - trigger: state
+    entity_id:
+    - sensor.capteur_de_presence_chambre_marilou_ratio_de_presence
+    enabled: false
   - event: start
     trigger: homeassistant
   - entity_id:
@@ -1898,7 +1935,9 @@
         - condition: state
           entity_id: input_boolean.guest_mode
           state: 'on'
-      - condition: or
+        alias: Home occupied
+      - alias: Room occupied
+        condition: or
         conditions:
         - condition: state
           entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
@@ -1907,6 +1946,10 @@
             hours: 0
             minutes: 0
             seconds: 0
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.capteur_de_presence_chambre_marilou_ratio_de_presence
+          above: 50
           enabled: false
         - condition: state
           entity_id: input_boolean.mode_sommeil_marilou
@@ -4309,9 +4352,8 @@
   triggers:
   - trigger: state
     entity_id:
-    - media_player.media_center
-    to:
-    - playing
+    - media_player.apple_tv_salon
+    to: playing
     id: tv
     for:
       seconds: 1
@@ -4359,16 +4401,17 @@
   triggers:
   - trigger: state
     entity_id:
-    - media_player.media_center
+    - media_player.apple_tv_salon
     to:
     - 'off'
     - 'on'
     - idle
+    - standby
   - trigger: homeassistant
     event: start
   - trigger: state
     entity_id:
-    - media_player.media_center
+    - media_player.apple_tv_salon
     attribute: app_name
     from:
     - Netflix
@@ -4478,12 +4521,12 @@
   triggers:
   - trigger: state
     entity_id:
-    - media_player.media_center
+    - media_player.apple_tv_salon
     to: paused
     id: paused
   - trigger: state
     entity_id:
-    - media_player.media_center
+    - media_player.apple_tv_salon
     to: playing
     id: playing
   conditions:
@@ -4627,8 +4670,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - media_player.media_center
+      entity_id: media_player.apple_tv_salon
   - action: media_player.media_pause
     metadata: {}
     data: {}
@@ -6732,7 +6774,7 @@
   triggers:
   - trigger: state
     entity_id:
-    - binary_sensor.climatisation_rez_de_chaussee_autorisee
+    - binary_sensor.climatisation_salon_autorisation
   - trigger: state
     entity_id:
     - input_number.temperature_cible_chauffage_rez_de_chaussee
@@ -6759,7 +6801,7 @@
       milliseconds: 0
   - if:
     - condition: state
-      entity_id: binary_sensor.climatisation_rez_de_chaussee_autorisee
+      entity_id: binary_sensor.climatisation_salon_autorisation
       state: 'on'
     then:
     - choose:
@@ -6772,7 +6814,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
               state: cool
           then:
           - action: climate.set_hvac_mode
@@ -6780,7 +6822,7 @@
             data:
               hvac_mode: cool
             target:
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
           - delay:
               hours: 0
               minutes: 0
@@ -6789,14 +6831,15 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')
-              | float(0) != state_attr(''climate.floirac'',''temperature'') | float(0)}}'
+              | float(0) != state_attr(''climate.climatisation_salon'',''temperature'')
+              | float(0)}}'
           then:
           - action: climate.set_temperature
             metadata: {}
             data:
               temperature: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')}}'
             target:
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
           - delay:
               hours: 0
               minutes: 0
@@ -6811,7 +6854,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
               state: heat
           then:
           - action: climate.set_hvac_mode
@@ -6819,7 +6862,7 @@
             data:
               hvac_mode: heat
             target:
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
           - delay:
               hours: 0
               minutes: 0
@@ -6828,14 +6871,15 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')
-              | float(0) != state_attr(''climate.floirac'',''temperature'') | float(0)}}'
+              | float(0) != state_attr(''climate.climatisation_salon'',''temperature'')
+              | float(0)}}'
           then:
           - action: climate.set_temperature
             metadata: {}
             data:
               temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
             target:
-              entity_id: climate.floirac
+              entity_id: climate.climatisation_salon
           - delay:
               hours: 0
               minutes: 0
@@ -6845,7 +6889,7 @@
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
           attribute: fan_mode
           state: auto
       then:
@@ -6854,7 +6898,7 @@
         data:
           fan_mode: auto
         target:
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
       - delay:
           hours: 0
           minutes: 0
@@ -6864,35 +6908,52 @@
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.floirac
-          attribute: swing_horizontal_mode
-          state: '2'
-      then:
-      - action: climate.set_swing_horizontal_mode
-        metadata: {}
-        data:
-          swing_horizontal_mode: '2'
-        target:
-          entity_id: climate.floirac
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
           attribute: swing_mode
-          state: 1_up
+          state: 'off'
       then:
       - action: climate.set_swing_mode
         metadata: {}
         data:
-          swing_mode: 1_up
+          swing_mode: 'off'
         target:
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: select.climatisation_salon_oscillation_verticale
+          state: ↑↑
+      then:
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: ↑↑
+        target:
+          entity_id: select.climatisation_salon_oscillation_verticale
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: select.climatisation_salon_oscillation_horizontale
+          state: ←
+      then:
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: ←
+        target:
+          entity_id: select.climatisation_salon_oscillation_horizontale
       - delay:
           hours: 0
           minutes: 0
@@ -6903,7 +6964,7 @@
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
           state: 'off'
       then:
       - action: climate.set_hvac_mode
@@ -6911,7 +6972,7 @@
         data:
           hvac_mode: 'off'
         target:
-          entity_id: climate.floirac
+          entity_id: climate.climatisation_salon
   mode: restart
 - id: '1750749535386'
   alias: Guirlande Jardin - Allumer

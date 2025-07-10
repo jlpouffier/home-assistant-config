@@ -1,0 +1,51 @@
+# Configuration defaults the CN105 climate config and remote temperature sensors
+
+# External component: https://github.com/echavet/MitsubishiCN105ESPHome
+external_components:
+  - source: github://echavet/MitsubishiCN105ESPHome
+    refresh: 0s
+  
+sensor:
+  - platform: homeassistant
+    name: "Remote Temperature Sensor"
+    entity_id: ${remote_temp_sensor}
+    internal: true
+    device_class: temperature
+    state_class: measurement
+    unit_of_measurement: "°C"
+    filters:
+      - clamp: # Limits values to range accepted by Mitsubishi units
+          min_value: 10
+          max_value: 31
+          ignore_out_of_range: true
+      - throttle: 5min
+    on_value:
+      then:
+        - logger.log:
+            level: INFO
+            format: "Remote temperature received from HA: %.1f C"
+            args: [ 'x' ]
+        - lambda: 'id(hp).set_remote_temperature(x);'
+
+climate:
+  - platform: cn105
+    id: hp
+    name: "${friendly_name}"
+    icon: mdi:heat-pump
+    visual:
+      min_temperature: 10
+      max_temperature: 31
+      temperature_step:
+        target_temperature: 1
+        current_temperature: 0.5
+    # Timeout and communication settings
+    remote_temperature_timeout: 120min
+    update_interval: 2s
+    debounce_delay : 100ms
+    vertical_vane_select:
+      name: Vertical Vane
+      disabled_by_default: false
+    horizontal_vane_select:
+      name: Horizontal Vane
+      disabled_by_default: false
+
