@@ -111,7 +111,7 @@ blueprint:
           selector:
             trigger:
     advanced_section:
-      name: Advanced Notification Data
+      name: Advanced 
       icon: mdi:cog
       collapsed: true
       input:
@@ -121,6 +121,12 @@ blueprint:
           default: {}
           selector:
             object:
+        replace_older_notification:
+          name: Replace older notifications 
+          description: Replace older notifications originating from the same blueprint. Usefull to share progress, for exmaple.
+          default: false
+          selector:
+            boolean:
 
 ####################################### WARNING #######################################
 #                        THIS PART IS DEPENDANT ON YOUR SYSTEM.                       #
@@ -153,12 +159,6 @@ fields:
     required: false
     selector:
       boolean:
-  user_tag:
-    name: Unique identifier
-    description: Unique identifier of the notificaiton (Overrides the identifier set in the blueprint - Use it if you know what you are doing)
-    required: false
-    selector:
-      text:
 
 sequence:
   - variables:
@@ -174,10 +174,11 @@ sequence:
       button_action: !input button_action
       discard_when: !input discard_when
       notification_data_advanced: !input notification_data_advanced
+      replace_older_notification: !input replace_older_notification
 
       # Coming from the script created by the blueprint
       default_tag: |
-        {{ this.entity_id | md5}}
+        
 
       # Overrides from fields
       title: |
@@ -198,11 +199,13 @@ sequence:
         {% else %}
           {{default_importance}}
         {% endif %}
+      
+      # Tag
       tag: |
-        {% if user_tag is defined %}
-          {{user_tag}}
+        {% if replace_older_notification is true %}
+          {{ this.entity_id | md5}}
         {% else %}
-          {{default_tag}}
+          {{ (now().timestamp() ~ (range(9999) | random)) | string | md5}}          
         {% endif %}
 
       # Notification data parts
