@@ -1569,3 +1569,17 @@ power_notification_fuite_d_eau:
         url: /lovelace/fuites
   alias: Power Notification - Fuite d'eau
   description: ''
+power_notification_sonnette_video:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_not_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F3A5 Sonnette "
+      notification_data_advanced:
+        entity_id: camera.sonnette_fluide
+        url: /lovelace/cameras
+      default_message: La sonnette a détectée quelque chose
+  alias: Power notification - Sonnette vidéo
+  description: ''

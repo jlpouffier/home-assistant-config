@@ -491,7 +491,6 @@
       title: "\U0001F4FA Épisode en télechargement ..."
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
-      tag: '{{trigger.json.downloadId}}'
     trigger: webhook
     enabled: false
   - allowed_methods:
@@ -503,7 +502,6 @@
       title: ✅ Épisode téléchargé !
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
-      tag: '{{trigger.json.downloadId}}'
     trigger: webhook
   - allowed_methods:
     - POST
@@ -513,7 +511,6 @@
     variables:
       title: "\U0001F3A5 Film en télechargement ..."
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
-      tag: '{{trigger.json.downloadId}}'
     trigger: webhook
     enabled: false
   - allowed_methods:
@@ -524,7 +521,6 @@
     variables:
       title: ✅ Film téléchargé !
       message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
-      tag: '{{trigger.json.downloadId}}'
     trigger: webhook
   conditions:
   - condition: state
@@ -537,7 +533,6 @@
       variables:
         user_title: '{{title}}'
         user_message: '{{message}}'
-        user_tag: '{{tag}}'
     target:
       entity_id: script.power_notification_servaar
   mode: single
@@ -1445,6 +1440,7 @@
     data: {}
     target:
       entity_id: button.standing_desk_move_desk_to_position_2
+    enabled: false
   - action: media_player.media_pause
     metadata: {}
     data: {}
@@ -4757,7 +4753,6 @@
     metadata: {}
     data:
       user_message: '{{trigger.calendar_event.summary}}'
-      user_tag: '{{as_timestamp(now())}}'
   mode: single
 - id: '1737976480635'
   alias: Rappels - Notifier rappel maison vide
@@ -4788,7 +4783,6 @@
         metadata: {}
         data:
           user_message: '{{repeat.item}}'
-          user_tag: '{{repeat.item[:64]}}'
       for_each: '{{reminder_list}}'
   mode: single
 - id: '1737976815103'
@@ -4821,7 +4815,6 @@
         metadata: {}
         data:
           user_message: '{{repeat.item}}'
-          user_tag: '{{repeat.item[:64]}}'
       for_each: '{{reminder_list}}'
   mode: single
 - id: '1738676615343'
@@ -5231,17 +5224,19 @@
         entity_id: input_boolean.mode_sommeil_marilou
         state: 'on'
     then:
-    - action: switch.turn_off
+    - action: number.set_value
       metadata: {}
-      data: {}
+      data:
+        value: '0'
       target:
-        entity_id: switch.doorbell
+        entity_id: number.carillon_entree_volume
     else:
-    - action: switch.turn_on
+    - action: number.set_value
       metadata: {}
-      data: {}
+      data:
+        value: '4'
       target:
-        entity_id: switch.doorbell
+        entity_id: number.carillon_entree_volume
   mode: single
 - id: '1742072094434'
   alias: VPE Douche - Affichage Boost Chauffage
@@ -5813,55 +5808,25 @@
   alias: Mode sommeil Marilou - Bouton
   description: ''
   triggers:
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_short_press
-    subtype: turn_on
-    trigger: device
+  - trigger: state
+    entity_id:
+    - event.hue_dimmer_switch_1_bouton_1
     id: 'on'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_long_release
-    subtype: turn_on
-    trigger: device
+  - trigger: state
+    entity_id:
+    - event.hue_dimmer_switch_1_bouton_2
     id: 'on'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_short_press
-    subtype: dim_up
-    trigger: device
-    id: 'on'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_long_release
-    subtype: dim_up
-    trigger: device
-    id: 'on'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_short_press
-    subtype: dim_down
-    trigger: device
+  - trigger: state
+    entity_id:
+    - event.hue_dimmer_switch_1_bouton_3
     id: 'off'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_long_release
-    subtype: dim_down
-    trigger: device
+  - trigger: state
+    entity_id:
+    - event.hue_dimmer_switch_1_bouton_4
     id: 'off'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_short_press
-    subtype: turn_off
-    trigger: device
-    id: 'off'
-  - device_id: 5c9632c0c8c35cb775c78bbc03bb844c
-    domain: zha
-    type: remote_button_long_release
-    subtype: turn_off
-    trigger: device
-    id: 'off'
-  conditions: []
+  conditions:
+  - condition: template
+    value_template: '{{trigger.to_state.attributes.event_type in [''initial_press'']}}'
   actions:
   - choose:
     - conditions:
@@ -7033,3 +6998,50 @@
         \     \n\nFuite d'eau détectée ! ({{unique_area_names([trigger.entity_id])}})"
   mode: queued
   max: 10
+- id: '1752843691325'
+  alias: Sonnette vidéo - Notifications importante
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sonnette_personne
+    id: person
+    to: 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.sonnette_colis
+    id: parcel
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Vide
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    enabled: true
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - person
+      sequence:
+      - variables:
+          user_message: Personne détectée près de la porte d'entrée
+    - conditions:
+      - condition: trigger
+        id:
+        - parcel
+      sequence:
+      - variables:
+          user_message: Colis détecté près de la porte d'entrée
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: '{{user_message}}'
+    target:
+      entity_id: script.power_notification_sonnette_video
+  mode: single
