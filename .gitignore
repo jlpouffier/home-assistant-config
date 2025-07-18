@@ -15,3 +15,4 @@ image/
 themes/mushroom
 .HA_VERSION
 packages/untracked_packages/
+zwavejs_*.bin
