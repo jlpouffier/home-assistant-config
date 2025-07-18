@@ -651,6 +651,7 @@ power_notification_litiere_pleine:
         data: {}
         target:
           entity_id: counter.passages_litiere
+      replace_older_notification: true
   description: ''
   icon: mdi:bell
 power_notification_poubelle_noire_non_sortie_a_temps:
@@ -699,6 +700,7 @@ power_notification_poubelle_noire_a_sortir:
         - input_boolean.poubelle_noire_a_sortir
         to: 'off'
       button: true
+      replace_older_notification: true
   description: ''
   icon: mdi:bell
 power_notification_poubelle_verte_a_sortir:
@@ -725,6 +727,7 @@ power_notification_poubelle_verte_a_sortir:
         - input_boolean.poubelle_verte_a_sortir
         to: 'off'
       button: true
+      replace_older_notification: true
   description: ''
   icon: mdi:bell
 power_notification_pluie_et_portes_ouvertes:
@@ -746,6 +749,7 @@ power_notification_pluie_et_portes_ouvertes:
         entity_id:
         - sensor.wittboy_rain_rate_piezo
         to: '0.0'
+      replace_older_notification: true
   description: ''
   icon: mdi:water
 power_notification_pluie_et_fenetres_ouvertes:
@@ -767,6 +771,7 @@ power_notification_pluie_et_fenetres_ouvertes:
         entity_id:
         - sensor.wittboy_rain_rate_piezo
         to: '0.0'
+      replace_older_notification: true
   description: ''
   icon: mdi:water
 power_notification_mise_a_jour_dispo:
@@ -786,6 +791,7 @@ power_notification_mise_a_jour_dispo:
       target: send_to_all
       notification_data_advanced:
         url: /config/dashboard
+      replace_older_notification: true
   description: ''
   icon: mdi:cellphone-arrow-down
 power_notification_batteries_faibles:
@@ -800,6 +806,7 @@ power_notification_batteries_faibles:
       target: send_to_all
       notification_data_advanced:
         url: /lovelace-system/batteries
+      replace_older_notification: true
   description: ''
   icon: mdi:battery-10
 power_notification_servaar:
@@ -840,6 +847,7 @@ power_notification_simulation_de_presence_et_eloignement_du_domicile:
         - input_boolean.automation_presence_simulator
         to: 'on'
       thing: zone.home
+      replace_older_notification: true
   description: ''
   icon: mdi:controller-classic
 power_notification_pont_chaban_delmas:
@@ -869,6 +877,7 @@ power_notification_rappel_charge_tesla:
         - binary_sensor.meme_cable_de_charge
         to: 'on'
       target: send_to_all
+      replace_older_notification: true
   description: ''
   icon: phu:tesla-icon
 power_notification_desactiver_mode_invite_lors_de_l_arrivee:
@@ -894,6 +903,7 @@ power_notification_desactiver_mode_invite_lors_de_l_arrivee:
         entity_id:
         - input_boolean.guest_mode
         to: 'off'
+      replace_older_notification: true
   description: ''
   icon: mdi:creation
 power_notification_porte_d_entree_restee_ouverte:
@@ -912,6 +922,7 @@ power_notification_porte_d_entree_restee_ouverte:
         - binary_sensor.capteur_ouverture_porte_entree
         to: 'off'
       default_importance: true
+      replace_older_notification: true
   description: ''
   icon: mdi:door-open
 power_notification_courrier_a_relever:
@@ -936,6 +947,7 @@ power_notification_courrier_a_relever:
         entity_id:
         - input_boolean.courrier_a_relever
         to: 'off'
+      replace_older_notification: true
   description: ''
   icon: mdi:mailbox-up
 power_notification_machine_a_laver_terminee:
@@ -961,6 +973,7 @@ power_notification_machine_a_laver_terminee:
         entity_id:
         - input_select.etat_machine_a_laver
         from: À vider
+      replace_older_notification: true
   description: ''
   icon: mdi:washing-machine-alert
 power_notification_fenetres_ouvertes:
@@ -983,6 +996,7 @@ power_notification_fenetres_ouvertes:
         entity_id:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
+      replace_older_notification: true
   description: ''
   icon: mdi:window-open
 power_notification_four_allume:
@@ -1005,6 +1019,7 @@ power_notification_four_allume:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      replace_older_notification: true
   description: ''
   icon: mdi:stove
 power_notification_plaques_a_induction_allumees:
@@ -1028,6 +1043,7 @@ power_notification_plaques_a_induction_allumees:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      replace_older_notification: true
   description: ''
   icon: mdi:gas-burner
 power_notification_porte_fenetre_du_salon_ouverte:
@@ -1051,6 +1067,7 @@ power_notification_porte_fenetre_du_salon_ouverte:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: false
+      replace_older_notification: true
   description: ''
   icon: mdi:door-open
 power_notification_porte_d_entree_ouverte:
@@ -1074,6 +1091,7 @@ power_notification_porte_d_entree_ouverte:
         - input_select.modes_de_presence_de_la_maison_v2
         to: Occupée
       default_importance: true
+      replace_older_notification: true
   description: ''
   icon: mdi:door-open
 power_notification_temperature_anormale_dans_le_bureau:
@@ -1086,6 +1104,7 @@ power_notification_temperature_anormale_dans_le_bureau:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans le bureau
+      replace_older_notification: true
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_le_salon:
@@ -1098,6 +1117,7 @@ power_notification_temperature_anormale_dans_le_salon:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans le salon
+      replace_older_notification: true
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_la_chambre:
@@ -1110,6 +1130,7 @@ power_notification_temperature_anormale_dans_la_chambre:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans la chambre
+      replace_older_notification: true
   description: ''
   icon: mdi:home-thermometer
 power_notification_temperature_anormale_dans_la_chambre_de_marilou:
@@ -1122,6 +1143,7 @@ power_notification_temperature_anormale_dans_la_chambre_de_marilou:
       - zone.home
       default_title: "\U0001F321️ Température anormale"
       default_message: Température anormale dans la chambre de Marilou
+      replace_older_notification: true
   description: ''
   icon: mdi:home-thermometer
 quitter_la_maison:
@@ -1383,6 +1405,7 @@ power_notification_porte_d_entree_ouverte_lors_du_coucher:
         - binary_sensor.capteur_ouverture_porte_entree
         to: 'off'
       default_importance: true
+      replace_older_notification: true
   description: ''
   icon: mdi:door-open
 power_notification_serrure_verouillee_sur_porte_ouverte:
@@ -1405,6 +1428,7 @@ power_notification_serrure_verouillee_sur_porte_ouverte:
         entity_id:
         - binary_sensor.capteur_ouverture_porte_entree
         to: 'off'
+      replace_older_notification: true
   alias: Power notification - Serrure vérouillée sur porte ouverte
   description: ''
 power_notification_serrure_deverrouillee:
@@ -1434,6 +1458,7 @@ power_notification_lancement_machine_a_laver_prevu:
         entity_id:
         - input_select.etat_machine_a_laver
         from: Plannifiée
+      replace_older_notification: true
   alias: Power Notification - Lancement machine à laver prévu
   description: ''
 start_escape_game:
@@ -1514,6 +1539,7 @@ power_notification_montre_oubliee:
         data: {}
         target:
           entity_id: input_boolean.montre_portee
+      replace_older_notification: true
   alias: Power Notification - Montre oubliée
   description: ''
 power_notification_telephone_oublie:
@@ -1533,6 +1559,7 @@ power_notification_telephone_oublie:
         target:
           entity_id:
           - input_boolean.telephone_porte
+      replace_older_notification: true
   alias: Power Notification - Téléphone oublié
   description: ''
 power_notification_appareil_reattache_automatiquement:
@@ -1543,6 +1570,7 @@ power_notification_appareil_reattache_automatiquement:
       - person.jenova70
       default_title: 'Appareil personnel '
       default_message: Appareil réattaché automatiquement
+      replace_older_notification: true
   alias: Power Notification - Appareil réattaché automatiquement
   description: ''
 power_notification_serrure_verrouillee:
