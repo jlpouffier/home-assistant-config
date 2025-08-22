@@ -1,0 +1,93 @@
+modbus:
+  - name: koolnova
+    type: tcp
+    host: !secret koolnova_modbus_adapter_ip
+    port: !secret koolnova_modbus_adapter_port
+    climates:
+      # --------------------------
+      # Zone 1  (40001..40004)
+      # --------------------------
+      - name: "Climatisation (Bureau)"
+        device_address: 49
+        unique_id: climatisation_bureau
+        input_type: holding
+        data_type: int16
+
+        # Current temperature (PV)
+        address: 3                 # 40004
+        scale: 0.5
+        precision: 1
+        temp_step: 0.5
+        min_temp: 15
+        max_temp: 35
+
+        # Target setpoint
+        target_temp_register: 2    # 40003
+
+        # HVAC mode (Heat/Cool)
+        hvac_mode_register:
+          address: 1               # 40002
+          values:
+            state_cool: [65, 49, 33, 17]   # writes 65 (Auto+Cool)
+            state_heat: [66, 50, 34, 18]   # writes 66 (Auto+Heat)
+
+        # Per-zone On/Off
+        hvac_onoff_register: 0     # 40001
+        hvac_on_value: 3
+        hvac_off_value: 2
+
+      # --------------------------
+      # Zone 2  (40005..40008)
+      # --------------------------
+      - name: "Climatisation (Chambre Marilou)"
+        device_address: 49
+        unique_id: climatisation_chambre_marilou
+        input_type: holding
+        data_type: int16
+
+        address: 7                 # 40008 (current temp)
+        scale: 0.5
+        precision: 1
+        temp_step: 0.5
+        min_temp: 15
+        max_temp: 35
+
+        target_temp_register: 6    # 40007
+
+        hvac_mode_register:
+          address: 5               # 40006
+          values:
+            state_cool: [65, 49, 33, 17]   # writes 65 (Auto+Cool)
+            state_heat: [66, 50, 34, 18]   # writes 66 (Auto+Heat)
+
+        hvac_onoff_register: 4     # 40005
+        hvac_on_value: 3
+        hvac_off_value: 2
+
+      # --------------------------
+      # Zone 3  (40009..40012)
+      # --------------------------
+      - name: "Climatisation (Chambre)"
+        device_address: 49
+        unique_id: climatisation_chambre
+        input_type: holding
+        data_type: int16
+
+        address: 11                # 40012 (current temp)
+        scale: 0.5
+        precision: 1
+        temp_step: 0.5
+        min_temp: 15
+        max_temp: 35
+
+        target_temp_register: 10   # 40011
+
+        hvac_mode_register:
+          address: 9               # 40010
+          values:
+            state_cool: [65, 49, 33, 17]   # writes 65 (Auto+Cool)
+            state_heat: [66, 50, 34, 18]   # writes 66 (Auto+Heat)
+
+        hvac_onoff_register: 8     # 40009
+        hvac_on_value: 3
+        hvac_off_value: 2
