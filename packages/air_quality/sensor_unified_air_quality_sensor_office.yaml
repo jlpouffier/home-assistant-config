@@ -1,0 +1,106 @@
+template:
+  - sensor:
+      - name: "Qualité de l'air (Bureau)"
+        unique_id: "office_air_quality"
+        state_class: measurement
+        # State = numeric IAQ score (1=Excellent … 6=Hazardous)
+        state: >-
+          {% set co2 = states('sensor.indoor_air_quality_monitor_salon_dioxyde_de_carbone') | int(0) %}
+          {% set pm1  = states('sensor.indoor_air_quality_monitor_salon_pm1') | float(0) %}
+          {% set pm25 = states('sensor.indoor_air_quality_monitor_salon_pm2_5') | float(0) %}
+          {% set pm10 = states('sensor.indoor_air_quality_monitor_salon_pm10')  | float(0) %}
+          {% set voc  = states('sensor.indoor_air_quality_monitor_salon_voc_index') | int(0) %}
+          {% set nox  = states('sensor.indoor_air_quality_monitor_salon_nox_index') | int(0) %}
+
+          {# Scores: 1=Excellent, 2=Good, 3=Moderate, 4=Poor, 5=Very Poor, 6=Hazardous #}
+          {% set co2_score   = 6 if co2 > 2500 else 5 if co2 > 1500 else 4 if co2 > 1000 else 3 if co2 > 750 else 2 if co2 > 600 else 1 %}
+          {% set pm1_score   = 6 if pm1 > 250 else 5 if pm1 > 150 else 4 if pm1 > 55 else 3 if pm1 > 35 else 2 if pm1 > 12 else 1 %}
+          {% set pm25_score  = 6 if pm25 > 250 else 5 if pm25 > 150 else 4 if pm25 > 55 else 3 if pm25 > 35 else 2 if pm25 > 12 else 1 %}
+          {% set pm10_score  = 6 if pm10 > 424 else 5 if pm10 > 354 else 4 if pm10 > 254 else 3 if pm10 > 154 else 2 if pm10 > 54 else 1 %}
+          {% set voc_score   = 6 if voc >= 400 else 5 if voc >= 350 else 4 if voc >= 250 else 3 if voc >= 200 else 2 if voc >= 100 else 1 %}
+          {% set nox_score   = 6 if nox >= 400 else 5 if nox >= 350 else 4 if nox >= 300 else 3 if nox >= 100 else 2 if nox >= 50 else 1 %}
+
+          {% set worst_score = [co2_score, pm1_score, pm25_score, pm10_score, voc_score, nox_score] | max %}
+          {{ worst_score }}
+
+        attributes:
+          category: >-
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[ this.state | int(0) ] }}
+          driven_by: >-
+            {% set co2 = states('sensor.indoor_air_quality_monitor_salon_dioxyde_de_carbone') | int(0) %}
+            {% set pm1  = states('sensor.indoor_air_quality_monitor_salon_pm1') | float(0) %}
+            {% set pm25 = states('sensor.indoor_air_quality_monitor_salon_pm2_5') | float(0) %}
+            {% set pm10 = states('sensor.indoor_air_quality_monitor_salon_pm10')  | float(0) %}
+            {% set voc  = states('sensor.indoor_air_quality_monitor_salon_voc_index') | int(0) %}
+            {% set nox  = states('sensor.indoor_air_quality_monitor_salon_nox_index') | int(0) %}
+
+            {% set co2_score   = 6 if co2 > 2500 else 5 if co2 > 1500 else 4 if co2 > 1000 else 3 if co2 > 750 else 2 if co2 > 600 else 1 %}
+            {% set pm1_score   = 6 if pm1 > 250 else 5 if pm1 > 150 else 4 if pm1 > 55 else 3 if pm1 > 35 else 2 if pm1 > 12 else 1 %}
+            {% set pm25_score  = 6 if pm25 > 250 else 5 if pm25 > 150 else 4 if pm25 > 55 else 3 if pm25 > 35 else 2 if pm25 > 12 else 1 %}
+            {% set pm10_score  = 6 if pm10 > 424 else 5 if pm10 > 354 else 4 if pm10 > 254 else 3 if pm10 > 154 else 2 if pm10 > 54 else 1 %}
+            {% set voc_score   = 6 if voc >= 400 else 5 if voc >= 350 else 4 if voc >= 250 else 3 if voc >= 200 else 2 if voc >= 100 else 1 %}
+            {% set nox_score   = 6 if nox >= 400 else 5 if nox >= 350 else 4 if nox >= 300 else 3 if nox >= 100 else 2 if nox >= 50 else 1 %}
+
+            {% set pairs = [
+              ('CO₂', co2_score, co2, 'ppm'),
+              ('PM2.5', pm25_score, pm25|round(0), 'µg/m³'),
+              ('PM10', pm10_score, pm10|round(0), 'µg/m³'),
+              ('PM1.0', pm1_score, pm1|round(0), 'µg/m³'),
+              ('VOC index', voc_score, voc, ''),
+              ('NOx index', nox_score, nox, '')
+            ] %}
+            {% set worst = pairs | sort(attribute=1, reverse=True) | first %}
+            {{ worst[0] ~ ' — ' ~ worst[2] ~ ( ' ' ~ worst[3] if worst[3] != '' else '' ) }}
+
+          # Full breakdown (handy in the more-info panel)
+          co2: "{{ states('sensor.indoor_air_quality_monitor_salon_dioxyde_de_carbone') | int(0) }} ppm"
+          co2_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_dioxyde_de_carbone') | int(0) %}
+            {% set s = 6 if v > 2500 else 5 if v > 1500 else 4 if v > 1000 else 3 if v > 750 else 2 if v > 600 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+          pm2_5: "{{ (states('sensor.indoor_air_quality_monitor_salon_pm2_5') | float(0)) | round(1) }} µg/m³"
+          pm2_5_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_pm2_5') | float(0) %}
+            {% set s = 6 if v > 250 else 5 if v > 150 else 4 if v > 55 else 3 if v > 35 else 2 if v > 12 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+          pm10: "{{ (states('sensor.indoor_air_quality_monitor_salon_pm10') | float(0)) | round(0) }} µg/m³"
+          pm10_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_pm10') | float(0) %}
+            {% set s = 6 if v > 424 else 5 if v > 354 else 4 if v > 254 else 3 if v > 154 else 2 if v > 54 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+          pm1_0: "{{ (states('sensor.indoor_air_quality_monitor_salon_pm1') | float(0)) | round(1) }} µg/m³"
+          pm1_0_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_pm1') | float(0) %}
+            {% set s = 6 if v > 250 else 5 if v > 150 else 4 if v > 55 else 3 if v > 35 else 2 if v > 12 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+          voc_index: "{{ states('sensor.indoor_air_quality_monitor_salon_voc_index') | int(0) }}"
+          voc_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_voc_index') | int(0) %}
+            {% set s = 6 if v >= 400 else 5 if v >= 350 else 4 if v >= 250 else 3 if v >= 200 else 2 if v >= 100 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+          nox_index: "{{ states('sensor.indoor_air_quality_monitor_salon_nox_index') | int(0) }}"
+          nox_category: >-
+            {% set v = states('sensor.indoor_air_quality_monitor_salon_nox_index') | int(0) %}
+            {% set s = 6 if v >= 400 else 5 if v >= 350 else 4 if v >= 300 else 3 if v >= 100 else 2 if v >= 50 else 1 %}
+            {% set categories = {1:'Excellent', 2:'Good', 3:'Moderate', 4:'Poor', 5:'Very Poor', 6:'Hazardous'} %}
+            {{ categories[s] }}
+
+        icon: >-
+          {% set s = this.state | int(0) %}
+          {% if s <= 2 %} mdi:weather-sunny
+          {% elif s == 3 %} mdi:weather-partly-cloudy
+          {% elif s == 4 %} mdi:weather-cloudy
+          {% elif s == 5 %} mdi:smog
+          {% else %} mdi:biohazard
+          {% endif %}
