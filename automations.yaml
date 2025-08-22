@@ -1347,7 +1347,9 @@
   mode: single
 - id: '1714134719761'
   alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
-  description: ''
+  description: Cet automatisme permet de réinitialiser les lumières à leur scène par
+    défaut via une commande vocale. Il vérifie si un appareil approprié est utilisé
+    et s'il existe des scènes par défaut dans la zone, puis applique la scène correspondante.
   triggers:
   - command:
     - réinitialise[r] (la|les) lumière[s]
@@ -1372,6 +1374,7 @@
         metadata: {}
         target:
           entity_id: '{{target_scene_list}}'
+        data: {}
       - set_conversation_response: Lumière réinitialisée
       else:
       - set_conversation_response: Aucune scène par défaut trouvée
@@ -1576,24 +1579,15 @@
     from: Vide
   - trigger: state
     entity_id:
-    - binary_sensor.presence_rez_de_chaussee
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-    enabled: false
-  - trigger: state
-    entity_id:
     - sensor.ratio_de_presence_rez_de_chaussee
   - entity_id:
-    - binary_sensor.capteur_ouverture_fenetre_cuisine
-    - binary_sensor.capteur_ouverture_porte_entree
-    - binary_sensor.capteur_ouverture_porte_fenetre_salon
+    - binary_sensor.ouverture_salon
     for:
       hours: 0
       minutes: 5
       seconds: 0
     trigger: state
+    to:
   - event: start
     trigger: homeassistant
   - entity_id:
@@ -1609,18 +1603,13 @@
   actions:
   - choose:
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_ouverture_fenetre_cuisine
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.capteur_ouverture_porte_entree
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.capteur_ouverture_porte_fenetre_salon
-          state: 'on'
-        alias: Doors / Windows open
+      - condition: state
+        entity_id: binary_sensor.ouverture_salon
+        state: 'on'
+        for:
+          hours: 0
+          minutes: 5
+          seconds: 0
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -1643,10 +1632,6 @@
       - alias: Room occupied
         condition: or
         conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_rez_de_chaussee
-          state: 'on'
-          enabled: false
         - condition: numeric_state
           entity_id: sensor.ratio_de_presence_rez_de_chaussee
           above: 50
@@ -1691,14 +1676,6 @@
       minutes: 5
       seconds: 0
     trigger: state
-  - entity_id:
-    - binary_sensor.capteur_presence_bureau_occupancy
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-    trigger: state
-    enabled: false
   - trigger: state
     entity_id:
     - sensor.capteur_de_presence_bureau_ratio_de_presence
@@ -1717,6 +1694,10 @@
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_bureau
         state: 'on'
+        for:
+          hours: 0
+          minutes: 5
+          seconds: 0
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -1737,10 +1718,6 @@
           entity_id: input_boolean.guest_mode
           state: 'on'
         alias: Home is occupied
-      - condition: state
-        entity_id: binary_sensor.capteur_presence_bureau_occupancy
-        state: 'on'
-        enabled: false
       - alias: Room occupied
         condition: numeric_state
         entity_id: sensor.capteur_de_presence_bureau_ratio_de_presence
@@ -1784,14 +1761,6 @@
       minutes: 5
       seconds: 0
     trigger: state
-  - entity_id:
-    - binary_sensor.capteur_presence_chambre_occupancy
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-    trigger: state
-    enabled: false
   - trigger: state
     enabled: false
     entity_id:
@@ -1811,6 +1780,10 @@
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
         state: 'on'
+        for:
+          hours: 0
+          minutes: 5
+          seconds: 0
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -1833,14 +1806,6 @@
       - alias: Room occupied
         condition: or
         conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_presence_chambre_occupancy
-          state: 'on'
-          for:
-            hours: 0
-            minutes: 0
-            seconds: 0
-          enabled: false
         - condition: numeric_state
           entity_id: sensor.capteur_de_presence_chambre_ratio_de_presence
           above: 50
@@ -1885,14 +1850,6 @@
       minutes: 5
       seconds: 0
     trigger: state
-  - entity_id:
-    - binary_sensor.capteur_presence_chambre_marilou_occupancy
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-    trigger: state
-    enabled: false
   - trigger: state
     entity_id:
     - sensor.capteur_de_presence_chambre_marilou_ratio_de_presence
@@ -1912,6 +1869,10 @@
       - condition: state
         entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
         state: 'on'
+        for:
+          hours: 0
+          minutes: 5
+          seconds: 0
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -1935,14 +1896,6 @@
       - alias: Room occupied
         condition: or
         conditions:
-        - condition: state
-          entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
-          state: 'on'
-          for:
-            hours: 0
-            minutes: 0
-            seconds: 0
-          enabled: false
         - condition: numeric_state
           entity_id: sensor.capteur_de_presence_chambre_marilou_ratio_de_presence
           above: 50
@@ -2233,9 +2186,7 @@
       room_name: Le salon
       room_temperature: sensor.capteur_temperature_salon_temperature
       room_openings:
-      - binary_sensor.capteur_ouverture_fenetre_cuisine
-      - binary_sensor.capteur_ouverture_porte_entree
-      - binary_sensor.capteur_ouverture_porte_fenetre_salon
+      - binary_sensor.ouverture_salon
       room_openings_duration: 00:05:00
       outside_temperature: sensor.wittboy_outdoor_temperature
       power_notification_script: script.power_notification_temperature_anormale_dans_le_salon
@@ -4330,15 +4281,23 @@
     offset: '-2:0:0'
   conditions: []
   actions:
-  - action: conversation.process
+  - action: ai_task.generate_data
+    metadata: {}
     data:
-      agent_id: conversation.holiday_greeting
-      text: '{{trigger.calendar_event.summary}}'
-    response_variable: ai_greeting_response
+      task_name: Holiday Greeting
+      instructions: "Instructions:\nGenerate a text to wish me a happy holiday based
+        on an input holiday.\nMy Name is JLo.\nKeep the text short.\nKeep everyhing
+        in French.\nAdd an emoji at the start.\n\nInput: \n{{trigger.calendar_event.summary}}"
+      entity_id: ai_task.openai_ai_task
+      structure:
+        greeting:
+          selector:
+            text:
+    response_variable: ai_response
   - action: input_text.set_value
     metadata: {}
     data:
-      value: '{{ai_greeting_response.response.speech.plain.speech}}'
+      value: '{{ai_response.data.greeting}}'
     target:
       entity_id: input_text.holiday_greeting
   mode: single
@@ -4584,8 +4543,11 @@
       custom_target:
         entity_id: media_player.sonos_salle_de_douche_music_assistant
 - id: '1736027398142'
-  alias: Jouer de la musique par la voix (Musique Assistant)
-  description: ''
+  alias: Jouer de la Musique par la Voix (Music Assistant)
+  description: Cette automatisation permet de jouer de la musique en utilisant des
+    commandes vocales, en fonction de l'artiste, de l'album ou de la piste spécifiés.
+    Les utilisateurs peuvent simplement demander à écouter leur musique préférée depuis
+    n'importe quel appareil compatible.
   triggers:
   - command:
     - (Jouer|Joue|Écouter|Écoutez|Ecouter|Ecoutez) {query}
@@ -4875,8 +4837,11 @@
       entity_id: scene.dynamic_scene_before_bad_air_notification
   mode: single
 - id: '1739568563693'
-  alias: Assist - Fallback Assistant lors d'une panne d'internet
-  description: ''
+  alias: Assist - Assistant de secours lors d'une panne d'internet
+  description: Cette automatisation sélectionne un assistant local lors d'une panne
+    d'internet et revient à l'assistant préféré une fois la connexion rétablie. Elle
+    permet de maintenir les commandes vocales fonctionnelles même lors de coupures
+    de réseau.
   triggers:
   - trigger: state
     entity_id:
@@ -5201,7 +5166,7 @@
       entity_id: input_boolean.mode_chien
   mode: single
 - id: '1741604729527'
-  alias: Contrôler la sonnette avec les modes sommeil
+  alias: Sonnette vidéo - Contrôler le volume avec les modes sommeil
   description: ''
   triggers:
   - trigger: state
@@ -5230,6 +5195,12 @@
         value: '0'
       target:
         entity_id: number.carillon_entree_volume
+    - action: number.set_value
+      metadata: {}
+      data:
+        value: '50'
+      target:
+        entity_id: number.sonnette_volume
     else:
     - action: number.set_value
       metadata: {}
@@ -5237,6 +5208,12 @@
         value: '4'
       target:
         entity_id: number.carillon_entree_volume
+    - action: number.set_value
+      metadata: {}
+      data:
+        value: '100'
+      target:
+        entity_id: number.sonnette_volume
   mode: single
 - id: '1742072094434'
   alias: VPE Douche - Affichage Boost Chauffage
@@ -5693,18 +5670,6 @@
     id: job_done
   - trigger: state
     entity_id:
-    - binary_sensor.is_washing_machine_running
-    to: 'on'
-    id: power_on
-    enabled: false
-  - trigger: state
-    entity_id:
-    - binary_sensor.is_washing_machine_running
-    to: 'off'
-    id: power_off
-    enabled: false
-  - trigger: state
-    entity_id:
     - binary_sensor.machine_a_laver_remote_control
     id: remote_control_off
     not_from: unavailable
@@ -5722,7 +5687,6 @@
       - condition: trigger
         id:
         - job_clean
-        - power_on
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -5734,7 +5698,6 @@
       - condition: trigger
         id:
         - job_done
-        - power_off
       sequence:
       - action: input_select.select_option
         metadata: {}
@@ -5860,8 +5823,9 @@
           data: {}
   mode: single
 - id: '1746466029976'
-  alias: Appareils personnels - Attacher/Détacher montre
-  description: ''
+  alias: Appareils personnels - Attacher/Détacher Montre
+  description: Cette automatisation attache ou détache le suivi d'appareil pour la
+    montre en fonction de son port.
   triggers:
   - trigger: state
     entity_id:
@@ -5889,7 +5853,9 @@
   mode: single
 - id: '1746466094247'
   alias: Appareils personnels - Attacher/Détacher téléphone
-  description: ''
+  description: Cette automatisation permet d'attacher ou de détacher le téléphone
+    de l'utilisateur lorsque l'état du boolean 'telephone_porte' change. En ajoutant
+    les téléphones à la personne, cela permet un suivi précis de leur présence.
   triggers:
   - trigger: state
     entity_id:
@@ -5918,8 +5884,10 @@
         - device_tracker.jean_loics_iphone
   mode: single
 - id: '1746466554887'
-  alias: Appareils personnels - Détecter anomalie
-  description: ''
+  alias: "Appareils personnels - \U0001F514 Notifier appareil oublié"
+  description: Cette automatisation vérifie si l'iPhone ou la montre est oublié lors
+    d'un déplacement. Si l'un est à la maison et l'autre est en dehors, une notification
+    est envoyée pour rappeler l'objet laissé derrière.
   triggers:
   - trigger: state
     entity_id:
@@ -5967,8 +5935,10 @@
         - script.power_notification_montre_oubliee
   mode: single
 - id: '1746467143497'
-  alias: Appareils personnels - Réparer anomalie
-  description: ''
+  alias: Appareils personnels - Réattacher automatiquement
+  description: Lorsque l'iPhone ou l'Apple Watch revient à la maison, cette automatisation
+    va vérifier si l'appareil est correctement porté. Si ce n'est pas le cas, il réactivera
+    l'état de port pour chaque appareil et enverra une notification.
   triggers:
   - trigger: state
     entity_id:
@@ -6356,7 +6326,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              entity_id: climate.climatisation_bureau
               state: cool
           then:
           - action: climate.set_hvac_mode
@@ -6364,7 +6334,7 @@
             data:
               hvac_mode: cool
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              entity_id: climate.climatisation_bureau
           - delay:
               hours: 0
               minutes: 0
@@ -6373,7 +6343,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_climatisation_bureau'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_bureau'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_bureau'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6381,7 +6351,7 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_climatisation_bureau'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              entity_id: climate.climatisation_bureau
       - conditions:
         - condition: state
           entity_id: input_select.mode_climatisation_intelligente
@@ -6391,7 +6361,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              entity_id: climate.climatisation_bureau
               state: heat
           then:
           - action: climate.set_hvac_mode
@@ -6399,7 +6369,7 @@
             data:
               hvac_mode: heat
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
+              entity_id: climate.climatisation_bureau
           - delay:
               hours: 0
               minutes: 0
@@ -6408,7 +6378,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_chauffage_bureau'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_bureau'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_bureau'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6416,32 +6386,13 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_chauffage_bureau'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_bureau
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_bureau
-          attribute: fan_mode
-          state: auto
-      then:
-      - action: climate.set_fan_mode
-        metadata: {}
-        data:
-          fan_mode: auto
-        target:
-          entity_id: climate.climatisation_premier_etage_climatisation_bureau
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
+              entity_id: climate.climatisation_bureau
     else:
     - if:
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          entity_id: climate.climatisation_bureau
           state: 'off'
       then:
       - action: climate.set_hvac_mode
@@ -6449,7 +6400,7 @@
         data:
           hvac_mode: 'off'
         target:
-          entity_id: climate.climatisation_premier_etage_climatisation_bureau
+          entity_id: climate.climatisation_bureau
   mode: restart
 - id: '1750081036212'
   alias: Climatisation Intelligente - Chambre
@@ -6497,7 +6448,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              entity_id: climate.climatisation_chambre
               state: cool
           then:
           - action: climate.set_hvac_mode
@@ -6505,7 +6456,7 @@
             data:
               hvac_mode: cool
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              entity_id: climate.climatisation_chambre
           - delay:
               hours: 0
               minutes: 0
@@ -6514,7 +6465,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_climatisation_chambre'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_chambre'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6522,7 +6473,7 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_climatisation_chambre'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              entity_id: climate.climatisation_chambre
       - conditions:
         - condition: state
           entity_id: input_select.mode_climatisation_intelligente
@@ -6532,7 +6483,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              entity_id: climate.climatisation_chambre
               state: heat
           then:
           - action: climate.set_hvac_mode
@@ -6540,7 +6491,7 @@
             data:
               hvac_mode: heat
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
+              entity_id: climate.climatisation_chambre
           - delay:
               hours: 0
               minutes: 0
@@ -6549,7 +6500,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_chauffage_chambre'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_chambre'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6557,32 +6508,13 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_chauffage_chambre'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre
-          attribute: fan_mode
-          state: auto
-      then:
-      - action: climate.set_fan_mode
-        metadata: {}
-        data:
-          fan_mode: auto
-        target:
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
+              entity_id: climate.climatisation_chambre
     else:
     - if:
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          entity_id: climate.climatisation_chambre
           state: 'off'
       then:
       - action: climate.set_hvac_mode
@@ -6590,7 +6522,7 @@
         data:
           hvac_mode: 'off'
         target:
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre
+          entity_id: climate.climatisation_chambre
   mode: restart
 - id: '1750081171295'
   alias: Climatisation Intelligente - Chambre Marilou
@@ -6638,7 +6570,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              entity_id: climate.climatisation_chambre_marilou
               state: cool
           then:
           - action: climate.set_hvac_mode
@@ -6646,7 +6578,7 @@
             data:
               hvac_mode: cool
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              entity_id: climate.climatisation_chambre_marilou
           - delay:
               hours: 0
               minutes: 0
@@ -6655,7 +6587,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre_marilou'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_chambre_marilou'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6663,7 +6595,7 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_climatisation_chambre_marilou'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              entity_id: climate.climatisation_chambre_marilou
       - conditions:
         - condition: state
           entity_id: input_select.mode_climatisation_intelligente
@@ -6673,7 +6605,7 @@
           - condition: not
             conditions:
             - condition: state
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              entity_id: climate.climatisation_chambre_marilou
               state: heat
           then:
           - action: climate.set_hvac_mode
@@ -6681,7 +6613,7 @@
             data:
               hvac_mode: heat
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+              entity_id: climate.climatisation_chambre_marilou
           - delay:
               hours: 0
               minutes: 0
@@ -6690,7 +6622,7 @@
         - if:
           - condition: template
             value_template: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')
-              | float(0) != state_attr(''climate.climatisation_premier_etage_climatisation_chambre_marilou'',''temperature'')
+              | float(0) != state_attr(''climate.climatisation_chambre_marilou'',''temperature'')
               | float(0)}}'
           then:
           - action: climate.set_temperature
@@ -6698,32 +6630,13 @@
             data:
               temperature: '{{states(''input_number.temperature_cible_chauffage_chambre_marilou'')}}'
             target:
-              entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
-          attribute: fan_mode
-          state: auto
-      then:
-      - action: climate.set_fan_mode
-        metadata: {}
-        data:
-          fan_mode: auto
-        target:
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
+              entity_id: climate.climatisation_chambre_marilou
     else:
     - if:
       - condition: not
         conditions:
         - condition: state
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          entity_id: climate.climatisation_chambre_marilou
           state: 'off'
       then:
       - action: climate.set_hvac_mode
@@ -6731,7 +6644,7 @@
         data:
           hvac_mode: 'off'
         target:
-          entity_id: climate.climatisation_premier_etage_climatisation_chambre_marilou
+          entity_id: climate.climatisation_chambre_marilou
   mode: restart
 - id: '1750081335140'
   alias: Climatisation Intelligente - Rez-de-chaussée
@@ -7044,4 +6957,377 @@
         user_message: '{{user_message}}'
     target:
       entity_id: script.power_notification_sonnette_video
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  mode: single
+- id: '1752934059438'
+  alias: Sonnette vidéo - Ne pas enregistrer lors du départ/arrivée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Départ en cours
+    id: departure
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Arrivée en cours
+    id: arrival
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.sonnette_enregistrement_ftp
+      - switch.sonnette_enregistrer
+  - wait_for_trigger:
+    - trigger: state
+      entity_id:
+      - input_select.modes_de_presence_de_la_maison_v2
+      to: Vide
+      for:
+        hours: 0
+        minutes: 2
+        seconds: 0
+    - trigger: state
+      entity_id:
+      - input_select.modes_de_presence_de_la_maison_v2
+      to: Occupée
+      for:
+        hours: 0
+        minutes: 2
+        seconds: 0
+    timeout:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.sonnette_enregistrement_ftp
+      - switch.sonnette_enregistrer
+  mode: single
+- id: '1754241277625'
+  alias: Réduire volume lorsque assistant vocal en écoute (Bureau Téléphone)
+  description: ''
+  use_blueprint:
+    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
+    input:
+      assist_satellite_entity: assist_satellite.telephone_analogique
+      custom_target:
+        entity_id: media_player.sonos_bureau_music_assistant
+- id: '1755354215867'
+  alias: 'Lave vaisselle - Planifier lors du démarrage '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.lave_vaisselle_etat
+    to: 'on'
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Inactif
+    target:
+      entity_id: input_select.etat_lave_vaisselle
+  - if:
+    - condition: state
+      entity_id: sensor.lave_vaisselle_porte
+      state: open
+    then:
+    - wait_for_trigger:
+      - trigger: state
+        entity_id:
+        - sensor.lave_vaisselle_porte
+        to: closed
+      continue_on_timeout: false
+    alias: Make sure door is closed
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - alias: Make sure dishwasher is ready (Not already started)
+    if:
+    - condition: state
+      entity_id: sensor.lave_vaisselle_etat
+      state: ready
+    - condition: state
+      entity_id: switch.lave_vaisselle_etat
+      state: 'on'
+    then:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Planifié
+      target:
+        entity_id: input_select.etat_lave_vaisselle
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.lave_vaisselle_etat
+  mode: single
+- id: '1755354500368'
+  alias: Lave vaisselle - Lavage en cours
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.lave_vaisselle_etat
+    to: run
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Lavage en cours
+    target:
+      entity_id: input_select.etat_lave_vaisselle
+  mode: single
+- id: '1755354559606'
+  alias: Lave vaisselle - À vider
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.lave_vaisselle_etat
+    to: finished
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: À vider
+    target:
+      entity_id: input_select.etat_lave_vaisselle
+  mode: single
+- id: '1755354642082'
+  alias: Lave vaisselle - Lave vaisselle vidé
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.lave_vaisselle_porte
+    to: closed
+  conditions:
+  - condition: state
+    entity_id: input_select.etat_lave_vaisselle
+    state: À vider
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Inactif
+    target:
+      entity_id: input_select.etat_lave_vaisselle
+  mode: single
+- id: '1755354977183'
+  alias: "Lave vaisselle - \U0001F514 Notifier démarrage prévu"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.etat_lave_vaisselle
+    to: Planifié
+  conditions: []
+  actions:
+  - action: script.power_notification_lancement_lave_vaisselle_prevu
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1755355197104'
+  alias: "Lave vaisselle - \U0001F514 Notifier cycle terminé"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.etat_lave_vaisselle
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  conditions:
+  - condition: state
+    entity_id: input_boolean.recevoir_notification_lave_vaisselle_termine
+    state: 'on'
+  - condition: state
+    entity_id: input_select.etat_lave_vaisselle
+    state: À vider
+  - condition: state
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_lave_vaisselle_termine
+  mode: single
+- id: '1755355447475'
+  alias: Lave vaisselle - Lancer à 1:00
+  description: ''
+  triggers:
+  - trigger: time
+    at: 01:00:00
+  conditions:
+  - condition: state
+    entity_id: input_select.etat_lave_vaisselle
+    state: Planifié
+  actions:
+  - action: select.select_option
+    metadata: {}
+    data:
+      option: dishcare_dishwasher_program_eco_50
+    target:
+      entity_id: select.lave_vaisselle_programme_actif
+  mode: single
+- id: '1755356382074'
+  alias: Lave vaisselle - Annulation du lavage
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.lave_vaisselle_etat
+    to: aborting
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Inactif
+    target:
+      entity_id: input_select.etat_lave_vaisselle
+  mode: single
+- id: '1755694081224'
+  alias: New automation
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.presence_rez_de_chaussee
+    to: 'on'
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: assist_satellite.start_conversation
+    metadata: {}
+    data:
+      start_message: Hey JLo, hey Home assistant community! I'm Nabu, what do you
+        want me to do?
+      preannounce: true
+    target:
+      entity_id: assist_satellite.vpe_salon_satellite_assist
+  mode: single
+- id: '1755865701094'
+  alias: Motion detected test long range
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.please_work_motion_detection_location_provided
+    to: 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: Motion detected !!
+      message: Motion detected !!
+      data:
+        tag: long_range
+        push:
+          interruption-level: critical
+  mode: single
+- id: '1755871156066'
+  alias: Frigo - Porte réfrigérateur restée ouverte
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.porte_refrigerateur
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_porte_refrigerateur_restee_ouverte
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      preannounce: true
+      preannounce_media_id:
+        media_content_id: media-source://media_source/local/error.mp3
+        media_content_type: audio/mpeg
+        metadata:
+          title: error.mp3
+          thumbnail:
+          media_class: music
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+      message: La porte du réfrigérateur est restée ouverte
+    target:
+      entity_id: assist_satellite.vpe_cuisine_satellite_assist
+  mode: single
+- id: '1755871368040'
+  alias: Frigo - Porte congélateur restée ouverte
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.porte_congelateur
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 50
+      seconds: 0
+  conditions: []
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.power_notification_porte_congelateur_restee_ouverte
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      preannounce: true
+      preannounce_media_id:
+        media_content_id: media-source://media_source/local/error.mp3
+        media_content_type: audio/mpeg
+        metadata:
+          title: error.mp3
+          thumbnail:
+          media_class: music
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+      message: La porte du congélateur est restée ouverte
+    target:
+      entity_id: assist_satellite.vpe_cuisine_satellite_assist
   mode: single
