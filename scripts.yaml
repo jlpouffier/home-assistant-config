@@ -452,7 +452,7 @@ controler_le_standing_desk:
       description: Position cible du standing desk (Assise ou Debout)
       required: true
   description: Contrôler les standing desk dans le bureau en donnant une position
-    cible. (Assise ou Debout)
+    cible. (Assise ou Debout).
   icon: mdi:desk
 eteindre_tous_les_lecteur_multimedia:
   alias: Éteindre tous les lecteurs multimédia
@@ -625,6 +625,33 @@ preparer_depart_maison:
       data: {}
       target:
         entity_id: script.power_notification_porte_fenetre_du_salon_ouverte
+  - if:
+    - condition: state
+      entity_id: binary_sensor.porte_refrigerateur
+      state: 'on'
+    then:
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_importance: false
+      target:
+        entity_id: script.power_notification_porte_refrigerateur_restee_ouverte
+    alias: Notify top fridge door open
+  - alias: Notify bottom fridge door open
+    if:
+    - condition: state
+      entity_id: binary_sensor.porte_congelateur
+      state: 'on'
+    then:
+    - action: script.turn_on
+      metadata: {}
+      data:
+        variables:
+          user_importance: false
+      target:
+        entity_id:
+        - script.power_notification_porte_congelateur_restee_ouverte
   mode: queued
   icon: mdi:home-export-outline
   fields: {}
@@ -1483,15 +1510,131 @@ start_escape_game:
       message: Creation of the story in progress. Please wait.
     target:
       area_id: '{{area}}'
-  - action: conversation.process
-    metadata: {}
+  - action: media_player.play_media
+    metadata:
+      title: elevator_music.mp3
+      thumbnail:
+      media_class: music
+      children_media_class:
+      navigateIds:
+      - {}
+      - media_content_type: app
+        media_content_id: media-source://media_source
     data:
-      text: Generate new story
-      agent_id: conversation.chatgpt_4
-    response_variable: response_from_ai
-  - variables:
-      story: '{{response_from_ai.response.speech.plain.speech|from_json}}'
-      description: '{{story.description}}'
+      media_content_id: media-source://media_source/local/elevator_music.mp3
+      media_content_type: audio/mpeg
+    target:
+      area_id: '{{area}}'
+  - action: ai_task.generate_data
+    data:
+      entity_id: ai_task.ai_task_o3
+      task_name: Escape Room story generation
+      instructions: 'Instructions:
+
+        You are a story designer for immersive, voice-interactive escape room experiences.
+
+
+        Your task is to generate original, self-contained escape room stories that
+        are playable through voice. Each story should follow a clear structure and
+        be simple enough for a single-room scenario, but still engaging.
+
+
+        You are creative, logical, and focused on player experience. Generate puzzles
+        that are simple but satisfying to solve.
+
+
+        Constraints:
+
+        - Each story must be on the theme "Home Automation"
+
+        - All stories must fit within a single room and be playable by voice with
+        limited memory.
+
+        - Objects and interactions must follow logical cause and effect. Do not allow
+        skipping steps.
+
+        - The room must contains around 5 objects
+
+        - The story must contain around 8 interactions
+
+        - The story must progress naturally through exploration and discovery.
+
+        - Interactions should only reference things that have been discovered.
+
+        - Keep language immersive and sensory, but concise.
+
+        - Assume another agent will run the game. Your job is only to design the story.'
+      structure:
+        title:
+          description: Title of the Escape room. Short, thematic, and intriguing.
+          selector:
+            text:
+        openining_narrative:
+          description: The opening narrative that sets the scene and the player's
+            goal.
+          selector:
+            text:
+        room_description:
+          description: A high-level view of the room and its atmosphere.
+          selector:
+            text:
+        objects:
+          description: "List of items or furniture the player can interact with. Each
+            object includes:\n - name: Name of the object\n - location: Location of
+            the object in the room\n - description: Description of what is immediatly
+            visible\n"
+          selector:
+            object:
+              multiple: true
+              fields:
+                name:
+                  label: name
+                  selector:
+                    text:
+                location:
+                  label: location
+                  selector:
+                    text:
+                description:
+                  label: description
+                  selector:
+                    text:
+        interactions:
+          description: "List of possible player actions and outcomes. Each interaction
+            includes:\n - trigger: What the player might say or do\n - result: What
+            happens (including state changes, discoveries, or sensory details)\n"
+          selector:
+            object:
+              multiple: true
+              fields:
+                trigger:
+                  label: trigger
+                  selector:
+                    text:
+                result:
+                  label: result
+                  selector:
+                    text:
+        solution:
+          description: A step-by-step list of what the player must do to succeed.
+          selector:
+            object:
+              multiple: true
+              fields:
+                step:
+                  label: step
+                  selector:
+                    text:
+        end_game:
+          description: A short narrative that plays when the puzzle is solved.
+          selector:
+            text:
+    response_variable: ai
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      area_id: '{{area}}'
   - action: assist_satellite.start_conversation
     metadata: {}
     data:
@@ -1499,13 +1642,13 @@ start_escape_game:
       extra_system_prompt: 'BEGINING STORY:
 
 
-        {{story}}
+        {{ai.data}}
 
 
         END STORY
 
         '
-      start_message: '{{description}}
+      start_message: '{{ai.data.openining_narrative}}
 
         What do you want to do first?
 
@@ -1611,3 +1754,85 @@ power_notification_sonnette_video:
       default_message: La sonnette a détectée quelque chose
   alias: Power notification - Sonnette vidéo
   description: ''
+power_notification_lancement_lave_vaisselle_prevu:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F9FD Lave vaisselle"
+      default_message: Le lave vaisselle démarrera automatiquement cette nuit
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_select.etat_lave_vaisselle
+        from: Planifié
+      replace_older_notification: true
+  alias: Power Notification - Lancement lave vaisselle prévu
+  description: ''
+power_notification_lave_vaisselle_termine:
+  alias: Power Notification - Lave vaisselle terminé
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F9FD Lave vaisselle"
+      default_message: Cycle de lavage terminé !
+      button_title: Lave vaisselle vidé!
+      button_action:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Inactif
+        target:
+          entity_id:
+          - input_select.etat_lave_vaisselle
+      discard_when:
+      - trigger: state
+        entity_id:
+        - input_select.etat_lave_vaisselle
+        from: À vider
+      replace_older_notification: true
+  description: ''
+  icon: mdi:dishwasher-alert
+power_notification_porte_refrigerateur_restee_ouverte:
+  alias: 'Power Notification - Porte réfrigérateur restée ouverte '
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F9CA Frigo"
+      default_message: La porte du réfrigérateur est restée ouverte!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.porte_refrigerateur
+        to: 'off'
+      default_importance: true
+      replace_older_notification: true
+  description: ''
+  icon: mdi:fridge-top
+power_notification_porte_congelateur_restee_ouverte:
+  alias: Power Notification - Porte congélateur restée ouverte
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      target: send_to_persons_in_zones
+      zones:
+      - zone.home
+      default_title: "\U0001F9CA Frigo"
+      default_message: La porte du congélateur est restée ouverte!
+      discard_when:
+      - trigger: state
+        entity_id:
+        - binary_sensor.porte_congelateur
+        to: 'off'
+      default_importance: true
+      replace_older_notification: true
+  description: ''
+  icon: mdi:fridge-bottom
