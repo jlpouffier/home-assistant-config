@@ -1229,6 +1229,55 @@ recuperer_liste_de_course:
   icon: mdi:basket
 jouer_de_la_musique_music_assistant:
   sequence:
+  - action: ai_task.generate_data
+    data:
+      task_name: Music Search
+      instructions: "Instructions:\nTransforms a music search query into a structured
+        ouput. \n\nConstraints:\n- No comment\n- No null fields, only fill what's
+        necessary\n- Input query can be in French or English\n- Reply with real data
+        even if the query is fuzzy\n\nExamples:\n- \"Hells Bells by ACDC\" > {\"media_id\":\"Hells
+        Bells\",  \"media_type\":\"track\", \"artist\":\"AC/DC\"}\n- \"La discographie
+        de Pink Floyd\" >> {\"media_id\": \"Pink Floyd\", \"media_type\":\"artist\"}\n-
+        \"Le gagnant de l'eurovision 2016\" >> {\"media_id\":\"Jamala\", \"media_type\":\"artist\"}\"\n-
+        \"The Shooting Stars meme\" > {\"media_id\":\"Shooting Stars\",  \"media_type\":\"track\",
+        \"artist\":\"Bag Raiders\"}\n\nInput:\nThe dude that's making the music of
+        inception"
+      entity_id: ai_task.ai_task_gpt_4o
+      structure:
+        media_type:
+          description: 'The type of media searched
+
+            '
+          required: true
+          selector:
+            select:
+              options:
+              - track
+              - album
+              - artist
+        media_id:
+          description: 'The most specific from track, album, and artist. - If the
+            search is about a track: Then media_id is the track name. - If the search
+            is about an album: Then media_id is the album name. - If the search is
+            about an artist: Then media_id is the artist name.
+
+            '
+          required: true
+          selector:
+            text:
+        artist:
+          description: 'Used to further restrict the search in case it is necessary
+
+            '
+          selector:
+            text:
+        album:
+          description: 'Used to further restrict the search in case it is necessary
+
+            '
+          selector:
+            text:
+    enabled: false
   - action: conversation.process
     data:
       agent_id: conversation.music_assistant_search_bot
