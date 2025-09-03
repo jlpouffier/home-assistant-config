@@ -485,17 +485,6 @@
   - allowed_methods:
     - POST
     local_only: true
-    webhook_id: sonarr-grab--KqTQ4vReuFd_as1xTR_hPqk2
-    id: sonarr-grab
-    variables:
-      title: "\U0001F4FA Épisode en télechargement ..."
-      message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
-        - {{trigger.json.episodes[0].title}}'
-    trigger: webhook
-    enabled: false
-  - allowed_methods:
-    - POST
-    local_only: true
     webhook_id: sonarr-download--KqTQ4vReuFd_as1xTR_hPqk2
     id: sonarr-download
     variables:
@@ -503,16 +492,6 @@
       message: '{{trigger.json.series.title}} - {{trigger.json.episodes[0].seasonNumber}}x{{trigger.json.episodes[0].episodeNumber}}
         - {{trigger.json.episodes[0].title}}'
     trigger: webhook
-  - allowed_methods:
-    - POST
-    local_only: true
-    webhook_id: radarr-grab-ugUFeiF1HF_WK_-jpm1aFMCQ
-    id: radarr-grab
-    variables:
-      title: "\U0001F3A5 Film en télechargement ..."
-      message: '{{trigger.json.movie.title}} ({{trigger.json.movie.year}})'
-    trigger: webhook
-    enabled: false
   - allowed_methods:
     - POST
     local_only: true
@@ -1443,7 +1422,7 @@
     data: {}
     target:
       entity_id: button.standing_desk_move_desk_to_position_2
-    enabled: false
+    enabled: true
   - action: media_player.media_pause
     metadata: {}
     data: {}
@@ -5648,86 +5627,6 @@
     metadata: {}
     data: {}
   mode: single
-- id: '1745780998051'
-  alias: Machine à Laver - State machine
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.machine_a_laver_job_state
-    not_from: unavailable
-    to:
-    - rinse
-    - spin
-    - wash
-    id: job_clean
-  - trigger: state
-    entity_id:
-    - sensor.machine_a_laver_job_state
-    not_from: unavailable
-    to:
-    - finish
-    id: job_done
-  - trigger: state
-    entity_id:
-    - binary_sensor.machine_a_laver_remote_control
-    id: remote_control_off
-    not_from: unavailable
-    to: 'off'
-  - trigger: state
-    entity_id:
-    - binary_sensor.machine_a_laver_remote_control
-    id: remote_control_on
-    not_from: unavailable
-    to: 'on'
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - job_clean
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Lavage en cours
-        target:
-          entity_id: input_select.etat_machine_a_laver
-    - conditions:
-      - condition: trigger
-        id:
-        - job_done
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: À vider
-        target:
-          entity_id: input_select.etat_machine_a_laver
-    - conditions:
-      - condition: trigger
-        id:
-        - remote_control_off
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Inactive
-        target:
-          entity_id: input_select.etat_machine_a_laver
-    - conditions:
-      - condition: trigger
-        id:
-        - remote_control_on
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: Plannifiée
-        target:
-          entity_id: input_select.etat_machine_a_laver
-  mode: single
 - id: '1745787390051'
   alias: 'Machine à laver - Alimentation écran companion '
   description: ''
@@ -7188,7 +7087,7 @@
   - action: select.select_option
     metadata: {}
     data:
-      option: dishcare_dishwasher_program_eco_50
+      option: dishcare_dishwasher_program_auto_2
     target:
       entity_id: select.lave_vaisselle_programme_actif
   mode: single
@@ -7210,7 +7109,7 @@
       entity_id: input_select.etat_lave_vaisselle
   mode: single
 - id: '1755694081224'
-  alias: New automation
+  alias: Démo Start convo
   description: ''
   triggers:
   - trigger: state
@@ -7232,26 +7131,6 @@
       preannounce: true
     target:
       entity_id: assist_satellite.vpe_salon_satellite_assist
-  mode: single
-- id: '1755865701094'
-  alias: Motion detected test long range
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.please_work_motion_detection_location_provided
-    to: 'on'
-  conditions: []
-  actions:
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: Motion detected !!
-      message: Motion detected !!
-      data:
-        tag: long_range
-        push:
-          interruption-level: critical
   mode: single
 - id: '1755871156066'
   alias: Frigo - Porte réfrigérateur restée ouverte
@@ -7302,7 +7181,7 @@
     to: 'on'
     for:
       hours: 0
-      minutes: 50
+      minutes: 5
       seconds: 0
   conditions: []
   actions:
@@ -7330,4 +7209,78 @@
       message: La porte du congélateur est restée ouverte
     target:
       entity_id: assist_satellite.vpe_cuisine_satellite_assist
+  mode: single
+- id: '1756643667821'
+  alias: Machine à laver - État "Lavage en cours"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.machine_a_laver_job_state
+    to:
+    - wash
+    - spin
+    - rinse
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Lavage en cours
+    target:
+      entity_id: input_select.etat_machine_a_laver
+  mode: single
+- id: '1756643763031'
+  alias: Machine à laver - État "À vider"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.machine_a_laver_job_state
+    to: finish
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: À vider
+    target:
+      entity_id: input_select.etat_machine_a_laver
+  mode: single
+- id: '1756643842396'
+  alias: Machine à laver - État "Planifiée"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.machine_a_laver_remote_control
+    to: 'on'
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Plannifiée
+    target:
+      entity_id: input_select.etat_machine_a_laver
+  mode: single
+- id: '1756643921523'
+  alias: Machine à laver - État "Inactive"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.porte_machine_a_laver_ouverture
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.etat_machine_a_laver
+    state: À vider
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Inactive
+    target:
+      entity_id: input_select.etat_machine_a_laver
   mode: single
