@@ -397,6 +397,7 @@ controler_le_standing_desk:
             - condition: state
               entity_id: sensor.standing_desk_state
               state: standing_position
+        enabled: true
     - conditions:
       - condition: template
         value_template: '{{target_position == ''sitting''}}'
@@ -438,6 +439,7 @@ controler_le_standing_desk:
             - condition: state
               entity_id: sensor.standing_desk_state
               state: seated_position
+        enabled: true
   fields:
     target_position:
       selector:
@@ -1885,3 +1887,44 @@ power_notification_porte_congelateur_restee_ouverte:
       replace_older_notification: true
   description: ''
   icon: mdi:fridge-bottom
+clignoter_le_dessous_de_bureau:
+  sequence:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      rgb_color: '{{color}}'
+      brightness_pct: 100
+    target:
+      entity_id: light.bureau_central
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 500
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.bureau_central
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 100
+      flash: long
+    target:
+      entity_id: light.bureau_central
+  fields:
+    color:
+      selector:
+        color_rgb: {}
+      name: Couleur
+      description: Clouer du flash
+      required: true
+  alias: Clignoter le bureau
+  description: ''

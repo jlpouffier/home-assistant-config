@@ -248,6 +248,7 @@
       scene_id: dynamic_scene_before_meeting
       snapshot_entities:
       - light.bureau_suspension
+      - light.lampes_bureau
     action: scene.create
   - delay:
       hours: 0
@@ -262,12 +263,11 @@
       - light.bureau_suspension
     action: light.turn_on
   - data:
-      brightness_pct: 60
+      brightness_pct: 80
       color_temp_kelvin: 3521
-    target:
-      entity_id:
-      - light.hue_play_bars
     action: light.turn_on
+    target:
+      entity_id: light.lampes_bureau
   - data: {}
     target:
       entity_id: switch.vpe_bureau_microphone
@@ -284,10 +284,6 @@
         from: 'on'
         trigger: state
       continue_on_timeout: false
-  - data: {}
-    target:
-      entity_id: light.hue_play_bars
-    action: light.turn_off
   - data: {}
     target:
       entity_id: scene.dynamic_scene_before_meeting
@@ -656,75 +652,31 @@
     entity_id: device_tracker.jean_loics_macbook_pro
     state: home
   actions:
-  - action: scene.create
-    data:
-      scene_id: dynamic_scene_before_meeting_notification
-      snapshot_entities:
-      - light.hue_play_bars
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
   - choose:
     - conditions:
       - condition: trigger
         id:
         - personal
       sequence:
-      - action: light.turn_on
+      - action: script.clignoter_le_dessous_de_bureau
+        metadata: {}
         data:
-          brightness_pct: 100
-          rgb_color:
-          - 0
-          - 76
+          color:
+          - 4
+          - 51
           - 255
-          transition: 1
-        target:
-          entity_id:
-          - light.hue_play_bars
     - conditions:
       - condition: trigger
         id:
         - social_time
       sequence:
-      - action: light.turn_on
+      - action: script.clignoter_le_dessous_de_bureau
+        metadata: {}
         data:
-          brightness_pct: 100
-          rgb_color:
-          - 68
-          - 255
+          color:
           - 0
-          transition: 1
-        target:
-          entity_id:
-          - light.hue_play_bars
-    default:
-    - action: light.turn_on
-      data:
-        brightness_pct: 100
-        rgb_color:
-        - 0
-        - 76
-        - 255
-        transition: 1
-      target:
-        entity_id:
-        - light.hue_play_bars
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 2
-      milliseconds: 0
-  - action: scene.turn_on
-    data: {}
-    target:
-      entity_id: scene.dynamic_scene_before_meeting_notification
-  - action: scene.delete
-    metadata: {}
-    data: {}
-    target:
-      entity_id: scene.dynamic_scene_before_meeting_notification
+          - 249
+          - 0
   mode: single
 - id: '1691566363432'
   alias: "Simulation de présence - \U0001F6CE️ Notifier Éloignement domicile sans
@@ -4762,10 +4714,10 @@
   alias: Bureau - Notification Lumineuse Qualité de l'air
   description: ''
   triggers:
-  - trigger: state
+  - trigger: numeric_state
     entity_id:
-    - binary_sensor.qualite_de_l_air_bureau
-    to: 'on'
+    - sensor.qualite_de_l_air_bureau
+    above: 3
   conditions:
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
@@ -4780,40 +4732,13 @@
     entity_id: input_boolean.mode_sommeil
     state: 'off'
   actions:
-  - action: scene.create
-    data:
-      scene_id: dynamic_scene_before_bad_air_notification
-      snapshot_entities:
-      - light.hue_play_bars
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
-  - action: light.turn_on
+  - action: script.clignoter_le_dessous_de_bureau
     metadata: {}
     data:
-      rgb_color:
+      color:
       - 255
+      - 38
       - 0
-      - 0
-      brightness_pct: 100
-    target:
-      entity_id: light.hue_play_bars
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: scene.turn_on
-    data: {}
-    target:
-      entity_id: scene.dynamic_scene_before_bad_air_notification
-  - action: scene.delete
-    metadata: {}
-    data: {}
-    target:
-      entity_id: scene.dynamic_scene_before_bad_air_notification
   mode: single
 - id: '1739568563693'
   alias: Assist - Assistant de secours lors d'une panne d'internet
@@ -7108,30 +7033,6 @@
     target:
       entity_id: input_select.etat_lave_vaisselle
   mode: single
-- id: '1755694081224'
-  alias: Démo Start convo
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.presence_rez_de_chaussee
-    to: 'on'
-  conditions: []
-  actions:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
-  - action: assist_satellite.start_conversation
-    metadata: {}
-    data:
-      start_message: Hey JLo, hey Home assistant community! I'm Nabu, what do you
-        want me to do?
-      preannounce: true
-    target:
-      entity_id: assist_satellite.vpe_salon_satellite_assist
-  mode: single
 - id: '1755871156066'
   alias: Frigo - Porte réfrigérateur restée ouverte
   description: ''
@@ -7283,4 +7184,28 @@
       option: Inactive
     target:
       entity_id: input_select.etat_machine_a_laver
+  mode: single
+- id: '1757012871241'
+  alias: Bouton urgence - Flash
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.bouton_d_urgence
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.mode_sommeil
+    state: 'off'
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      flash: short
+    target:
+      entity_id:
+      - light.bureau_central
   mode: single
