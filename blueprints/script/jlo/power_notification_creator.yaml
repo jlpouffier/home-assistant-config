@@ -314,26 +314,48 @@ sequence:
                       | map(attribute='entity_id')
                       | list
                     %}
-                    {% set has_funny_notifications_conversation_agent =
-                      "conversation.funny_notifications_conversation_agent" in 
-                      expand(states.conversation)
+                    {% set has_correct_ai_task =
+                      "ai_task.ai_task_gpt_4o" in 
+                      expand(states.ai_task)
                       | map(attribute='entity_id')
                       | list
                     %}
                     {% set are_funny_notifications_on = 
                       states("input_boolean.funny_notifications") == "on"
                     %}
-                    {{ has_funny_notifications_master_switch and has_funny_notifications_conversation_agent and are_funny_notifications_on}}
+                    {{ has_funny_notifications_master_switch and has_correct_ai_task and are_funny_notifications_on}}
               then:
-                - action: conversation.process
-                  metadata: {}
+                - action: ai_task.generate_data
                   data:
-                    agent_id: conversation.funny_notifications_conversation_agent
-                    text: |
+                    task_name: Notification Troll
+                    instructions: |
+                      Instructions:
+                      - Transform title and message of a notification of a home automation platform into something funny, sassy, and trolling
+
+                      Constraints:
+                      - Keep the same language as the input, it can be either English or French.
+                      - Keep the texts short.
+
+                      Example:
+                      - {"title":"🐈  Litière","message":"Pensez à nettoyer la litière !"} > {"title":"🐈  Devine qui doit nettoyer la litière","message":"C'est toi, et fait le vite, ca pue."}
+
+                      Input:
                       {"title":"{{title}}","message":"{{message}}"}
+                    entity_id: ai_task.ai_task_gpt_4o
+                    structure:
+                      title:
+                        required: true
+                        description: Title of the notification
+                        selector:
+                          text: null
+                      message:
+                        required: true
+                        description: Message of the notification
+                        selector:
+                          text: null
                   response_variable: ai_output
                 - variables:
-                    ai_output_json: "{{ai_output.response.speech.plain.speech|from_json}}"
+                    ai_output_json: "{{ai_output.data}}"
                 - action: "{{person_service_mapping[repeat.item]['service']}}"
                   data:
                     title: "{{ai_output_json.title}}"
