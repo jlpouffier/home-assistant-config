@@ -1231,6 +1231,15 @@ recuperer_liste_de_course:
   icon: mdi:basket
 jouer_de_la_musique_music_assistant:
   sequence:
+  - action: conversation.process
+    data:
+      agent_id: conversation.music_assistant_search_bot
+      text: '{{query}}'
+    response_variable: response_from_ai
+    enabled: true
+  - variables:
+      media_data: '{{response_from_ai.response.speech.plain.speech|from_json}}'
+    enabled: true
   - action: ai_task.generate_data
     data:
       task_name: Music Search
@@ -1242,8 +1251,7 @@ jouer_de_la_musique_music_assistant:
         de Pink Floyd\" >> {\"media_id\": \"Pink Floyd\", \"media_type\":\"artist\"}\n-
         \"Le gagnant de l'eurovision 2016\" >> {\"media_id\":\"Jamala\", \"media_type\":\"artist\"}\"\n-
         \"The Shooting Stars meme\" > {\"media_id\":\"Shooting Stars\",  \"media_type\":\"track\",
-        \"artist\":\"Bag Raiders\"}\n\nInput:\nThe dude that's making the music of
-        inception"
+        \"artist\":\"Bag Raiders\"}\n\nInput:\n{{query}}"
       entity_id: ai_task.ai_task_gpt_4o
       structure:
         media_type:
@@ -1280,13 +1288,10 @@ jouer_de_la_musique_music_assistant:
           selector:
             text:
     enabled: false
-  - action: conversation.process
-    data:
-      agent_id: conversation.music_assistant_search_bot
-      text: '{{query}}'
     response_variable: response_from_ai
   - variables:
-      media_data: '{{response_from_ai.response.speech.plain.speech|from_json}}'
+      media_data: '{{response_from_ai.data}}'
+    enabled: false
   - choose:
     - conditions:
       - condition: template
