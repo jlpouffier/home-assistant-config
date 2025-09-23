@@ -3361,6 +3361,41 @@
         target:
           entity_id:
           - assist_satellite.vpe_chambre_satellite_assist
+      - if:
+        - condition: state
+          entity_id: binary_sensor.jour_de_travail_aujourdhui
+          state: 'on'
+        then:
+        - action: calendar.get_events
+          metadata: {}
+          data:
+            start_date_time: '{{today_at(''00:00'')}}'
+            end_date_time: '{{today_at(''23:59'')}}'
+          target:
+            entity_id: calendar.jeanloic_pouffier_openhomefoundation_org
+          response_variable: calendar
+        - action: ai_task.generate_data
+          metadata: {}
+          data:
+            task_name: Résumé jour de travail
+            instructions: 'Voici mes réunion proféssionelle aujourd''hui: {{calendar}}
+
+              Résume ma journée en une phrase courte.'
+            entity_id: ai_task.ai_task_gpt_4_1_mini
+            structure:
+              resume:
+                description: Résumé de ma journée professionelle.
+                selector:
+                  text:
+          response_variable: ai
+        - action: assist_satellite.announce
+          metadata: {}
+          data:
+            preannounce: false
+            message: '{{ai.data.resume}}'
+          target:
+            entity_id:
+            - assist_satellite.vpe_chambre_satellite_assist
   mode: single
 - id: '1729586824286'
   alias: Mode Sommeil - Actions
@@ -4219,7 +4254,7 @@
       instructions: "Instructions:\nGenerate a text to wish me a happy holiday based
         on an input holiday.\nMy Name is JLo.\nKeep the text short.\nKeep everyhing
         in French.\nAdd an emoji at the start.\n\nInput: \n{{trigger.calendar_event.summary}}"
-      entity_id: ai_task.openai_ai_task
+      entity_id: ai_task.ai_task_gpt_4_1_mini
       structure:
         greeting:
           selector:
@@ -6744,11 +6779,6 @@
     - binary_sensor.sonnette_personne
     id: person
     to: 'on'
-  - trigger: state
-    entity_id:
-    - binary_sensor.sonnette_colis
-    id: parcel
-    to: 'on'
   conditions:
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
@@ -6759,32 +6789,44 @@
       seconds: 0
     enabled: true
   actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - person
-      sequence:
-      - variables:
-          user_message: Personne détectée près de la porte d'entrée
-    - conditions:
-      - condition: trigger
-        id:
-        - parcel
-      sequence:
-      - variables:
-          user_message: Colis détecté près de la porte d'entrée
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: Description personne
+      instructions: 'Ma sonnette a détecté une personne. Décris ce que tu vois : nombre
+        de personnes, leurs habits. Si un colis est visible, mentionne-le, sinon ne
+        le mentionne pas. Garde la description courte (moins de 180 caractères).'
+      structure:
+        description:
+          required: true
+          selector:
+            text:
+      attachments:
+        media_content_id: media-source://camera/camera.sonnette_net
+        media_content_type: application/vnd.apple.mpegurl
+        metadata:
+          title: Sonnette Net
+          thumbnail: /api/camera_proxy/camera.sonnette_net
+          media_class: video
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://camera
+      entity_id: ai_task.ai_task_gpt_4_1_mini
+    response_variable: response
   - action: script.turn_on
     metadata: {}
     data:
       variables:
-        user_message: '{{user_message}}'
+        user_title: "\U0001F514 Personne détectée"
+        user_message: '{{response.data.description}}'
     target:
       entity_id: script.power_notification_sonnette_video
   - delay:
       hours: 0
-      minutes: 0
-      seconds: 30
+      minutes: 10
+      seconds: 0
       milliseconds: 0
   mode: single
 - id: '1752934059438'
@@ -7166,7 +7208,7 @@
       entity_id: input_select.etat_machine_a_laver
   mode: single
 - id: '1756643921523'
-  alias: Machine à laver - État "Inactive"
+  alias: 'Machine à laver - État "Inactive" après lavage '
   description: ''
   triggers:
   - trigger: state
@@ -7208,4 +7250,247 @@
     target:
       entity_id:
       - light.bureau_central
+  mode: single
+- id: '1758050014189'
+  alias: Sonnette - Description lors de l'appui sur bouton
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sonnette_visiteur
+    to: 'on'
+  conditions: []
+  actions:
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: Description personne
+      instructions: 'Quelqu''un vient d''appyuer sur ma sonnette. Décris ce que tu
+        vois : nombre de personnes, leurs habits. Si un colis est visible, mentionne-le,
+        sinon ne le mentionne pas. Garde la description courte (moins de 180 caractères).'
+      structure:
+        description:
+          required: true
+          selector:
+            text:
+      attachments:
+        media_content_id: media-source://camera/camera.sonnette_net
+        media_content_type: application/vnd.apple.mpegurl
+        metadata:
+          title: Sonnette Net
+          thumbnail: /api/camera_proxy/camera.sonnette_net
+          media_class: video
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://camera
+      entity_id: ai_task.ai_task_gpt_4_1_mini
+    response_variable: response
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_title: "\U0001F514 Sonnette appuyée"
+        user_message: '{{response.data.description}}'
+    target:
+      entity_id: script.power_notification_sonnette_video
+  mode: single
+- id: '1758174862436'
+  alias: 'Machine à laver - État « inactive » depuis planifiée '
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.machine_a_laver_remote_control
+    to: 'off'
+  conditions:
+  - condition: state
+    state: Plannifiée
+    entity_id: input_select.etat_machine_a_laver
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Inactive
+    target:
+      entity_id: input_select.etat_machine_a_laver
+  mode: single
+- id: '1758531782409'
+  alias: Demo Weather
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: '0'
+    seconds: '0'
+  conditions: []
+  actions:
+  - action: weather.get_forecasts
+    metadata: {}
+    data:
+      type: hourly
+    target:
+      entity_id: weather.floirac
+    response_variable: weather
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: Weather summary
+      instructions: 'It is {{now()}}
+
+        This is the weather forecast: {{weather}}
+
+        Create a sentence summarizing the weather for the rest of the day.
+
+        Keep it under 150 characters.'
+      entity_id: ai_task.ai_task_gpt_4o
+      structure:
+        sentence:
+          selector:
+            text:
+    response_variable: ai
+  - action: input_text.set_value
+    metadata: {}
+    data:
+      value: '{{ai.data.sentence}}'
+    target:
+      entity_id: input_text.weather_summary_demo
+  mode: single
+- id: '1758532416681'
+  alias: Demo Doorbell
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.doorbell_demo
+    to: 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: "\U0001F514 Doorbell "
+      message: Processing image ...
+      data:
+        tag: doorbell
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: Doorbell description
+      instructions: 'Someone rang my doorbell.
+
+
+        Instructions:
+
+        - Describe the scene, describe every person on the scene
+
+        - Count People
+
+        - Count Animals'
+      entity_id: ai_task.ai_task_gpt_4o
+      structure:
+        summary:
+          description: Summary of the scene and the people inside it. Keep it under
+            180 characters
+          selector:
+            text:
+        person_count:
+          description: Number of person in the scene
+          selector:
+            number:
+        animal_count:
+          description: Number of animal in the scene
+          selector:
+            number:
+      attachments:
+        media_content_id: media-source://media_source/local/doorbell_test.png
+        media_content_type: image/png
+        metadata:
+          title: doorbell_test.png
+          thumbnail:
+          media_class: image
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+    response_variable: ai
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: "\U0001F514 Doorbell ({{ai.data.person_count}} \U0001F9D1\U0001F3FB‍\U0001F9B1
+        / {{ai.data.animal_count}} \U0001F40A)"
+      message: '{{ai.data.summary}}'
+      data:
+        tag: doorbell
+  - action: ai_task.generate_image
+    metadata: {}
+    data:
+      task_name: Manga
+      instructions: Tranform this image into a super cute manga!
+      entity_id: ai_task.google_ai_task
+      attachments:
+        media_content_id: media-source://media_source/local/doorbell_test.png
+        media_content_type: image/png
+        metadata:
+          title: doorbell_test.png
+          thumbnail:
+          media_class: image
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+    response_variable: ai_image
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: "\U0001F514 Doorbell ({{ai.data.person_count}} \U0001F9D1\U0001F3FB‍\U0001F9B1
+        / {{ai.data.animal_count}} \U0001F40A)"
+      message: '{{ai.data.summary}}'
+      data:
+        tag: doorbell
+        image: http://home.local:8123{{ai_image.url}}
+  mode: single
+- id: '1758573382739'
+  alias: Dashboard - Prévision météo
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: '0'
+    seconds: '0'
+    hours: /6
+  conditions: []
+  actions:
+  - action: weather.get_forecasts
+    metadata: {}
+    data:
+      type: hourly
+    target:
+      entity_id:
+      - weather.floirac
+    response_variable: weather
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: Weather summary
+      instructions: 'L''heure actuelle est: {{now()}}
+
+        Les prevision météorologique sont: {{weather}}
+
+        Resume la météo pour le reste de la journée en une phrase de moins de 150
+        caractères.'
+      entity_id: ai_task.ai_task_gpt_4_1_mini
+      structure:
+        resume:
+          description: Résumé de la méteo pour le reste de la journée
+          selector:
+            text:
+    response_variable: ai
+  - action: input_text.set_value
+    metadata: {}
+    data:
+      value: '{{ai.data.resume}}'
+    target:
+      entity_id: input_text.previsions_meteo
   mode: single

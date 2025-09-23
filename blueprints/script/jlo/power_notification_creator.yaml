@@ -330,7 +330,7 @@ sequence:
                     task_name: Notification Troll
                     instructions: |
                       Instructions:
-                      - Transform title and message of a notification of a home automation platform into something funny, sassy, and trolling
+                      - Transform title and message of a notification of a home automation platform into something patronising, aggresive, mean, trolling.
 
                       Constraints:
                       - Keep the same language as the input, it can be either English or French.
