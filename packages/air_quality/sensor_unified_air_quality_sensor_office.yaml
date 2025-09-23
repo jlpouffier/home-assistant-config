@@ -26,7 +26,7 @@ template:
         attributes:
           category: >-
             {% set categories = {1:'Excellentee', 2:'Bonne', 3:'Moyenne', 4:'Mauvaise', 5:'Très Mauvaise', 6:'Dangereuse'} %}
-            {{ categories[ this.state | int(0) ] }}
+            {{ categories[ this.state | int(1) ] }}
           driven_by: >-
             {% set co2 = states('sensor.indoor_air_quality_monitor_salon_dioxyde_de_carbone') | int(0) %}
             {% set pm1  = states('sensor.indoor_air_quality_monitor_salon_pm1') | float(0) %}
