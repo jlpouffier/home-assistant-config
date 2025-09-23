@@ -1,0 +1,53 @@
+template:
+  - triggers:
+      - trigger: state
+        entity_id:
+          - binary_sensor.is_litter_full
+          - input_boolean.courrier_a_relever
+          - input_select.etat_machine_a_laver
+          - input_select.etat_lave_vaisselle
+          - input_boolean.poubelle_noire_a_sortir
+          - input_boolean.poubelle_verte_a_sortir
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: event_template_reloaded
+    actions:
+      variables:
+        chores: 
+          - entity_id: binary_sensor.is_litter_full
+            state: 'on'
+            translation: Litière à vider
+          - entity_id: input_boolean.courrier_a_relever
+            state: 'on'
+            translation: Courrier à relever
+          - entity_id: input_select.etat_machine_a_laver
+            state: À vider
+            translation: Machine à laver à vider
+          - entity_id: input_select.etat_lave_vaisselle
+            state: À vider
+            translation: Lave vaisselle à vider
+          - entity_id: input_boolean.poubelle_noire_a_sortir
+            state: "on"
+            translation: Poubelle noire à sortir
+          - entity_id: input_boolean.poubelle_verte_a_sortir
+            state: 'on'
+            translation: Poubelle verte à sortir
+        active_chores_details: |
+          [
+            {%- for chore in chores -%}
+              {%- if is_state(chore.entity_id, chore.state) -%}
+                "{{chore.translation}}",
+              {%- endif -%}
+            {%- endfor -%}
+          ]
+
+    binary_sensor:
+      - name: chores 
+        unique_id: chores
+        state: |
+          {{ active_chores_details | length > 0 }}
+        device_class: problem
+        attributes:
+          details: |
+            {{active_chores_details}}
