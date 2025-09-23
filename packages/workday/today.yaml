@@ -1,11 +1,13 @@
 template:
-  - trigger:
+  - triggers:
       - trigger: time_pattern
         hours: "0"
         minutes: "0"
       - trigger: homeassistant
         event: start
-    action:
+      - trigger: event
+        event_type: event_template_reloaded
+    actions:
       - action: calendar.get_events
         data:
           start_date_time: "{{today_at('12:00')}}"
