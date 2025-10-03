@@ -16,3 +16,4 @@ themes/mushroom
 .HA_VERSION
 packages/untracked_packages/
 zwavejs_*.bin
+.ha_run.lock
