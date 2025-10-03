@@ -1495,7 +1495,7 @@ power_notification_serrure_verouillee_sur_porte_ouverte:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
-      target: send_to_persons_in_zones
+      target: send_to_all
       zones:
       - zone.proche_de_la_maison
       default_title: "\U0001F512 Serrure"
@@ -1518,8 +1518,7 @@ power_notification_serrure_deverrouillee:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
-      persons:
-      - person.jenova70
+      persons: []
       target: send_to_all
       zones: []
       default_title: "\U0001F513 Serrure"
@@ -1776,8 +1775,7 @@ power_notification_serrure_verrouillee:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
     input:
-      persons:
-      - person.jenova70
+      persons: []
       target: send_to_all
       zones: []
       default_title: "\U0001F513 Serrure"
@@ -1795,21 +1793,6 @@ power_notification_fuite_d_eau:
       notification_data_advanced:
         url: /lovelace/fuites
   alias: Power Notification - Fuite d'eau
-  description: ''
-power_notification_sonnette_video:
-  use_blueprint:
-    path: jlo/power_notification_creator.yaml
-    input:
-      target: send_to_all
-      zones: []
-      default_title: "\U0001F514 Sonnette "
-      notification_data_advanced:
-        entity_id: camera.sonnette_fluide
-        url: /lovelace/cameras
-      default_message: La sonnette a détectée quelque chose
-      persons:
-      - person.jenova70
-  alias: Power notification - Sonnette vidéo
   description: ''
 power_notification_lancement_lave_vaisselle_prevu:
   use_blueprint:

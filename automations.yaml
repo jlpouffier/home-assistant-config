@@ -2213,7 +2213,7 @@
       data: {}
       target:
         entity_id: light.2d_matrix
-    - action: select.random
+    - action: select.select_next
       target:
         entity_id:
         - select.2d_matrix_preset
@@ -3378,7 +3378,8 @@
           metadata: {}
           data:
             task_name: Résumé jour de travail
-            instructions: 'Voici mes réunion proféssionelle aujourd''hui: {{calendar}}
+            instructions: 'Voici mes réunions proféssionelles a venir pour aujourd''hui:
+              {{calendar}}
 
               Résume ma journée en une phrase courte.'
             entity_id: ai_task.ai_task_gpt_4_1_mini
@@ -5259,7 +5260,7 @@
             data:
               entity_id: sensor.jlo_slack
               status_text: Away
-              status_emoji: ':satellite_antenna:'
+              status_emoji: ':away:'
           - action: slack_user.set_presence
             metadata: {}
             data:
@@ -6789,40 +6790,62 @@
       seconds: 0
     enabled: true
   actions:
+  - variables:
+      image_url: '{{''doorbell_snapshots/doorbell_person_'' ~ now().strftime(''%Y_%m_%d_%H_%M_%S'')
+        ~ ''.png'' }}'
+      notification_tag: '{{''doorbell_person_'' ~ now() | string | md5}}'
+  - action: camera.snapshot
+    data:
+      filename: '{{''/media/'' ~ image_url}}'
+    target:
+      entity_id: camera.sonnette_net
   - action: ai_task.generate_data
     metadata: {}
     data:
       task_name: Description personne
-      instructions: 'Ma sonnette a détecté une personne. Décris ce que tu vois : nombre
-        de personnes, leurs habits. Si un colis est visible, mentionne-le, sinon ne
-        le mentionne pas. Garde la description courte (moins de 180 caractères).'
+      instructions: 'Ma sonnette vient de detectée quelqu''un.
+
+
+        Instructions:
+
+        - Décris chaque personne dans l''image
+
+        - Compte le nombre de colis'
       structure:
-        description:
+        summary:
+          description: Description chaque personne dans l'image. Moins de 180 caractères.
           required: true
           selector:
             text:
+        person_count:
+          description: Nombre de personne détectées.
+          required: true
+          selector:
+            number:
+        parcel_count:
+          description: Nombre de colis détectés.
+          required: true
+          selector:
+            number:
       attachments:
-        media_content_id: media-source://camera/camera.sonnette_net
-        media_content_type: application/vnd.apple.mpegurl
-        metadata:
-          title: Sonnette Net
-          thumbnail: /api/camera_proxy/camera.sonnette_net
-          media_class: video
-          children_media_class:
-          navigateIds:
-          - {}
-          - media_content_type: app
-            media_content_id: media-source://camera
+        media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
+        media_content_type: image/png
       entity_id: ai_task.ai_task_gpt_4_1_mini
-    response_variable: response
-  - action: script.turn_on
-    metadata: {}
-    data:
-      variables:
-        user_title: "\U0001F514 Personne détectée"
-        user_message: '{{response.data.description}}'
-    target:
-      entity_id: script.power_notification_sonnette_video
+    response_variable: ai
+    enabled: true
+  - if:
+    - condition: template
+      value_template: '{{ai.data.person_count > 0}}'
+    then:
+    - action: notify.mobile_app_jean_loics_iphone
+      metadata: {}
+      data:
+        title: "\U0001F514 Personne détectée! {{\"\U0001F4E6 Colis detecté\" if ai.data.parcel_count
+          > 0}}"
+        data:
+          tag: '{{notification_tag}}'
+          image: '{{''/media/local/'' ~ image_url}}'
+        message: '{{ai.data.summary}}'
   - delay:
       hours: 0
       minutes: 10
@@ -7261,40 +7284,85 @@
     to: 'on'
   conditions: []
   actions:
+  - variables:
+      image_url: '{{''doorbell_snapshots/doorbell_ring_'' ~ now().strftime(''%Y_%m_%d_%H_%M_%S'')
+        ~ ''.png'' }}'
+      notification_tag: '{{''doorbell_ring_'' ~ now() | string | md5}}'
+  - action: camera.snapshot
+    data:
+      filename: '{{''/media/'' ~ image_url}}'
+    target:
+      entity_id: camera.sonnette_net
+  - action: notify.mobile_app_jean_loics_iphone
+    metadata: {}
+    data:
+      title: "\U0001F514 Sonnette appuyée!"
+      message: Description de l'image en cours ..
+      data:
+        tag: '{{notification_tag}}'
+        image: '{{''/media/local/'' ~ image_url}}'
   - action: ai_task.generate_data
     metadata: {}
     data:
       task_name: Description personne
-      instructions: 'Quelqu''un vient d''appyuer sur ma sonnette. Décris ce que tu
-        vois : nombre de personnes, leurs habits. Si un colis est visible, mentionne-le,
-        sinon ne le mentionne pas. Garde la description courte (moins de 180 caractères).'
+      instructions: "Quelqu'un vient d'appyuer sur ma sonnette. \n\nInstructions:\n-
+        Décris chaque personne dans l'image\n- Compte le nombre de colis"
       structure:
-        description:
+        summary:
+          description: Description chaque personne dans l'image. Moins de 180 caractères.
           required: true
           selector:
             text:
+        person_count:
+          description: Nombre de personne détectées.
+          required: true
+          selector:
+            number:
+        parcel_count:
+          description: Nombre de colis détectés.
+          required: true
+          selector:
+            number:
       attachments:
-        media_content_id: media-source://camera/camera.sonnette_net
-        media_content_type: application/vnd.apple.mpegurl
-        metadata:
-          title: Sonnette Net
-          thumbnail: /api/camera_proxy/camera.sonnette_net
-          media_class: video
-          children_media_class:
-          navigateIds:
-          - {}
-          - media_content_type: app
-            media_content_id: media-source://camera
+        media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
+        media_content_type: image/png
       entity_id: ai_task.ai_task_gpt_4_1_mini
-    response_variable: response
-  - action: script.turn_on
+    response_variable: ai
+    enabled: true
+  - action: notify.mobile_app_jean_loics_iphone
     metadata: {}
     data:
-      variables:
-        user_title: "\U0001F514 Sonnette appuyée"
-        user_message: '{{response.data.description}}'
-    target:
-      entity_id: script.power_notification_sonnette_video
+      title: "\U0001F514 Sonnette appuyée! {{\"\U0001F4E6 Colis detecté\" if ai.data.parcel_count
+        > 0}}"
+      data:
+        tag: '{{notification_tag}}'
+        image: '{{''/media/local/'' ~ image_url}}'
+      message: '{{ai.data.summary}}'
+  - if:
+    - condition: template
+      value_template: '{{ai.data.person_count > 0}}'
+    then:
+    - action: ai_task.generate_image
+      metadata: {}
+      data:
+        attachments:
+          media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
+          media_content_type: image/png
+        entity_id: ai_task.google_ai_task
+        task_name: Doorbell enhancement
+        instructions: Zoom sur le visage de la personne
+      response_variable: ai_image
+    - variables:
+        enhanced_image_url: '{{ai_image.url.split(''?'')[0]}}'
+    - action: notify.mobile_app_jean_loics_iphone
+      metadata: {}
+      data:
+        title: "\U0001F514 Sonnette appuyée! {{\"\U0001F4E6 Colis detecté\" if ai.data.parcel_count
+          > 0}}"
+        data:
+          tag: '{{notification_tag}}'
+          image: '{{enhanced_image_url}}'
+        message: '{{ai.data.summary}}'
   mode: single
 - id: '1758174862436'
   alias: 'Machine à laver - État « inactive » depuis planifiée '
@@ -7373,6 +7441,7 @@
       message: Processing image ...
       data:
         tag: doorbell
+    enabled: true
   - action: ai_task.generate_data
     metadata: {}
     data:
@@ -7415,6 +7484,7 @@
           - media_content_type: app
             media_content_id: media-source://media_source
     response_variable: ai
+    enabled: true
   - action: notify.mobile_app_jean_loics_iphone
     metadata: {}
     data:
@@ -7423,6 +7493,7 @@
       message: '{{ai.data.summary}}'
       data:
         tag: doorbell
+    enabled: true
   - action: ai_task.generate_image
     metadata: {}
     data:
@@ -7442,6 +7513,7 @@
           - media_content_type: app
             media_content_id: media-source://media_source
     response_variable: ai_image
+    enabled: true
   - action: notify.mobile_app_jean_loics_iphone
     metadata: {}
     data:
@@ -7450,7 +7522,8 @@
       message: '{{ai.data.summary}}'
       data:
         tag: doorbell
-        image: http://home.local:8123{{ai_image.url}}
+        image: http://midgard.local:8123{{ai_image.url}}
+    enabled: true
   mode: single
 - id: '1758573382739'
   alias: Dashboard - Prévision météo
