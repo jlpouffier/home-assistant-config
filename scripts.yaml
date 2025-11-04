@@ -1791,7 +1791,7 @@ power_notification_fuite_d_eau:
       default_message: Fuite d'eau détectée!
       default_importance: true
       notification_data_advanced:
-        url: /lovelace/fuites
+        url: /lovelace/safety
   alias: Power Notification - Fuite d'eau
   description: ''
 power_notification_lancement_lave_vaisselle_prevu:
@@ -1916,4 +1916,26 @@ clignoter_le_dessous_de_bureau:
       description: Clouer du flash
       required: true
   alias: Clignoter le bureau
+  description: ''
+power_notification_fumee:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_title: "\U0001F4A8 Fumée détectée"
+      default_message: Fumée détectée!
+      default_importance: true
+      notification_data_advanced:
+        url: /lovelace/safety
+  alias: Power Notification - Fumée
+  description: ''
+  icon: mdi:smoke-detector-variant-alert
+power_notification_machine_a_laver_coupee_lors_d_une_fuite:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      default_importance: true
+      default_title: "\U0001FAE7 Machine à laver"
+      default_message: Machine à laver coupée en prevention d'une fuite dans la salle
+        de bains
+  alias: Power Notification - Machine à laver coupée lors d'une fuite
   description: ''

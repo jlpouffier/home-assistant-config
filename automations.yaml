@@ -807,11 +807,17 @@
     id: end
     trigger: time
   conditions:
-  - condition: state
-    entity_id: media_player.vpe_chambre_marilou_music_assistant
-    state: playing
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: media_player.vpe_chambre_marilou_music_assistant
+      state: playing
+    - condition: state
+      entity_id: light.chambre_bebe
+      state:
+      - 'on'
   actions:
   - action: media_player.media_pause
     data: {}
@@ -954,7 +960,10 @@
         data:
           brightness_pct: 60
         target:
-          floor_id: rez_de_chaussee
+          area_id:
+          - cuisine
+          - entree
+          - salon
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -981,8 +990,12 @@
         data:
           brightness_pct: 40
         target:
-          floor_id: rez_de_chaussee
-          entity_id: light.exterieur_guinguette
+          entity_id:
+          - light.exterieur_guinguette
+          area_id:
+          - cuisine
+          - entree
+          - salon
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1009,8 +1022,12 @@
         data:
           brightness_pct: 60
         target:
-          floor_id: rez_de_chaussee
-          entity_id: light.exterieur_guinguette
+          entity_id:
+          - light.exterieur_guinguette
+          area_id:
+          - cuisine
+          - entree
+          - salon
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1128,37 +1145,6 @@
       target:
         entity_id: script.power_notification_poubelle_verte_a_sortir
   mode: single
-- id: '1702835659800'
-  alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle verte sortie depuis notification"
-  description: ''
-  triggers:
-  - event_type: mobile_app_notification_action
-    event_data:
-      action: green_trash_taken_out
-    trigger: event
-  conditions: []
-  actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.poubelle_verte_a_sortir
-    data: {}
-  mode: single
-- id: '1702835708226'
-  alias: "Poubelles Intelligentes - \U0001F4F2 Poubelle noire sortie depuis notification"
-  description: ''
-  triggers:
-  - event_type: mobile_app_notification_action
-    event_data:
-      action: black_trash_taken_out
-    trigger: event
-  conditions: []
-  actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id:
-      - input_boolean.poubelle_noire_a_sortir
-    data: {}
-  mode: single
 - id: '1703176659308'
   alias: Bureau - Standing Desk Autonome
   description: ''
@@ -1258,23 +1244,6 @@
         target:
           entity_id: script.controler_le_standing_desk
       - set_conversation_response: Bureau en descente
-  mode: single
-- id: '1707424061311'
-  alias: "Mode Sommeil Marilou - \U0001F4E3 Lancer par commande vocale "
-  description: ''
-  triggers:
-  - command:
-    - 'Au dodo '
-    - (Au lit)|(Ollie)|(Holly)
-    trigger: conversation
-  conditions: []
-  actions:
-  - action: input_boolean.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: input_boolean.mode_sommeil_marilou
-  - set_conversation_response: Bonne nuit Marilou !
   mode: single
 - id: '1714134719761'
   alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
@@ -2167,8 +2136,14 @@
   triggers:
   - entity_id:
     - binary_sensor.capteur_presence_bureau_occupancy
+    trigger: state
+  - entity_id:
     - input_boolean.automation_matrix_2d
+    trigger: state
+  - entity_id:
     - input_datetime.pulse_end_schedule
+    trigger: state
+  - entity_id:
     - input_datetime.pulse_start_schedule
     trigger: state
   - at: input_datetime.pulse_start_schedule
@@ -2361,38 +2336,54 @@
       entity_id: input_select.modes_de_presence_de_la_maison_v2
   mode: single
 - id: '1727986078836'
-  alias: Modes de presence de la maison - Occupée via le Dial Hue
+  alias: Modes de presence de la maison - Occupée via Alarme
   description: ''
   triggers:
   - trigger: state
     entity_id:
-    - event.hue_tap_dial_switch_1_bouton_1
-    attribute: event_type
-    to: long_release
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-  - trigger: state
-    entity_id:
-    - event.hue_tap_dial_switch_1_bouton_2
-    attribute: event_type
-    to: long_release
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Arrivée en cours
+    - alarm_control_panel.clavier_alarme_centrale_dalarme
+    to: disarmed
+  conditions: []
   actions:
-  - action: input_select.select_option
-    metadata: {}
-    data:
-      option: Occupée
-    target:
-      entity_id: input_select.modes_de_presence_de_la_maison_v2
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Vide
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state: Arrivée en cours
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Arrivée en cours
+        target:
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Occupée
+        target:
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+    - conditions:
+      - condition: state
+        entity_id: input_select.modes_de_presence_de_la_maison_v2
+        state: Départ en cours
+      sequence:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Occupée
+        target:
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
   mode: single
 - id: '1727986554484'
   alias: Modes de presence de la maison - Départ en cours via Occupation de la maison
@@ -2500,28 +2491,17 @@
       entity_id: input_select.modes_de_presence_de_la_maison_v2
   mode: single
 - id: '1727986902983'
-  alias: Modes de presence de la maison - Départ en cours via le Dial Hue
+  alias: Modes de presence de la maison - Départ en cours via Alarme
   description: ''
   triggers:
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_3
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_4
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
+  - trigger: state
+    entity_id:
+    - alarm_control_panel.clavier_alarme_centrale_dalarme
+    to: armed_away
   conditions:
   - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.automation_presence_simulator
-    state: 'off'
+    entity_id: input_select.modes_de_presence_de_la_maison_v2
+    state: Occupée
   actions:
   - action: input_select.select_option
     metadata: {}
@@ -2647,37 +2627,6 @@
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Vide
-  actions:
-  - action: input_select.select_option
-    metadata: {}
-    data:
-      option: Arrivée en cours
-    target:
-      entity_id: input_select.modes_de_presence_de_la_maison_v2
-  mode: single
-- id: '1727987389149'
-  alias: Modes de presence de la maison - Arrivée en cours via le Dial Hue
-  description: ''
-  triggers:
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_1
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  - entity_id:
-    - event.hue_tap_dial_switch_1_bouton_2
-    attribute: event_type
-    to: repeat
-    id: 'on'
-    trigger: state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.automation_presence_simulator
-    state: 'off'
   actions:
   - action: input_select.select_option
     metadata: {}
@@ -4239,7 +4188,7 @@
             entity_id: '{{player}}'
   mode: single
 - id: '1731941056494'
-  alias: Vacances - Générer texte de bonne fête
+  alias: Dashboard - Générer texte de bonne fête
   description: ''
   triggers:
   - trigger: calendar
@@ -4400,8 +4349,11 @@
     target:
       entity_id:
       - light.couloir_applique_escalier
-      area_id: exterieur
-      floor_id: rez_de_chaussee
+      area_id:
+      - exterieur
+      - cuisine
+      - entree
+      - salon
   - action: hue.activate_scene
     target:
       entity_id: scene.salon_salon_tv_playing
@@ -4493,8 +4445,11 @@
         target:
           entity_id:
           - light.couloir_applique_escalier
-          area_id: exterieur
-          floor_id: rez_de_chaussee
+          area_id:
+          - exterieur
+          - cuisine
+          - entree
+          - salon
       - action: hue.activate_scene
         target:
           entity_id: scene.salon_salon_tv_playing
@@ -4590,7 +4545,10 @@
     metadata: {}
     data: {}
     target:
-      floor_id: rez_de_chaussee
+      area_id:
+      - cuisine
+      - entree
+      - salon
   - action: media_player.turn_off
     metadata: {}
     data: {}
@@ -5752,6 +5710,13 @@
   - trigger: state
     entity_id:
     - device_tracker.jlo_s_iphone_bluetooth
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    to:
+  - trigger: state
+    entity_id:
     - device_tracker.jlo_s_apple_watch_bluetooth
     for:
       hours: 0
@@ -6712,36 +6677,6 @@
         target:
           entity_id: climate.climatisation_salon
   mode: restart
-- id: '1750749535386'
-  alias: Guirlande Jardin - Allumer
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - event.hue_tap_dial_switch_9_bouton_2
-  conditions:
-  - condition: state
-    entity_id: event.hue_tap_dial_switch_9_bouton_2
-    attribute: event_type
-    state: initial_press
-  actions:
-  - if:
-    - condition: state
-      entity_id: binary_sensor.exterieur_lumineux
-      state: 'on'
-    then:
-    - action: light.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: light.exterieur_guinguette
-  - action: light.turn_on
-    metadata: {}
-    data:
-      brightness_pct: 40
-    target:
-      entity_id: light.exterieur_sphere
-  mode: single
 - id: '1751811618609'
   alias: "Fuite d'eau - \U0001F514 Notifier"
   description: ''
@@ -7384,147 +7319,6 @@
     target:
       entity_id: input_select.etat_machine_a_laver
   mode: single
-- id: '1758531782409'
-  alias: Demo Weather
-  description: ''
-  triggers:
-  - trigger: time_pattern
-    minutes: '0'
-    seconds: '0'
-  conditions: []
-  actions:
-  - action: weather.get_forecasts
-    metadata: {}
-    data:
-      type: hourly
-    target:
-      entity_id: weather.floirac
-    response_variable: weather
-  - action: ai_task.generate_data
-    metadata: {}
-    data:
-      task_name: Weather summary
-      instructions: 'It is {{now()}}
-
-        This is the weather forecast: {{weather}}
-
-        Create a sentence summarizing the weather for the rest of the day.
-
-        Keep it under 150 characters.'
-      entity_id: ai_task.ai_task_gpt_4o
-      structure:
-        sentence:
-          selector:
-            text:
-    response_variable: ai
-  - action: input_text.set_value
-    metadata: {}
-    data:
-      value: '{{ai.data.sentence}}'
-    target:
-      entity_id: input_text.weather_summary_demo
-  mode: single
-- id: '1758532416681'
-  alias: Demo Doorbell
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.doorbell_demo
-    to: 'on'
-  conditions: []
-  actions:
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: "\U0001F514 Doorbell "
-      message: Processing image ...
-      data:
-        tag: doorbell
-    enabled: true
-  - action: ai_task.generate_data
-    metadata: {}
-    data:
-      task_name: Doorbell description
-      instructions: 'Someone rang my doorbell.
-
-
-        Instructions:
-
-        - Describe the scene, describe every person on the scene
-
-        - Count People
-
-        - Count Animals'
-      entity_id: ai_task.ai_task_gpt_4o
-      structure:
-        summary:
-          description: Summary of the scene and the people inside it. Keep it under
-            180 characters
-          selector:
-            text:
-        person_count:
-          description: Number of person in the scene
-          selector:
-            number:
-        animal_count:
-          description: Number of animal in the scene
-          selector:
-            number:
-      attachments:
-        media_content_id: media-source://media_source/local/doorbell_test.png
-        media_content_type: image/png
-        metadata:
-          title: doorbell_test.png
-          thumbnail:
-          media_class: image
-          children_media_class:
-          navigateIds:
-          - {}
-          - media_content_type: app
-            media_content_id: media-source://media_source
-    response_variable: ai
-    enabled: true
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: "\U0001F514 Doorbell ({{ai.data.person_count}} \U0001F9D1\U0001F3FB‍\U0001F9B1
-        / {{ai.data.animal_count}} \U0001F40A)"
-      message: '{{ai.data.summary}}'
-      data:
-        tag: doorbell
-    enabled: true
-  - action: ai_task.generate_image
-    metadata: {}
-    data:
-      task_name: Manga
-      instructions: Tranform this image into a super cute manga!
-      entity_id: ai_task.google_ai_task
-      attachments:
-        media_content_id: media-source://media_source/local/doorbell_test.png
-        media_content_type: image/png
-        metadata:
-          title: doorbell_test.png
-          thumbnail:
-          media_class: image
-          children_media_class:
-          navigateIds:
-          - {}
-          - media_content_type: app
-            media_content_id: media-source://media_source
-    response_variable: ai_image
-    enabled: true
-  - action: notify.mobile_app_jean_loics_iphone
-    metadata: {}
-    data:
-      title: "\U0001F514 Doorbell ({{ai.data.person_count}} \U0001F9D1\U0001F3FB‍\U0001F9B1
-        / {{ai.data.animal_count}} \U0001F40A)"
-      message: '{{ai.data.summary}}'
-      data:
-        tag: doorbell
-        image: http://midgard.local:8123{{ai_image.url}}
-    enabled: true
-  mode: single
 - id: '1758573382739'
   alias: Dashboard - Prévision météo
   description: ''
@@ -7566,4 +7360,150 @@
       value: '{{ai.data.resume}}'
     target:
       entity_id: input_text.previsions_meteo
+  mode: single
+- id: '1760735514418'
+  alias: Alarme - Armer lors du départ
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Vide
+  conditions:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+      state: armed_away
+  actions:
+  - action: alarm_control_panel.alarm_arm_away
+    metadata: {}
+    data: {}
+    target:
+      entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+  mode: single
+- id: '1760735584722'
+  alias: Alarme - Désarmer lors de l'arrivée
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+    to: Occupée
+  conditions:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+      state: disarmed
+  actions:
+  - action: alarm_control_panel.alarm_disarm
+    metadata: {}
+    data: {}
+    target:
+      entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+  mode: single
+- id: '1760741632261'
+  alias: Alarme - Armer Fallback
+  description: Active l'alarme en mode absence lorsque l'alarme est armée en mode
+    maison ou nuit.
+  triggers:
+  - trigger: state
+    entity_id:
+    - alarm_control_panel.clavier_alarme_centrale_dalarme
+    to: armed_home
+  - trigger: state
+    entity_id:
+    - alarm_control_panel.clavier_alarme_centrale_dalarme
+    to: armed_night
+  conditions: []
+  actions:
+  - action: alarm_control_panel.alarm_arm_away
+    metadata: {}
+    data: {}
+    target:
+      entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+  mode: single
+- id: '1760794479839'
+  alias: "Fumée - \U0001F514 Notifier"
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.detecteur_de_fumee_couloir
+    to: 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.detecteur_de_fumee_salon
+    to: 'on'
+  conditions: []
+  actions:
+  - action: script.power_notification_fumee
+    metadata: {}
+    data:
+      user_message: "{%- from 'unique_area_names.jinja' import unique_area_names -%}
+        \     \n\nFumée détectée ! ({{unique_area_names([trigger.entity_id])}})"
+  mode: queued
+  max: 10
+- id: '1760806594903'
+  alias: Alarme - Code personnalisés
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: zha_event
+    event_data:
+      device_id: ccefbc8f79166ebb372dc1c776141afe
+      command: arm
+      args:
+        arm_mode_description: Disarm
+  conditions:
+  - condition: template
+    value_template: '{{trigger.event.data.args.code != ''''}}'
+  actions:
+  - action: calendar.get_events
+    metadata: {}
+    data:
+      duration:
+        hours: 0
+        minutes: 1
+        seconds: 0
+    target:
+      entity_id: calendar.alarm_codes
+    response_variable: calendar
+  - variables:
+      input_code: '{{trigger.event.data.args.code}}'
+      valid_codes: "[\n  {% for event in calendar[\"calendar.alarm_codes\"].events
+        %}\n    \"{{event.summary}}\",\n  {% endfor %}\n]\n"
+  - if:
+    - condition: template
+      value_template: '{{input_code | string in valid_codes}}'
+    then:
+    - action: alarm_control_panel.alarm_disarm
+      metadata: {}
+      data: {}
+      target:
+        entity_id: alarm_control_panel.clavier_alarme_centrale_dalarme
+  mode: single
+- id: '1761059617171'
+  alias: Machine à laver - Couper lors d'une fuite
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_de_fuite_salle_de_bains
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_select.etat_machine_a_laver
+    state:
+    - Lavage en cours
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.machine_a_laver
+  - action: script.power_notification_machine_a_laver_coupee_lors_d_une_fuite
+    metadata: {}
+    data: {}
   mode: single
