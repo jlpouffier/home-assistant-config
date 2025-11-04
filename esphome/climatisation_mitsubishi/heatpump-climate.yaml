@@ -18,7 +18,7 @@ sensor:
           min_value: 10
           max_value: 31
           ignore_out_of_range: true
-      - throttle: 5min
+      - throttle: 10min
     on_value:
       then:
         - logger.log:
@@ -39,7 +39,7 @@ climate:
         target_temperature: 1
         current_temperature: 0.5
     # Timeout and communication settings
-    remote_temperature_timeout: 120min
+    remote_temperature_timeout: 1440min
     update_interval: 2s
     debounce_delay : 100ms
     vertical_vane_select:
