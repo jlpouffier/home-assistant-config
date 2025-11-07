@@ -352,10 +352,10 @@
       entity_id: binary_sensor.exterieur_lumineux
       state: 'off'
     then:
-    - action: script.turn_on
-      data: {}
-      target:
-        entity_id: script.welcome_home
+    - action: script.welcome_home
+      metadata: {}
+      data:
+        user_transition: 3
   mode: queued
   max: 10
 - id: '1688375110167'

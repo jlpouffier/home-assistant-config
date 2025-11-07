@@ -60,136 +60,111 @@ leave_home:
   fields: {}
   description: ''
 welcome_home:
-  alias: Bienvenue a la maison
+  alias: Allumer progressivement les lumières du rez-de-chaussée
   mode: queued
   sequence:
   - action: light.turn_on
     metadata: {}
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 60
     target:
       entity_id: light.entree_suspension
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     metadata: {}
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 70
     target:
       entity_id:
       - light.salon_buffet_gauche
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     metadata: {}
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 70
     target:
       entity_id: light.salon_suspension_tv
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     metadata: {}
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 70
     target:
       entity_id:
       - light.salon_buffet_droit
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     target:
       entity_id: light.salon_trepied
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 70
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     metadata: {}
     data:
       brightness_pct: 40
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
     target:
       entity_id:
       - light.hue_aurelle_panel_1
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_comptoir
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 40
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     target:
       entity_id:
       - light.hue_white_candle_2
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 60
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 60
     target:
       entity_id: light.hue_white_candle_1
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
+  - delay: '{{user_transition | float}}'
     enabled: true
   - action: light.turn_on
     target:
       entity_id:
       - light.cuisine_suspension
     data:
-      transition: 2
+      transition: '{{user_transition * 2 | float}}'
       brightness_pct: 60
-  icon: mdi:home-import-outline
+  icon: mdi:ceiling-light-multiple
   description: ''
+  fields:
+    user_transition:
+      selector:
+        number:
+          min: 0
+          max: 5
+          step: 0.01
+      default: 1
+      name: Durée de transition (s)
+      required: true
+      description: Durée de transition entre chaque lumière
 wake_up:
   alias: Réveil Lumineux - Lumières
   sequence:
