@@ -17,3 +17,4 @@ themes/mushroom
 packages/untracked_packages/
 zwavejs_*.bin
 .ha_run.lock
+everything-presence-zone-configurator/

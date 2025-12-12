@@ -1,0 +1,16 @@
+{% macro bluetooth_proxy(address) %}
+{% set mapping = {
+  "D4:D4:DA:70:85:AE": "eabe04c781f8ad6c1fe999c9472a9bac",
+  "D4:D4:DA:70:81:16": "39ade01b678f1ab9c086d2109d71f1ad",
+  "EC:C9:FF:04:72:62": "112d6fa5791fb39fed0647053534d569",
+  "08:A6:F7:5C:03:E6": "2717a6789d05626b37a0bb2a1399ab88",
+  "D0:EF:76:EF:88:F6": "5aed1afd10bc9754aa7922159ffd1385",
+  "DC:DA:0C:13:D1:BE": "2ba93782f08f996225c0f0458bc022f4"
+  
+}
+%}
+
+{% from 'device_name_clean.jinja' import device_name_clean %}
+
+{{ device_name_clean(mapping[address]) if address in mapping.keys() else 'unknown' }}
+{% endmacro %}

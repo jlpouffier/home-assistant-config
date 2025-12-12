@@ -212,20 +212,20 @@ start_marilou_bedtime_routine:
       volume_level: 0.1
     target:
       entity_id:
-      - media_player.vpe_chambre_marilou_music_assistant
+      - media_player.chambre_marilou
   - action: music_assistant.play_media
     data:
       media_id: Au Dodo Marilou
       enqueue: replace
       media_type: playlist
     target:
-      entity_id: media_player.vpe_chambre_marilou_music_assistant
+      entity_id: media_player.chambre_marilou
   - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
-      - media_player.vpe_chambre_marilou_music_assistant
+      - media_player.chambre_marilou
   - sequence:
     - delay:
         hours: 0
@@ -236,14 +236,14 @@ start_marilou_bedtime_routine:
       - condition: not
         conditions:
         - condition: state
-          entity_id: media_player.vpe_chambre_marilou_music_assistant
+          entity_id: media_player.chambre_marilou
           state: playing
       then:
       - action: media_player.media_play
         metadata: {}
         data: {}
         target:
-          entity_id: media_player.vpe_chambre_marilou_music_assistant
+          entity_id: media_player.chambre_marilou
       - delay:
           hours: 0
           minutes: 0
@@ -253,14 +253,14 @@ start_marilou_bedtime_routine:
         - condition: not
           conditions:
           - condition: state
-            entity_id: media_player.vpe_chambre_marilou_music_assistant
+            entity_id: media_player.chambre_marilou
             state: playing
         then:
         - action: media_player.media_next_track
           metadata: {}
           data: {}
           target:
-            entity_id: media_player.vpe_chambre_marilou_music_assistant
+            entity_id: media_player.chambre_marilou
     alias: Fallback in case audio does not start
   mode: single
   icon: mdi:bell-sleep
@@ -273,19 +273,19 @@ lancer_playlist_de_reveil:
       volume_level: 0.2
     target:
       entity_id:
-      - media_player.vpe_chambre_music_assistant
+      - media_player.chambre
   - action: media_player.shuffle_set
     data:
       shuffle: true
     target:
       entity_id:
-      - media_player.vpe_chambre_music_assistant
+      - media_player.chambre
   - action: music_assistant.play_media
     target:
       entity_id:
-      - media_player.vpe_chambre_music_assistant
+      - media_player.chambre
     data:
-      media_id: Chillhop Master Playlist
+      media_id: ⏰ Réveil
       enqueue: replace
       media_type: playlist
   - sequence:
@@ -298,14 +298,14 @@ lancer_playlist_de_reveil:
       - condition: not
         conditions:
         - condition: state
-          entity_id: media_player.vpe_chambre_music_assistant
+          entity_id: media_player.chambre
           state: playing
       then:
       - action: media_player.media_play
         metadata: {}
         data: {}
         target:
-          entity_id: media_player.vpe_chambre_music_assistant
+          entity_id: media_player.chambre
       - delay:
           hours: 0
           minutes: 0
@@ -315,14 +315,14 @@ lancer_playlist_de_reveil:
         - condition: not
           conditions:
           - condition: state
-            entity_id: media_player.vpe_chambre_music_assistant
+            entity_id: media_player.chambre
             state: playing
         then:
         - action: media_player.media_next_track
           metadata: {}
           data: {}
           target:
-            entity_id: media_player.vpe_chambre_music_assistant
+            entity_id: media_player.chambre
     alias: Fallback in case audio does not start
   mode: single
   icon: mdi:alarm

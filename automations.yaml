@@ -511,106 +511,6 @@
     target:
       entity_id: script.power_notification_servaar
   mode: single
-- id: '1689253436663'
-  alias: Lumières Extérieures - Synchroniser Hue et SONOFF
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.is_exterior_sphere_bright
-    from: 'off'
-    to: 'on'
-    id: sphere_bright
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
-    trigger: state
-  - entity_id:
-    - binary_sensor.is_exterior_sphere_bright
-    from: 'on'
-    to: 'off'
-    id: sphere_not_bright
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
-    trigger: state
-  - entity_id:
-    - light.plafonnier_exterieur
-    from: 'off'
-    to: 'on'
-    id: ceiling_light_on
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
-    trigger: state
-  - entity_id:
-    - light.plafonnier_exterieur
-    from: 'on'
-    to: 'off'
-    id: ceiling_light_off
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 1
-    trigger: state
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - sphere_bright
-      - condition: state
-        entity_id: light.plafonnier_exterieur
-        state: 'off'
-      sequence:
-      - action: light.turn_on
-        data: {}
-        target:
-          entity_id: light.plafonnier_exterieur
-    - conditions:
-      - condition: trigger
-        id:
-        - sphere_not_bright
-      - condition: state
-        entity_id: light.plafonnier_exterieur
-        state: 'on'
-      sequence:
-      - action: light.turn_off
-        data: {}
-        target:
-          entity_id: light.plafonnier_exterieur
-    - conditions:
-      - condition: trigger
-        id:
-        - ceiling_light_on
-      - condition: state
-        entity_id: binary_sensor.is_exterior_sphere_bright
-        state: 'off'
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
-        target:
-          entity_id:
-          - light.exterieur_sphere
-    - conditions:
-      - condition: trigger
-        id:
-        - ceiling_light_off
-      - condition: state
-        entity_id: binary_sensor.is_exterior_sphere_bright
-        state: 'on'
-      sequence:
-      - action: light.turn_off
-        data: {}
-        target:
-          entity_id:
-          - light.exterieur_sphere
-  mode: parallel
-  max: 10
 - id: '1691413517615'
   alias: Bureau - Notification Lumineuse Meetings
   description: ''
@@ -809,21 +709,16 @@
   conditions:
   - condition: template
     value_template: '{{now() >= as_local(as_datetime(states("input_datetime.marilou_bedtime_routine_end")))}}'
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: media_player.vpe_chambre_marilou_music_assistant
-      state: playing
-    - condition: state
-      entity_id: light.chambre_bebe
-      state:
-      - 'on'
+  - condition: state
+    entity_id: input_boolean.mode_sommeil_marilou
+    state:
+    - 'on'
   actions:
   - action: media_player.media_pause
     data: {}
     target:
       entity_id:
-      - media_player.vpe_chambre_marilou_music_assistant
+      - media_player.chambre_marilou
   - action: light.turn_off
     data: {}
     target:
@@ -914,6 +809,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: out
     - conditions:
       - condition: template
         value_template: '{{step == "wake_up"}}'
@@ -947,6 +843,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: wake_up
     - conditions:
       - condition: template
         value_template: '{{step == "breakfast"}}'
@@ -964,6 +861,9 @@
           - cuisine
           - entree
           - salon
+          entity_id:
+          - light.exterieur_sphere
+          - light.applique
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -978,6 +878,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: breakfast
     - conditions:
       - condition: template
         value_template: '{{step == "chill"}}'
@@ -1010,6 +911,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: chill
     - conditions:
       - condition: template
         value_template: '{{step == "eating"}}'
@@ -1022,12 +924,13 @@
         data:
           brightness_pct: 60
         target:
-          entity_id:
-          - light.exterieur_guinguette
           area_id:
           - cuisine
           - entree
           - salon
+          entity_id:
+          - light.exterieur_sphere
+          - light.applique
       - if:
         - condition: state
           entity_id: input_boolean.presence_simulator_control_cover
@@ -1042,6 +945,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: eating
     - conditions:
       - condition: template
         value_template: '{{step == "bedtime"}}'
@@ -1075,6 +979,7 @@
           data: {}
           target:
             entity_id: cover.rideaux_premier_etage
+      alias: bedtime
   mode: single
 - id: '1702164245946'
   alias: Routine du sommeil Marilou - Changer heure fin de routine
@@ -1312,6 +1217,12 @@
     metadata: {}
     data: {}
     enabled: true
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Automatique
+    target:
+      entity_id: input_select.reveil_intelligent
   mode: single
 - id: '1718020295304'
   alias: Éteindre Bureau si plus de présence
@@ -1380,8 +1291,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - media_player.vpe_chambre_music_assistant
+      entity_id: media_player.chambre
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -1412,7 +1322,8 @@
     metadata: {}
     data: {}
     target:
-      entity_id: media_player.vpe_chambre_marilou_music_assistant
+      entity_id:
+      - media_player.chambre_marilou
   mode: single
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
@@ -2097,7 +2008,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: La chambre
-      room_temperature: sensor.radiateur_chambre_current_temperature
+      room_temperature: sensor.capteur_temperature_chambre_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre
       room_openings_duration: 00:05:00
@@ -2111,7 +2022,7 @@
     path: perso/notify_abnormal_temperature_v2.yaml
     input:
       room_name: La chambre de Marilou
-      room_temperature: sensor.radiateur_chambre_marilou_current_temperature
+      room_temperature: sensor.capteur_temperature_chambre_marilou_temperature
       room_openings:
       - binary_sensor.capteur_ouverture_fenetre_chambre_bebe
       room_openings_duration: 00:05:00
@@ -3331,7 +3242,6 @@
               {{calendar}}
 
               Résume ma journée en une phrase courte.'
-            entity_id: ai_task.ai_task_gpt_4_1_mini
             structure:
               resume:
                 description: Résumé de ma journée professionelle.
@@ -3404,7 +3314,7 @@
         data: {}
         target:
           entity_id:
-          - media_player.vpe_chambre_music_assistant
+          - media_player.chambre
       - if:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
@@ -3484,7 +3394,8 @@
         metadata: {}
         data: {}
         target:
-          entity_id: media_player.vpe_chambre_music_assistant
+          entity_id:
+          - media_player.chambre
       - if:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_chambre
@@ -3980,57 +3891,6 @@
         entity_id:
         - switch.vpe_chambre_microphone
   mode: single
-- id: '1731176431172'
-  alias: VPE Chambre Marilou - Allumer / Éteindre automatiquement
-  description: ''
-  triggers:
-  - entity_id:
-    - binary_sensor.capteur_presence_chambre_marilou_occupancy
-    to: 'on'
-    trigger: state
-  - trigger: state
-    entity_id:
-    - binary_sensor.capteur_presence_chambre_marilou_occupancy
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-  - trigger: state
-    entity_id:
-    - input_select.modes_de_presence_de_la_maison_v2
-  - trigger: homeassistant
-    event: start
-  conditions:
-  - condition: state
-    entity_id: input_boolean.extinction_automatique_des_pieces
-    state: 'on'
-  actions:
-  - choose:
-    - conditions:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: input_select.modes_de_presence_de_la_maison_v2
-          state: Vide
-      - condition: state
-        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
-        state: 'on'
-      sequence:
-      - action: switch.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - switch.vpe_chambre_marilou_microphone
-    default:
-    - action: switch.turn_off
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - switch.vpe_chambre_marilou_microphone
-  mode: single
 - id: '1731176473847'
   alias: VPE Bureau - Allumer / Éteindre automatiquement
   description: ''
@@ -4119,7 +3979,6 @@
     - event.vpe_bureau_button_press
     - event.vpe_chambre_button_press
     - event.vpe_cuisine_button_press
-    - event.vpe_chambre_marilou_button_press
     - event.vpe_dvt_salle_de_douche_button_press
     not_from:
     - unavailable
@@ -4204,7 +4063,6 @@
       instructions: "Instructions:\nGenerate a text to wish me a happy holiday based
         on an input holiday.\nMy Name is JLo.\nKeep the text short.\nKeep everyhing
         in French.\nAdd an emoji at the start.\n\nInput: \n{{trigger.calendar_event.summary}}"
-      entity_id: ai_task.ai_task_gpt_4_1_mini
       structure:
         greeting:
           selector:
@@ -4779,68 +4637,6 @@
         target:
           label_id: choix_d_assistant
   mode: single
-- id: '1740752651459'
-  alias: Mode Sommeil Marilou - Activer par VPE
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - event.vpe_chambre_marilou_button_press
-    not_from:
-    - unavailable
-  conditions:
-  - condition: state
-    entity_id: event.vpe_chambre_marilou_button_press
-    state: long_press
-    attribute: event_type
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.mode_sommeil_marilou
-        state: 'off'
-      sequence:
-      - action: input_boolean.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.mode_sommeil_marilou
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - action: assist_satellite.announce
-        metadata: {}
-        data:
-          message: Bonne nuit Marilou!
-          preannounce: false
-        target:
-          entity_id: assist_satellite.vpe_chambre_marilou_satellite_assist
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.mode_sommeil_marilou
-        state: 'on'
-      sequence:
-      - action: input_boolean.turn_off
-        target:
-          entity_id:
-          - input_boolean.mode_sommeil_marilou
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - action: assist_satellite.announce
-        metadata: {}
-        data:
-          message: Bonjour Marilou!
-          preannounce: false
-        target:
-          entity_id:
-          - assist_satellite.vpe_chambre_marilou_satellite_assist
-  mode: single
 - id: '1740752921943'
   alias: Mode Sommeil Marilou - Actions
   description: ''
@@ -4885,16 +4681,11 @@
         entity_id: input_boolean.mode_sommeil_marilou
         state: 'off'
       sequence:
-      - action: light.turn_off
-        metadata: {}
-        data: {}
-        target:
-          area_id: chambre_bebe
       - action: media_player.media_pause
         data: {}
         target:
           entity_id:
-          - media_player.vpe_chambre_marilou_music_assistant
+          - media_player.chambre_marilou
       - if:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
@@ -4906,51 +4697,6 @@
           target:
             entity_id: cover.rideau_chambre_marilou
           enabled: true
-      - if:
-        - condition: state
-          entity_id: binary_sensor.exterieur_lumineux
-          state: 'off'
-        then:
-        - action: scene.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id: scene.scenes_hue_chambre_marilou_lecture
-  mode: single
-- id: '1740753985952'
-  alias: VoiceKit Chambre Marilou - Controller Volume
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_boolean.mode_sommeil_marilou
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
-  - trigger: homeassistant
-    event: start
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.mode_sommeil_marilou
-        state: 'on'
-      sequence:
-      - action: media_player.volume_set
-        metadata: {}
-        data:
-          volume_level: 0.1
-        target:
-          entity_id: media_player.vpe_chambre_marilou_media_player
-    default:
-    - action: media_player.volume_set
-      metadata: {}
-      data:
-        volume_level: 0.6
-      target:
-        entity_id: media_player.vpe_chambre_marilou_media_player
   mode: single
 - id: '1741603027915'
   alias: Mode Chien - Actions
@@ -5012,12 +4758,19 @@
             entity_id: binary_sensor.exterieur_lumineux
             state: 'on'
           sequence:
-          - action: cover.set_cover_position
-            metadata: {}
-            data:
-              position: 30
-            target:
-              entity_id: cover.volets_salon
+          - if:
+            - condition: state
+              entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
+              state:
+              - 'on'
+            then:
+            - action: cover.set_cover_position
+              metadata: {}
+              data:
+                position: 30
+              target:
+                entity_id: cover.volets_salon
+            alias: Close Shutter
         - conditions:
           - condition: state
             entity_id: binary_sensor.exterieur_lumineux
@@ -5033,11 +4786,18 @@
               - salon
               - entree
               entity_id: light.bureau_suspension
-          - action: cover.close_cover
-            metadata: {}
-            data: {}
-            target:
-              entity_id: cover.volets_salon
+          - alias: Close Shutter
+            if:
+            - condition: state
+              entity_id: input_boolean.surveillance_de_la_maison_fermer_le_volet_quand_maison_vide
+              state:
+              - 'on'
+            then:
+            - action: cover.close_cover
+              metadata: {}
+              data: {}
+              target:
+                entity_id: cover.volets_salon
     - conditions:
       - condition: state
         entity_id: input_boolean.mode_chien
@@ -6226,7 +5986,8 @@
           hvac_mode: 'off'
         target:
           entity_id: climate.climatisation_bureau
-  mode: restart
+  mode: queued
+  max: 10
 - id: '1750081036212'
   alias: Climatisation Intelligente - Chambre
   description: ''
@@ -6348,7 +6109,8 @@
           hvac_mode: 'off'
         target:
           entity_id: climate.climatisation_chambre
-  mode: restart
+  mode: queued
+  max: 10
 - id: '1750081171295'
   alias: Climatisation Intelligente - Chambre Marilou
   description: ''
@@ -6470,14 +6232,15 @@
           hvac_mode: 'off'
         target:
           entity_id: climate.climatisation_chambre_marilou
-  mode: restart
+  mode: queued
+  max: 10
 - id: '1750081335140'
   alias: Climatisation Intelligente - Rez-de-chaussée
   description: ''
   triggers:
   - trigger: state
     entity_id:
-    - binary_sensor.climatisation_salon_autorisation
+    - sensor.climatisation_salon_temperature_actuelle
   - trigger: state
     entity_id:
     - input_number.temperature_cible_chauffage_rez_de_chaussee
@@ -6487,196 +6250,279 @@
   - trigger: state
     entity_id:
     - input_select.mode_climatisation_intelligente
-  - trigger: homeassistant
-    event: start
+  - trigger: state
+    entity_id:
+    - input_select.mode_chauffage_rez_de_chaussee
   - trigger: state
     entity_id:
     - input_boolean.climatisation_intelligent_du_rez_de_chaussee
+  - event: start
+    trigger: homeassistant
   conditions:
   - condition: state
     entity_id: input_boolean.climatisation_intelligent_du_rez_de_chaussee
     state: 'on'
   actions:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 1
-      milliseconds: 0
-  - if:
-    - condition: state
-      entity_id: binary_sensor.climatisation_salon_autorisation
-      state: 'on'
-    then:
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: input_select.mode_climatisation_intelligente
-          state: Froid
-        sequence:
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.climatisation_salon
-              state: cool
-          then:
-          - action: climate.set_hvac_mode
-            metadata: {}
-            data:
-              hvac_mode: cool
-            target:
-              entity_id: climate.climatisation_salon
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 1
-              milliseconds: 0
-        - if:
+  - delay: 00:00:01
+  - variables:
+      temp: '{{ states(''sensor.climatisation_salon_temperature_actuelle'') | float(0)
+        }}
+
+        '
+      mode_global: '{{ states(''input_select.mode_climatisation_intelligente'') }}
+
+        '
+      mode_room: '{{ states(''input_select.mode_chauffage_rez_de_chaussee'') }}
+
+        '
+      target_heat: '{{ states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')
+        | float(0) }}
+
+        '
+      target_cool: '{{ states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')
+        | float(0) }}
+
+        '
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ mode_global == ''Éteint'' or mode_room == ''Frost Guard''
+          }}
+
+          '
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            state: 'off'
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            hvac_mode: 'off'
+          action: climate.set_hvac_mode
+        - delay: 00:00:01
+        alias: Turn off
+      alias: Global mode off or Room mode Frost Guard
+    - conditions:
+      - condition: template
+        value_template: '{{ mode_global == ''Chaud'' and mode_room != ''Frost Guard''
+          }}
+
+          '
+        alias: Heating
+      sequence:
+      - choose:
+        - conditions:
           - condition: template
-            value_template: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')
-              | float(0) != state_attr(''climate.climatisation_salon'',''temperature'')
-              | float(0)}}'
-          then:
-          - action: climate.set_temperature
-            metadata: {}
-            data:
-              temperature: '{{states(''input_number.temperature_cible_climatisation_rez_de_chaussee'')}}'
-            target:
-              entity_id: climate.climatisation_salon
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 1
-              milliseconds: 0
-      - conditions:
-        - condition: state
-          entity_id: input_select.mode_climatisation_intelligente
-          state: Chaud
-        sequence:
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.climatisation_salon
-              state: heat
-          then:
-          - action: climate.set_hvac_mode
-            metadata: {}
-            data:
-              hvac_mode: heat
-            target:
-              entity_id: climate.climatisation_salon
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 1
-              milliseconds: 0
-        - if:
+            value_template: '{{ temp < target_heat }}
+
+              '
+          sequence:
+          - if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                state: heat
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                hvac_mode: heat
+              action: climate.set_hvac_mode
+            - delay: 00:00:01
+            alias: Turn on
+          - alias: Set target temp
+            if:
+            - condition: template
+              value_template: '{{ target_heat != (state_attr(''climate.climatisation_salon'',''temperature'')
+                | float(0)) }}
+
+                '
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                temperature: '{{ target_heat }}'
+              action: climate.set_temperature
+            - delay: 00:00:01
+          - alias: Set vertical fan direction
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: select.climatisation_salon_oscillation_verticale
+                state: ↓
+            then:
+            - target:
+                entity_id: select.climatisation_salon_oscillation_verticale
+              data:
+                option: ↓
+              action: select.select_option
+            - delay: 00:00:01
+          - alias: Set horizontal fan direction
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: select.climatisation_salon_oscillation_horizontale
+                state: SWING
+            then:
+            - target:
+                entity_id: select.climatisation_salon_oscillation_horizontale
+              data:
+                option: SWING
+              action: select.select_option
+            - delay: 00:00:01
+          - alias: Set fan speed
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                attribute: fan_mode
+                state: auto
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                fan_mode: auto
+              action: climate.set_fan_mode
+            - delay: 00:00:01
+          alias: temp < target_heat
+        - conditions:
           - condition: template
-            value_template: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')
-              | float(0) != state_attr(''climate.climatisation_salon'',''temperature'')
-              | float(0)}}'
-          then:
-          - action: climate.set_temperature
-            metadata: {}
-            data:
-              temperature: '{{states(''input_number.temperature_cible_chauffage_rez_de_chaussee'')}}'
-            target:
-              entity_id: climate.climatisation_salon
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 1
-              milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_salon
-          attribute: fan_mode
-          state: auto
-      then:
-      - action: climate.set_fan_mode
-        metadata: {}
-        data:
-          fan_mode: auto
-        target:
-          entity_id: climate.climatisation_salon
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_salon
-          attribute: swing_mode
-          state: 'off'
-      then:
-      - action: climate.set_swing_mode
-        metadata: {}
-        data:
-          swing_mode: 'off'
-        target:
-          entity_id: climate.climatisation_salon
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: select.climatisation_salon_oscillation_verticale
-          state: ↑↑
-      then:
-      - action: select.select_option
-        metadata: {}
-        data:
-          option: ↑↑
-        target:
-          entity_id: select.climatisation_salon_oscillation_verticale
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: select.climatisation_salon_oscillation_horizontale
-          state: ←
-      then:
-      - action: select.select_option
-        metadata: {}
-        data:
-          option: ←
-        target:
-          entity_id: select.climatisation_salon_oscillation_horizontale
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-    else:
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: climate.climatisation_salon
-          state: 'off'
-      then:
-      - action: climate.set_hvac_mode
-        metadata: {}
-        data:
-          hvac_mode: 'off'
-        target:
-          entity_id: climate.climatisation_salon
-  mode: restart
+            value_template: '{{ temp >= target_heat + 1 }}
+
+              '
+          sequence:
+          - alias: Turn off
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                state: 'off'
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                hvac_mode: 'off'
+              action: climate.set_hvac_mode
+            - delay: 00:00:01
+          alias: temp >= target_heat + x
+    - conditions:
+      - condition: template
+        value_template: '{{ mode_global == ''Froid'' and mode_room != ''Frost Guard''
+          }}
+
+          '
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ temp > target_cool }}
+
+              '
+          sequence:
+          - if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                state: cool
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                hvac_mode: cool
+              action: climate.set_hvac_mode
+            - delay: 00:00:01
+            alias: Turn on
+          - alias: Set target temp
+            if:
+            - condition: template
+              value_template: '{{ target_cool != (state_attr(''climate.climatisation_salon'',''temperature'')
+                | float(0)) }}
+
+                '
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                temperature: '{{ target_cool }}'
+              action: climate.set_temperature
+            - delay: 00:00:01
+          - alias: Set vertical fan direction
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: select.climatisation_salon_oscillation_verticale
+                state: ↑↑
+            then:
+            - target:
+                entity_id: select.climatisation_salon_oscillation_verticale
+              data:
+                option: ↑↑
+              action: select.select_option
+            - delay: 00:00:01
+          - alias: Set horizontal fan direction
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: select.climatisation_salon_oscillation_horizontale
+                state: SWING
+            then:
+            - target:
+                entity_id: select.climatisation_salon_oscillation_horizontale
+              data:
+                option: SWING
+              action: select.select_option
+            - delay: 00:00:01
+          - alias: Set fan speed
+            if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                attribute: fan_mode
+                state: auto
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                fan_mode: auto
+              action: climate.set_fan_mode
+            - delay: 00:00:01
+          alias: temp > target_cool
+        - conditions:
+          - condition: template
+            value_template: '{{ temp <= target_cool - 1 }}
+
+              '
+          sequence:
+          - if:
+            - condition: not
+              conditions:
+              - condition: state
+                entity_id: climate.climatisation_salon
+                state: 'off'
+            then:
+            - target:
+                entity_id: climate.climatisation_salon
+              data:
+                hvac_mode: 'off'
+              action: climate.set_hvac_mode
+            - delay: 00:00:01
+          alias: temp <= target_cool - x
+      alias: Cooling
+  mode: queued
+  max: 10
 - id: '1751811618609'
   alias: "Fuite d'eau - \U0001F514 Notifier"
   description: ''
@@ -6765,7 +6611,6 @@
       attachments:
         media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
         media_content_type: image/png
-      entity_id: ai_task.ai_task_gpt_4_1_mini
     response_variable: ai
     enabled: true
   - if:
@@ -7261,7 +7106,6 @@
       attachments:
         media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
         media_content_type: image/png
-      entity_id: ai_task.ai_task_gpt_4_1_mini
     response_variable: ai
     enabled: true
   - action: notify.mobile_app_jean_loics_iphone
@@ -7283,7 +7127,6 @@
         attachments:
           media_content_id: '{{''media-source://media_source/local/'' ~ image_url}}'
           media_content_type: image/png
-        entity_id: ai_task.google_ai_task
         task_name: Doorbell enhancement
         instructions: Zoom sur le visage de la personne
       response_variable: ai_image
@@ -7347,7 +7190,6 @@
 
         Resume la météo pour le reste de la journée en une phrase de moins de 150
         caractères.'
-      entity_id: ai_task.ai_task_gpt_4_1_mini
       structure:
         resume:
           description: Résumé de la méteo pour le reste de la journée
@@ -7506,4 +7348,126 @@
   - action: script.power_notification_machine_a_laver_coupee_lors_d_une_fuite
     metadata: {}
     data: {}
+  mode: single
+- id: '1763219442473'
+  alias: Réduire volume lorsque assistant vocal en écoute (Chambre)
+  description: ''
+  use_blueprint:
+    path: perso/reduce_volume_of_media_player_when_voice_assistant_listening_v2.yaml
+    input:
+      assist_satellite_entity: assist_satellite.vpe_chambre_satellite_assist
+      custom_target:
+        entity_id: media_player.chambre
+- id: '1763385220661'
+  alias: 'Musique Multi-room: Allumer / Éteindre'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.musique_multi_room
+    to:
+    - 'on'
+    id: 'on'
+  - trigger: state
+    entity_id:
+    - input_boolean.musique_multi_room
+    to:
+    - 'off'
+    id: 'off'
+  - trigger: state
+    entity_id:
+    - media_player.maison
+    to:
+    - 'off'
+    - standby
+    id: 'off'
+  - trigger: state
+    entity_id:
+    - media_player.maison
+    to:
+    - 'on'
+    - idle
+    - playing
+    - paused
+    id: 'on'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - 'on'
+      sequence:
+      - action: media_player.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.maison
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.musique_multi_room
+    - conditions:
+      - condition: trigger
+        id:
+        - 'off'
+      sequence:
+      - action: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.maison
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.musique_multi_room
+  mode: single
+- id: '1763573888431'
+  alias: 'Camera Salon: Privacy Mode'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.modes_de_presence_de_la_maison_v2
+  - trigger: state
+    entity_id:
+    - input_boolean.guest_mode
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state:
+        - 'off'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.modes_de_presence_de_la_maison_v2
+          state:
+          - Vide
+          - Arrivée en cours
+        - condition: state
+          entity_id: input_boolean.mode_sommeil
+          state:
+          - 'on'
+      sequence:
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.camera_mode_prive
+    default:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.camera_mode_prive
   mode: single

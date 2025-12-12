@@ -341,7 +341,6 @@ sequence:
 
                       Input:
                       {"title":"{{title}}","message":"{{message}}"}
-                    entity_id: ai_task.ai_task_gpt_4o
                     structure:
                       title:
                         required: true

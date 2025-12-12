@@ -1,15 +1,15 @@
 template:
-  - trigger:
-      - platform: state
+  - triggers:
+      - trigger: state
         entity_id:
           - media_player.meme_lecteur_multimedia
         from: null
         to: null
-      - platform: state
+      - trigger: state
         entity_id:
           - media_player.meme_lecteur_multimedia
         attribute: media_title
-      - platform: state
+      - trigger: state
         entity_id:
           - media_player.meme_lecteur_multimedia
         attribute: media_artist
