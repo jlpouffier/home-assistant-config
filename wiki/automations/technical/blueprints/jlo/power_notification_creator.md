@@ -14,50 +14,26 @@ Send powerfull notifications that discard themselves to the people of the home d
 - `discard`
 - `target`
 
-### What the blueprint does (high level)
-- Repeat
-- If A computed rule is true
-- Generate data
-- Item]['service']}}
-- Else
-- Item]['service']}}
-- If A computed rule is true
-- Wait for trigger: An event happens
-- Or trigger: A trigger fires
-- If A computed rule is true
-- Repeat
-- Item]['service']}}
-
-```mermaid
-flowchart TD
-  S["Start"]
-  N1["Repeat"]
-  N2["If A computed rule is true"]
-  N3["Generate data"]
-  N4["Item]['service']}}"]
-  N5["Else"]
-  N6["Item]['service']}}"]
-  N7["If A computed rule is true"]
-  N8["Wait for trigger: An event happens"]
-  N9["Or trigger: A trigger fires"]
-  N10["If A computed rule is true"]
-  N11["Repeat"]
-  N12["Item]['service']}}"]
-  E["End"]
-  S --> N1
-  N1 --> N2
-  N2 --> N3
-  N3 --> N4
-  N4 --> N5
-  N5 --> N6
-  N6 --> N7
-  N7 --> N8
-  N8 --> N9
-  N9 --> N10
-  N10 --> N11
-  N11 --> N12
-  N12 --> E
-```
+### Flow (trace-style)
+- Entry: when the blueprint is executed by a script/automation
+- REPEAT
+  - IF
+    - Check: A custom rule is true (based on: Notifications Droles)
+    - THEN
+      - Generate structured data
+      - Item]['service']}}
+    - ELSE
+      - Item]['service']}}
+- IF
+  - Check: A custom rule is true
+  - THEN
+    - Wait for one of: An event happens; A trigger fires
+    - IF
+      - Check: A custom rule is true
+      - THEN
+        - Step
+    - REPEAT
+      - Item]['service']}}
 
 ## Français
 - Fichier source : `blueprints/script/jlo/power_notification_creator.yaml`
@@ -73,47 +49,23 @@ Send powerfull notifications that discard themselves to the people of the home d
 - `discard`
 - `target`
 
-### Ce que fait le blueprint (niveau simple)
-- Répéter
-- Si Une règle calculée est vraie
-- Action : generate data
-- Action : item]['service']}}
-- Sinon
-- Action : item]['service']}}
-- Si Une règle calculée est vraie
-- Attendre le déclencheur : Un événement se produit
-- Ou : Un déclencheur se produit
-- Si Une règle calculée est vraie
-- Répéter
-- Action : item]['service']}}
-
-```mermaid
-flowchart TD
-  S["Début"]
-  N1["Répéter"]
-  N2["Si Une règle calculée est vraie"]
-  N3["Action : generate data"]
-  N4["Action : item]['service']}}"]
-  N5["Sinon"]
-  N6["Action : item]['service']}}"]
-  N7["Si Une règle calculée est vraie"]
-  N8["Attendre le déclencheur : Un événement se produit"]
-  N9["Ou : Un déclencheur se produit"]
-  N10["Si Une règle calculée est vraie"]
-  N11["Répéter"]
-  N12["Action : item]['service']}}"]
-  E["Fin"]
-  S --> N1
-  N1 --> N2
-  N2 --> N3
-  N3 --> N4
-  N4 --> N5
-  N5 --> N6
-  N6 --> N7
-  N7 --> N8
-  N8 --> N9
-  N9 --> N10
-  N10 --> N11
-  N11 --> N12
-  N12 --> E
-```
+### Déroulé (style ‘trace’)
+- Entrée : quand le blueprint est exécuté par un script/une automatisation
+- RÉPÉTER
+  - SI
+    - Vérifier : Une règle personnalisée est vraie (basée sur : Notifications Droles)
+    - ALORS
+      - Générer des données structurées
+      - Action : item]['service']}}
+    - SINON
+      - Action : item]['service']}}
+- SI
+  - Vérifier : Une règle personnalisée est vraie
+  - ALORS
+    - Attendre l’un de : Un événement se produit; Un déclencheur se produit
+    - SI
+      - Vérifier : Une règle personnalisée est vraie
+      - ALORS
+        - Étape
+    - RÉPÉTER
+      - Action : item]['service']}}

@@ -1,27 +1,11 @@
 # Create Date Time Reminder / Create Date Time Reminder
 
 ## English
-### Steps (high level)
+### Flow (trace-style)
+- Entry: when this script is run
 - Create event Rappels
 
-```mermaid
-flowchart TD
-  S["Start"]
-  N1["Create event Rappels"]
-  E["End"]
-  S --> N1
-  N1 --> E
-```
-
 ## Français
-### Étapes (niveau simple)
+### Déroulé (style ‘trace’)
+- Entrée : quand ce script est exécuté
 - Action : create event sur Rappels
-
-```mermaid
-flowchart TD
-  S["Début"]
-  N1["Action : create event sur Rappels"]
-  E["Fin"]
-  S --> N1
-  N1 --> E
-```
