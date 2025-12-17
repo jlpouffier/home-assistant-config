@@ -11,6 +11,8 @@ template:
         - binary_sensor.capteur_presence_chambre_mmwave
       to:
         - "off"
+      for:
+        minutes: 1
       id: mmwave_clear
     binary_sensor:
       - name: hybrid_occupancy_sensor_bedroom
@@ -35,6 +37,8 @@ template:
         - binary_sensor.capteur_presence_chambre_marilou_mmwave
       to:
         - "off"
+      for:
+        minutes: 1
       id: mmwave_clear
     binary_sensor:
       - name: hybrid_occupancy_sensor_marilou_bedroom
@@ -59,6 +63,8 @@ template:
         - binary_sensor.capteur_presence_bureau_mmwave
       to:
         - "off"
+      for:
+        minutes: 1
       id: mmwave_clear
     binary_sensor:
       - name: hybrid_occupancy_sensor_office
