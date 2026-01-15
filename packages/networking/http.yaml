@@ -3,8 +3,5 @@
 http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - !secret reverse_proxy_ip
-    - 127.0.0.1
-    - ::1
+  cors_allowed_origins:
+    - http://localhost:8124
