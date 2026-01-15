@@ -191,8 +191,6 @@ wake_up:
     target:
       entity_id:
       - light.chambre_suspension
-      - light.chambre_chevet_droit
-      - light.chambre_chevet_gauche
   - delay:
       hours: 0
       minutes: 10
