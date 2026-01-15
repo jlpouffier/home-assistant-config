@@ -1281,6 +1281,10 @@
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
+  - condition: state
+    entity_id: input_boolean.mode_sommeil
+    state:
+    - 'off'
   actions:
   - action: light.turn_off
     metadata: {}
@@ -1312,6 +1316,10 @@
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
+  - condition: state
+    entity_id: input_boolean.mode_sommeil_marilou
+    state:
+    - 'off'
   actions:
   - action: light.turn_off
     metadata: {}
@@ -4196,11 +4204,11 @@
       - light.entree_suspension
       - light.exterieur_sphere
       - light.exterieur_guinguette
-      - light.plafonnier_exterieur
       - light.couloir_applique_escalier
       - cover.volets_salon
       - light.hue_white_candle_2
       - light.hue_white_candle_1
+      - light.applique
   - action: light.turn_off
     metadata: {}
     data: {}
@@ -4209,13 +4217,10 @@
       - light.couloir_applique_escalier
       area_id:
       - exterieur
-      - cuisine
-      - entree
-      - salon
   - action: hue.activate_scene
-    target:
-      entity_id: scene.salon_salon_tv_playing
     data: {}
+    target:
+      entity_id: scene.rez_de_chaussee_tv_play
   - if:
     - condition: state
       entity_id: binary_sensor.exterieur_lumineux
@@ -4288,10 +4293,7 @@
         metadata: {}
         data: {}
         target:
-          entity_id:
-          - scene.salon_salon_tv_paused
-          - scene.entree_entree_tv_paused
-          - scene.cuisine_cuisine_tv_paused
+          entity_id: scene.rez_de_chaussee_tv_paused
     - conditions:
       - condition: trigger
         id:
@@ -4305,13 +4307,10 @@
           - light.couloir_applique_escalier
           area_id:
           - exterieur
-          - cuisine
-          - entree
-          - salon
       - action: hue.activate_scene
-        target:
-          entity_id: scene.salon_salon_tv_playing
         data: {}
+        target:
+          entity_id: scene.rez_de_chaussee_tv_play
   mode: restart
 - id: '1734703658294'
   alias: Réduire volume lorsque assistant vocal en écoute (Salle de Douche)
@@ -4385,10 +4384,11 @@
   triggers:
   - entity_id:
     - binary_sensor.presence_rez_de_chaussee
-    to: 'off'
+    to:
+    - 'off'
     for:
       hours: 0
-      minutes: 30
+      minutes: 10
       seconds: 0
     trigger: state
   conditions:
@@ -4398,6 +4398,10 @@
   - condition: state
     entity_id: input_select.modes_de_presence_de_la_maison_v2
     state: Occupée
+  - condition: state
+    entity_id: input_boolean.mode_cinema
+    state:
+    - 'off'
   actions:
   - action: light.turn_off
     metadata: {}
@@ -4561,36 +4565,6 @@
         data:
           user_message: '{{repeat.item}}'
       for_each: '{{reminder_list}}'
-  mode: single
-- id: '1738676615343'
-  alias: Bureau - Notification Lumineuse Qualité de l'air
-  description: ''
-  triggers:
-  - trigger: numeric_state
-    entity_id:
-    - sensor.qualite_de_l_air_bureau
-    above: 3
-  conditions:
-  - condition: state
-    entity_id: input_select.modes_de_presence_de_la_maison_v2
-    state: Occupée
-  - condition: state
-    entity_id: binary_sensor.capteur_presence_bureau_occupancy
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.guest_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.mode_sommeil
-    state: 'off'
-  actions:
-  - action: script.clignoter_le_dessous_de_bureau
-    metadata: {}
-    data:
-      color:
-      - 255
-      - 38
-      - 0
   mode: single
 - id: '1739568563693'
   alias: Assist - Assistant de secours lors d'une panne d'internet
@@ -5400,195 +5374,6 @@
           metadata: {}
           data: {}
   mode: single
-- id: '1746466029976'
-  alias: Appareils personnels - Attacher/Détacher Montre
-  description: Cette automatisation attache ou détache le suivi d'appareil pour la
-    montre en fonction de son port.
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_boolean.montre_portee
-  conditions: []
-  actions:
-  - if:
-    - condition: state
-      entity_id: input_boolean.montre_portee
-      state: 'on'
-    then:
-    - action: person.add_device_tracker
-      metadata: {}
-      data:
-        entity_id: person.jenova70
-        device_tracker:
-        - device_tracker.jlo_s_apple_watch_bluetooth
-    else:
-    - action: person.remove_device_tracker
-      metadata: {}
-      data:
-        entity_id: person.jenova70
-        device_tracker:
-        - device_tracker.jlo_s_apple_watch_bluetooth
-  mode: single
-- id: '1746466094247'
-  alias: Appareils personnels - Attacher/Détacher téléphone
-  description: Cette automatisation permet d'attacher ou de détacher le téléphone
-    de l'utilisateur lorsque l'état du boolean 'telephone_porte' change. En ajoutant
-    les téléphones à la personne, cela permet un suivi précis de leur présence.
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_boolean.telephone_porte
-  conditions: []
-  actions:
-  - if:
-    - condition: state
-      entity_id: input_boolean.telephone_porte
-      state: 'on'
-    then:
-    - action: person.add_device_tracker
-      metadata: {}
-      data:
-        entity_id: person.jenova70
-        device_tracker:
-        - device_tracker.jlo_s_iphone_bluetooth
-        - device_tracker.jean_loics_iphone
-    else:
-    - action: person.remove_device_tracker
-      metadata: {}
-      data:
-        entity_id: person.jenova70
-        device_tracker:
-        - device_tracker.jlo_s_iphone_bluetooth
-        - device_tracker.jean_loics_iphone
-  mode: single
-- id: '1746466554887'
-  alias: "Appareils personnels - \U0001F514 Notifier appareil oublié"
-  description: Cette automatisation vérifie si l'iPhone ou la montre est oublié lors
-    d'un déplacement. Si l'un est à la maison et l'autre est en dehors, une notification
-    est envoyée pour rappeler l'objet laissé derrière.
-  triggers:
-  - trigger: state
-    entity_id:
-    - device_tracker.jlo_s_iphone_bluetooth
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-    to:
-  - trigger: state
-    entity_id:
-    - device_tracker.jlo_s_apple_watch_bluetooth
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-    to:
-  conditions:
-  - condition: state
-    entity_id: input_boolean.telephone_porte
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.montre_portee
-    state: 'on'
-  actions:
-  - if:
-    - condition: state
-      entity_id: device_tracker.jlo_s_iphone_bluetooth
-      state: home
-    - condition: state
-      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
-      state: not_home
-    then:
-    - action: script.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: script.power_notification_telephone_oublie
-  - if:
-    - condition: state
-      entity_id: device_tracker.jlo_s_iphone_bluetooth
-      state: not_home
-    - condition: state
-      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
-      state: home
-    then:
-    - action: script.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - script.power_notification_montre_oubliee
-  mode: single
-- id: '1746467143497'
-  alias: Appareils personnels - Réattacher automatiquement
-  description: Lorsque l'iPhone ou l'Apple Watch revient à la maison, cette automatisation
-    va vérifier si l'appareil est correctement porté. Si ce n'est pas le cas, il réactivera
-    l'état de port pour chaque appareil et enverra une notification.
-  triggers:
-  - trigger: state
-    entity_id:
-    - device_tracker.jlo_s_iphone_bluetooth
-    to: home
-    id: phone_back_home
-  - trigger: state
-    entity_id:
-    - device_tracker.jlo_s_apple_watch_bluetooth
-    to: home
-    id: watch_back_home
-  conditions: []
-  actions:
-  - if:
-    - condition: trigger
-      id:
-      - phone_back_home
-    - condition: state
-      entity_id: input_boolean.montre_portee
-      state: 'off'
-    - condition: state
-      entity_id: device_tracker.jlo_s_apple_watch_bluetooth
-      state: home
-    then:
-    - action: input_boolean.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: input_boolean.montre_portee
-    - action: script.turn_on
-      metadata: {}
-      data:
-        variables:
-          user_title: ⌚ Montre
-          user_message: Montre réattachée automatiquement
-      target:
-        entity_id:
-        - script.power_notification_appareil_reattache_automatiquement
-  - if:
-    - condition: trigger
-      id:
-      - watch_back_home
-    - condition: state
-      entity_id: input_boolean.telephone_porte
-      state: 'off'
-    - condition: state
-      entity_id: device_tracker.jlo_s_iphone_bluetooth
-      state: home
-    then:
-    - action: input_boolean.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-        - input_boolean.telephone_porte
-    - action: script.turn_on
-      metadata: {}
-      data:
-        variables:
-          user_title: "\U0001F4F1 Téléphone"
-          user_message: Téléphone réattaché automatiquement
-      target:
-        entity_id:
-        - script.power_notification_appareil_reattache_automatiquement
-  mode: single
 - id: '1748330056295'
   alias: 'Machine à laver - Essorage par défaut '
   description: ''
@@ -5886,6 +5671,14 @@
   - trigger: state
     entity_id:
     - input_boolean.climatisation_intelligent_du_bureau
+  - trigger: state
+    entity_id:
+    - climate.climatisation_bureau
+    attribute: temperature
+  - trigger: state
+    entity_id:
+    - climate.climatisation_bureau
+    to:
   conditions:
   - condition: state
     entity_id: input_boolean.climatisation_intelligent_du_bureau
@@ -6009,6 +5802,14 @@
   - trigger: state
     entity_id:
     - input_boolean.climatisation_intelligent_de_la_chambre
+  - trigger: state
+    entity_id:
+    - climate.climatisation_chambre
+    attribute: temperature
+  - trigger: state
+    entity_id:
+    - climate.climatisation_chambre
+    to:
   conditions:
   - condition: state
     entity_id: input_boolean.climatisation_intelligent_de_la_chambre
@@ -6132,6 +5933,14 @@
   - trigger: state
     entity_id:
     - input_boolean.climatisation_intelligent_de_la_chambre_de_marilou
+  - trigger: state
+    entity_id:
+    - climate.climatisation_chambre_marilou
+    attribute: temperature
+  - trigger: state
+    entity_id:
+    - climate.climatisation_chambre_marilou
+    to:
   conditions:
   - condition: state
     entity_id: input_boolean.climatisation_intelligent_de_la_chambre_de_marilou
@@ -6414,6 +6223,73 @@
               action: climate.set_hvac_mode
             - delay: 00:00:01
           alias: temp >= target_heat + x
+        default:
+        - choose:
+          - conditions:
+            - condition: state
+              entity_id: climate.climatisation_salon
+              state:
+              - heating
+              attribute: hvac_action
+            sequence:
+            - alias: Set target temp
+              if:
+              - condition: template
+                value_template: '{{ target_heat != (state_attr(''climate.climatisation_salon'',''temperature'')
+                  | float(0)) }}
+
+                  '
+              then:
+              - target:
+                  entity_id: climate.climatisation_salon
+                data:
+                  temperature: '{{ target_heat }}'
+                action: climate.set_temperature
+              - delay: 00:00:01
+            - alias: Set vertical fan direction
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: select.climatisation_salon_oscillation_verticale
+                  state: ↑↑
+              then:
+              - target:
+                  entity_id: select.climatisation_salon_oscillation_verticale
+                data:
+                  option: ↓
+                action: select.select_option
+              - delay: 00:00:01
+            - alias: Set horizontal fan direction
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: select.climatisation_salon_oscillation_horizontale
+                  state: SWING
+              then:
+              - target:
+                  entity_id: select.climatisation_salon_oscillation_horizontale
+                data:
+                  option: SWING
+                action: select.select_option
+              - delay: 00:00:01
+            - alias: Set fan speed
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: climate.climatisation_salon
+                  attribute: fan_mode
+                  state: auto
+              then:
+              - target:
+                  entity_id: climate.climatisation_salon
+                data:
+                  fan_mode: auto
+                action: climate.set_fan_mode
+              - delay: 00:00:01
+            alias: AC already heating
     - conditions:
       - condition: template
         value_template: '{{ mode_global == ''Froid'' and mode_room != ''Frost Guard''
@@ -6520,6 +6396,73 @@
               action: climate.set_hvac_mode
             - delay: 00:00:01
           alias: temp <= target_cool - x
+        default:
+        - choose:
+          - conditions:
+            - condition: state
+              entity_id: climate.climatisation_salon
+              state:
+              - cooling
+              attribute: hvac_action
+            sequence:
+            - alias: Set target temp
+              if:
+              - condition: template
+                value_template: '{{ target_cool != (state_attr(''climate.climatisation_salon'',''temperature'')
+                  | float(0)) }}
+
+                  '
+              then:
+              - target:
+                  entity_id: climate.climatisation_salon
+                data:
+                  temperature: '{{ target_cool }}'
+                action: climate.set_temperature
+              - delay: 00:00:01
+            - alias: Set vertical fan direction
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: select.climatisation_salon_oscillation_verticale
+                  state: ↑↑
+              then:
+              - target:
+                  entity_id: select.climatisation_salon_oscillation_verticale
+                data:
+                  option: ↑↑
+                action: select.select_option
+              - delay: 00:00:01
+            - alias: Set horizontal fan direction
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: select.climatisation_salon_oscillation_horizontale
+                  state: SWING
+              then:
+              - target:
+                  entity_id: select.climatisation_salon_oscillation_horizontale
+                data:
+                  option: SWING
+                action: select.select_option
+              - delay: 00:00:01
+            - alias: Set fan speed
+              if:
+              - condition: not
+                conditions:
+                - condition: state
+                  entity_id: climate.climatisation_salon
+                  attribute: fan_mode
+                  state: auto
+              then:
+              - target:
+                  entity_id: climate.climatisation_salon
+                data:
+                  fan_mode: auto
+                action: climate.set_fan_mode
+              - delay: 00:00:01
+            alias: AC already cooling
       alias: Cooling
   mode: queued
   max: 10
@@ -7470,4 +7413,158 @@
       data: {}
       target:
         entity_id: switch.camera_mode_prive
+  mode: single
+- id: '1766921128082'
+  alias: Capteur de qualité de l'air Chambre - Allumer / Éteindre écran
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil
+  - trigger: state
+    entity_id:
+    - input_boolean.guest_mode
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_chambre_occupancy
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.mode_sommeil
+        state:
+        - 'off'
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state:
+        - 'off'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.capteur_de_qualite_de_l_air_chambre
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.capteur_de_qualite_de_l_air_chambre
+  mode: single
+- id: '1766921401443'
+  alias: Capteur de qualité de l'air Chambre Marilou - Allumer / Éteindre écran
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
+    to:
+    - 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_chambre_marilou_occupancy
+    to:
+    - 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_chambre_marilou_occupancy
+        state:
+        - 'on'
+      - condition: state
+        entity_id: input_boolean.mode_sommeil_marilou
+        state:
+        - 'off'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.capteur_de_qualite_de_l_air_chambre_marilou
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.capteur_de_qualite_de_l_air_chambre_marilou
+  mode: single
+- id: '1766921521220'
+  alias: Capteur de qualité de l'air Bureau - Allumer / Éteindre écran
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to:
+    - 'on'
+    trigger: state
+  - trigger: state
+    entity_id:
+    - binary_sensor.capteur_presence_bureau_occupancy
+    to:
+    - 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.capteur_presence_bureau_occupancy
+        state:
+        - 'on'
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.capteur_de_qualite_de_l_air_bureau
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.capteur_de_qualite_de_l_air_bureau
+  mode: single
+- id: '1767870180004'
+  alias: New automation
+  description: ''
+  triggers:
+  - trigger: light.brightness_changed
+    target:
+      device_id: b10132f0782d71127347a9535ece97cb
+    options: {}
+  conditions: []
+  actions: []
   mode: single
