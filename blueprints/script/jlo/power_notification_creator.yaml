@@ -314,16 +314,10 @@ sequence:
                       | map(attribute='entity_id')
                       | list
                     %}
-                    {% set has_correct_ai_task =
-                      "ai_task.ai_task_gpt_4o" in 
-                      expand(states.ai_task)
-                      | map(attribute='entity_id')
-                      | list
-                    %}
                     {% set are_funny_notifications_on = 
                       states("input_boolean.funny_notifications") == "on"
                     %}
-                    {{ has_funny_notifications_master_switch and has_correct_ai_task and are_funny_notifications_on}}
+                    {{ has_funny_notifications_master_switch and are_funny_notifications_on}}
               then:
                 - action: ai_task.generate_data
                   data:
@@ -333,7 +327,7 @@ sequence:
                       - Transform title and message of a notification of a home automation platform into something patronising, aggresive, mean, trolling.
 
                       Constraints:
-                      - Keep the same language as the input, it can be either English or French.
+                      - Keep the same language as the input.
                       - Keep the texts short.
 
                       Example:
