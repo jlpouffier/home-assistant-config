@@ -1,0 +1,17 @@
+rest_command:
+  get_marilou_stories:
+    url: http://localhost:8095/api
+    method: POST
+    headers:
+      accept: "application/json, text/html"
+      authorization: !secret music_assistant_auth
+    payload: >
+      {
+        "message_id": "1",
+        "command": "music/playlists/playlist_tracks",
+        "args": {
+          "item_id": "1",
+          "provider_instance_id_or_domain": "library"
+        }
+      }
+    content_type:  'application/json; charset=utf-8'

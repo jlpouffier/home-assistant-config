@@ -735,9 +735,6 @@
   - entity_id:
     - input_boolean.automation_presence_simulator
     trigger: state
-  - entity_id:
-    - input_boolean.presence_simulator_control_cover
-    trigger: state
   - trigger: state
     entity_id:
     - input_select.modes_de_presence_de_la_maison_v2
@@ -786,7 +783,7 @@
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{step == "out"}}'
+        value_template: '{{step == "night"}}'
       sequence:
       - action: light.turn_off
         data: {}
@@ -795,21 +792,16 @@
           - rez_de_chaussee
           - premier_etage
           area_id: exterieur
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.close_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.close_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
-      alias: out
+      - action: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
+      - action: cover.close_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
+      alias: night
     - conditions:
       - condition: template
         value_template: '{{step == "wake_up"}}'
@@ -829,20 +821,15 @@
           - bureau
           - chambre
           - chambre_bebe
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.close_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.open_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
+      - action: cover.close_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
       alias: wake_up
     - conditions:
       - condition: template
@@ -864,21 +851,37 @@
           entity_id:
           - light.exterieur_sphere
           - light.applique
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.open_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.open_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
+      - action: cover.open_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
       alias: breakfast
+    - conditions:
+      - condition: template
+        value_template: '{{step == "idle"}}'
+      sequence:
+      - action: light.turn_off
+        data: {}
+        target:
+          floor_id:
+          - rez_de_chaussee
+          - premier_etage
+          area_id: exterieur
+      - action: cover.open_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
+      alias: idle
     - conditions:
       - condition: template
         value_template: '{{step == "chill"}}'
@@ -897,20 +900,15 @@
           - cuisine
           - entree
           - salon
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.open_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.open_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
+      - action: cover.open_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
       alias: chill
     - conditions:
       - condition: template
@@ -931,20 +929,15 @@
           entity_id:
           - light.exterieur_sphere
           - light.applique
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.open_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.open_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
+      - action: cover.open_cover
+        data: {}
+        target:
+          entity_id: cover.volets_salon
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
       alias: eating
     - conditions:
       - condition: template
@@ -965,20 +958,16 @@
           - bureau
           - chambre
           - chambre_bebe
-      - if:
-        - condition: state
-          entity_id: input_boolean.presence_simulator_control_cover
-          state: 'on'
-        then:
-        - action: cover.open_cover
-          data: {}
-          target:
-            entity_id: cover.volets_salon
-        - action: cover.open_cover
-          metadata: {}
-          data: {}
-          target:
-            entity_id: cover.rideaux_premier_etage
+      - action: cover.close_cover
+        target:
+          entity_id:
+          - cover.volets_salon
+        data: {}
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.rideaux_premier_etage
       alias: bedtime
   mode: single
 - id: '1702164245946'
@@ -1150,42 +1139,6 @@
           entity_id: script.controler_le_standing_desk
       - set_conversation_response: Bureau en descente
   mode: single
-- id: '1714134719761'
-  alias: "Assist - \U0001F4E3 Réinitialiser la lumière"
-  description: Cet automatisme permet de réinitialiser les lumières à leur scène par
-    défaut via une commande vocale. Il vérifie si un appareil approprié est utilisé
-    et s'il existe des scènes par défaut dans la zone, puis applique la scène correspondante.
-  triggers:
-  - command:
-    - réinitialise[r] (la|les) lumière[s]
-    trigger: conversation
-  conditions: []
-  actions:
-  - if:
-    - condition: template
-      value_template: '{{ trigger.device_id != None}}'
-    then:
-    - variables:
-        target_scene_list: "{% set default_scenes = label_entities(\"Scène par défaut\")
-          %}\n{% set target_area = area_id(trigger.device_id) %}\n{% set entities_in_area
-          = area_entities(target_area) %}\n\n[\n{%- for entity in entities_in_area
-          -%}\n  {%- if entity in default_scenes -%}\n    \"{{entity}}\",\n  {%- endif
-          -%}\n{%- endfor -%}\n]\n"
-    - if:
-      - condition: template
-        value_template: '{{ target_scene_list | count >=1 }}'
-      then:
-      - action: scene.turn_on
-        metadata: {}
-        target:
-          entity_id: '{{target_scene_list}}'
-        data: {}
-      - set_conversation_response: Lumière réinitialisée
-      else:
-      - set_conversation_response: Aucune scène par défaut trouvée
-    else:
-    - set_conversation_response: Cette commande ne fonctionne pas depuis cet appareil
-  mode: single
 - id: '1714308060749'
   alias: Réveil intelligent - Démarrer la Musique
   description: ''
@@ -1255,12 +1208,18 @@
     target:
       entity_id: button.standing_desk_move_desk_to_position_2
     enabled: true
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_bureau_music_assistant
+  - if:
+    - condition: state
+      entity_id: input_boolean.musique_multi_room
+      state:
+      - 'off'
+    then:
+    - action: media_player.media_pause
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - media_player.sonos_bureau_music_assistant
   mode: single
 - id: '1718020351848'
   alias: Éteindre Chambre si plus de présence
@@ -1291,11 +1250,17 @@
     data: {}
     target:
       area_id: chambre
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id: media_player.chambre
+  - if:
+    - condition: state
+      entity_id: input_boolean.musique_multi_room
+      state:
+      - 'off'
+    then:
+    - action: media_player.media_pause
+      metadata: {}
+      data: {}
+      target:
+        entity_id: media_player.chambre
   mode: single
 - id: '1718020490708'
   alias: Éteindre Chambre Marilou si plus de présence
@@ -1326,12 +1291,18 @@
     data: {}
     target:
       area_id: chambre_bebe
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.chambre_marilou
+  - if:
+    - condition: state
+      entity_id: input_boolean.musique_multi_room
+      state:
+      - 'off'
+    then:
+    - action: media_player.media_pause
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - media_player.chambre_marilou
   mode: single
 - id: '1718707293101'
   alias: Transfert Musique Tesla vers Maison - Transférer Musique
@@ -3749,10 +3720,11 @@
   - trigger: state
     entity_id:
     - binary_sensor.presence_rez_de_chaussee
-    to: 'off'
+    to:
+    - 'off'
     for:
       hours: 0
-      minutes: 15
+      minutes: 10
       seconds: 0
   - trigger: state
     entity_id:
@@ -3794,59 +3766,6 @@
       target:
         entity_id:
         - switch.micros_rez_de_chaussee
-  mode: single
-- id: '1730753017143'
-  alias: VoiceKit Chambre - Controller Volume
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_boolean.mode_sommeil
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 30
-  - trigger: state
-    entity_id:
-    - input_boolean.mode_sommeil_marilou
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
-  - trigger: homeassistant
-    event: start
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.mode_sommeil
-        state: 'on'
-      sequence:
-      - action: media_player.volume_set
-        metadata: {}
-        data:
-          volume_level: 0.2
-        target:
-          entity_id: media_player.vpe_chambre_media_player
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.mode_sommeil_marilou
-        state: 'on'
-      sequence:
-      - action: media_player.volume_set
-        metadata: {}
-        data:
-          volume_level: 0.4
-        target:
-          entity_id: media_player.vpe_chambre_media_player
-    default:
-    - action: media_player.volume_set
-      metadata: {}
-      data:
-        volume_level: 0.8
-      target:
-        entity_id: media_player.vpe_chambre_media_player
   mode: single
 - id: '1731176393383'
   alias: VPE Chambre - Allumer / Éteindre automatiquement
@@ -4023,36 +3942,6 @@
         media_type: playlist
         enqueue: replace
     enabled: true
-  - alias: Fallback in case audio does not start
-    sequence:
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 10
-        milliseconds: 0
-    - if:
-      - condition: template
-        value_template: '{{ states(player) != ''playing'' }}'
-      then:
-      - action: media_player.media_play
-        metadata: {}
-        data: {}
-        target:
-          entity_id: '{{player}}'
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 10
-          milliseconds: 0
-      - if:
-        - condition: template
-          value_template: '{{ states(player) != ''playing'' }}'
-        then:
-        - action: media_player.media_next_track
-          metadata: {}
-          data: {}
-          target:
-            entity_id: '{{player}}'
   mode: single
 - id: '1731941056494'
   alias: Dashboard - Générer texte de bonne fête
@@ -4416,12 +4305,18 @@
     data: {}
     target:
       entity_id: media_player.apple_tv_salon
-  - action: media_player.media_pause
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - media_player.sonos_amp_music_assistant
+  - if:
+    - condition: state
+      entity_id: input_boolean.musique_multi_room
+      state:
+      - 'off'
+    then:
+    - action: media_player.media_pause
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - media_player.sonos_amp_music_assistant
   mode: single
 - id: '1737233418257'
   alias: Boost Salle de Bain - Activer par le VPE
@@ -4660,6 +4555,11 @@
         target:
           entity_id:
           - media_player.chambre_marilou
+      - action: media_player.clear_playlist
+        metadata: {}
+        target:
+          entity_id: media_player.chambre_marilou
+        data: {}
       - if:
         - condition: state
           entity_id: binary_sensor.capteur_ouverture_fenetre_chambre_bebe
@@ -7557,14 +7457,408 @@
         entity_id:
         - switch.capteur_de_qualite_de_l_air_bureau
   mode: single
-- id: '1767870180004'
+- id: '1768853078535'
+  alias: Stranger Things Mode
+  description: Each light flickers independently for maximum creepiness
+  triggers:
+  - entity_id: input_boolean.mode_stranger_things
+    to: 'on'
+    id: start
+    trigger: state
+  - entity_id: input_boolean.mode_stranger_things
+    to: 'off'
+    id: stop
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: start
+      sequence:
+      - action: music_assistant.play_media
+        metadata: {}
+        target:
+          device_id: 315df874412444bd09dd72f23ecc751a
+        data:
+          media_id: Stranger Things
+          media_type: track
+          artist: Kyle Dixon
+          enqueue: replace
+      - action: light.turn_off
+        metadata: {}
+        target:
+          area_id:
+          - salon
+          - cuisine
+          - entree
+        data:
+          transition: 3
+      - data:
+          scene_id: stranger_things_restore
+          snapshot_entities:
+          - light.hue_aurelle_panel_1
+          - light.salon_suspension_tv
+          - light.salon_trepied
+          - light.salon_buffet_gauche
+          - light.salon_buffet_droit
+          - light.cuisine_comptoir
+          - light.cuisine_suspension
+          - light.hue_white_candle_1
+          - light.hue_white_candle_2
+          - light.entree_suspension
+        action: scene.create
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - parallel:
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.entree_suspension
+              data:
+                brightness_pct: '{{ range(10, 100) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(40, 230) | random }}'
+            - target:
+                entity_id: light.entree_suspension
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(30, 160) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.salon_buffet_gauche
+              data:
+                brightness_pct: '{{ range(20, 90) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(450, 750) | random }}'
+            - target:
+                entity_id: light.salon_buffet_gauche
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(350, 650) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.salon_suspension_tv
+              data:
+                brightness_pct: '{{ range(15, 90) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(450, 750) | random }}'
+            - target:
+                entity_id: light.salon_suspension_tv
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(350, 650) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.salon_buffet_droit
+              data:
+                brightness_pct: '{{ range(5, 100) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(50, 250) | random }}'
+            - target:
+                entity_id: light.salon_buffet_droit
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(30, 180) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.hue_aurelle_panel_1
+              data:
+                brightness_pct: '{{ range(20, 100) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(400, 700) | random }}'
+            - target:
+                entity_id: light.hue_aurelle_panel_1
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(300, 600) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.salon_trepied
+              data:
+                brightness_pct: '{{ range(15, 95) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(400, 700) | random }}'
+            - target:
+                entity_id: light.salon_trepied
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(300, 600) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.cuisine_comptoir
+              data:
+                brightness_pct: '{{ range(10, 90) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(60, 280) | random }}'
+            - target:
+                entity_id: light.cuisine_comptoir
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(40, 200) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.hue_white_candle_2
+              data:
+                brightness_pct: '{{ range(5, 100) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(50, 250) | random }}'
+            - target:
+                entity_id: light.hue_white_candle_2
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(40, 180) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.hue_white_candle_1
+              data:
+                brightness_pct: '{{ range(10, 100) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(40, 220) | random }}'
+            - target:
+                entity_id: light.hue_white_candle_1
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(30, 150) | random }}'
+        - repeat:
+            while:
+            - condition: state
+              entity_id: input_boolean.mode_stranger_things
+              state: 'on'
+            sequence:
+            - target:
+                entity_id: light.cuisine_suspension
+              data:
+                brightness_pct: '{{ range(5, 85) | random }}'
+                transition: 0
+              action: light.turn_on
+            - delay:
+                milliseconds: '{{ range(70, 300) | random }}'
+            - target:
+                entity_id: light.cuisine_suspension
+              action: light.turn_off
+              data:
+                transition: 0
+            - delay:
+                milliseconds: '{{ range(50, 220) | random }}'
+    - conditions:
+      - condition: trigger
+        id: stop
+      sequence:
+      - action: media_player.media_pause
+        metadata: {}
+        target:
+          device_id: 315df874412444bd09dd72f23ecc751a
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - target:
+          entity_id: scene.stranger_things_restore
+        action: scene.turn_on
+        data: {}
+  mode: restart
+- id: '1769627753797'
+  alias: Appareil critique - Notifier si plus alimenté
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.server
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.frigo
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.standing_desk
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.lave_vaisselle
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.media_center
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data:
+      variables:
+        user_message: '{%- from ''device_name_clean.jinja'' import device_name_clean
+          -%}
+
+          Appareil non alimenté! ({{device_name_clean(trigger.entity_id)}} )
+
+          '
+    target:
+      entity_id:
+      - script.power_notification_appareil_critique_non_alimente
+  mode: single
+- id: '1770628027108'
+  alias: Enceintes Marilou - Controller volume
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.chambre_marilou
+  - trigger: state
+    entity_id:
+    - input_boolean.mode_sommeil_marilou
+  conditions:
+  - condition: state
+    entity_id: input_boolean.mode_sommeil_marilou
+    state:
+    - 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.chambre_marilou
+        state:
+        - playing
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: "{{ (state_attr('media_player.chambre_marilou', 'media_album_name')
+              | default('') | lower)\n   is search('toudou|doudou') }}"
+            alias: Toudou playing
+          sequence:
+          - action: media_player.volume_set
+            metadata: {}
+            target:
+              entity_id: media_player.chambre_marilou
+            data:
+              volume_level: 0.3
+        default:
+        - action: media_player.volume_set
+          metadata: {}
+          target:
+            entity_id: media_player.chambre_marilou
+          data:
+            volume_level: 0.1
+  mode: single
+- id: '1770628491872'
+  alias: Toudou - Bouton
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - event.bilresa_scroll_wheel_bouton_3
+    - event.bilresa_scroll_wheel_bouton_6
+    - event.bilresa_scroll_wheel_bouton_9
+  conditions: []
+  actions:
+  - action: script.lancer_une_histoire_toudou
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1771259015738'
   alias: New automation
   description: ''
   triggers:
-  - trigger: light.brightness_changed
+  - trigger: light.brightness_crossed_threshold
     target:
-      device_id: b10132f0782d71127347a9535ece97cb
-    options: {}
+      entity_id: light.lampe_bureau_droite
+    options:
+      behavior: any
+      threshold_type: above
+      lower_limit:
+        number: 80
+        active_choice: number
   conditions: []
   actions: []
   mode: single

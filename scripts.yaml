@@ -205,12 +205,10 @@ wake_up:
 start_marilou_bedtime_routine:
   alias: Démarrer la routine du sommeil de Marilou
   sequence:
-  - action: media_player.volume_set
-    data:
-      volume_level: 0.1
-    target:
-      entity_id:
-      - media_player.chambre_marilou
+  - action: script.lancer_une_histoire_toudou
+    metadata: {}
+    data: {}
+    enabled: false
   - action: music_assistant.play_media
     data:
       media_id: Au Dodo Marilou
@@ -224,42 +222,6 @@ start_marilou_bedtime_routine:
     target:
       entity_id:
       - media_player.chambre_marilou
-  - sequence:
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 10
-        milliseconds: 0
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.chambre_marilou
-          state: playing
-      then:
-      - action: media_player.media_play
-        metadata: {}
-        data: {}
-        target:
-          entity_id: media_player.chambre_marilou
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 10
-          milliseconds: 0
-      - if:
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: media_player.chambre_marilou
-            state: playing
-        then:
-        - action: media_player.media_next_track
-          metadata: {}
-          data: {}
-          target:
-            entity_id: media_player.chambre_marilou
-    alias: Fallback in case audio does not start
   mode: single
   icon: mdi:bell-sleep
   description: ''
@@ -1694,56 +1656,6 @@ start_escape_game:
       name: Area
       description: Area in which the escape room audio game will start
       required: true
-power_notification_montre_oubliee:
-  use_blueprint:
-    path: jlo/power_notification_creator.yaml
-    input:
-      persons:
-      - person.jenova70
-      default_title: ⌚ Montre oubliée?
-      default_message: La montre est toujours à la maison alors que le telephone ne
-        l'ai plus!
-      button_title: Détacher ma montre
-      button_action:
-      - action: input_boolean.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.montre_portee
-      replace_older_notification: true
-  alias: Power Notification - Montre oubliée
-  description: ''
-power_notification_telephone_oublie:
-  use_blueprint:
-    path: jlo/power_notification_creator.yaml
-    input:
-      persons:
-      - person.jenova70
-      default_title: ⌚ Téléphone oublié?
-      default_message: Le téléphone est toujours à la maison alors que la montre ne
-        l'ai plus!
-      button_title: Détacher mon téléphone
-      button_action:
-      - action: input_boolean.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_boolean.telephone_porte
-      replace_older_notification: true
-  alias: Power Notification - Téléphone oublié
-  description: ''
-power_notification_appareil_reattache_automatiquement:
-  use_blueprint:
-    path: jlo/power_notification_creator.yaml
-    input:
-      persons:
-      - person.jenova70
-      default_title: 'Appareil personnel '
-      default_message: Appareil réattaché automatiquement
-      replace_older_notification: true
-  alias: Power Notification - Appareil réattaché automatiquement
-  description: ''
 power_notification_serrure_verrouillee:
   use_blueprint:
     path: jlo/power_notification_creator.yaml
@@ -1912,3 +1824,61 @@ power_notification_machine_a_laver_coupee_lors_d_une_fuite:
         de bains
   alias: Power Notification - Machine à laver coupée lors d'une fuite
   description: ''
+power_notification_appareil_critique_non_alimente:
+  use_blueprint:
+    path: jlo/power_notification_creator.yaml
+    input:
+      persons:
+      - person.jenova70
+      default_title: "\U0001F50C Panne de courant!"
+      default_message: Appareil critique non alimenté!
+      default_importance: true
+  alias: Power notification - Appareil critique non alimenté
+  description: ''
+lancer_une_histoire_toudou:
+  sequence:
+  - action: rest_command.get_marilou_stories
+    metadata: {}
+    data: {}
+    response_variable: playlist_tracks
+  - choose:
+    - conditions:
+      - condition: media_player.is_playing
+        target:
+          entity_id: media_player.chambre_marilou
+        options:
+          behavior: any
+      sequence:
+      - action: music_assistant.play_media
+        metadata: {}
+        target:
+          entity_id: media_player.chambre_marilou
+        data:
+          media_id: '{{ (playlist_tracks.content | map(attribute=''uri'') | list)
+            | random }}'
+          media_type: track
+          enqueue: next
+      - action: media_player.media_next_track
+        metadata: {}
+        target:
+          entity_id: media_player.chambre_marilou
+        data: {}
+    - conditions:
+      - condition: media_player.is_not_playing
+        target:
+          entity_id: media_player.chambre_marilou
+        options:
+          behavior: any
+      sequence:
+      - action: music_assistant.play_media
+        metadata: {}
+        target:
+          entity_id: media_player.chambre_marilou
+        data:
+          media_id: '{{ (playlist_tracks.content | map(attribute=''uri'') | list)
+            | random }}'
+          media_type: track
+          enqueue: replace
+  alias: Lancer une histoire Toudou
+  description: ''
+  icon: mdi:teddy-bear
