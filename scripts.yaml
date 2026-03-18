@@ -1882,3 +1882,515 @@ lancer_une_histoire_toudou:
   alias: Lancer une histoire Toudou
   description: ''
   icon: mdi:teddy-bear
+controller_clim_rez_de_chaussee:
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{mode == ''off''}}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            state: 'off'
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            hvac_mode: 'off'
+          action: climate.set_hvac_mode
+        - delay: 00:00:01
+        alias: Turn off
+      alias: 'Off'
+    - conditions:
+      - condition: template
+        value_template: '{{mode == ''heat''}}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            state: heat
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            hvac_mode: heat
+          action: climate.set_hvac_mode
+        - delay: 00:00:01
+        alias: Turn on
+      - alias: Set target temp
+        if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_salon'',''temperature'')
+            | float(0)) }}
+
+            '
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            temperature: '{{ target_temperature }}'
+          action: climate.set_temperature
+        - delay: 00:00:01
+      - alias: Set vertical fan direction
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: select.climatisation_salon_oscillation_verticale
+            state: ↓
+        then:
+        - target:
+            entity_id: select.climatisation_salon_oscillation_verticale
+          data:
+            option: ↓
+          action: select.select_option
+        - delay: 00:00:01
+      - alias: Set horizontal fan direction
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: select.climatisation_salon_oscillation_horizontale
+            state: SWING
+        then:
+        - target:
+            entity_id: select.climatisation_salon_oscillation_horizontale
+          data:
+            option: SWING
+          action: select.select_option
+        - delay: 00:00:01
+      - alias: Set fan speed
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            attribute: fan_mode
+            state: auto
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            fan_mode: auto
+          action: climate.set_fan_mode
+        - delay: 00:00:01
+      alias: Heat
+    - conditions:
+      - condition: template
+        value_template: '{{mode == ''cool''}}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            state: cool
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            hvac_mode: cool
+          action: climate.set_hvac_mode
+        - delay: 00:00:01
+        alias: Turn on
+      - alias: Set target temp
+        if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_salon'',''temperature'')
+            | float(0)) }}
+
+            '
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            temperature: '{{ target_temperature }}'
+          action: climate.set_temperature
+        - delay: 00:00:01
+      - alias: Set vertical fan direction
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: select.climatisation_salon_oscillation_verticale
+            state: ↑↑
+        then:
+        - target:
+            entity_id: select.climatisation_salon_oscillation_verticale
+          data:
+            option: ↑↑
+          action: select.select_option
+        - delay: 00:00:01
+      - alias: Set horizontal fan direction
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: select.climatisation_salon_oscillation_horizontale
+            state: SWING
+        then:
+        - target:
+            entity_id: select.climatisation_salon_oscillation_horizontale
+          data:
+            option: SWING
+          action: select.select_option
+        - delay: 00:00:01
+      - alias: Set fan speed
+        if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_salon
+            attribute: fan_mode
+            state: auto
+        then:
+        - target:
+            entity_id: climate.climatisation_salon
+          data:
+            fan_mode: auto
+          action: climate.set_fan_mode
+        - delay: 00:00:01
+      alias: Heat
+  fields:
+    mode:
+      selector:
+        select:
+          options:
+          - label: Éteint
+            value: 'off'
+          - label: Froid
+            value: cool
+          - label: Chaud
+            value: heat
+      required: true
+      name: Mode
+    target_temperature:
+      selector:
+        number:
+          min: 0
+          max: 35
+          step: 0.5
+  alias: Controller Clim Rez de Chaussée
+  description: Controller la clim du rez-de-chaussée de façon optimale
+controller_clim_bureau:
+  alias: Controller Clim Bureau
+  description: Controller la clim du bureau de façon optimale (MODBUS, nécessite délais)
+  fields:
+    mode:
+      name: Mode
+      selector:
+        select:
+          options:
+          - label: Éteint
+            value: 'off'
+          - label: Froid
+            value: cool
+          - label: Chaud
+            value: heat
+      required: true
+    target_temperature:
+      selector:
+        number:
+          min: 0
+          max: 35
+          step: 0.5
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''off'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_bureau
+            state: 'off'
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_bureau
+          data:
+            hvac_mode: 'off'
+        - delay: 00:00:01
+        alias: Turn off
+      alias: 'Off'
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''heat'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_bureau
+            state: heat
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_bureau
+          data:
+            hvac_mode: heat
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_bureau'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_bureau
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Heat
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''cool'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_bureau
+            state: cool
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_bureau
+          data:
+            hvac_mode: cool
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_bureau'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_bureau
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Cool
+controller_clim_chambre:
+  alias: Controller Clim Chambre
+  description: Controller la clim de la chambre de façon optimale (MODBUS, nécessite
+    délais)
+  fields:
+    mode:
+      name: Mode
+      selector:
+        select:
+          options:
+          - label: Éteint
+            value: 'off'
+          - label: Froid
+            value: cool
+          - label: Chaud
+            value: heat
+      required: true
+    target_temperature:
+      selector:
+        number:
+          min: 0
+          max: 35
+          step: 0.5
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''off'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre
+            state: 'off'
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre
+          data:
+            hvac_mode: 'off'
+        - delay: 00:00:01
+        alias: Turn off
+      alias: 'Off'
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''heat'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre
+            state: heat
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre
+          data:
+            hvac_mode: heat
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_chambre'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_chambre
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Heat
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''cool'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre
+            state: cool
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre
+          data:
+            hvac_mode: cool
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_chambre'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_chambre
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Cool
+controller_clim_chambre_marilou:
+  alias: Controller Clim Chambre Marilou
+  description: Controller la clim de la chambre de Marilou de façon optimale (MODBUS,
+    nécessite délais)
+  fields:
+    mode:
+      name: Mode
+      selector:
+        select:
+          options:
+          - label: Éteint
+            value: 'off'
+          - label: Froid
+            value: cool
+          - label: Chaud
+            value: heat
+      required: true
+    target_temperature:
+      selector:
+        number:
+          min: 0
+          max: 35
+          step: 0.5
+  sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''off'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre_marilou
+            state: 'off'
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre_marilou
+          data:
+            hvac_mode: 'off'
+        - delay: 00:00:01
+        alias: Turn off
+      alias: 'Off'
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''heat'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre_marilou
+            state: heat
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre_marilou
+          data:
+            hvac_mode: heat
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_chambre_marilou'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_chambre_marilou
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Heat
+    - conditions:
+      - condition: template
+        value_template: '{{ mode == ''cool'' }}'
+      sequence:
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: climate.climatisation_chambre_marilou
+            state: cool
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.climatisation_chambre_marilou
+          data:
+            hvac_mode: cool
+        - delay: 00:00:01
+        alias: Turn on
+      - if:
+        - condition: template
+          value_template: '{{ target_temperature != (state_attr(''climate.climatisation_chambre_marilou'',''temperature'')
+            | float(0)) }}'
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.climatisation_chambre_marilou
+          data:
+            temperature: '{{ target_temperature }}'
+        - delay: 00:00:01
+        alias: Set target temp
+      alias: Cool
